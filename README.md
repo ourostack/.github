@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/ouro.png" alt="Ouro" width="160" height="160">
+</p>
+
 # Ourostack GitHub profile
 
 This repository holds the [organization profile](profile/README.md) and shared GitHub brand images.
