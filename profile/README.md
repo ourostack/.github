@@ -9,9 +9,9 @@
 | Desk | Ouro HX | Ouro MD |
 | :---: | :---: | :---: |
 | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/desk.png" alt="Desk" width="128" height="128">](https://github.com/ourostack/desk) | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/ouro-hx.png" alt="Ouro HX" width="128" height="128">](https://github.com/ourostack/ouro-ui) | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/ouro-md.png" alt="Ouro MD" width="128" height="128">](https://github.com/ourostack/ouro-md) |
-| Durable work state for agents | Component library, under construction | Native macOS Markdown editor |
+| Where agents keep their work, with Crew for teams | Components for humans and the agents building with them; under construction | A Mac Markdown editor for reading what agents write |
 
 | Ouro Shepherd | Friends | Factory |
 | :---: | :---: | :---: |
 | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/shepherd.png" alt="Ouro Shepherd" width="128" height="128">](https://github.com/ourostack/ouroboros/blob/main/docs/shepherd-sense.md) | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/friends.png" alt="Friends" width="128" height="128">](https://github.com/ourostack/friends) | [<img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/factory.png" alt="Factory" width="128" height="128">](https://ourostack.github.io/factory/) |
-| Keeps every coding agent moving; coming soon | Who's who for agents, with Friends Relay | Real agent work, measured in public |
+| Keeps agents on task; coming soon | Who agents know, and how they reach each other | Agent work, measured in public |
