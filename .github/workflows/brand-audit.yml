@@ -1,0 +1,27 @@
+name: brand audit
+
+# Checks every surface in brand/surfaces.json against brand/provenance.json.
+# Red means a surface is stale: see brand/AGENTS.md. Not a required check, because a
+# brand pull request has to merge before other repositories can point at its files.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Audit every brand surface
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRAND_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+        run: node brand/tools/audit.mjs --format text

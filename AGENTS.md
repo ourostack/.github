@@ -1,0 +1,54 @@
+# AGENTS.md
+
+This repository holds the ourostack organization profile and the canonical brand: the storybook world at dawn, Ouro on its glowing trail, and each product's character in its own scene. Everything another surface shows comes from `brand/`.
+
+## The rule: a branding update reaches every surface
+
+A branding update (a new or redrawn header, mark, crop, card or icon) is done only when every surface in [`brand/surfaces.json`](brand/surfaces.json) carries it and the audit is green. Merging the art here is the start, not the end.
+
+1. **Change the art here first.** Put the file in `brand/` and record it in `brand/provenance.json`: its source, the prompt chain and references (for anything drawn) or the exact crop and encoder (for anything derived), and its sha256. Derived files come from `python3 brand/tools/derive.py`; never hand-edit them. Keep Ouro on-model: one head, one tail, the "O" curl, the same face.
+2. **Find every surface.** `brand/surfaces.json` lists them: the organization profile, every repository README and social preview, npm package pages, and every page of ouroboros.bot, ui.ouro.bot and the Ouro MD page that stays on ouro.bot (favicons, touch icons, Open Graph and Twitter cards, heroes).
+3. **Bring it to each one** through that surface's own route (below).
+4. **Run the audit** and fix what it names:
+
+   ```sh
+   node brand/tools/audit.mjs --format text
+   ```
+
+   It exits 0 when every surface is current, 1 when any is stale or a repository is missing from the registry, and 3 when it cannot check (set `GH_TOKEN`). Every problem line comes with a `fix:`. `--format json` gives one document for agents; `--only site:` limits it to ids with that prefix. The same audit runs here on every push, pull request and each morning (`.github/workflows/brand-audit.yml`).
+
+**A new surface goes into the registry in the same change that creates it.** A new repository gets a README header and a social preview entry (draw its scene with the prompt chain in `provenance.json`); a new site or page gets a `website` entry or a sitemap the audit already walks. The audit fails on any ourostack repository that is neither registered nor excluded with a reason.
+
+## How each kind of surface takes the brand
+
+| Kind | Where it lives | How to update it |
+| --- | --- | --- |
+| `github-readme` | the top of each repository's README (the profile: `profile/README.md` here) | A small README-only PR in that repository whose first lines are the header block below; merge when green. |
+| `github-social-preview` | repository Settings > General > Social preview | GitHub has no API for this. Upload `brand/social/<scene>.jpg` from a signed-in browser (the Desk headed browser with the operator's profile), one repository at a time. |
+| `npm-readme` | the package page on npmjs.com | Ships with the package's next release; the audit shows it as waiting until then. |
+| `website` | ouroboros.bot (ourostack/ouroboros-website), ui.ouro.bot (ourostack/ouro-ui `site/`), ouro.bot/apps/ouro-md/ (ourostack/ouro-apps-site) | Copy each file byte-for-byte to `/brand/storybook/<same path>` on the site (no re-encoding), reference it from the page, deploy through the repository's CI. |
+
+README header block (use the scene's own alt text, written for someone who can't see it):
+
+```html
+<!-- ourostack:brand:start -->
+<p align="center">
+  <a href="https://github.com/ourostack"><img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/<scene>.webp" alt="<what the scene shows>" width="100%"></a>
+</p>
+<!-- ourostack:brand:end -->
+```
+
+A site page carries the brand when:
+
+- its hero is a `<picture data-brand-scene="<scene>">` with `scenes/<scene>-{640,960,1536}` (AVIF, then WebP) and `phone/<scene>-{384,768}` for narrow screens, eager and `fetchpriority="high"`; scenes below the fold are lazy;
+- `rel=icon` serves `icons/ouro.svg` (or `icons/ouro-hx.svg` on Ouro HX pages) and `rel=apple-touch-icon` serves `icons/<mark>-180.png`;
+- `og:image` and `twitter:image` are the same 1200x630 card: `og/<scene>.jpg` itself, or a card the site composes on it at build time (the registry says which).
+
+## What is not a brand surface
+
+App icons (Ouro MD's icon, the Apple apps') are product identity and do not change with a brand update. Forks keep their upstream README and identity. `surfaces.json` lists every exclusion with its reason.
+
+## Git
+
+- Commit email: `16390116+arimendelow@users.noreply.github.com`.
+- No AI attribution in commits, pull requests or files.
