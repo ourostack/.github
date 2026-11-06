@@ -40,7 +40,7 @@ README header block (use the scene's own alt text, written for someone who can't
 
 A site page carries the brand when:
 
-- its hero is a `<picture data-brand-scene="<scene>">` with `scenes/<scene>-{640,960,1536}` (AVIF, then WebP) and `phone/<scene>-{384,768}` for narrow screens, eager and `fetchpriority="high"`; scenes below the fold are lazy;
+- its hero is a `<picture data-brand-scene="<scene>">` with `scenes/<scene>-{640,960,1536}` (AVIF, then WebP) and `phone/<scene>-{384,768}` for narrow screens (4:3 by default; a scene with `phoneAspect` in `brand/tools/crops.json` is wider, so size the phone hero from the file's own width and height and never crop it again with `object-fit`), eager and `fetchpriority="high"`; scenes below the fold are lazy;
 - `rel=icon` serves `icons/ouro.svg` (or `icons/ouro-hx.svg` on Ouro HX pages) and `rel=apple-touch-icon` serves `icons/<mark>-180.png`;
 - `og:image` and `twitter:image` are the same 1200x630 card: `og/<scene>.jpg` itself, or a card the site composes on it at build time (the registry says which).
 
