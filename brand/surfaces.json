@@ -1,0 +1,383 @@
+{
+  "$comment": "Every surface a branding update must reach. brand/AGENTS.md has the rule; node brand/tools/audit.mjs checks each one. Paths in header, image, icon and og are relative to brand/ and must be in brand/provenance.json.",
+  "version": 1,
+  "canonicalRaw": "https://raw.githubusercontent.com/ourostack/.github/main/brand/",
+  "org": "ourostack",
+  "excluded": {
+    "playwright": "Fork of microsoft/playwright; keeps its upstream README and identity.",
+    "cmux": "Fork of manaflow-ai/cmux; keeps its upstream README and identity.",
+    "image-gen-mcp": "Archived.",
+    "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here."
+  },
+  "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14).",
+  "surfaces": [
+    {
+      "id": "profile",
+      "kind": "github-readme",
+      "repo": "ourostack/.github",
+      "path": "profile/README.md",
+      "header": "headers/ourostack.webp",
+      "note": "The organization profile at https://github.com/ourostack. Its product tiles use the other headers too."
+    },
+    {
+      "id": "readme:.github",
+      "kind": "github-readme",
+      "repo": "ourostack/.github",
+      "header": "headers/ourostack.webp"
+    },
+    {
+      "id": "readme:apple-distribution-kit",
+      "kind": "github-readme",
+      "repo": "ourostack/apple-distribution-kit",
+      "header": "headers/apple-distribution-kit.webp"
+    },
+    {
+      "id": "readme:desk",
+      "kind": "github-readme",
+      "repo": "ourostack/desk",
+      "header": "headers/desk.webp"
+    },
+    {
+      "id": "readme:factory",
+      "kind": "github-readme",
+      "repo": "ourostack/factory",
+      "header": "headers/factory.webp"
+    },
+    {
+      "id": "readme:flow-review",
+      "kind": "github-readme",
+      "repo": "ourostack/flow-review",
+      "header": "headers/flow-review.webp"
+    },
+    {
+      "id": "readme:friends",
+      "kind": "github-readme",
+      "repo": "ourostack/friends",
+      "header": "headers/friends.webp"
+    },
+    {
+      "id": "readme:friends-relay",
+      "kind": "github-readme",
+      "repo": "ourostack/friends-relay",
+      "header": "headers/friends-relay.webp"
+    },
+    {
+      "id": "readme:gatefold",
+      "kind": "github-readme",
+      "repo": "ourostack/gatefold",
+      "header": "headers/gatefold.webp"
+    },
+    {
+      "id": "readme:homebrew-tap",
+      "kind": "github-readme",
+      "repo": "ourostack/homebrew-tap",
+      "header": "headers/homebrew-tap.webp"
+    },
+    {
+      "id": "readme:m365crawl",
+      "kind": "github-readme",
+      "repo": "ourostack/m365crawl",
+      "header": "headers/m365crawl.webp"
+    },
+    {
+      "id": "readme:ouro-apps-site",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-apps-site",
+      "header": "headers/ouro-apps-site.webp"
+    },
+    {
+      "id": "readme:ouro-md",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-md",
+      "header": "headers/ouro-md.webp"
+    },
+    {
+      "id": "readme:ouro-native-apple-app-shell",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-native-apple-app-shell",
+      "header": "headers/ouro-native-apple-app-shell.webp"
+    },
+    {
+      "id": "readme:ouro-ui",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-ui",
+      "header": "headers/ouro-hx.webp"
+    },
+    {
+      "id": "readme:ouro-ui-apple",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-ui-apple",
+      "header": "headers/ouro-ui-apple.webp"
+    },
+    {
+      "id": "readme:ouro-ui-core",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-ui-core",
+      "header": "headers/ouro-ui-core.webp"
+    },
+    {
+      "id": "readme:ouro-work-substrate",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-work-substrate",
+      "header": "headers/ouro-work.webp"
+    },
+    {
+      "id": "readme:ouro-workbench",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-workbench",
+      "header": "headers/ouro-workbench.webp",
+      "held": "Workbench is frozen (ourostack/ouro-workbench#437) and its required macOS checks cannot run since GitHub retired macos-14 on 2026-11-02; the header PR #439 was closed. Land the runner fix first if Workbench is unfrozen, then reopen #439."
+    },
+    {
+      "id": "readme:ouroboros",
+      "kind": "github-readme",
+      "repo": "ourostack/ouroboros",
+      "header": "headers/ouroboros.webp"
+    },
+    {
+      "id": "readme:ouroboros-skills",
+      "kind": "github-readme",
+      "repo": "ourostack/ouroboros-skills",
+      "header": "headers/ouroboros-skills.webp"
+    },
+    {
+      "id": "readme:ouroboros-website",
+      "kind": "github-readme",
+      "repo": "ourostack/ouroboros-website",
+      "header": "headers/ouroboros-website.webp"
+    },
+    {
+      "id": "readme:playwright-focus-proof",
+      "kind": "github-readme",
+      "repo": "ourostack/playwright-focus-proof",
+      "header": "headers/playwright-focus-proof.webp"
+    },
+    {
+      "id": "social:.github",
+      "kind": "github-social-preview",
+      "repo": "ourostack/.github",
+      "image": "social/ourostack.jpg"
+    },
+    {
+      "id": "social:apple-distribution-kit",
+      "kind": "github-social-preview",
+      "repo": "ourostack/apple-distribution-kit",
+      "image": "social/apple-distribution-kit.jpg"
+    },
+    {
+      "id": "social:desk",
+      "kind": "github-social-preview",
+      "repo": "ourostack/desk",
+      "image": "social/desk.jpg"
+    },
+    {
+      "id": "social:factory",
+      "kind": "github-social-preview",
+      "repo": "ourostack/factory",
+      "image": "social/factory.jpg"
+    },
+    {
+      "id": "social:flow-review",
+      "kind": "github-social-preview",
+      "repo": "ourostack/flow-review",
+      "image": "social/flow-review.jpg"
+    },
+    {
+      "id": "social:friends",
+      "kind": "github-social-preview",
+      "repo": "ourostack/friends",
+      "image": "social/friends.jpg"
+    },
+    {
+      "id": "social:friends-relay",
+      "kind": "github-social-preview",
+      "repo": "ourostack/friends-relay",
+      "image": "social/friends-relay.jpg"
+    },
+    {
+      "id": "social:gatefold",
+      "kind": "github-social-preview",
+      "repo": "ourostack/gatefold",
+      "image": "social/gatefold.jpg"
+    },
+    {
+      "id": "social:homebrew-tap",
+      "kind": "github-social-preview",
+      "repo": "ourostack/homebrew-tap",
+      "image": "social/homebrew-tap.jpg"
+    },
+    {
+      "id": "social:m365crawl",
+      "kind": "github-social-preview",
+      "repo": "ourostack/m365crawl",
+      "image": "social/m365crawl.jpg"
+    },
+    {
+      "id": "social:ouro-apps-site",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-apps-site",
+      "image": "social/ouro-apps-site.jpg"
+    },
+    {
+      "id": "social:ouro-md",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-md",
+      "image": "social/ouro-md.jpg"
+    },
+    {
+      "id": "social:ouro-native-apple-app-shell",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-native-apple-app-shell",
+      "image": "social/ouro-native-apple-app-shell.jpg"
+    },
+    {
+      "id": "social:ouro-ui",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-ui",
+      "image": "social/ouro-hx.jpg"
+    },
+    {
+      "id": "social:ouro-ui-apple",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-ui-apple",
+      "image": "social/ouro-ui-apple.jpg"
+    },
+    {
+      "id": "social:ouro-ui-core",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-ui-core",
+      "image": "social/ouro-ui-core.jpg"
+    },
+    {
+      "id": "social:ouro-work-substrate",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-work-substrate",
+      "image": "social/ouro-work.jpg"
+    },
+    {
+      "id": "social:ouro-workbench",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-workbench",
+      "image": "social/ouro-workbench.jpg"
+    },
+    {
+      "id": "social:ouroboros",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouroboros",
+      "image": "social/ouroboros.jpg"
+    },
+    {
+      "id": "social:ouroboros-skills",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouroboros-skills",
+      "image": "social/ouroboros-skills.jpg"
+    },
+    {
+      "id": "social:ouroboros-website",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouroboros-website",
+      "image": "social/ouroboros-website.jpg"
+    },
+    {
+      "id": "social:playwright-focus-proof",
+      "kind": "github-social-preview",
+      "repo": "ourostack/playwright-focus-proof",
+      "image": "social/playwright-focus-proof.jpg"
+    },
+    {
+      "id": "npm:@ouro.bot/cli",
+      "kind": "npm-readme",
+      "package": "@ouro.bot/cli",
+      "header": "headers/ouroboros.webp",
+      "updatesWith": "the next npm release of ourostack/ouroboros (the README ships in the package)"
+    },
+    {
+      "id": "npm:@ouro.bot/friends",
+      "kind": "npm-readme",
+      "package": "@ouro.bot/friends",
+      "header": "headers/friends.webp",
+      "updatesWith": "the next npm release of ourostack/friends"
+    },
+    {
+      "id": "site:ouroboros.bot",
+      "kind": "website",
+      "repo": "ourostack/ouroboros-website",
+      "origin": "https://ouroboros.bot",
+      "sitemap": "https://ouroboros.bot/sitemap-index.xml",
+      "base": "/brand/storybook/",
+      "icon": "icons/ouro.svg",
+      "appleTouchIcon": "icons/ouro-180.png",
+      "og": "composed",
+      "pages": {
+        "/": {
+          "hero": "ourostack"
+        },
+        "/apps/": {
+          "hero": "ouro-apps-site"
+        },
+        "/ouro-hx/": {
+          "hero": "ouro-hx"
+        },
+        "/desk/": {
+          "hero": "desk"
+        },
+        "/ouro-md/": {
+          "hero": "ouro-md"
+        },
+        "/butler/": {
+          "hero": "butler"
+        },
+        "/lab/": {
+          "hero": "ouroboros"
+        }
+      }
+    },
+    {
+      "id": "site:ui.ouro.bot",
+      "kind": "website",
+      "repo": "ourostack/ouro-ui",
+      "origin": "https://ui.ouro.bot",
+      "sitemap": "https://ui.ouro.bot/sitemap.xml",
+      "base": "/brand/storybook/",
+      "icon": "icons/ouro-hx.svg",
+      "appleTouchIcon": "icons/ouro-hx-180.png",
+      "og": "composed",
+      "pages": {
+        "/": {
+          "hero": "ouro-hx"
+        },
+        "/apple/": {
+          "hero": "ouro-ui-apple"
+        },
+        "/docs/": {
+          "hero": "ouro-ui-core"
+        }
+      }
+    },
+    {
+      "id": "site:ouro.bot/apps/ouro-md",
+      "kind": "website",
+      "repo": "ourostack/ouro-apps-site",
+      "origin": "https://ouro.bot",
+      "base": "https://ouroboros.bot/brand/storybook/",
+      "icon": null,
+      "appleTouchIcon": null,
+      "og": "og/ouro-md.jpg",
+      "note": "Ouro MD's download page, its App Store marketing URL; it stays on ouro.bot. Its favicon and touch icon are Ouro MD's app icon, which is out of scope. It loads its art from ouroboros.bot because the ouro-apex Worker serves only kept files.",
+      "pages": {
+        "/apps/ouro-md/": {
+          "hero": "ouro-md"
+        }
+      }
+    },
+    {
+      "id": "installer:ouro.bot/ouro-md-install.sh",
+      "kind": "note",
+      "note": "The Ouro MD installer at https://ouro.bot/ouro-md-install.sh and apps/ouro-md/stable.json carry no imagery. They are listed so a brand pass checks they still serve unchanged; the audit fetches them and fails only if they stop serving.",
+      "check": [
+        "https://ouro.bot/ouro-md-install.sh",
+        "https://ouro.bot/apps/ouro-md/stable.json"
+      ]
+    }
+  ]
+}
