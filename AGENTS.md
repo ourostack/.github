@@ -24,7 +24,7 @@ A branding update (a new or redrawn header, mark, crop, card or icon) is done on
 | Kind | Where it lives | How to update it |
 | --- | --- | --- |
 | `github-readme` | the top of each repository's README (the profile: `profile/README.md` here) | A small README-only PR in that repository whose first lines are the header block below; merge when green. |
-| `github-social-preview` | repository Settings > General > Social preview | GitHub has no API for this. Upload `brand/social/<scene>.jpg` from a signed-in browser (the Desk headed browser with the operator's profile), one repository at a time. |
+| `github-social-preview` | repository Settings > General > Social preview | GitHub has no API for this. `node brand/tools/upload-social-previews.mjs` uploads every stale one through a background copy of the local Edge profile; it needs github.com signed in there once and stops with exit 3 if not. |
 | `npm-readme` | the package page on npmjs.com | Ships with the package's next release; the audit shows it as waiting until then. |
 | `website` | ouroboros.bot (ourostack/ouroboros-website), ui.ouro.bot (ourostack/ouro-ui `site/`), ouro.bot/apps/ouro-md/ (ourostack/ouro-apps-site) | Copy each file byte-for-byte to `/brand/storybook/<same path>` on the site (no re-encoding), reference it from the page, deploy through the repository's CI. |
 
