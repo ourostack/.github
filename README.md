@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/ouro.png" alt="Ouro" width="160" height="160">
+  <img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ourostack.webp" alt="Ouro and its friends at dawn in Ouro's world" width="100%">
 </p>
 
 # Ourostack GitHub profile
@@ -15,6 +15,7 @@ The rich renders are the primary marks. Use one-colour silhouettes only for tiny
 - `brand/shepherd.png`: Ouro Shepherd render, Ouro with a shepherd's staff, accepted for current use.
 - `brand/friends.png`: Friends render, Ouro with two people and two robots; Friends and Friends Relay share it.
 - `brand/factory.png`: Factory render, a warm ochre factory.
-- `brand/provenance.json`: source, approval scope and copied-byte hashes.
+- `brand/headers/`: full-width scene headers for the organization profile and each repository README, all set in one storybook world at dawn: Ouro on its glowing trail with each product. `ourostack.webp` is the profile hero; each other file is named after its product or repository. They aren't reviewed by Ari yet.
+- `brand/provenance.json`: source, approval scope and copied-byte hashes; for each header, the prompt, reference images and model that drew it.
 
 Ouro UI is the parent; Ouro HX is its component library under construction. No approved Ouro AX mark is claimed here.
