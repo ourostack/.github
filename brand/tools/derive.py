@@ -94,15 +94,17 @@ def build():
                 yield f"scenes/{scene}-{w}.{fmt}", encode(im, fmt), {
                     **base, "use": "site hero, responsive width", "operation": op, "encoder": ENCODERS[fmt]}
 
-        # Phone hero: a 4:3 window around the subject, at 1x and 2x.
-        box = crop_centre(src, round(src.height * 4 / 3), c["phone"])
+        # Phone hero: a 4:3 window around the subject, at 1x and 2x. A scene whose
+        # story is wider than 4:3 (two characters far apart) sets phoneAspect.
+        aw, ah = c.get("phoneAspect", [4, 3])
+        box = crop_centre(src, round(src.height * aw / ah), c["phone"])
         phone = src.crop(box)
         for w in (384, 768):
             h = round(phone.height * w / phone.width)
             im = phone.resize((w, h), Image.LANCZOS)
             for fmt in ("webp", "avif"):
                 yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt), {
-                    **base, "use": "phone hero (4:3)",
+                    **base, "use": f"phone hero ({aw}:{ah})",
                     "operation": f"crop box {list(box)} then resize to {w}x{h} (Lanczos)",
                     "encoder": ENCODERS[fmt]}
 
