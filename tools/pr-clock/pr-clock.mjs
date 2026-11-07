@@ -11,6 +11,7 @@
 // (see .github/workflows/pr-clock.yml) also covers private ones.
 
 import { pathToFileURL } from "node:url";
+import { readSeats, seatLine } from "./seat-guard.mjs";
 
 export const LIMIT_MIN = 30;
 export const SOON_MIN = 20;
@@ -125,7 +126,7 @@ export function late(prs, now) {
 
 const CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"];
 
-export function render(allPrs, now) {
+export function render(allPrs, now, seats) {
   // This issue is public: a private repository's PR is counted, never named.
   const prs = allPrs.filter((pr) => !pr.repository?.isPrivate);
   const hidden = late(allPrs.filter((pr) => pr.repository?.isPrivate), now).length;
@@ -134,6 +135,8 @@ export function render(allPrs, now) {
   const stamp = new Date(now).toISOString().replace(/\.\d+Z$/, "Z").replace("T", " ");
   const face = CLOCKS[new Date(now).getUTCHours() % 12];
   const out = [];
+  // The one-paid-seat guard rides along: agents/one-paid-seat.md.
+  if (seats) out.push(seatLine(seats), "");
   if (!rows.length && hidden) {
     out.push(`## 🔒 Only private repositories have late PRs`);
   } else if (!rows.length) {
@@ -257,7 +260,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   }
   const now = new Date().toISOString();
   const prs = await fetchOpenPrs();
-  const view = render(prs, now);
+  const seats = await readSeats((path) => gh(path, { token: process.env.SEAT_TOKEN || process.env.GH_TOKEN }));
+  console.error(seatLine(seats));
+  const view = render(prs, now, seats);
   if (process.argv.includes("--json")) console.log(JSON.stringify(view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })), null, 2));
   else if (process.argv.includes("--update-issue")) {
     const url = await updateIssue(view);
