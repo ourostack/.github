@@ -4,20 +4,211 @@
   "canonicalRaw": "https://raw.githubusercontent.com/ourostack/.github/main/brand/",
   "org": "ourostack",
   "excluded": {
-    "playwright": "Fork of microsoft/playwright; keeps its upstream README and identity.",
-    "cmux": "Fork of manaflow-ai/cmux; keeps its upstream README and identity.",
+    "playwright": "Fork of microsoft/playwright. Its main mirrors upstream exactly as the base for upstream PR branches, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "image-gen-mcp": "Archived.",
     "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here."
   },
   "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14); the Ouro Labs enterprise shows the same render and is registered below as enterprise:avatar so the audit notices if they drift apart.",
   "surfaces": [
     {
+      "id": "org:ourostack",
+      "kind": "github-org-profile",
+      "org": "ourostack",
+      "name": "Ouro",
+      "description": "Open-source tools for people and the agents who work beside them.",
+      "blog": "https://ouroboros.bot",
+      "pins": [
+        "desk",
+        "ouroboros",
+        "ouro-ui",
+        "ouro-md",
+        "gatefold",
+        "m365crawl"
+      ],
+      "note": "The org page header and pins. No API sets these; a signed-in owner does (settings/profile, Customize pins)."
+    },
+    {
+      "id": "about:.github",
+      "kind": "github-about",
+      "repo": "ourostack/.github",
+      "family": "home",
+      "homepage": "https://github.com/ourostack"
+    },
+    {
+      "id": "about:ouroboros-website",
+      "kind": "github-about",
+      "repo": "ourostack/ouroboros-website",
+      "family": "home",
+      "homepage": "https://ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-apps-site",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-apps-site",
+      "family": "home",
+      "homepage": "https://ouroboros.bot/apps/"
+    },
+    {
+      "id": "about:ouroboros",
+      "kind": "github-about",
+      "repo": "ourostack/ouroboros",
+      "family": "ouroboros",
+      "homepage": "https://ouroboros.bot/"
+    },
+    {
+      "id": "about:ouroboros-skills",
+      "kind": "github-about",
+      "repo": "ourostack/ouroboros-skills",
+      "family": "ouroboros",
+      "homepage": "https://ouroboros.bot/lab/"
+    },
+    {
+      "id": "about:friends",
+      "kind": "github-about",
+      "repo": "ourostack/friends",
+      "family": "ouroboros",
+      "homepage": "https://ouroboros.bot/#friends"
+    },
+    {
+      "id": "about:friends-relay",
+      "kind": "github-about",
+      "repo": "ourostack/friends-relay",
+      "family": "ouroboros",
+      "homepage": "https://ouroboros.bot/#friends"
+    },
+    {
+      "id": "about:ouro-work-substrate",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-work-substrate",
+      "family": "ouroboros",
+      "homepage": "https://ouroboros.bot/lab/"
+    },
+    {
+      "id": "about:desk",
+      "kind": "github-about",
+      "repo": "ourostack/desk",
+      "family": "desk",
+      "homepage": "https://ouroboros.bot/desk/"
+    },
+    {
+      "id": "about:factory",
+      "kind": "github-about",
+      "repo": "ourostack/factory",
+      "family": "desk",
+      "homepage": "https://ourostack.github.io/factory/"
+    },
+    {
+      "id": "about:ouro-ui",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-ui",
+      "family": "ouro-ui",
+      "homepage": "https://ui.ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-ui-core",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-ui-core",
+      "family": "ouro-ui",
+      "homepage": "https://ui.ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-ui-apple",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-ui-apple",
+      "family": "ouro-ui",
+      "homepage": "https://ui.ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-md",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-md",
+      "family": "apps",
+      "homepage": "https://ouroboros.bot/ouro-md/"
+    },
+    {
+      "id": "about:gatefold",
+      "kind": "github-about",
+      "repo": "ourostack/gatefold",
+      "family": "apps",
+      "homepage": ""
+    },
+    {
+      "id": "about:flow-review",
+      "kind": "github-about",
+      "repo": "ourostack/flow-review",
+      "family": "tools",
+      "homepage": ""
+    },
+    {
+      "id": "about:m365crawl",
+      "kind": "github-about",
+      "repo": "ourostack/m365crawl",
+      "family": "tools",
+      "homepage": ""
+    },
+    {
+      "id": "about:homebrew-tap",
+      "kind": "github-about",
+      "repo": "ourostack/homebrew-tap",
+      "family": "tools",
+      "homepage": ""
+    },
+    {
+      "id": "about:apple-distribution-kit",
+      "kind": "github-about",
+      "repo": "ourostack/apple-distribution-kit",
+      "family": "tools",
+      "homepage": ""
+    },
+    {
+      "id": "about:ouro-native-apple-app-shell",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-native-apple-app-shell",
+      "family": "tools",
+      "homepage": ""
+    },
+    {
+      "id": "about:cmux",
+      "kind": "github-about",
+      "repo": "ourostack/cmux",
+      "family": "labs",
+      "homepage": "https://cmux.com"
+    },
+    {
+      "id": "about:playwright",
+      "kind": "github-about",
+      "repo": "ourostack/playwright",
+      "family": "labs",
+      "homepage": "https://playwright.dev"
+    },
+    {
+      "id": "about:playwright-focus-proof",
+      "kind": "github-about",
+      "repo": "ourostack/playwright-focus-proof",
+      "family": "labs",
+      "homepage": ""
+    },
+    {
+      "id": "about:ouro-workbench",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-workbench",
+      "family": "labs",
+      "homepage": ""
+    },
+    {
       "id": "profile",
       "kind": "github-readme",
       "repo": "ourostack/.github",
       "path": "profile/README.md",
       "header": "headers/ourostack.webp",
-      "note": "The organization profile at https://github.com/ourostack. Its product tiles use the other headers too."
+      "note": "The organization profile at https://github.com/ourostack: a map of every repo by family. Its tiles use four product headers and the Labs section uses headers/labs.webp.",
+      "uses": [
+        "headers/desk.webp",
+        "headers/ouro-hx.webp",
+        "headers/ouro-md.webp",
+        "headers/ouroboros.webp",
+        "headers/labs.webp"
+      ]
     },
     {
       "id": "enterprise:avatar",
@@ -39,6 +230,13 @@
       "kind": "github-readme",
       "repo": "ourostack/.github",
       "header": "headers/ourostack.webp"
+    },
+    {
+      "id": "readme:cmux",
+      "kind": "github-readme",
+      "repo": "ourostack/cmux",
+      "header": "headers/labs.webp",
+      "note": "Our README on the fork's default branch, ouro; main stays a pure upstream mirror."
     },
     {
       "id": "readme:apple-distribution-kit",
@@ -171,6 +369,12 @@
       "kind": "github-social-preview",
       "repo": "ourostack/.github",
       "image": "social/ourostack.jpg"
+    },
+    {
+      "id": "social:cmux",
+      "kind": "github-social-preview",
+      "repo": "ourostack/cmux",
+      "image": "social/labs.jpg"
     },
     {
       "id": "social:apple-distribution-kit",
@@ -444,5 +648,17 @@
       ]
     }
   ],
-  "enterprise": "ouro"
+  "enterprise": "ouro",
+  "families": {
+    "$comment": "The family custom property's values and what each holds. labs = forks and experiments, tried in the open, not supported.",
+    "values": [
+      "home",
+      "ouroboros",
+      "desk",
+      "ouro-ui",
+      "apps",
+      "tools",
+      "labs"
+    ]
+  }
 }

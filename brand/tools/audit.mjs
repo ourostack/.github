@@ -159,7 +159,35 @@ const checks = {
       const found = head.match(/https:\/\/raw\.githubusercontent\.com\/ourostack\/\.github\/main\/brand\/[^"' )]+/);
       problems.push(found ? `README header is ${found[0].replace(registry.canonicalRaw, "brand/")}, want brand/${s.header}` : `README has no brand/${s.header} header in its first 25 lines`);
     }
-    return { problems, fix: `Open a README-only PR in ${s.repo} whose first lines are the header block in brand/AGENTS.md with brand/${s.header}; merge it when green.` };
+    for (const extra of s.uses ?? []) if (!text.includes(raw(extra))) problems.push(`README does not show brand/${extra}`);
+    return { problems, fix: `Open a README-only PR in ${s.repo} whose first lines are the header block in brand/AGENTS.md with brand/${s.header}${s.uses ? ` and that shows ${s.uses.map((u) => `brand/${u}`).join(", ")}` : ""}; merge it when green.` };
+  },
+  // The About sidebar: a description, the registered homepage, the ourostack topic (and labs for labs), and the family property.
+  async "github-about"(s) {
+    const repo = await ghJson(`/repos/${s.repo}`);
+    const problems = [];
+    if (!repo.description?.trim()) problems.push("no About description");
+    if (s.homepage !== undefined && (repo.homepage ?? "") !== s.homepage) problems.push(`homepage is ${JSON.stringify(repo.homepage ?? "")}, want ${JSON.stringify(s.homepage)}`);
+    const topics = repo.topics ?? [];
+    for (const t of ["ourostack", ...(s.family === "labs" ? ["labs"] : [])]) if (!topics.includes(t)) problems.push(`topics lack ${t}`);
+    if (s.family === "labs" && !/^Labs\b/.test(repo.description ?? "")) problems.push('a labs description starts with "Labs"');
+    let manual;
+    const props = await get(`https://api.github.com/repos/${s.repo}/properties/values`, ghHeaders());
+    const family = props.status === 200 ? JSON.parse(props.body.toString("utf8")).find((p) => p.property_name === "family")?.value : undefined;
+    if (family === undefined) manual = "the org has no family custom property yet: an org owner creates it at https://github.com/organizations/ourostack/settings/custom-properties (it asks for sudo)";
+    else if (family !== s.family) problems.push(`custom property family is ${family}, want ${s.family}`);
+    return { problems, manual, fix: `Set the About fields with gh api -X PATCH repos/${s.repo} (description, homepage) and gh api -X PUT repos/${s.repo}/topics; set family=${s.family} at https://github.com/organizations/ourostack/settings/custom-properties?tab=set-values.` };
+  },
+  // The organization page: display name, description, URL and pinned repositories.
+  async "github-org-profile"(s) {
+    const org = await ghJson(`/orgs/${s.org}`);
+    const problems = [];
+    for (const [k, want] of Object.entries({ name: s.name, description: s.description, blog: s.blog })) if (want !== undefined && (org[k] ?? "") !== want) problems.push(`${k} is ${JSON.stringify(org[k] ?? "")}, want ${JSON.stringify(want)}`);
+    const data = await ghGraphql(`{organization(login:"${s.org}"){pinnedItems(first:6){nodes{... on Repository{name}}}}}`);
+    const pins = data.organization.pinnedItems.nodes.map((n) => n.name).sort();
+    const want = [...(s.pins ?? [])].sort();
+    if (s.pins && pins.join() !== want.join()) problems.push(`pins are ${pins.join(", ") || "none"}, want ${want.join(", ")}`);
+    return { problems, fix: `Set name, description and URL at https://github.com/organizations/${s.org}/settings/profile and the pins on https://github.com/${s.org} (Customize pins); both need a signed-in owner.` };
   },
   async "github-social-preview"(s) {
     const [owner, name] = s.repo.split("/");
@@ -340,6 +368,11 @@ async function coverage() {
   }
   const readmes = new Set(registry.surfaces.filter((s) => s.kind === "github-readme" && !s.path).map((s) => s.repo.split("/")[1]));
   const socials = new Set(registry.surfaces.filter((s) => s.kind === "github-social-preview").map((s) => s.repo.split("/")[1]));
+  const abouts = new Set(registry.surfaces.filter((s) => s.kind === "github-about").map((s) => s.repo.split("/")[1]));
+  for (const r of repos) {
+    if (r.archived || abouts.has(r.name)) continue;
+    out.push({ id: `unregistered:about:${r.name}`, status: "unregistered", problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
+  }
   const out = [];
   for (const r of repos) {
     if (r.name in (registry.excluded ?? {}) || r.archived) continue;
@@ -358,7 +391,10 @@ async function coverage() {
 // ---------- canonical bytes: main serves what provenance records ----------
 async function canonical() {
   const used = new Set();
-  for (const s of registry.surfaces) for (const k of ["header", "image", "mark"]) if (s[k]) used.add(s[k]);
+  for (const s of registry.surfaces) {
+    for (const k of ["header", "image", "mark"]) if (s[k]) used.add(s[k]);
+    for (const u of s.uses ?? []) used.add(u);
+  }
   const problems = [];
   await Promise.all(
     [...used].map(async (p) => {
