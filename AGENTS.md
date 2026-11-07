@@ -7,7 +7,7 @@ This repository holds the ourostack organization profile and the canonical brand
 A branding update (a new or redrawn header, mark, crop, card or icon) is done only when every surface in [`brand/surfaces.json`](brand/surfaces.json) carries it and the audit is green. Merging the art here is the start, not the end.
 
 1. **Change the art here first.** Put the file in `brand/` and record it in `brand/provenance.json`: its source, the prompt chain and references (for anything drawn) or the exact crop and encoder (for anything derived), and its sha256. Derived files come from `python3 brand/tools/derive.py`; never hand-edit them. Keep Ouro on-model: one head, one tail, the "O" curl, the same face.
-2. **Find every surface.** `brand/surfaces.json` lists them: the organization profile, every repository README and social preview, npm package pages, and every page of ouroboros.bot, ui.ouro.bot and the Ouro MD page that stays on ouro.bot (favicons, touch icons, Open Graph and Twitter cards, heroes).
+2. **Find every surface.** `brand/surfaces.json` lists them: the organization profile, every repository README and social preview, npm package pages, and every page of ouroboros.bot, ui.ouroboros.bot and the Ouro MD page that stays on ouro.bot (favicons, touch icons, Open Graph and Twitter cards, heroes).
 3. **Bring it to each one** through that surface's own route (below).
 4. **Run the audit** and fix what it names:
 
@@ -26,7 +26,7 @@ A branding update (a new or redrawn header, mark, crop, card or icon) is done on
 | `github-readme` | the top of each repository's README (the profile: `profile/README.md` here) | A small README-only PR in that repository whose first lines are the header block below; merge when green. |
 | `github-social-preview` | repository Settings > General > Social preview | GitHub has no API for this. `node brand/tools/upload-social-previews.mjs` uploads every stale one through a background copy of the local Edge profile; it needs github.com signed in there once and stops with exit 3 if not. |
 | `npm-readme` | the package page on npmjs.com | Ships with the package's next release; the audit shows it as waiting until then. |
-| `website` | ouroboros.bot (ourostack/ouroboros-website), ui.ouro.bot (ourostack/ouro-ui `site/`), ouro.bot/apps/ouro-md/ (ourostack/ouro-apps-site) | Copy each file byte-for-byte to `/brand/storybook/<same path>` on the site (no re-encoding), reference it from the page, deploy through the repository's CI. |
+| `website` | ouroboros.bot (ourostack/ouroboros-website), ui.ouroboros.bot (ourostack/ouro-ui `site/`), ouro.bot/apps/ouro-md/ (ourostack/ouro-apps-site) | Copy each file byte-for-byte to `/brand/storybook/<same path>` on the site (no re-encoding), reference it from the page, deploy through the repository's CI. |
 
 README header block (use the scene's own alt text, written for someone who can't see it):
 
