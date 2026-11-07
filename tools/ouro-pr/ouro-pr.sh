@@ -106,17 +106,21 @@ else
     run gh pr merge --auto "$method" "$url"
   elif err=$(gh pr merge --auto "$method" "$url" 2>&1); then
     say "auto-merge on: it merges itself when its checks pass."
-  elif ! printf '%s' "$err" | grep -qi "clean status"; then
+  elif ! printf '%s' "$err" | grep -qiE "(clean|unstable) status"; then
     say "could not turn on auto-merge: $err"
     echo "$url"
     exit 1
   else
     say "no required checks here: waiting for this PR's own checks, then merging."
-    [ "$dry" = 1 ] || sleep 15
-    if run gh pr checks "$url" --watch --fail-fast --interval 20 >&2; then
-      run gh pr merge "$method" --delete-branch "$url"
-    elif [ "$dry" = 1 ] || gh pr checks "$url" 2>&1 | grep -q "no checks reported"; then
-      run gh pr merge "$method" --delete-branch "$url"
+    # Give Actions up to a minute to register the PR's checks before deciding it has none.
+    for _ in 1 2 3 4 5 6; do
+      sleep 10
+      gh pr checks "$url" 2>&1 | grep -q "no checks reported" || break
+    done
+    if gh pr checks "$url" --watch --fail-fast --interval 20 >&2; then
+      gh pr merge "$method" --delete-branch "$url"
+    elif gh pr checks "$url" 2>&1 | grep -q "no checks reported"; then
+      gh pr merge "$method" --delete-branch "$url"
     else
       say "a check failed: fix it, push, and rerun gh ouro-pr. Not merged."
       echo "$url"

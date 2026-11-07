@@ -195,7 +195,7 @@ export async function fetchOpenPrs() {
   let cursor = null;
   do {
     const { data } = await gh("/graphql", { method: "POST", body: { query: QUERY, variables: { q, cursor } } });
-    prs.push(...data.search.nodes.filter((n) => n.number));
+    prs.push(...data.search.nodes.filter((n) => n?.number));
     cursor = data.search.pageInfo.hasNextPage ? data.search.pageInfo.endCursor : null;
   } while (cursor);
   return prs;
@@ -205,7 +205,9 @@ async function updateIssue({ title, body }) {
   const repo = process.env.GITHUB_REPOSITORY ?? "ourostack/.github";
   const token = process.env.ISSUE_TOKEN ?? process.env.GH_TOKEN;
   // GitHub silently drops a label that does not exist yet, so make sure it does.
-  await gh(`/repos/${repo}/labels`, { method: "POST", body: { name: LABEL, color: "1f883d", description: "The PR clock: PRs open past 30 minutes" }, token }).catch(() => {});
+  await gh(`/repos/${repo}/labels`, { method: "POST", body: { name: LABEL, color: "1f883d", description: "The PR clock: PRs open past 30 minutes" }, token }).catch((err) => {
+    if (!/: 422 /.test(err.message)) console.error(`could not make the ${LABEL} label: ${err.message}`);
+  });
   const found = await gh(`/repos/${repo}/issues?labels=${LABEL}&state=open&per_page=10`, { token });
   const issue = found.find((i) => !i.pull_request);
   if (issue) {
