@@ -17,10 +17,10 @@ Ari, 2026-11-07: "can we have auto merge on pass by default? and we keep it safe
 Install it once on any machine:
 
 ```sh
-gh alias set --clobber ouro-pr '!gh api -H "Accept: application/vnd.github.raw" repos/ourostack/.github/contents/tools/ouro-pr/ouro-pr.sh | bash -s --'
+gh alias set --clobber ouro-pr '!f=$(mktemp) && gh api -H "Accept: application/vnd.github.raw" repos/ourostack/.github/contents/tools/ouro-pr/ouro-pr.sh >"$f" && bash "$f" "$@"'
 ```
 
-Then, from a finished branch, run `gh ouro-pr`. It pushes the branch (never with force), opens the PR with a title and body taken from the commits (or your `--title` and `--body-file`), and turns on auto-merge, which joins the merge queue where the repository has one. Pass `--dry-run` to see what it would do. It always runs the latest [`tools/ouro-pr/ouro-pr.sh`](../tools/ouro-pr/ouro-pr.sh) from this repository.
+Then, from a finished branch, run `gh ouro-pr`. It pushes the branch (never with force), opens the PR with a title and body taken from the commits (or your `--title` and `--body-file`), and turns on auto-merge, which joins the merge queue where the repository has one. Pass `--dry-run` to see what it would do. It always runs the latest [`tools/ouro-pr/ouro-pr.sh`](../tools/ouro-pr/ouro-pr.sh) from this repository's main, so a change merged to that file runs on every agent's machine at its next publish: review it like any shared tool. In a repository with no required checks, GitHub has nothing for auto-merge to wait on, so `gh ouro-pr` waits for the PR's own checks and merges only if they pass.
 
 Put a `Desk-Task: <track>/<task>` line in a commit body or the PR body: the PR clock uses it to name the owner.
 
@@ -41,18 +41,18 @@ The [PR clock](#the-pr-clock) names every late PR and what is holding it. Whoeve
 | 🟡 Checks running for a long time, or waiting for a runner | The CI is too slow or the runners are too few for this rule. Note it on that repository's CI-speed issue; don't wait silently. |
 | 🟠 Behind or conflicting with its base | Rebase or merge the base into it (never force-push a shared branch; push a fresh branch if you must rewrite), then let auto-merge carry it. |
 | 🟣 In the merge queue for a long time | The queue is the bottleneck: look at the queue's checks, and at the repository's CI-speed issue. |
-| 🔵 Waiting for a required review, or 🙋 waiting on Ari | Only Ari can unblock it: say so in one line, in the conversation he reads, with the PR link. A PR should rarely be here; decisions belong before publishing. |
+| 🔵 Waiting for a required review, or 🙋 waiting on Ari | Ask the reviewer it waits on, in one line with the PR link, where they read. A PR should rarely be here: decisions belong before publishing. |
 | ⚪ A draft, or anything that isn't going anywhere | Finish it and publish properly, or close it with a one-line reason (what replaced it, or why it stopped). A closed PR with a reason is fine; a forgotten open one is not. |
 
 Draining someone else's late PR is fine when its owner is gone; read the PR and its linked task first, and don't push into a branch another agent is still working on: comment instead.
 
 ## The PR clock
 
-A scheduled workflow here ([`.github/workflows/pr-clock.yml`](../.github/workflows/pr-clock.yml), every 10 minutes) keeps one pinned issue current: **PRs past 30 minutes**. One line per late PR: how long it has been open, what is holding it (worked out from its checks and merge state), its likely owner, and ⏸️ if it was published without auto-merge. When nothing is late, it says **All clear**. The issue title carries the count, so the pinned card reads at a glance.
+A scheduled workflow here ([`.github/workflows/pr-clock.yml`](../.github/workflows/pr-clock.yml), every 10 minutes) keeps one pinned issue current: **PRs past 30 minutes**. One line per late PR: how long it has been open, what is holding it (worked out from its checks and merge state), its likely owner, and ⏸️ if it was published without auto-merge. When nothing is late, it says **All clear**. The issue title carries the count, so the pinned card reads at a glance. Age counts from when the PR was opened, so a draft marked ready after a day is already late: don't park work in drafts.
 
 Run it locally with `GH_TOKEN=$(gh auth token) node tools/pr-clock/pr-clock.mjs`. Tests: `node --test tools/pr-clock/pr-clock.test.mjs`.
 
-It reads with the workflow's own token, which sees every public repository (today, every repository with PRs). Setting the `PR_CLOCK_APP_ID` variable and `PR_CLOCK_APP_PRIVATE_KEY` secret for a read-only GitHub App installed on `arimendelow` would let it see private repositories too.
+It reads with the workflow's own token, which sees every public repository (today, every repository with PRs). Setting the `PR_CLOCK_APP_CLIENT_ID` variable and `PR_CLOCK_APP_PRIVATE_KEY` secret for a read-only GitHub App installed on `arimendelow` would let it count late PRs in arimendelow's private repositories too; this issue is public, so it counts them without naming them.
 
 ## Prior art
 

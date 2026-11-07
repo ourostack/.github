@@ -2,7 +2,7 @@
 # ouro-pr: publish the current branch as a pull request that merges itself when green.
 #
 # Install once (always runs the latest version from ourostack/.github main):
-#   gh alias set --clobber ouro-pr '!gh api -H "Accept: application/vnd.github.raw" repos/ourostack/.github/contents/tools/ouro-pr/ouro-pr.sh | bash -s --'
+#   gh alias set --clobber ouro-pr '!f=$(mktemp) && gh api -H "Accept: application/vnd.github.raw" repos/ourostack/.github/contents/tools/ouro-pr/ouro-pr.sh >"$f" && bash "$f" "$@"'
 # Then, from a finished, reviewed, locally validated branch:
 #   gh ouro-pr                       # title and body from the commits
 #   gh ouro-pr --title "..." --body-file notes.md --base main
@@ -14,13 +14,15 @@
 # The rule it serves: https://github.com/ourostack/.github/blob/main/agents/prs-merge-within-30-minutes.md
 set -euo pipefail
 
+main() {
 title="" body_file="" base="" dry=0
 extra=()
 while [ $# -gt 0 ]; do
   case "$1" in
-    --title|-t) title="$2"; shift 2 ;;
-    --body-file|-F) body_file="$2"; shift 2 ;;
-    --base|-B) base="$2"; shift 2 ;;
+    --title|-t|--body-file|-F|--base|-B)
+      [ $# -ge 2 ] || { echo "ouro-pr: $1 needs a value" >&2; exit 2; }
+      case "$1" in --title|-t) title="$2" ;; --body-file|-F) body_file="$2" ;; *) base="$2" ;; esac
+      shift 2 ;;
     --dry-run) dry=1; shift ;;
     --draft|-d) echo "ouro-pr: no drafts. Publish when the work is done and has passed every review and local check." >&2; exit 2 ;;
     -h|--help) sed -n '2,14p' "${BASH_SOURCE[0]:-/dev/null}" 2>/dev/null || true; echo "Usage: gh ouro-pr [--title T] [--body-file F] [--base B] [--dry-run] [gh pr create flags]"; exit 0 ;;
@@ -32,7 +34,7 @@ say() { printf 'ouro-pr: %s\n' "$*" >&2; }
 run() { if [ "$dry" = 1 ]; then printf '[dry-run]' >&2; printf ' %q' "$@" >&2; echo >&2; else "$@"; fi; }
 
 branch=$(git symbolic-ref --short HEAD 2>/dev/null) || { say "not on a branch"; exit 2; }
-repo=$(gh repo view --json nameWithOwner,defaultBranchRef --jq '.nameWithOwner + " " + .defaultBranchRef.name')
+repo=$(gh repo view "$(git remote get-url origin)" --json nameWithOwner,defaultBranchRef --jq '.nameWithOwner + " " + .defaultBranchRef.name')
 name=${repo%% *}
 [ -n "$base" ] || base=${repo##* }
 [ "$branch" != "$base" ] || { say "you are on $base; make a branch first"; exit 2; }
@@ -44,13 +46,13 @@ count=$(git rev-list --count "$range")
 [ "$count" -gt 0 ] || { say "no commits ahead of origin/$base"; exit 2; }
 
 # Title: the only commit's subject, or the oldest commit's subject for a stack.
-[ -n "$title" ] || title=$(git log --reverse --format=%s "$range" | head -n 1)
+[ -n "$title" ] || title=$(git log --format=%s "$range" | tail -n 1)
 
 if [ -z "$body_file" ]; then
   body_file=$(mktemp "${TMPDIR:-/tmp}/ouro-pr-body.XXXXXX")
   {
     if [ "$count" = 1 ]; then
-      git log -1 --format=%b HEAD | grep -v -E '^(Co-Authored-By|Signed-off-by):' || true
+      git log -1 --format=%b HEAD | grep -v -i -E '^(Co-Authored-By|Signed-off-by):' || true
     else
       git log --reverse --format='- %s' "$range"
       # Keep the owner line the PR clock reads.
@@ -98,12 +100,32 @@ if [ "$queue" = true ]; then
   run gh pr merge --auto "$url"
   say "auto-merge on: it joins the merge queue when its checks pass."
 else
-  # With nothing left to wait for, GitHub refuses auto-merge ("clean status"): merge now instead.
-  if run gh pr merge --auto "$method" "$url"; then
+  # A repository with no required checks has nothing for auto-merge to wait on, and GitHub refuses
+  # it ("clean status"). Then wait for whatever checks the PR does run, and merge only if they pass.
+  if [ "$dry" = 1 ]; then
+    run gh pr merge --auto "$method" "$url"
+  elif err=$(gh pr merge --auto "$method" "$url" 2>&1); then
     say "auto-merge on: it merges itself when its checks pass."
+  elif ! printf '%s' "$err" | grep -qi "clean status"; then
+    say "could not turn on auto-merge: $err"
+    echo "$url"
+    exit 1
   else
-    say "nothing to wait for: merging now."
-    run gh pr merge "$method" --delete-branch "$url"
+    say "no required checks here: waiting for this PR's own checks, then merging."
+    [ "$dry" = 1 ] || sleep 15
+    if run gh pr checks "$url" --watch --fail-fast --interval 20 >&2; then
+      run gh pr merge "$method" --delete-branch "$url"
+    elif [ "$dry" = 1 ] || gh pr checks "$url" 2>&1 | grep -q "no checks reported"; then
+      run gh pr merge "$method" --delete-branch "$url"
+    else
+      say "a check failed: fix it, push, and rerun gh ouro-pr. Not merged."
+      echo "$url"
+      exit 1
+    fi
   fi
 fi
 echo "$url"
+}
+
+# Read the whole script before running any of it.
+main "$@"

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This repository holds the ourostack organization profile, the canonical brand (the storybook world at dawn, Ouro on its glowing trail, and each product's character in its own scene; everything another surface shows comes from `brand/`), and the shared agent guidance every ourostack and spoonjoy repository points to.
+This repository holds the ourostack organization profile, the canonical brand (the storybook world at dawn, Ouro on its glowing trail, and each product's character in its own scene; everything another surface shows comes from `brand/`), and the shared agent guidance that ourostack, spoonjoy and arimendelow repositories point to.
 
 ## Shared agent guidance for every repository
 

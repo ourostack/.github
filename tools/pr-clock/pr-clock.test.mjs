@@ -49,6 +49,20 @@ test("mergeable now means merge it, even with an advisory red", () => {
   assert.match(blocker(pr({ mergeStateStatus: "CLEAN", autoMergeRequest: { enabledAt: NOW } }), NOW).text, /auto-merge has not fired/);
 });
 
+test("UNSTABLE with a check still running waits for it instead of saying merge now", () => {
+  const b = blocker(pr({ mergeStateStatus: "UNSTABLE" }, [run("lint", "COMPLETED", "SUCCESS"), run("e2e", "IN_PROGRESS")]), NOW);
+  assert.equal(b.kind, "pending");
+  assert.equal(b.text, "required checks green; `e2e` still running for 20m");
+});
+
+test("a private repository's late PR is counted but never named", () => {
+  const secret = pr({ title: "Secret plan", repository: { nameWithOwner: "arimendelow/desk", isPrivate: true, autoMergeAllowed: false } });
+  const view = render([secret], NOW);
+  assert.equal(view.title, "PRs past 30 minutes: 1");
+  assert.doesNotMatch(view.body, /Secret plan|arimendelow\/desk/);
+  assert.match(view.body, /🔒 1 late PR in private repositories/);
+});
+
 test("a PR published without auto-merge is a finding, except where GitHub offers none", () => {
   assert.equal(autoMergeOff(pr()), true);
   assert.equal(autoMergeOff(pr({ autoMergeRequest: { enabledAt: NOW } })), false);
@@ -69,7 +83,7 @@ test("queue, conflicts, behind, drafts and Ari each get their own blocker", () =
 
 test("owner comes from the Desk-Task line first, then assignees, then the branch", () => {
   assert.equal(owner(pr({ body: "Fixes it.\n\nDesk-Task: agent-capacity/prs-merge" })), "desk `agent-capacity/prs-merge`");
-  assert.equal(owner(pr({ assignees: { nodes: [{ login: "slugger" }] } })), "@slugger");
+  assert.equal(owner(pr({ assignees: { nodes: [{ login: "slugger" }] } })), "`slugger`");
   assert.equal(owner(pr({ author: { login: "dependabot[bot]" } })), "dependabot");
   assert.equal(owner(pr()), "branch `fix/thing`");
 });

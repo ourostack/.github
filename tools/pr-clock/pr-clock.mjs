@@ -67,6 +67,9 @@ export function blocker(pr, now) {
   if (pr.mergeable === "CONFLICTING" || pr.mergeStateStatus === "DIRTY") return { kind: "conflict", text: "conflicts with its base: rebase" };
   if (waitingOnAri) return { kind: "ari", text: "waiting on Ari" };
   const advisory = red.length ? ` (advisory red: ${namesOf(red, 1)})` : "";
+  // UNSTABLE: the required checks pass but another is red or still running. Wait for a running one.
+  if (pr.mergeStateStatus === "UNSTABLE" && pending.length)
+    return { kind: "pending", text: `required checks green; ${namesOf(pending, 1)} still running for ${oldest(pending)}` };
   switch (pr.mergeStateStatus) {
     case "CLEAN":
     case "HAS_HOOKS":
@@ -96,9 +99,9 @@ export function owner(pr) {
   const task = /^Desk-Task:\s*(\S+)/m.exec(`${pr.body ?? ""}\n${message}`)?.[1];
   if (task) return `desk \`${task}\``;
   const assignees = (pr.assignees?.nodes ?? []).map((a) => a.login).filter((l) => l !== ARI);
-  if (assignees.length) return assignees.map((l) => `@${l}`).join(", ");
+  if (assignees.length) return assignees.map((l) => `\`${l}\``).join(", ");
   const author = pr.author?.login ?? "ghost";
-  if (author !== ARI) return author.endsWith("[bot]") || /^(dependabot|renovate)/.test(author) ? author.replace(/\[bot\]$/, "") : `@${author}`;
+  if (author !== ARI) return author.endsWith("[bot]") || /^(dependabot|renovate)/.test(author) ? author.replace(/\[bot\]$/, "") : `\`${author}\``;
   const branch = pr.headRefName ?? "?";
   return `branch \`${branch.length > 36 ? `${branch.slice(0, 35)}…` : branch}\``;
 }
@@ -122,13 +125,18 @@ export function late(prs, now) {
 
 const CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"];
 
-export function render(prs, now) {
+export function render(allPrs, now) {
+  // This issue is public: a private repository's PR is counted, never named.
+  const prs = allPrs.filter((pr) => !pr.repository?.isPrivate);
+  const hidden = late(allPrs.filter((pr) => pr.repository?.isPrivate), now).length;
   const rows = late(prs, now);
   const soon = prs.map((pr) => minutesBetween(pr.createdAt, now)).filter((m) => m >= SOON_MIN && m < LIMIT_MIN).length;
   const stamp = new Date(now).toISOString().replace(/\.\d+Z$/, "Z").replace("T", " ");
   const face = CLOCKS[new Date(now).getUTCHours() % 12];
   const out = [];
-  if (!rows.length) {
+  if (!rows.length && hidden) {
+    out.push(`## 🔒 Only private repositories have late PRs`);
+  } else if (!rows.length) {
     out.push(`## 🟢 All clear`, "");
     const oldest = prs.length ? fmtAge(Math.max(...prs.map((pr) => minutesBetween(pr.createdAt, now)))) : null;
     out.push(
@@ -149,17 +157,19 @@ export function render(prs, now) {
     }
     if (soon) out.push("", `${soon} more will pass 30 minutes within 10 minutes.`);
   }
+  if (hidden) out.push("", `🔒 ${hidden} late PR${hidden === 1 ? "" : "s"} in private repositories, not named here.`);
   out.push(
     "",
     `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟠 rebase · ⚪ close with a reason or finish. [The rule](${RULE_URL})</sub>`,
   );
-  return { title: rows.length ? `${TITLE}: ${rows.length}` : `${TITLE}: all clear`, body: out.join("\n"), rows };
+  const total = rows.length + hidden;
+  return { title: total ? `${TITLE}: ${total}` : `${TITLE}: all clear`, body: out.join("\n"), rows };
 }
 
 // ---- GitHub I/O ----
 
 const QUERY = `query($q:String!,$cursor:String){search(query:$q,type:ISSUE,first:40,after:$cursor){pageInfo{hasNextPage endCursor}
-nodes{... on PullRequest{number title url createdAt isDraft body headRefName author{login} repository{nameWithOwner autoMergeAllowed}
+nodes{... on PullRequest{number title url createdAt isDraft body headRefName author{login} repository{nameWithOwner autoMergeAllowed isPrivate}
 mergeable mergeStateStatus reviewDecision autoMergeRequest{enabledAt} mergeQueueEntry{state position enqueuedAt}
 assignees(first:5){nodes{login}} labels(first:10){nodes{name}}
 reviewRequests(first:10){nodes{requestedReviewer{... on User{login}}}}
@@ -173,7 +183,9 @@ async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } =
     body: body && JSON.stringify(body),
   });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok || json.errors) throw new Error(`${method} ${path}: ${res.status} ${JSON.stringify(json.errors ?? json.message)}`);
+  // A partial GraphQL error (one PR it could not read) still leaves the rest worth reporting.
+  if (json.errors && json.data) console.error(`partial: ${JSON.stringify(json.errors).slice(0, 500)}`);
+  else if (!res.ok || json.errors) throw new Error(`${method} ${path}: ${res.status} ${JSON.stringify(json.errors ?? json.message)}`);
   return json;
 }
 
@@ -192,6 +204,8 @@ export async function fetchOpenPrs() {
 async function updateIssue({ title, body }) {
   const repo = process.env.GITHUB_REPOSITORY ?? "ourostack/.github";
   const token = process.env.ISSUE_TOKEN ?? process.env.GH_TOKEN;
+  // GitHub silently drops a label that does not exist yet, so make sure it does.
+  await gh(`/repos/${repo}/labels`, { method: "POST", body: { name: LABEL, color: "1f883d", description: "The PR clock: PRs open past 30 minutes" }, token }).catch(() => {});
   const found = await gh(`/repos/${repo}/issues?labels=${LABEL}&state=open&per_page=10`, { token });
   const issue = found.find((i) => !i.pull_request);
   if (issue) {
@@ -203,7 +217,7 @@ async function updateIssue({ title, body }) {
   return made.html_url;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   if (!process.env.GH_TOKEN) {
     console.error("Set GH_TOKEN.");
     process.exit(3);

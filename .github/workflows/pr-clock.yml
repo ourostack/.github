@@ -29,15 +29,16 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test the clock
         run: node --test tools/pr-clock/pr-clock.test.mjs
-      # Optional: an ourostack-owned GitHub App (read-only pull requests, checks, statuses,
-      # contents, actions) also lets the clock see private repositories. Without it the
-      # workflow token reads every public one, which today is every repository with PRs.
+      # Optional: a read-only GitHub App (pull requests, checks, statuses, contents, actions)
+      # installed on arimendelow lets the clock count late PRs in its private repositories; the
+      # issue is public, so it never names them. Without it the workflow token reads every public
+      # repository, which today is every repository with PRs.
       - name: App token for private repositories
         id: app
-        if: ${{ vars.PR_CLOCK_APP_ID != '' }}
+        if: ${{ vars.PR_CLOCK_APP_CLIENT_ID != '' }}
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          app-id: ${{ vars.PR_CLOCK_APP_ID }}
+          client-id: ${{ vars.PR_CLOCK_APP_CLIENT_ID }}
           private-key: ${{ secrets.PR_CLOCK_APP_PRIVATE_KEY }}
           owner: arimendelow
       - name: Read every open PR (dry run on pull requests)
