@@ -90,6 +90,11 @@ query($owner:String!,$repo:String!,$base:String!){repository(owner:$owner,name:$
   --jq '.data.repository | [(.autoMergeAllowed|tostring), (.mergeQueue != null|tostring), (if .squashMergeAllowed then "--squash" elif .mergeCommitAllowed then "--merge" else "--rebase" end)] | join(" ")')
 read -r auto queue method <<<"$info"
 
+# Required checks on the base branch, from branch protection and rulesets. With none, GitHub's
+# auto-merge merges at once, before any check has run, so wait for the PR's checks instead.
+required=$(( $(gh api "repos/$name/branches/$base" --jq '(.protection.required_status_checks.contexts // []) | length' 2>/dev/null || echo 0) \
+  + $(gh api "repos/$name/rules/branches/$base" --jq '[.[] | select(.type == "required_status_checks") | .parameters.required_status_checks | length] | add // 0' 2>/dev/null || echo 0) ))
+
 if [ "$auto" != true ]; then
   say "GitHub offers no auto-merge in $name (private repository on a free plan)."
   say "Merge it the moment it is green: gh pr merge $method --delete-branch $url"
@@ -103,10 +108,10 @@ else
   # A repository with no required checks has nothing for auto-merge to wait on, and GitHub refuses
   # it ("clean status"). Then wait for whatever checks the PR does run, and merge only if they pass.
   if [ "$dry" = 1 ]; then
-    run gh pr merge --auto "$method" "$url"
-  elif err=$(gh pr merge --auto "$method" "$url" 2>&1); then
+    if [ "$required" -gt 0 ]; then run gh pr merge --auto "$method" "$url"; else say "no required checks: would wait for the PR's own checks, then merge"; fi
+  elif [ "$required" -gt 0 ] && err=$(gh pr merge --auto "$method" "$url" 2>&1); then
     say "auto-merge on: it merges itself when its checks pass."
-  elif ! printf '%s' "$err" | grep -qiE "(clean|unstable) status"; then
+  elif [ "$required" -gt 0 ] && ! printf '%s' "$err" | grep -qiE "(clean|unstable) status"; then
     say "could not turn on auto-merge: $err"
     echo "$url"
     exit 1
