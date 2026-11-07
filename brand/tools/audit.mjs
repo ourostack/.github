@@ -4,6 +4,10 @@
 //   node brand/tools/audit.mjs                 # text on a terminal, JSON otherwise
 //   node brand/tools/audit.mjs --format text   # force text (CI uses this)
 //   node brand/tools/audit.mjs --only site:    # only surfaces whose id starts with "site:"
+//   node brand/tools/audit.mjs --only site:ouroboros.bot --origin http://localhost:4321
+//                                              # audit one website's build served elsewhere (a PR's CI build
+//                                              # or preview): its origin, sitemap and absolute same-site URLs
+//                                              # are read from --origin instead of the registered origin
 //
 // Exit codes: 0 every surface is current (held and waiting surfaces are listed, not failed),
 // 1 at least one surface is stale or unregistered, 2 usage, 3 environment not ready (no GitHub token, network).
@@ -24,17 +28,23 @@ const opt = (name) => {
 };
 const format = opt("--format") ?? (process.stdout.isTTY ? "text" : "json");
 const only = opt("--only") ?? "";
+const originOverride = opt("--origin");
+if (originOverride !== undefined) {
+  if (!/^https?:\/\/[^/]+$/.test(originOverride)) usage(`--origin must be a bare origin like http://localhost:4321, not ${originOverride}`);
+  if (!only.startsWith("site:") || only === "site:") usage("--origin needs --only <one website id>, for example --only site:ouroboros.bot");
+}
 if (!["text", "json"].includes(format)) usage(`--format must be text or json, not ${format}`);
 if (args.includes("--help") || args.includes("-h")) usage();
 
 function usage(message) {
   if (message) process.stderr.write(`${message}\n`);
-  process.stderr.write("usage: node brand/tools/audit.mjs [--format text|json] [--only <id prefix>]\n");
+  process.stderr.write("usage: node brand/tools/audit.mjs [--format text|json] [--only <id prefix>] [--origin <url> with --only <website id>]\n");
   process.exit(message ? 2 : 0);
 }
 
 const registry = JSON.parse(readFileSync(join(BRAND, "surfaces.json"), "utf8"));
 const provenance = new Map(JSON.parse(readFileSync(join(BRAND, "provenance.json"), "utf8")).map((e) => [e.file, e]));
+if (originOverride !== undefined && !registry.surfaces.some((x) => x.id === only && x.kind === "website")) usage(`--origin needs --only to name one registered website exactly; ${only} is not one`);
 const sha = (buf) => createHash("sha256").update(buf).digest("hex");
 
 function token() {
@@ -183,6 +193,10 @@ const checks = {
   },
   async website(s) {
     const problems = [];
+    // --origin: read this site from another host (a PR build), mapping the registered origin onto it.
+    const registered = s.origin;
+    const rehost = (u) => (originOverride && u.startsWith(registered) ? originOverride + u.slice(registered.length) : u);
+    if (originOverride) s = { ...s, origin: originOverride, sitemap: s.sitemap && rehost(s.sitemap), base: s.base.startsWith("http") ? rehost(s.base) : s.base };
     const pages = new Set(Object.keys(s.pages ?? {}));
     if (s.sitemap) {
       const locs = await sitemapLocs(s.sitemap, problems);
@@ -201,7 +215,7 @@ const checks = {
         if (res.status !== 200) return problems.push(`${where}: answered ${res.status || res.error}`);
         if (new URL(res.url).origin !== new URL(s.origin).origin) return problems.push(`${where}: redirects off-site to ${res.url}`);
         const html = res.body.toString("utf8");
-        const abs = (href) => new URL(href.replace(/&amp;/g, "&"), res.url).href;
+        const abs = (href) => rehost(new URL(href.replace(/&amp;/g, "&"), res.url).href);
         const tags = [...html.matchAll(/<(link|meta)\b[^>]*>/gi)].map((m) => m[0]);
         const attr = (tag, a) => tag.match(new RegExp(`\\b${a}\\s*=\\s*["']([^"']*)["']`, "i"))?.[1];
         const links = tags.filter((t) => /^<link/i.test(t));
@@ -284,7 +298,9 @@ async function sitemapLocs(url, problems, depth = 0) {
   }
   const xml = res.body.toString("utf8");
   const locs = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1]);
-  if (/<sitemapindex/.test(xml) && depth < 2) return (await Promise.all(locs.map((l) => sitemapLocs(l, problems, depth + 1)))).flat();
+  const here = new URL(url).origin;
+  const child = (l) => (originOverride ? here + new URL(l).pathname : l);
+  if (/<sitemapindex/.test(xml) && depth < 2) return (await Promise.all(locs.map((l) => sitemapLocs(child(l), problems, depth + 1)))).flat();
   return locs;
 }
 
@@ -336,6 +352,7 @@ const results = [];
 let envError = null;
 async function run(s) {
   if (!s.id.startsWith(only)) return;
+  if (originOverride && s.id !== only) return;
   try {
     const r = await checks[s.kind](s);
     let status = r.problems.length ? "stale" : "current";
