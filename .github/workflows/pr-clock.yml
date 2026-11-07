@@ -5,7 +5,8 @@ name: PR clock
 # The rule: agents/prs-merge-within-30-minutes.md.
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # Off the hour: GitHub delays or drops scheduled runs at busy times, worst at minute 0.
+    - cron: "4-59/10 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
