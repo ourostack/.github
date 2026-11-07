@@ -209,6 +209,7 @@ export async function fetchOpenPrs() {
   // An empty list means the token could not read the owners, never that all is clear.
   if (!repos.length) throw new Error(`no repositories readable under ${OWNERS.join(", ")}`);
   const prs = [];
+  const unread = [];
   for (let i = 0; i < repos.length; i += 8) {
     const chunk = repos.slice(i, i + 8);
     const query = `query{${chunk
@@ -220,11 +221,13 @@ export async function fetchOpenPrs() {
     const { data } = await gh("/graphql", { method: "POST", body: { query } });
     chunk.forEach((full, j) => {
       const conn = data?.[`r${j}`]?.pullRequests;
-      if (!conn) return console.error(`could not read ${full}`);
+      if (!conn) return unread.push(full);
       if (conn.totalCount > conn.nodes.length) console.error(`${full}: showing the oldest ${conn.nodes.length} of ${conn.totalCount} open PRs`);
       prs.push(...conn.nodes.filter((n) => n?.number));
     });
   }
+  // A repository it cannot read could hold a late PR: fail loudly rather than say all clear.
+  if (unread.length) throw new Error(`could not read ${unread.length} of ${repos.length} repositories: ${unread.join(", ")}`);
   console.error(`read ${repos.length} repositories with open issues or PRs, ${prs.length} open PRs`);
   return prs;
 }
