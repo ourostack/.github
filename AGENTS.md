@@ -1,6 +1,12 @@
 # AGENTS.md
 
-This repository holds the ourostack organization profile and the canonical brand: the storybook world at dawn, Ouro on its glowing trail, and each product's character in its own scene. Everything another surface shows comes from `brand/`.
+This repository holds the ourostack organization profile, the canonical brand (the storybook world at dawn, Ouro on its glowing trail, and each product's character in its own scene; everything another surface shows comes from `brand/`), and the shared agent guidance that ourostack, spoonjoy and arimendelow repositories point to.
+
+## Shared agent guidance for every repository
+
+Each rule lives in [`agents/`](agents/), and each repository's AGENTS.md links to it.
+
+- **[Every PR merges within 30 minutes](agents/prs-merge-within-30-minutes.md).** Finish, review and validate on the branch, then publish with `gh ouro-pr` so auto-merge is on and green means merged. Question every check that isn't in CI. The [PR clock](agents/prs-merge-within-30-minutes.md#the-pr-clock) pins an issue here listing every PR open past 30 minutes and what is holding it.
 
 ## The rule: a branding update reaches every surface
 
