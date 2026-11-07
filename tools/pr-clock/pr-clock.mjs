@@ -168,13 +168,14 @@ export function render(allPrs, now) {
 
 // ---- GitHub I/O ----
 
-const QUERY = `query($q:String!,$cursor:String){search(query:$q,type:ISSUE,first:40,after:$cursor){pageInfo{hasNextPage endCursor}
-nodes{... on PullRequest{number title url createdAt isDraft body headRefName author{login} repository{nameWithOwner autoMergeAllowed isPrivate}
+// PR fields, read per repository. (GitHub's search API returns nothing outside the workflow
+// token's own repository, so the clock lists repositories and reads each one instead.)
+const PR_FIELDS = `number title url createdAt isDraft body headRefName author{login} repository{nameWithOwner autoMergeAllowed isPrivate}
 mergeable mergeStateStatus reviewDecision autoMergeRequest{enabledAt} mergeQueueEntry{state position enqueuedAt}
 assignees(first:5){nodes{login}} labels(first:10){nodes{name}}
 reviewRequests(first:10){nodes{requestedReviewer{... on User{login}}}}
 commits(last:1){nodes{commit{message statusCheckRollup{contexts(first:100){nodes{__typename
-... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}}}}}`;
+... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}`;
 
 async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } = {}) {
   const res = await fetch(`https://api.github.com${path}`, {
@@ -189,15 +190,42 @@ async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } =
   return json;
 }
 
+// Every repository the token can see under each owner that might hold an open PR.
+export async function listRepos(owners = OWNERS) {
+  const repos = [];
+  for (const owner of owners) {
+    const base = owner === ARI ? `/users/${owner}/repos?type=owner` : `/orgs/${owner}/repos?type=all`;
+    for (let page = 1; ; page++) {
+      const batch = await gh(`${base}&per_page=100&page=${page}`);
+      repos.push(...batch.filter((r) => !r.archived && r.open_issues_count > 0).map((r) => r.full_name));
+      if (batch.length < 100) break;
+    }
+  }
+  return repos;
+}
+
 export async function fetchOpenPrs() {
-  const q = `is:pr is:open archived:false ${OWNERS.map((o) => (o === ARI ? `user:${o}` : `org:${o}`)).join(" ")}`;
+  const repos = await listRepos();
+  // An empty list means the token could not read the owners, never that all is clear.
+  if (!repos.length) throw new Error(`no repositories readable under ${OWNERS.join(", ")}`);
   const prs = [];
-  let cursor = null;
-  do {
-    const { data } = await gh("/graphql", { method: "POST", body: { query: QUERY, variables: { q, cursor } } });
-    prs.push(...data.search.nodes.filter((n) => n?.number));
-    cursor = data.search.pageInfo.hasNextPage ? data.search.pageInfo.endCursor : null;
-  } while (cursor);
+  for (let i = 0; i < repos.length; i += 8) {
+    const chunk = repos.slice(i, i + 8);
+    const query = `query{${chunk
+      .map((full, j) => {
+        const [owner, name] = full.split("/");
+        return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
+      })
+      .join(" ")}}`;
+    const { data } = await gh("/graphql", { method: "POST", body: { query } });
+    chunk.forEach((full, j) => {
+      const conn = data?.[`r${j}`]?.pullRequests;
+      if (!conn) return console.error(`could not read ${full}`);
+      if (conn.totalCount > conn.nodes.length) console.error(`${full}: showing the oldest ${conn.nodes.length} of ${conn.totalCount} open PRs`);
+      prs.push(...conn.nodes.filter((n) => n?.number));
+    });
+  }
+  console.error(`read ${repos.length} repositories with open issues or PRs, ${prs.length} open PRs`);
   return prs;
 }
 
