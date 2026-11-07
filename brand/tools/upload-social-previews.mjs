@@ -69,8 +69,8 @@ try {
   for (const s of jobs) {
     const file = join(BRAND, s.image);
     await page.goto(`https://github.com/${s.repo}/settings`);
-    const section = page.locator("div, section").filter({ has: page.getByRole("heading", { name: "Social preview" }) }).last();
-    const input = section.locator('input[type="file"]').first();
+    // GitHub's own id for the social preview input; the page also holds an unrelated feedback-form file input.
+    const input = page.locator("#repo-image-file-input");
     await input.setInputFiles(file);
     // GitHub uploads on change and swaps the preview image in place.
     await page.waitForResponse((r) => /repository-images|upload/.test(r.url()) && r.request().method() !== "GET", { timeout: 60000 }).catch(() => {});
