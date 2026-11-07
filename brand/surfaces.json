@@ -9,7 +9,7 @@
     "image-gen-mcp": "Archived.",
     "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here."
   },
-  "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14).",
+  "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14); the Ouro Labs enterprise shows the same render and is registered below as enterprise:avatar so the audit notices if they drift apart.",
   "surfaces": [
     {
       "id": "profile",
@@ -18,6 +18,21 @@
       "path": "profile/README.md",
       "header": "headers/ourostack.webp",
       "note": "The organization profile at https://github.com/ourostack. Its product tiles use the other headers too."
+    },
+    {
+      "id": "enterprise:avatar",
+      "kind": "github-avatar",
+      "url": "https://avatars.githubusercontent.com/b/894615?v=4",
+      "mark": "ouro.png",
+      "servedSha256": "3ed593cd60f149b350e81053facb658d8787d1fb8352fb5079d2609156761d62",
+      "note": "The Ouro Labs enterprise's profile picture (https://github.com/enterprises/ouro/settings/profile). GitHub re-encodes an upload to 460x460, so servedSha256 is GitHub's re-encode of brand/ouro.png, the same bytes the ourostack organization avatar serves."
+    },
+    {
+      "id": "enterprise:readme",
+      "kind": "github-enterprise-readme",
+      "enterprise": "ouro",
+      "header": "headers/ourostack.webp",
+      "note": "The Ouro Labs enterprise README on https://github.com/enterprises/ouro. Reading it needs a token with read:enterprise, which CI's token lacks; without one the audit lists it as manual."
     },
     {
       "id": "readme:.github",
@@ -428,5 +443,6 @@
         "https://ouroboros.bot/ouro-md/stable.json"
       ]
     }
-  ]
+  ],
+  "enterprise": "ouro"
 }
