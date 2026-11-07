@@ -29,7 +29,7 @@ while [ $# -gt 0 ]; do
 done
 
 say() { printf 'ouro-pr: %s\n' "$*" >&2; }
-run() { if [ "$dry" = 1 ]; then printf '[dry-run] %q ' "$@" >&2; echo >&2; else "$@"; fi; }
+run() { if [ "$dry" = 1 ]; then printf '[dry-run]' >&2; printf ' %q' "$@" >&2; echo >&2; else "$@"; fi; }
 
 branch=$(git symbolic-ref --short HEAD 2>/dev/null) || { say "not on a branch"; exit 2; }
 repo=$(gh repo view --json nameWithOwner,defaultBranchRef --jq '.nameWithOwner + " " + .defaultBranchRef.name')
