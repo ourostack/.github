@@ -1,0 +1,53 @@
+name: PR clock
+
+# Keeps the pinned issue "PRs past 30 minutes" current: every open PR in ourostack, spoonjoy and
+# arimendelow that has been open 30 minutes or more, what is holding it, and its likely owner.
+# The rule: agents/prs-merge-within-30-minutes.md.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["tools/pr-clock/**", ".github/workflows/pr-clock.yml"]
+  pull_request:
+    paths: ["tools/pr-clock/**", ".github/workflows/pr-clock.yml"]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: pr-clock-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: true
+
+jobs:
+  clock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test the clock
+        run: node --test tools/pr-clock/pr-clock.test.mjs
+      # Optional: an ourostack-owned GitHub App (read-only pull requests, checks, statuses,
+      # contents, actions) also lets the clock see private repositories. Without it the
+      # workflow token reads every public one, which today is every repository with PRs.
+      - name: App token for private repositories
+        id: app
+        if: ${{ vars.PR_CLOCK_APP_ID != '' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.PR_CLOCK_APP_ID }}
+          private-key: ${{ secrets.PR_CLOCK_APP_PRIVATE_KEY }}
+          owner: arimendelow
+      - name: Read every open PR (dry run on pull requests)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token || github.token }}
+        run: node tools/pr-clock/pr-clock.mjs >> "$GITHUB_STEP_SUMMARY"
+      - name: Update the pinned issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token || github.token }}
+          ISSUE_TOKEN: ${{ github.token }}
+        run: node tools/pr-clock/pr-clock.mjs --update-issue
