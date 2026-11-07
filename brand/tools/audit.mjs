@@ -8,6 +8,9 @@
 //                                              # audit one website's build served elsewhere (a PR's CI build
 //                                              # or preview): its origin, sitemap and absolute same-site URLs
 //                                              # are read from --origin instead of the registered origin
+//   ... --origin http://localhost:4321 --dist dist
+//                                              # also hash every file the build ships under the site's brand
+//                                              # folder, so a copied file no page links to is checked too
 //
 // Exit codes: 0 every surface is current (held, waiting and manual surfaces are listed, not failed),
 // 1 at least one surface is stale or unregistered, 2 usage, 3 environment not ready (no GitHub token, network).
@@ -15,7 +18,7 @@
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
 
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +32,8 @@ const opt = (name) => {
 const format = opt("--format") ?? (process.stdout.isTTY ? "text" : "json");
 const only = opt("--only") ?? "";
 const originOverride = opt("--origin");
+const distDir = opt("--dist");
+if (distDir !== undefined && originOverride === undefined) usage("--dist needs --origin (it audits a build, not production)");
 if (originOverride !== undefined) {
   if (!/^https?:\/\/[^/]+$/.test(originOverride)) usage(`--origin must be a bare origin like http://localhost:4321, not ${originOverride}`);
   if (!only.startsWith("site:") || only === "site:") usage("--origin needs --only <one website id>, for example --only site:ouroboros.bot");
@@ -38,7 +43,7 @@ if (args.includes("--help") || args.includes("-h")) usage();
 
 function usage(message) {
   if (message) process.stderr.write(`${message}\n`);
-  process.stderr.write("usage: node brand/tools/audit.mjs [--format text|json] [--only <id prefix>] [--origin <url> with --only <website id>]\n");
+  process.stderr.write("usage: node brand/tools/audit.mjs [--format text|json] [--only <id prefix>] [--origin <url> with --only <website id> [--dist <build dir>]]\n");
   process.exit(message ? 2 : 0);
 }
 
@@ -336,9 +341,34 @@ const checks = {
         }
       }),
     );
+    // --dist: every file the build ships under the brand folder must be a canonical brand file, byte for byte,
+    // whether or not a page links to it.
+    let shipped;
+    if (distDir) {
+      const root = join(distDir, new URL(base).pathname);
+      const walk = (dir) => readdirSync(dir).flatMap((n) => (statSync(join(dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]));
+      let files = [];
+      try {
+        files = walk(root);
+      } catch {
+        problems.push(`--dist: ${root} does not exist`);
+      }
+      shipped = files.length;
+      for (const f of files) {
+        const rel = f.slice(root.length).replace(/^\/+/, "");
+        if (rel === "provenance.json") continue; // a site may publish the provenance record beside the art
+        if (!provenance.has(rel)) problems.push(`build ships ${new URL(base).pathname}${rel}, which is not a brand file`);
+        else {
+          const have = sha(readFileSync(f));
+          const want = asset(rel).sha256;
+          if (have !== want) problems.push(`build ships ${new URL(base).pathname}${rel} that is not brand/${rel} (sha256 ${have.slice(0, 12)}, want ${want.slice(0, 12)})`);
+        }
+      }
+    }
     return {
       problems: [...new Set(problems)].sort(),
       pages: pages.size,
+      ...(shipped === undefined ? {} : { shipped }),
       fix: `In ${s.repo}, copy each named brand/ file byte-for-byte to ${base}<same path>, reference it as brand/AGENTS.md describes, and deploy.`,
     };
   },
@@ -421,7 +451,7 @@ async function run(s) {
     if (status === "stale" && s.held) status = "held";
     if (status === "stale" && r.waiting) status = "waiting";
     if (status === "current" && r.manual) status = "manual";
-    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
+    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(r.shipped !== undefined ? { shipped: r.shipped } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
   } catch (err) {
     if (!(err instanceof EnvError)) throw err;
     envError ??= err.message;
