@@ -130,11 +130,12 @@ else
       gh pr merge "$method" --delete-branch "$url"
     elif gh pr checks "$url" 2>&1 | grep -q "no checks reported"; then
       gh pr merge "$method" --delete-branch "$url"
-    elif gh pr view "$url" --json statusCheckRollup --jq '[.statusCheckRollup[] | select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT" or .conclusion == "CANCELLED" or .conclusion == "STARTUP_FAILURE" or .state == "FAILURE" or .state == "ERROR")] | length' 2>/dev/null | grep -qv '^0$'; then
-      say "a check failed: fix it, push, and rerun gh ouro-pr. Not merged."
-      echo "$url"
-      exit 1
     else
+      n=$(gh pr view "$url" --json statusCheckRollup --jq '[.statusCheckRollup[] | select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT" or .conclusion == "CANCELLED" or .conclusion == "STARTUP_FAILURE" or .conclusion == "ACTION_REQUIRED" or .state == "FAILURE" or .state == "ERROR")] | length' 2>/dev/null) || n=
+      case $n in
+        ''|*[!0-9]*|0) ;;
+        *) say "a check failed: fix it, push, and rerun gh ouro-pr. Not merged."; echo "$url"; exit 1 ;;
+      esac
       # The watch itself stopped (a network or sign-in hiccup), not a check.
       say "lost track of the checks before they finished. Not merged: rerun gh ouro-pr to keep waiting."
       echo "$url"

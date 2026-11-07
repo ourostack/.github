@@ -24,7 +24,7 @@ Then, from a finished branch, run `gh ouro-pr`. It pushes the branch (never with
 
 Put a `Desk-Task: <track>/<task>` line in a commit body or the PR body: the PR clock uses it to name the owner.
 
-Some repositories (ouro-ui, spoonjoy-v2) check the PR's title and body for unsourced claims, and the body `gh ouro-pr` builds from commit messages can trip them (a number, an "every", even a `Desk-Task` path). There, write the body yourself and pass `--body-file`; the clock still finds a `Desk-Task` line in the commit message.
+Some repositories (ouro-ui, spoonjoy-v2) check the PR's title and body for unsourced claims, and the body `gh ouro-pr` builds from commit messages can trip them (a number, an "every", even a `Desk-Task` path). There, write the body yourself and pass `--body-file`; keep a `Desk-Task` line in it, or in the latest commit's message, which is the one the clock reads.
 
 Private repositories on a free plan have no auto-merge. There `gh ouro-pr` says so, and you merge the PR yourself the moment it is green.
 
