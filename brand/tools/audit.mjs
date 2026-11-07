@@ -9,7 +9,7 @@
 //                                              # or preview): its origin, sitemap and absolute same-site URLs
 //                                              # are read from --origin instead of the registered origin
 //
-// Exit codes: 0 every surface is current (held and waiting surfaces are listed, not failed),
+// Exit codes: 0 every surface is current (held, waiting and manual surfaces are listed, not failed),
 // 1 at least one surface is stale or unregistered, 2 usage, 3 environment not ready (no GitHub token, network).
 // BRAND_REF=<commit> checks that commit's canonical bytes instead of main's (CI sets it on pull requests).
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
@@ -176,6 +176,32 @@ const checks = {
       fix: `Upload brand/${s.image} at https://github.com/${s.repo}/settings (General > Social preview > Edit > Upload an image). GitHub has no API for this; a signed-in browser does it.`,
     };
   },
+  async "github-avatar"(s) {
+    asset(s.mark);
+    const res = await get(s.url);
+    if (res.status !== 200) throw new EnvError(`${s.url} answered ${res.status || res.error}`);
+    const have = sha(res.body);
+    return {
+      problems: have === s.servedSha256 ? [] : [`avatar is not GitHub's re-encode of brand/${s.mark} (sha256 ${have.slice(0, 12)}, want ${s.servedSha256.slice(0, 12)})`],
+      fix: `Upload brand/${s.mark} as the profile picture (${s.note?.match(/https:\/\/github\.com\/\S+?(?=\))/)?.[0] ?? "its settings page"}), then set servedSha256 in brand/surfaces.json to the sha256 of ${s.url}.`,
+    };
+  },
+  async "github-enterprise-readme"(s) {
+    const fix = `Edit the README at https://github.com/enterprises/${s.enterprise} (Overview > README > Edit) so its first lines are the header block in brand/AGENTS.md with brand/${s.header}.`;
+    const res = await slot(() =>
+      fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: { ...ghHeaders(), "content-type": "application/json", "user-agent": "ourostack-brand-audit" },
+        body: JSON.stringify({ query: `{enterprise(slug:"${s.enterprise}"){readme}}` }),
+      }).then(async (r) => ({ status: r.status, json: await r.json().catch(() => ({})) })),
+    );
+    // Only enterprise members with read:enterprise can read it; CI's token cannot, so say so instead of failing.
+    if (res.json.errors?.some((e) => e.type === "INSUFFICIENT_SCOPES" || e.type === "FORBIDDEN" || e.type === "NOT_FOUND"))
+      return { problems: [], manual: "needs a token with read:enterprise (gh auth refresh -s read:enterprise)", fix };
+    if (res.status !== 200 || res.json.errors) throw new EnvError(`GitHub GraphQL answered ${res.status}: ${JSON.stringify(res.json.errors ?? res.json).slice(0, 200)}`);
+    const head = (res.json.data.enterprise?.readme ?? "").split("\n").slice(0, 25).join("\n");
+    return { problems: head.includes(raw(s.header)) ? [] : [`enterprise README has no brand/${s.header} header in its first 25 lines`], fix };
+  },
   async "npm-readme"(s) {
     const res = await get(`https://registry.npmjs.org/${s.package.replace("/", "%2f")}`);
     if (res.status !== 200) throw new EnvError(`npm registry answered ${res.status || res.error} for ${s.package}`);
@@ -332,7 +358,7 @@ async function coverage() {
 // ---------- canonical bytes: main serves what provenance records ----------
 async function canonical() {
   const used = new Set();
-  for (const s of registry.surfaces) for (const k of ["header", "image"]) if (s[k]) used.add(s[k]);
+  for (const s of registry.surfaces) for (const k of ["header", "image", "mark"]) if (s[k]) used.add(s[k]);
   const problems = [];
   await Promise.all(
     [...used].map(async (p) => {
@@ -358,7 +384,8 @@ async function run(s) {
     let status = r.problems.length ? "stale" : "current";
     if (status === "stale" && s.held) status = "held";
     if (status === "stale" && r.waiting) status = "waiting";
-    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
+    if (status === "current" && r.manual) status = "manual";
+    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
   } catch (err) {
     if (!(err instanceof EnvError)) throw err;
     envError ??= err.message;
@@ -371,7 +398,7 @@ if (only === "" || "unregistered:".startsWith(only)) results.push(...(await cove
 results.sort((a, b) => a.id.localeCompare(b.id));
 
 const count = (st) => results.filter((r) => r.status === st).length;
-const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), held: count("held"), waiting: count("waiting"), unchecked: count("unchecked") };
+const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), held: count("held"), waiting: count("waiting"), manual: count("manual"), unchecked: count("unchecked") };
 const failed = summary.stale + summary.unregistered > 0;
 const exit = failed ? 1 : summary.unchecked ? 3 : 0;
 
@@ -380,7 +407,7 @@ if (format === "json") {
 } else {
   const color = process.stdout.isTTY && !process.env.NO_COLOR;
   const c = (code, t) => (color ? `\x1b[${code}m${t}\x1b[0m` : t);
-  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), held: c(33, "▲"), waiting: c(33, "▲"), unchecked: c(31, "?") };
+  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), held: c(33, "▲"), waiting: c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
   process.stdout.write(`BRAND AUDIT  ${registry.surfaces.length} surfaces in brand/surfaces.json\n\n`);
   for (const r of results) {
     const extra = r.pages ? c(2, ` (${r.pages} pages)`) : "";
@@ -388,7 +415,7 @@ if (format === "json") {
     if (r.status !== "current") {
       for (const p of r.problems.slice(0, 12)) process.stdout.write(`    ${p}\n`);
       if (r.problems.length > 12) process.stdout.write(`    … ${r.problems.length - 12} more (--format json lists all)\n`);
-      if (r.reason) process.stdout.write(c(2, `    held: ${r.reason}\n`));
+      if (r.reason) process.stdout.write(c(2, `    ${r.status}: ${r.reason}\n`));
       if (r.fix) process.stdout.write(c(2, `    fix: ${r.fix}\n`));
     }
   }
