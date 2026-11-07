@@ -21,7 +21,7 @@ The rich renders are the primary marks. Use one-colour silhouettes only for tiny
 
 ## Every surface, every time
 
-A branding update is done only when every surface carries it. [`brand/surfaces.json`](brand/surfaces.json) lists them all (the profile, every README and social preview, npm pages, and every page of ouroboros.bot, ui.ouro.bot and the Ouro MD page on ouro.bot), and one command checks them:
+A branding update is done only when every surface carries it. [`brand/surfaces.json`](brand/surfaces.json) lists them all (the profile, every README and social preview, npm pages, and every page of ouroboros.bot, ui.ouroboros.bot and the Ouro MD page on ouro.bot), and one command checks them:
 
 ```sh
 node brand/tools/audit.mjs --format text
