@@ -32,6 +32,8 @@ A branding update (a new or redrawn header, mark, crop, card or icon) is done on
 | Kind | Where it lives | How to update it |
 | --- | --- | --- |
 | `github-readme` | the top of each repository's README (the profile: `profile/README.md` here) | A small README-only PR in that repository whose first lines are the header block below; merge when green. |
+| `github-org-profile` | the org page header (display name, description, URL) and its six pins | A signed-in owner sets them at https://github.com/organizations/ourostack/settings/profile and with Customize pins on https://github.com/ourostack; the audit compares both with `surfaces.json`. |
+| `github-about` | every repository's About sidebar and its `family` custom property | `gh api -X PATCH repos/ourostack/<repo>` for the description and homepage, `gh api -X PUT repos/ourostack/<repo>/topics` for topics, and the org's custom properties page for `family`. The description is one plain sentence that matches the README's first line; topics include `ourostack` (and `labs` for labs, whose description starts with "Labs"). |
 | `github-social-preview` | repository Settings > General > Social preview | GitHub has no API for this. `node brand/tools/upload-social-previews.mjs` uploads every stale one through a background copy of the local Edge profile; it needs github.com signed in there once and stops with exit 3 if not. |
 | `github-avatar` | the Ouro Labs enterprise profile picture, https://github.com/enterprises/ouro/settings/profile | Upload the mark there (Profile picture > Upload new picture), then set `servedSha256` in `surfaces.json` to the sha256 of the avatar URL. GitHub re-encodes uploads to 460x460, so the audit compares that re-encode, not `brand/` bytes. |
 | `github-enterprise-readme` | the README on https://github.com/enterprises/ouro | Edit it there (README > Edit); its first lines are the header block below. It is not in a repository, and only a token with `read:enterprise` can read it, so CI lists it as `manual`; run the audit locally after `gh auth refresh -s read:enterprise` to check it. |
@@ -54,9 +56,13 @@ A site page carries the brand when:
 - `rel=icon` serves `icons/ouro.svg` (or `icons/ouro-hx.svg` on Ouro HX pages) and `rel=apple-touch-icon` serves `icons/<mark>-180.png`;
 - `og:image` and `twitter:image` are the same 1200x630 card: `og/<scene>.jpg` itself, or a card the site composes on it at build time (the registry says which).
 
+## Families
+
+Every repository belongs to one product family, recorded as the org custom property `family` and as its `about:<repo>` entry in `surfaces.json`: `home` (this profile and the sites), `ouroboros` (the agent harness and what it needs), `desk`, `ouro-ui`, `apps`, `tools`, and `labs` (forks and experiments: tried in the open, not supported). A new repository gets its family in the same change that registers it, and a line in the matching section of `profile/README.md`. Labs repositories also carry the `labs` topic, so [one search](https://github.com/search?q=org%3Aourostack+topic%3Alabs+fork%3Atrue&type=repositories) lists them all.
+
 ## What is not a brand surface
 
-App icons (Ouro MD's icon, the Apple apps') are product identity and do not change with a brand update. Forks keep their upstream README and identity. `surfaces.json` lists every exclusion with its reason.
+App icons (Ouro MD's icon, the Apple apps') are product identity and do not change with a brand update. A fork whose default branch mirrors upstream (playwright) keeps upstream's README; its About line says why we fork it. A fork with its own default branch (cmux) gets our README and the labs header. `surfaces.json` lists every exclusion with its reason.
 
 ## Git
 
