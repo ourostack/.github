@@ -29,4 +29,4 @@ node brand/tools/audit.mjs --format text
 
 It names each stale surface and how to fix it. Add a new surface to the registry when you make it. [AGENTS.md](AGENTS.md) has the whole routine.
 
-Ouro UI is the parent; Ouro HX is its component library under construction. No approved Ouro AX mark is claimed here.
+Ouro UI is the parent, and its site, ui.ouroboros.bot, is named Ouro UI, in two halves: Ouro HX (human experience) and Ouro AX (agent experience). The site wears the Ouro HX render and mark; no approved Ouro AX mark is claimed here.
