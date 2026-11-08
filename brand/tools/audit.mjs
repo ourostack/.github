@@ -399,11 +399,11 @@ async function coverage() {
   const readmes = new Set(registry.surfaces.filter((s) => s.kind === "github-readme" && !s.path).map((s) => s.repo.split("/")[1]));
   const socials = new Set(registry.surfaces.filter((s) => s.kind === "github-social-preview").map((s) => s.repo.split("/")[1]));
   const abouts = new Set(registry.surfaces.filter((s) => s.kind === "github-about").map((s) => s.repo.split("/")[1]));
+  const out = [];
   for (const r of repos) {
     if (r.archived || abouts.has(r.name)) continue;
     out.push({ id: `unregistered:about:${r.name}`, status: "unregistered", problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
   }
-  const out = [];
   for (const r of repos) {
     if (r.name in (registry.excluded ?? {}) || r.archived) continue;
     const missing = [!readmes.has(r.name) && "README", !socials.has(r.name) && "social preview"].filter(Boolean);
