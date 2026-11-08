@@ -20,7 +20,7 @@ Where coding agents keep their work, so it survives the session.
 
 **Start:** give your agent [SETUP.md](https://github.com/ourostack/desk/blob/main/SETUP.md) and say "set this up".
 
-<br clear="left"><br>
+<br clear="left">
 
 <a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="A person and a small robot building a green Ouro HX card together while Ouro watches"></a>
 
@@ -30,7 +30,7 @@ Components that feel right to people and read clearly to the agents building wit
 
 **Start:** see them live at [ui.ouroboros.bot](https://ui.ouroboros.bot/).
 
-<br clear="left"><br>
+<br clear="left">
 
 <a href="https://github.com/ourostack/ouro-md"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-md.webp" alt="Ouro reading a clean page on a wooden lectern, pages drifting in the dawn air"></a>
 
@@ -40,7 +40,7 @@ A calm Mac Markdown editor for reading what agents write.
 
 **Start:** [download it for Mac](https://ouroboros.bot/ouro-md/download/).
 
-<br clear="left"><br>
+<br clear="left">
 
 <a href="https://github.com/ourostack/ouroboros"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouroboros.webp" alt="Ouro outside its round-doored home in a hillside, letters and speech bubbles floating out"></a>
 
@@ -50,7 +50,7 @@ The agent harness where it all started: agents with memory and real tools.
 
 **Start:** `npx ouro.bot@latest`
 
-<br clear="left"><br>
+<br clear="left">
 
 ## Every repo, by family
 
@@ -69,7 +69,7 @@ Forks and experiments, tried in the open. Useful to us, honest about what they a
 
 [cmux](https://github.com/ourostack/cmux) · [playwright](https://github.com/ourostack/playwright) · [playwright-focus-proof](https://github.com/ourostack/playwright-focus-proof) · [ouro-workbench](https://github.com/ourostack/ouro-workbench) · [image-gen-mcp](https://github.com/ourostack/image-gen-mcp) (archived)
 
-<br clear="left"><br>
+<br clear="left">
 
 ---
 
