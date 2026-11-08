@@ -12,9 +12,9 @@
 
 ## Start with one
 
-<a href="https://github.com/ourostack/desk"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/desk.webp" alt="Ouro beside a tidy wooden desk with a lamp, on a dawn meadow"></a>
-
 ### [Desk](https://github.com/ourostack/desk)
+
+<a href="https://github.com/ourostack/desk"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/desk.webp" alt="Ouro beside a tidy wooden desk with a lamp, on a dawn meadow"></a>
 
 Where coding agents keep their work, so it survives the session.
 
@@ -22,9 +22,9 @@ Where coding agents keep their work, so it survives the session.
 
 <br clear="left">
 
-<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="A person and a small robot building a green Ouro HX card together while Ouro watches"></a>
-
 ### [Ouro UI](https://github.com/ourostack/ouro-ui)
+
+<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="A person and a small robot building a green Ouro HX card together while Ouro watches"></a>
 
 Components that feel right to people and read clearly to the agents building with them.
 
@@ -32,19 +32,19 @@ Components that feel right to people and read clearly to the agents building wit
 
 <br clear="left">
 
-<a href="https://github.com/ourostack/ouro-md"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-md.webp" alt="Ouro reading a clean page on a wooden lectern, pages drifting in the dawn air"></a>
-
 ### [Ouro MD](https://github.com/ourostack/ouro-md)
 
-A calm Mac Markdown editor for reading what agents write.
+<a href="https://github.com/ourostack/ouro-md"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-md.webp" alt="Ouro reading a clean page on a wooden lectern, pages drifting in the dawn air"></a>
+
+A minimalist Mac Markdown editor for reading what your agents write.
 
 **Start:** [download it for Mac](https://ouroboros.bot/ouro-md/download/).
 
 <br clear="left">
 
-<a href="https://github.com/ourostack/ouroboros"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouroboros.webp" alt="Ouro outside its round-doored home in a hillside, letters and speech bubbles floating out"></a>
-
 ### [Ouroboros](https://github.com/ourostack/ouroboros)
+
+<a href="https://github.com/ourostack/ouroboros"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouroboros.webp" alt="Ouro outside its round-doored home in a hillside, letters and speech bubbles floating out"></a>
 
 The agent harness where it all started: agents with memory and real tools.
 
