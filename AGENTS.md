@@ -7,6 +7,7 @@ This repository holds the ourostack organization profile, the canonical brand (t
 Each rule lives in [`agents/`](agents/), and each repository's AGENTS.md links to it.
 
 - **[Every PR merges within 30 minutes](agents/prs-merge-within-30-minutes.md).** Finish, review and validate on the branch, then publish with `gh ouro-pr` so auto-merge is on and green means merged. Question every check that isn't in CI. The [PR clock](agents/prs-merge-within-30-minutes.md#the-pr-clock) pins an issue here listing every PR open past 30 minutes and what is holding it.
+- **[One paid seat, ever](agents/one-paid-seat.md).** arimendelow is the only org member and the only paid seat. Contributors are outside collaborators on public repositories or send PRs from forks; nobody is ever made an org member or given a private repository. Agents act as Ari or through a GitHub App. The seat guard on the PR clock issue goes red on a second seat.
 
 ## The rule: a branding update reaches every surface
 

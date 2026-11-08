@@ -2,7 +2,8 @@ name: PR clock
 
 # Keeps the pinned issue "PRs past 30 minutes" current: every open PR in ourostack, spoonjoy and
 # arimendelow that has been open 30 minutes or more, what is holding it, and its likely owner.
-# The rule: agents/prs-merge-within-30-minutes.md.
+# The rule: agents/prs-merge-within-30-minutes.md. It also leads the issue with the seat guard's
+# line (agents/one-paid-seat.md): one license-consuming account across ourostack and spoonjoy.
 on:
   schedule:
     # Off the hour: GitHub delays or drops scheduled runs at busy times, worst at minute 0.
@@ -29,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test the clock
-        run: node --test tools/pr-clock/pr-clock.test.mjs
+        run: node --test tools/pr-clock/pr-clock.test.mjs tools/pr-clock/seat-guard.test.mjs
       # Optional: a read-only GitHub App (pull requests, checks, statuses, contents, actions)
       # installed on arimendelow lets the clock count late PRs in its private repositories; the
       # issue is public, so it never names them. Without it the workflow token reads every public
