@@ -26,9 +26,9 @@ Where coding agents keep their work, so it survives the session.
 
 <a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="A person and a small robot building a green Ouro HX card together while Ouro watches"></a>
 
-Components that feel right to people and read clearly to the agents building with them.
+Interfaces in two halves: Ouro HX, components that feel right to people, and Ouro AX, tools that read clearly to agents.
 
-**Start:** see them live at [ui.ouroboros.bot](https://ui.ouroboros.bot/).
+**Start:** see both live at [ui.ouroboros.bot](https://ui.ouroboros.bot/).
 
 <br clear="left">
 
