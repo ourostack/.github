@@ -67,7 +67,7 @@ The agent harness where it all started: agents with memory and real tools.
 
 Forks and experiments, tried in the open. Useful to us, honest about what they are, and **not supported**. Each one's README says why it exists.
 
-[cmux](https://github.com/ourostack/cmux) · [playwright](https://github.com/ourostack/playwright) · [playwright-focus-proof](https://github.com/ourostack/playwright-focus-proof) · [ouro-workbench](https://github.com/ourostack/ouro-workbench) · [image-gen-mcp](https://github.com/ourostack/image-gen-mcp) (archived)
+[cmux](https://github.com/ourostack/cmux) · [playwright](https://github.com/ourostack/playwright) · [swift-toolkit](https://github.com/ourostack/swift-toolkit) · [playwright-focus-proof](https://github.com/ourostack/playwright-focus-proof) · [ouro-workbench](https://github.com/ourostack/ouro-workbench) · [image-gen-mcp](https://github.com/ourostack/image-gen-mcp) (archived)
 
 <br clear="left">
 
