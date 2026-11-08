@@ -5651,5 +5651,201 @@
   "height": 630,
   "bytes": 329164,
   "sha256": "2b2da27009ab893f88c7c10b9d45ccd785228fb7878a58bec945091c5004f6ce"
+ },
+ {
+  "file": "headers/housesitter.webp",
+  "for": "https://github.com/ourostack/housesitter",
+  "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
+  "generated": "2026-11-08, for Ari (\"do we have a public surface you also need to make sure is all beautiful? :)\")",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
+  "crop": "1536x576 from the 1536x1024 master housesitter-b (box [0, 124, 1536, 700]), WebP q86",
+  "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827",
+  "generation": [
+   {
+    "master": "housesitter-b",
+    "master_sha256": "a1d7012713392089285ee3a1d06cc8ad6b8c03c9997d98b97b5e8208c99e5b00",
+    "prompt": "Edit the FIRST reference image, keeping everything exactly the same (the cottage, round window with the two little robots, green door, lantern, mailbox, bench, the little grey box with its amber eye-light and its cable into the wall, the blossom tree, the sky, the sun, the glowing trail, the meadow, the light and the rendering), with only these changes:\n\n1. Remove the brass key that hangs on the hook beside the green door, and the hook. That stretch of stone wall beside the door is just plain wall with ivy.\n2. Instead, the same big old-fashioned brass key now hangs on a short red ribbon from the front of the little grey box with the amber eye-light on the bench, resting against the box, as if the little box is the one trusted with the key.\n3. Ouro (second reference image) stays exactly as in the first image: same pose, same place on the doorstep, same face; one head, one tail, no limbs.\n\nNo text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "master:housesitter-a (sha256 22ab2f9fbfa25e54d1552d6d78c3f1936168cfbdfeb4ba6415ef2da49add83ee)",
+     "brand/ouro.png"
+    ],
+    "why": "an independent review read a brass key hanging by the front door as a key under the mat; the key now hangs from the little box that holds it"
+   },
+   {
+    "master": "housesitter-a",
+    "master_sha256": "22ab2f9fbfa25e54d1552d6d78c3f1936168cfbdfeb4ba6415ef2da49add83ee",
+    "prompt": "Wide storybook banner in \"Ouro's world\" at dawn, the same world, light and rendering as the LAST reference image: premium Pixar-like 3D, warm golden sunrise from the right, pastel peach-and-blue sky, misty hills, dewy green meadow with tiny warm glints, and a glowing braided trail of green and warm amber light winding through the meadow.\n\nOuro (reference image 1): exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail. Ouro holds nothing.\n\nScene for housesitter, \"your agents' little house, looked after through the night\": slightly left of centre, the glowing trail ends at a small, cosy storybook cottage with a round green door and one big round window. Inside the window, on the sill, sits a small silver square box with rounded corners (a tiny computer) glowing a soft calm white, and through the window you glimpse two tiny friendly white robots asleep-awake at a little table, busy and content. Beside the door hangs a big old-fashioned brass key on a hook, and a brass lantern that has burned all night, still softly lit. Next to the cottage, on a low wooden bench by the door, stands a small friendly grey box with a single round amber eye-light (a little watchful gadget), with a thin cable running neatly from it into the cottage wall. Ouro, large, is curled on the doorstep right of the door, wide awake and smiling at the viewer, as if it kept watch all night and everything is fine. In the upper left of the sky, two or three last stars are fading as the sun rises on the right. A small wooden postbox on a post with its little flag down.\n\nComposition: a very wide banner. Keep the cottage, Ouro and all props inside the middle horizontal band between 30% and 72% of the image height; the top quarter is open sky, the bottom quarter is soft meadow foreground. Nothing important touches the left or right edge.\n\nNo text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "brand/ouro.png",
+     "brand/headers/desk.webp (decoded to PNG)",
+     "brand/headers/ourostack.webp (decoded to PNG)"
+    ]
+   }
+  ]
+ },
+ {
+  "file": "scenes/housesitter-640.webp",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 49384,
+  "sha256": "7f5fc2e7c3dcf5bf69c00f72f98458c174716a1df18903df5e702ddb9c9a5cb9"
+ },
+ {
+  "file": "scenes/housesitter-640.avif",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 32438,
+  "sha256": "57d716cba614b54a2844dd9d929737ad3da64db8364275c5aa3f1ac63e434e62"
+ },
+ {
+  "file": "scenes/housesitter-960.webp",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 93878,
+  "sha256": "86bf50e2c33eb610566e284f4b625b3ccd951463162a43b2734441bcce54ad90"
+ },
+ {
+  "file": "scenes/housesitter-960.avif",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 60990,
+  "sha256": "16104590916b7935e80ea46a7d89cb27219d7f91d847bf53e42207855ea376aa"
+ },
+ {
+  "file": "scenes/housesitter-1536.avif",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 576,
+  "bytes": 118375,
+  "sha256": "e85b0191f0cb19894e6fe74930df5391ebdd2204d1d636a2f737bce9c61fd2a1"
+ },
+ {
+  "file": "phone/housesitter-384.webp",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "phone hero (16:9)",
+  "operation": "crop box [202, 0, 1226, 576] then resize to 384x216 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 216,
+  "bytes": 28014,
+  "sha256": "995c51408b66e76d79e46ff3967e5d6ce2bc58fafa321169aaa37dd187272850"
+ },
+ {
+  "file": "phone/housesitter-384.avif",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "phone hero (16:9)",
+  "operation": "crop box [202, 0, 1226, 576] then resize to 384x216 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 216,
+  "bytes": 18130,
+  "sha256": "079b1bf41e1bcf1520d16faba97a19157fe9ccb6d91559893aa9d4c56cb22f8e"
+ },
+ {
+  "file": "phone/housesitter-768.webp",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "phone hero (16:9)",
+  "operation": "crop box [202, 0, 1226, 576] then resize to 768x432 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 432,
+  "bytes": 80796,
+  "sha256": "ae6d5542fccdf4991b2bd4220087d6c021feb628d9ad12ca232ed199ed1629f5"
+ },
+ {
+  "file": "phone/housesitter-768.avif",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "phone hero (16:9)",
+  "operation": "crop box [202, 0, 1226, 576] then resize to 768x432 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 432,
+  "bytes": 52804,
+  "sha256": "936ed9c82f6421f923fb196e8d51939bd728451e9d7916802117ff2c46b17975"
+ },
+ {
+  "file": "social/housesitter.jpg",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [124, 0, 1276, 576] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 311340,
+  "sha256": "9507f3f0edb059ca3dcb110b0f8a03b3e6766ac00533eff70a7090e35a4b5e4e"
+ },
+ {
+  "file": "og/housesitter.jpg",
+  "derivedFrom": {
+   "file": "headers/housesitter.webp",
+   "sha256": "4378e32293fb8f3950fe1c03815f70a8a4c1dfab5af1d319d27f64017da0e827"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [152, 0, 1249, 576] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 290746,
+  "sha256": "2e0c034f2ea64c7acb88f5aaf38bc0299ad080f2ef34195b408e9a7bcc9d205e"
  }
 ]
