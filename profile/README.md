@@ -8,6 +8,8 @@
 
 **Open-source tools for people and the agents who work beside them.** Ouro is the snake curled into an O. It eats its own tail, so we ship, learn and ship again.
 
+**Our sites:** [Ouro](https://ouroboros.bot/) · [Ouro UI](https://ui.ouroboros.bot/) · [Ouro MD](https://ouroboros.bot/ouro-md/) · [Desk](https://ouroboros.bot/desk/) · [Apps](https://ouroboros.bot/apps/) · [Ari Mendelow](https://mendelow.me/) · [GitHub](https://github.com/ourostack)
+
 **People:** start at [ouroboros.bot](https://ouroboros.bot). **Agents:** read [the brief](https://ouroboros.bot/brief.md) for how we work, then use the map below; every repo's About line says what it is in one sentence.
 
 ## Start with one
@@ -73,4 +75,6 @@ Forks and experiments, tried in the open. Useful to us, honest about what they a
 
 ---
 
-Made in the open, one snake at a time. The site lives at [ouroboros.bot](https://ouroboros.bot).
+Made in the open, one snake at a time.
+
+[Ouro](https://ouroboros.bot/) · [Ouro UI](https://ui.ouroboros.bot/) · [Ouro MD](https://ouroboros.bot/ouro-md/) · [Desk](https://ouroboros.bot/desk/) · [Apps](https://ouroboros.bot/apps/) · [Ari Mendelow](https://mendelow.me/) · [GitHub](https://github.com/ourostack)
