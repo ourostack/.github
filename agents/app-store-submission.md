@@ -16,3 +16,7 @@ App Review rejected Spoonjoy for Mac 1.0 on 2026-11-02 under [Guideline 4.8, Log
 ## If App Review rejects under 4.8 anyway
 
 Fix the order in a new build and resubmit with it. In the same Resolution Center reply, say plainly where Sign in with Apple is and what changed. Replying "we already offer it" without a new build invites a second round.
+
+## A platform's first version takes no What's New
+
+An app's first version on a platform (for example the first Mac version of an app already on iPhone) cannot carry What's New. App Store Connect answers HTTP 409 "Attribute 'whatsNew' cannot be edited at this time" if the listing sends one. The same applies when a rejected first version is renamed and resubmitted. Leave `whatsNew` out of that platform's listing until a version on it has been released. Spoonjoy Mac 1.1 hit this in [stage run 42546769458](https://github.com/spoonjoy/spoonjoy-apple/actions/runs/42546769458), and [spoonjoy-apple#252](https://github.com/spoonjoy/spoonjoy-apple/pull/252) fixed it.
