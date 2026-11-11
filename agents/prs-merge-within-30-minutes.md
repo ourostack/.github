@@ -2,7 +2,9 @@
 
 Shared guidance for every agent and person working in ourostack, spoonjoy and arimendelow repositories. Each repository's AGENTS.md points here.
 
-**A pull request open for more than 30 minutes is a problem.** Ari, 2026-11-07: "if any PR is open for more than 30 mins, it's a problem :) ... i don't like these backups in ourostack". An open PR holds finished work away from main, goes stale against everyone else's changes, and turns into a pile of conflicts and reruns that someone has to untangle later. Small PRs that land fast keep main the one true picture of the work.
+**A pull request open for more than 30 minutes is a problem.** Ari, 2026-11-07: "if any PR is open for more than 30 mins, it's a problem :) ... i don't like these backups in ourostack".
+
+**30 minutes is a goal, not a deadline.** Ari, 2026-11-10: the number itself is arbitrary; the aim is PRs that are fast and svelte, and the clock exists to stop PRs sitting open for days. It never justifies discarding or abandoning work: a late PR gets finished and landed (the table below), not closed to beat the clock. On trunk-based work, the fix is a smaller PR next time. An open PR holds finished work away from main, goes stale against everyone else's changes, and turns into a pile of conflicts and reruns that someone has to untangle later. Small PRs that land fast keep main the one true picture of the work.
 
 ## The flow: done first, then publish, and green means merged
 
