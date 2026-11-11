@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { autoMergeOff, blocker, fmtAge, late, owner, render } from "./pr-clock.mjs";
+import { autoMergeOff, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
 
 const NOW = "2026-11-07T20:00:00Z";
 const run = (name, status, conclusion = null, startedAt = "2026-11-07T19:40:00Z") => ({ __typename: "CheckRun", name, status, conclusion, startedAt });
@@ -110,4 +110,41 @@ test("late PRs render one line each, with a count in the title", () => {
   assert.equal(lines.length, 1);
   assert.match(lines[0], /Pipes \\\| in title/);
   assert.match(lines[0], /🔴 red: `t`/);
+});
+
+const main = (state, over = {}, checks = [], message = "x") => ({
+  repository: { nameWithOwner: "ourostack/gatefold", isPrivate: false },
+  name: "main",
+  commit: { oid: "dbcffdb0123456789", committedDate: "2026-11-07T18:00:00Z", message, statusCheckRollup: state && { state, contexts: { nodes: checks } } },
+  ...over,
+});
+
+test("a red main is reported with its red checks, age and owner; green or pending mains are not", () => {
+  const reds = redMains([
+    main("FAILURE", {}, [run("iPad (place)", "COMPLETED", "FAILURE"), run("lint", "COMPLETED", "SUCCESS")], "Fix\n\nDesk-Task: agent-capacity/x"),
+    main("SUCCESS", { repository: { nameWithOwner: "ourostack/ok" } }),
+    main("PENDING", { repository: { nameWithOwner: "ourostack/running" } }),
+    main(null, { repository: { nameWithOwner: "ourostack/no-ci" } }),
+  ], NOW);
+  assert.equal(reds.length, 1);
+  assert.equal(reds[0].age, 120);
+  assert.equal(reds[0].text, "red: `iPad (place)`");
+  assert.equal(reds[0].owner, "desk `agent-capacity/x`");
+  assert.equal(redMains([main("ERROR")], NOW)[0].owner, "its AGENTS.md (CI)");
+});
+
+test("a red main shows above the PRs and in the title, and is never all clear", () => {
+  const view = render([], NOW, undefined, [main("FAILURE", {}, [run("App", "COMPLETED", "FAILURE")])]);
+  assert.match(view.body, /## 🔴 1 red main branch\n/);
+  assert.match(view.body, /\| 2h 00m \| \[ourostack\/gatefold\]\(https:\/\/github.com\/ourostack\/gatefold\) `main` \| \[dbcffdb\]/);
+  assert.doesNotMatch(view.body, /All clear/);
+  assert.equal(view.title, "PRs past 30 minutes: none · 1 red main");
+  const late1 = render([pr({}, [run("t", "COMPLETED", "FAILURE")])], NOW, undefined, [main("FAILURE")]);
+  assert.equal(late1.title, "PRs past 30 minutes: 1 · 1 red main");
+});
+
+test("a private repository's red main is counted but never named", () => {
+  const view = render([], NOW, undefined, [main("FAILURE", { repository: { nameWithOwner: "arimendelow/desk", isPrivate: true } })]);
+  assert.doesNotMatch(view.body, /arimendelow\/desk/);
+  assert.match(view.body, /🔒 1 red main branch in private repositories/);
 });
