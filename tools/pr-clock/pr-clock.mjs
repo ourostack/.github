@@ -163,7 +163,7 @@ export function render(allPrs, now, seats) {
   if (hidden) out.push("", `🔒 ${hidden} late PR${hidden === 1 ? "" : "s"} in private repositories, not named here.`);
   out.push(
     "",
-    `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes: if this time is over 30 minutes old, the clock itself is late, so run \`gh workflow run pr-clock.yml -R ourostack/.github\`. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟠 rebase · ⚪ close with a reason or finish. [The rule](${RULE_URL})</sub>`,
+    `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes: if this time is over 30 minutes old, the clock itself is late, so run \`gh workflow run pr-clock.yml -R ourostack/.github\`. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟠 rebase · ⚪ close with a reason or finish. 30 minutes is the outer alarm, not the goal: faster is always better. [The rule](${RULE_URL})</sub>`,
   );
   const total = rows.length + hidden;
   return { title: total ? `${TITLE}: ${total}` : `${TITLE}: all clear`, body: out.join("\n"), rows };
