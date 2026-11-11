@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // The PR clock: every open pull request in our orgs that has been open past 30 minutes,
-// with what is holding it and who most likely owns it. The rule and what to do about each
+// with what is holding it and who most likely owns it, and every repository whose default
+// branch is red at its latest commit (a red main holds every PR behind it). The rule and what to do about each
 // blocker: agents/prs-merge-within-30-minutes.md.
 //
 //   node tools/pr-clock/pr-clock.mjs                 # print the issue body
@@ -124,9 +125,27 @@ export function late(prs, now) {
     .sort((a, b) => ORDER.indexOf(a.block.kind) - ORDER.indexOf(b.block.kind) || b.age - a.age);
 }
 
+// Default branches whose latest commit is red. Each `main` is
+// { repository: { nameWithOwner, isPrivate }, name, commit: { oid, committedDate, message, statusCheckRollup } }.
+export function redMains(mains, now) {
+  return mains
+    .filter((m) => RED.has(m.commit?.statusCheckRollup?.state))
+    .map((m) => {
+      const red = checks({ commits: { nodes: [{ commit: m.commit }] } }).filter((c) => c.red);
+      const task = /^Desk-Task:\s*(\S+)/m.exec(m.commit.message ?? "")?.[1];
+      return {
+        main: m,
+        age: minutesBetween(m.commit.committedDate, now),
+        text: red.length ? `red: ${namesOf(red)}` : "red",
+        owner: task ? `desk \`${task}\`` : "its AGENTS.md (CI)",
+      };
+    })
+    .sort((a, b) => b.age - a.age);
+}
+
 const CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"];
 
-export function render(allPrs, now, seats) {
+export function render(allPrs, now, seats, allMains = []) {
   // This issue is public: a private repository's PR is counted, never named.
   const prs = allPrs.filter((pr) => !pr.repository?.isPrivate);
   const hidden = late(allPrs.filter((pr) => pr.repository?.isPrivate), now).length;
@@ -137,8 +156,22 @@ export function render(allPrs, now, seats) {
   const out = [];
   // The one-paid-seat guard rides along: agents/one-paid-seat.md.
   if (seats) out.push(seatLine(seats), "");
+  const reds = redMains(allMains.filter((m) => !m.repository?.isPrivate), now);
+  const hiddenReds = redMains(allMains.filter((m) => m.repository?.isPrivate), now).length;
+  if (reds.length) {
+    out.push(`## 🔴 ${reds.length} red main branch${reds.length === 1 ? "" : "es"}`, "", "A red default branch holds every PR behind it. Its owner fixes it, or reverts, before their next PR.", "");
+    out.push("| Red for | Repository | Latest commit | Likely owner |", "| --: | --- | --- | --- |");
+    for (const r of reds) {
+      const repo = r.main.repository.nameWithOwner;
+      out.push(`| ${fmtAge(r.age)} | [${repo}](https://github.com/${repo}) \`${r.main.name}\` | [${r.main.commit.oid.slice(0, 7)}](https://github.com/${repo}/commit/${r.main.commit.oid}) ${r.text} | ${r.owner} |`);
+    }
+    out.push("");
+  }
+  if (hiddenReds) out.push(`🔒 ${hiddenReds} red main branch${hiddenReds === 1 ? "" : "es"} in private repositories, not named here.`, "");
   if (!rows.length && hidden) {
     out.push(`## 🔒 Only private repositories have late PRs`);
+  } else if (!rows.length && (reds.length || hiddenReds)) {
+    out.push(`## No PRs past 30 minutes`);
   } else if (!rows.length) {
     out.push(`## 🟢 All clear`, "");
     const oldest = prs.length ? fmtAge(Math.max(...prs.map((pr) => minutesBetween(pr.createdAt, now)))) : null;
@@ -166,7 +199,9 @@ export function render(allPrs, now, seats) {
     `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes: if this time is over 30 minutes old, the clock itself is late, so run \`gh workflow run pr-clock.yml -R ourostack/.github\`. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟠 rebase · ⚪ close with a reason or finish. 30 minutes is the outer alarm, not the goal: faster is always better. [The rule](${RULE_URL})</sub>`,
   );
   const total = rows.length + hidden;
-  return { title: total ? `${TITLE}: ${total}` : `${TITLE}: all clear`, body: out.join("\n"), rows };
+  const redCount = reds.length + hiddenReds;
+  const redNote = redCount ? ` · ${redCount} red main` : "";
+  return { title: total ? `${TITLE}: ${total}${redNote}` : redCount ? `${TITLE}: none${redNote}` : `${TITLE}: all clear`, body: out.join("\n"), rows, reds };
 }
 
 // ---- GitHub I/O ----
@@ -207,32 +242,45 @@ export async function listRepos(owners = OWNERS) {
   return repos;
 }
 
+const MAIN_FIELDS = `nameWithOwner isPrivate defaultBranchRef{name target{... on Commit{oid committedDate message
+statusCheckRollup{state contexts(first:100){nodes{__typename
+... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}`;
+
 export async function fetchOpenPrs() {
+  return (await fetchState()).prs;
+}
+
+// The open PRs and each repository's default branch, read in the same queries.
+export async function fetchState() {
   const repos = await listRepos();
   // An empty list means the token could not read the owners, never that all is clear.
   if (!repos.length) throw new Error(`no repositories readable under ${OWNERS.join(", ")}`);
   const prs = [];
+  const mains = [];
   const unread = [];
   for (let i = 0; i < repos.length; i += 8) {
     const chunk = repos.slice(i, i + 8);
     const query = `query{${chunk
       .map((full, j) => {
         const [owner, name] = full.split("/");
-        return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
+        return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${MAIN_FIELDS} pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
       })
       .join(" ")}}`;
     const { data } = await gh("/graphql", { method: "POST", body: { query } });
     chunk.forEach((full, j) => {
-      const conn = data?.[`r${j}`]?.pullRequests;
+      const repo = data?.[`r${j}`];
+      const conn = repo?.pullRequests;
       if (!conn) return unread.push(full);
+      const head = repo.defaultBranchRef;
+      if (head?.target?.oid) mains.push({ repository: { nameWithOwner: repo.nameWithOwner, isPrivate: repo.isPrivate }, name: head.name, commit: head.target });
       if (conn.totalCount > conn.nodes.length) console.error(`${full}: showing the oldest ${conn.nodes.length} of ${conn.totalCount} open PRs`);
       prs.push(...conn.nodes.filter((n) => n?.number));
     });
   }
   // A repository it cannot read could hold a late PR: fail loudly rather than say all clear.
   if (unread.length) throw new Error(`could not read ${unread.length} of ${repos.length} repositories: ${unread.join(", ")}`);
-  console.error(`read ${repos.length} repositories with open issues or PRs, ${prs.length} open PRs`);
-  return prs;
+  console.error(`read ${repos.length} repositories with open issues or PRs, ${prs.length} open PRs, ${mains.length} default branches`);
+  return { prs, mains };
 }
 
 async function updateIssue({ title, body }) {
@@ -259,11 +307,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exit(3);
   }
   const now = new Date().toISOString();
-  const prs = await fetchOpenPrs();
+  const { prs, mains } = await fetchState();
   const seats = await readSeats((path) => gh(path, { token: process.env.SEAT_TOKEN || process.env.GH_TOKEN }));
   console.error(seatLine(seats));
-  const view = render(prs, now, seats);
-  if (process.argv.includes("--json")) console.log(JSON.stringify(view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })), null, 2));
+  const view = render(prs, now, seats, mains);
+  if (process.argv.includes("--json"))
+    console.log(JSON.stringify({
+      prs: view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })),
+      redMains: view.reds.map((r) => ({ repository: r.main.repository.nameWithOwner, commit: r.main.commit.oid, age: r.age, red: r.text, owner: r.owner })),
+    }, null, 2));
   else if (process.argv.includes("--update-issue")) {
     const url = await updateIssue(view);
     console.log(`${view.title}\n${url}`);

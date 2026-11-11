@@ -54,6 +54,8 @@ Draining someone else's late PR is fine when its owner is gone; read the PR and 
 
 A scheduled workflow here ([`.github/workflows/pr-clock.yml`](../.github/workflows/pr-clock.yml), every 10 minutes) keeps one pinned issue current: **PRs past 30 minutes**. One line per late PR: how long it has been open, what is holding it (worked out from its checks and merge state), its likely owner, and ⏸️ if it was published without auto-merge. When nothing is late, it says **All clear**. The issue title carries the count, so the pinned card reads at a glance. Age counts from when the PR was opened, so a draft marked ready after a day is already late: don't park work in drafts.
 
+It also lists every **red main**: a repository whose default branch is red at its latest commit, with how long that commit has stood, its red checks and its likely owner (the commit's `Desk-Task` line, or the owner the repository's AGENTS.md names under CI). A red main holds every PR behind it, so it shows above the late PRs, its count goes in the title, and the issue never says All clear while one stands. Like late PRs, a private repository's red main is counted, never named. The clock reads repositories with open issues or PRs, so a repository with neither isn't checked.
+
 Run it locally with `GH_TOKEN=$(gh auth token) node tools/pr-clock/pr-clock.mjs`. Tests: `node --test tools/pr-clock/pr-clock.test.mjs`.
 
 It reads with the workflow's own token, which sees every public repository (today, every repository with PRs). Setting the `PR_CLOCK_APP_CLIENT_ID` variable and `PR_CLOCK_APP_PRIVATE_KEY` secret for a read-only GitHub App installed on `arimendelow` would let it count late PRs in arimendelow's private repositories too; this issue is public, so it counts them without naming them.
