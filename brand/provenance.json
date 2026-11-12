@@ -5684,6 +5684,45 @@
   ]
  },
  {
+  "file": "headers/agent-workbench.webp",
+  "for": "https://ouroboros.bot/blog/build-ai-agent-from-scratch/",
+  "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
+  "generated": "Light master, 2026-11-11, for this guide",
+  "approval": "Ari asked for this guide's own hero, light and dark, 2026-11-11 (iteration 2 of the agent loop guide): Ouro beside a workbench building a little brass robot with a keyboard on its chest, a glowing loop wire around it; the dark one is the same scene at night.",
+  "crop": "1536x576 from the 1536x1024 master (rows 170–746), WebP q86",
+  "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82",
+  "generation": [
+   {
+    "master": "agent-workbench-light-master",
+    "master_sha256": "847ef7c44c17359f066528f1b861be4809622a302bcc0410b991cf00a09ae047",
+    "prompt": "(Summary of the prompt.) Wide storybook scene in \"Ouro's world\" at dawn, the same world, light and rendering as the style reference: premium Pixar-like 3D, warm golden light, pastel sky, misty hills, a green meadow and a glowing green-and-amber trail. Ouro (reference image 1): the same glossy green cartoon snake, curled into a round \"O\" with one head and one short tail tip beside the head, smiling, holding nothing, on the right. Beside Ouro, a wooden workbench; on it a small brass-and-wood robot with a glass dome head holding an amber spark, an open wiring panel and a keyboard on its chest, wired to a glowing green-and-amber loop wire; gears, an oil can, a spool, a screwdriver and a blueprint around it. Ouro, the robot and the bench sit in the middle band; open sky above, soft meadow below. No text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "ouro.png (Ouro reference)",
+     "style-ref.png (storybook style reference)"
+    ]
+   }
+  ]
+ },
+ {
+  "file": "headers/agent-workbench-dark.webp",
+  "for": "https://ouroboros.bot/blog/build-ai-agent-from-scratch/",
+  "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
+  "generated": "Dark master, 2026-11-11, edited from the light master",
+  "approval": "Ari asked for this guide's own hero, light and dark, 2026-11-11 (iteration 2 of the agent loop guide): Ouro beside a workbench building a little brass robot with a keyboard on its chest, a glowing loop wire around it; the dark one is the same scene at night.",
+  "crop": "1536x576 from the 1536x1024 master (rows 170–746), WebP q86",
+  "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3",
+  "generation": [
+   {
+    "master": "agent-workbench-dark-master",
+    "master_sha256": "f2708cb2fa1b619a35663fc001f1b45b1458911ef75126298b54150df0c32c0e",
+    "prompt": "(Summary of the prompt.) The light master edited to night: the same scene, composition, Ouro, robot, bench and props, under a deep blue starry sky; the loop wire, the robot's spark and the trail glow warm green and amber in the dark. Ouro keeps one head and one short tail tip beside the head. No text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "agent-workbench-light-master.png (the light master)"
+    ]
+   }
+  ]
+ },
+ {
   "file": "scenes/housesitter-640.webp",
   "derivedFrom": {
    "file": "headers/housesitter.webp",
@@ -5847,5 +5886,335 @@
   "height": 630,
   "bytes": 290746,
   "sha256": "2e0c034f2ea64c7acb88f5aaf38bc0299ad080f2ef34195b408e9a7bcc9d205e"
+ },
+ {
+  "file": "scenes/agent-workbench-640.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 47554,
+  "sha256": "1cdce418e5560d874f13a6999dc094fd40773558636d19a49b2a837b635d4820"
+ },
+ {
+  "file": "scenes/agent-workbench-640.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 40180,
+  "sha256": "dde057fa446d4707e7aab6dd55be5f8aae36ef6aff94b8128246c6f39799412d"
+ },
+ {
+  "file": "scenes/agent-workbench-960.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 88338,
+  "sha256": "59460e005ba487b4bf3e7722adfb6a19f1bd70c55dfd83444a64f48cad264731"
+ },
+ {
+  "file": "scenes/agent-workbench-960.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 69601,
+  "sha256": "c669a448c7afdb91c52a7237e8ca9bb200a4b12c2ae5c81e2ca209fc1cda6b8a"
+ },
+ {
+  "file": "scenes/agent-workbench-1536.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 576,
+  "bytes": 127350,
+  "sha256": "b7e16ca7cfe205574112dde4c447b410b3688a4ef2312b40d248064081625f3f"
+ },
+ {
+  "file": "phone/agent-workbench-384.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 28840,
+  "sha256": "a5f1bd473a3541153f653bd44ca1e5cf464de1d1eccac2cba1e284021d262b67"
+ },
+ {
+  "file": "phone/agent-workbench-384.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 23869,
+  "sha256": "213f8235d60bbc2ec20c74e96e5828511b0f0d9b0c776b11871b99a14c532e73"
+ },
+ {
+  "file": "phone/agent-workbench-768.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 78276,
+  "sha256": "5adddb05f52e96e9dbbbff30f016071f9bfccb2c0c9cbcc6ca58e152088b9593"
+ },
+ {
+  "file": "phone/agent-workbench-768.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 58480,
+  "sha256": "d7089ed0ce5ffdfa34489d60c5a03b1226958e395427c8e30130d9ad46a1fe13"
+ },
+ {
+  "file": "social/agent-workbench.jpg",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [192, 0, 1344, 576] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 287936,
+  "sha256": "c0fe4186faed91475e058b3a3154e78f284c6732cafdbd03e31aa3710318fcdc"
+ },
+ {
+  "file": "og/agent-workbench.jpg",
+  "derivedFrom": {
+   "file": "headers/agent-workbench.webp",
+   "sha256": "132611abaa65907ed15ef003553b3f55c1dc8b403fb06926ae429f94219cee82"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [220, 0, 1317, 576] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 268964,
+  "sha256": "c052bb4e1cdf72ed778cd012d99cc423a95e45f6ecfa68fe25261af3d4f6a327"
+ },
+ {
+  "file": "scenes/agent-workbench-dark-640.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 42966,
+  "sha256": "6498e9f7d1e11763ba1d4d0e8f739b6a391086ec15e5352d30b9bec75c38e4e5"
+ },
+ {
+  "file": "scenes/agent-workbench-dark-640.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x240 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 240,
+  "bytes": 37287,
+  "sha256": "daddf012b06d30d80e5d0a90108de5ca8e66effc06b2941896379ccb97a6aa9d"
+ },
+ {
+  "file": "scenes/agent-workbench-dark-960.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 81470,
+  "sha256": "754c52358b7ea30613f31cd0742422eb6b699e45ba96fa5fde2a011a4a366cb5"
+ },
+ {
+  "file": "scenes/agent-workbench-dark-960.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x360 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 360,
+  "bytes": 65001,
+  "sha256": "99d2be4b7567d6f93f28eb3c7a31fac5d258a5966f4ef5af97112fda2ed0dbc4"
+ },
+ {
+  "file": "scenes/agent-workbench-dark-1536.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 576,
+  "bytes": 116526,
+  "sha256": "71555e1610122f5d232df923dbfa2976ec696ef4aeb56e3a0c7f9db1e0164364"
+ },
+ {
+  "file": "phone/agent-workbench-dark-384.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 28376,
+  "sha256": "401f94cd1faeedd3ac5a9fd8c56a34c2fb55b05558ad3611025043aa10e7c56a"
+ },
+ {
+  "file": "phone/agent-workbench-dark-384.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 23186,
+  "sha256": "f40cfb5d0df2a721d6c8e179f9bd4a5a05f99fe7325c1b29c471674385e996f0"
+ },
+ {
+  "file": "phone/agent-workbench-dark-768.webp",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 74692,
+  "sha256": "19d1ad8de4409530ad86548675c6b35800190823193a8a11a82df16e9b566d01"
+ },
+ {
+  "file": "phone/agent-workbench-dark-768.avif",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [450, 0, 1218, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 55997,
+  "sha256": "d46ada7f608e2419987eb0b75ac12ad95d97a3431f2c7d3e9e7eaeb8022b400b"
+ },
+ {
+  "file": "social/agent-workbench-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [192, 0, 1344, 576] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 266188,
+  "sha256": "0b1667fffbe5a74dbedc5ce976d8e4500b544f598a49094f6736a34b34819aa5"
+ },
+ {
+  "file": "og/agent-workbench-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/agent-workbench-dark.webp",
+   "sha256": "cb0403e6512cefe805ff95802f63e129f06e57eb21ff8f2b76806b7e089d27f3"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [220, 0, 1317, 576] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 249786,
+  "sha256": "6d65ef332dfbb7486c904492acac3ede3e3a67afc7d3a2c62d07dc5b4c785604"
  }
 ]
