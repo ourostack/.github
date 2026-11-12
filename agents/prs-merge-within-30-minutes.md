@@ -1,10 +1,10 @@
-# Every PR merges fast: 30 minutes is the outer alarm
+# Every PR merges fast: 30 minutes is a goal, never a deadline
 
 Shared guidance for every agent and person working in ourostack, spoonjoy and arimendelow repositories. Each repository's AGENTS.md points here.
 
 **A pull request open for more than 30 minutes is a problem.** Ari, 2026-11-07: "if any PR is open for more than 30 mins, it's a problem :) ... i don't like these backups in ourostack".
 
-**30 minutes is the outer alarm, not the goal.** Every PR merges, and CI runs, as fast as possible, with sub-minute checks wherever we can. Ari, 2026-11-10: "that 'within 30 minutes' thing - it's an arbitrary target, 'the pursuit of excellence requires no justification' :) generally, everything should be as svelte and fast as possibel! gave 30 mins cuz there were all these PRs sitting around for days at a time and i needed to push you agents." The clock exists to stop PRs sitting open for days. It never justifies discarding or abandoning work: a late PR gets finished and landed (the table below), not closed to beat the clock. On trunk-based work, the fix is a smaller PR next time. An open PR holds finished work away from main, goes stale against everyone else's changes, and turns into a pile of conflicts and reruns that someone has to untangle later. Small PRs that land fast keep main the one true picture of the work.
+**30 minutes is a goal, never a deadline.** It is arbitrary. Every PR should be ready before it is opened and merge on green within minutes, and CI runs as fast as possible, with sub-minute checks wherever we can. Ari, 2026-11-10: "that 'within 30 minutes' thing - it's an arbitrary target, 'the pursuit of excellence requires no justification' :) generally, everything should be as svelte and fast as possibel! gave 30 mins cuz there were all these PRs sitting around for days at a time and i needed to push you agents." The clock exists to stop PRs sitting open for days. It never justifies discarding or abandoning work: a late PR gets finished and landed (the table below), not closed to beat the clock. On trunk-based work, the fix is a smaller PR next time. An open PR holds finished work away from main, goes stale against everyone else's changes, and turns into a pile of conflicts and reruns that someone has to untangle later. Small PRs that land fast keep main the one true picture of the work.
 
 ## The flow: done first, then publish, and green means merged
 
