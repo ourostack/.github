@@ -87,6 +87,11 @@ function get(url, headers = {}) {
           try {
             const res = await fetch(url, { headers: { "user-agent": "ourostack-brand-audit", ...headers }, redirect: "follow" });
             const body = Buffer.from(await res.arrayBuffer());
+            // A CDN edge sometimes answers one page of a large crawl with a transient 5xx; retry it like a network error.
+            if ([429, 502, 503, 504].includes(res.status) && attempt < 2) {
+              await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+              continue;
+            }
             return { status: res.status, url: res.url, type: res.headers.get("content-type") ?? "", body };
           } catch (err) {
             if (attempt >= 2) return { status: 0, url, type: "", body: Buffer.alloc(0), error: String(err.cause?.code ?? err.message) };
