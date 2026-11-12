@@ -47,6 +47,8 @@ UPSCALE_APPROVAL = DERIVED_APPROVAL + (
 # the right one; WebP, the fallback, gets fewer.
 LARGE = (2304, 3072, 3840, 5120, 7680)
 LARGE_WEBP = (3072, 7680)
+# Phone crops above the header's own 768 px, also from the 4x master.
+PHONE_LARGE = (1152, 1536)
 
 # The dawn sky from headers/ourostack.webp, sampled at its top edge and its horizon.
 DAWN_TOP = (253, 214, 178)
@@ -139,6 +141,19 @@ def build():
                 yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt), {
                     **base, "use": f"phone hero ({aw}:{ah})",
                     "operation": f"crop box {list(box)} then resize to {w}x{h} (Lanczos)",
+                    "encoder": ENCODERS[fmt]}
+        # Wider phone crops, so a phone screen with 2 or 3 device pixels per CSS pixel
+        # gets one per pixel: the same window, cut from the 4x master.
+        k = up.width / src.width
+        up_box = [round(v * k) for v in box]
+        up_phone = up.crop(up_box)
+        for w in PHONE_LARGE:
+            h = round(phone.height * w / phone.width)
+            im = up_phone.resize((w, h), Image.LANCZOS)
+            for fmt in ("webp", "avif"):
+                yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt), {
+                    **up_base, "use": f"phone hero ({aw}:{ah})",
+                    "operation": f"crop box {up_box} of the 4x master then resize to {w}x{h} (Lanczos)",
                     "encoder": ENCODERS[fmt]}
 
         # GitHub social preview, 1280x640.
