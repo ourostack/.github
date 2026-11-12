@@ -14,7 +14,7 @@ Each rule lives in [`agents/`](agents/), and each repository's AGENTS.md links t
 
 A branding update (a new or redrawn header, mark, crop, card or icon) is done only when every surface in [`brand/surfaces.json`](brand/surfaces.json) carries it and the audit is green. Merging the art here is the start, not the end.
 
-1. **Change the art here first.** Put the file in `brand/` and record it in `brand/provenance.json`: its source, the prompt chain and references (for anything drawn) or the exact crop and encoder (for anything derived), and its sha256. Derived files come from `python3 brand/tools/derive.py`; never hand-edit them. Keep Ouro on-model: one head, one tail, the "O" curl, the same face.
+1. **Change the art here first.** Put the file in `brand/` and record it in `brand/provenance.json`: its source, the prompt chain and references (for anything drawn) or the exact crop and encoder (for anything derived), and its sha256. Derived files come from `python3 brand/tools/derive.py`; never hand-edit them. A new header also needs its 4x master: run `python3 brand/tools/upscale.py <scene>` (Real-ESRGAN) before derive, and pass `--master` when its lossless master is kept. Keep Ouro on-model: one head, one tail, the "O" curl, the same face.
 2. **Find every surface.** `brand/surfaces.json` lists them: the organization profile, the Ouro Labs enterprise's README and avatar (github.com/enterprises/ouro), every repository README and social preview, npm package pages, and every page of ouroboros.bot (Ouro MD's download page included, at /ouro-md/download/) and ui.ouroboros.bot (favicons, touch icons, Open Graph and Twitter cards, heroes).
 3. **Bring it to each one** through that surface's own route (below).
 4. **Run the audit** and fix what it names:

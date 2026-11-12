@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Derive every site and social asset from the storybook headers.
+"""Derive every site and social asset from the storybook headers and their 4x masters.
 
     python3 brand/tools/derive.py          # write the files and their provenance entries
     python3 brand/tools/derive.py --check  # exit 1 if a file differs from provenance.json
 
 Nothing here draws anything new. Each file is an honest crop, resize or
 recomposition of a header or a character mark already in brand/, so Ouro stays
-exactly on-model. The crop centres live in brand/tools/crops.json. Each output
+exactly on-model. Site widths above the 1536 px header come from the scene's
+4x master in brand/upscaled/, made by upscale.py with Real-ESRGAN; 7680 is
+that master resized up 1.25x (Lanczos). The crop centres live in
+brand/tools/crops.json. Each output
 gets an entry in brand/provenance.json naming its source file and that file's
 sha256, the exact operation, and its own sha256, so the audit can prove a
 surface carries these bytes.
@@ -34,6 +37,16 @@ APPROVAL = (
     "build on those further and bring em to the site etc :)\""
 )
 DERIVED_APPROVAL = APPROVAL + " Derived by crop, resize or recomposition only; nothing new is drawn."
+
+UPSCALE_APPROVAL = DERIVED_APPROVAL + (
+    " Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, "
+    "and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master."
+)
+
+# Hero widths above the header. Every format gets every width so a browser picks
+# the right one; WebP, the fallback, gets fewer.
+LARGE = (2304, 3072, 3840, 5120, 7680)
+LARGE_WEBP = (3072, 7680)
 
 # The dawn sky from headers/ourostack.webp, sampled at its top edge and its horizon.
 DAWN_TOP = (253, 214, 178)
@@ -93,6 +106,26 @@ def build():
                 op = "whole scene" if w == src.width else f"whole scene resized to {w}x{h} (Lanczos)"
                 yield f"scenes/{scene}-{w}.{fmt}", encode(im, fmt), {
                     **base, "use": "site hero, responsive width", "operation": op, "encoder": ENCODERS[fmt]}
+
+        # Wider than the header: from the 4x Real-ESRGAN master, so a full-width hero
+        # has 2 device pixels per CSS pixel up to a 3840 px wide screen.
+        up_rel = f"upscaled/{scene}.webp"
+        up_bytes = (BRAND / up_rel).read_bytes()
+        up = Image.open(io.BytesIO(up_bytes)).convert("RGB")
+        up_base = {"derivedFrom": {"file": up_rel, "sha256": sha(up_bytes)}, "approval": UPSCALE_APPROVAL}
+        for w in LARGE:
+            h = round(src.height * w / src.width)
+            im = up.resize((w, h), Image.LANCZOS)
+            op = f"4x master resized to {w}x{h} (Lanczos)"
+            if w > up.width:
+                op += f", {w / up.width:g}x up from the {up.width} px master; no new detail is drawn"
+            for fmt in ("avif", "webp"):
+                if fmt == "webp" and w not in LARGE_WEBP:
+                    continue
+                yield f"scenes/{scene}-{w}.{fmt}", encode(im, fmt), {
+                    **up_base, "use": "site hero, responsive width",
+                    "operation": op,
+                    "encoder": ENCODERS[fmt]}
 
         # Phone hero: a 4:3 window around the subject, at 1x and 2x. A scene whose
         # story is wider than 4:3 (two characters far apart) sets phoneAspect.
@@ -162,8 +195,8 @@ def main():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
         im = Image.open(io.BytesIO(data))
-        by_file[rel] = {"file": rel, **entry, "approval": DERIVED_APPROVAL,
-                        "width": im.width, "height": im.height, "bytes": len(data), "sha256": digest}
+        by_file[rel] = {"file": rel, **{k: v for k, v in entry.items() if k != "approval"},
+                        "approval": entry.get("approval", DERIVED_APPROVAL), "width": im.width, "height": im.height, "bytes": len(data), "sha256": digest}
     if check:
         if bad:
             print("differs from provenance.json:\n  " + "\n  ".join(bad))
@@ -172,9 +205,9 @@ def main():
         return
     for e in by_file.values():
         if e["file"].startswith("headers/"):
-            e["approval"] = APPROVAL
+            e.setdefault("approval", APPROVAL)  # a later header keeps its own approval
     PROVENANCE.write_text(json.dumps(list(by_file.values()), indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {sum(1 for f in by_file if '/' in f and not f.startswith('headers/'))} derived files")
+    print(f"wrote {sum(1 for f in by_file if '/' in f and not f.startswith(('headers/', 'upscaled/')))} derived files")
 
 
 if __name__ == "__main__":
