@@ -20588,18 +20588,18 @@
   "generated": "2026-11-14, for Ari",
   "approval": "Ari asked for new headers for both essays, 2026-11-14: \"the header images both also need more work. 'what is agent experience' header doesnt tell me anything, and 'stop being the glue' header is both super weird AND ouro is broken\", then \"i suggest rethinking from first principles\". Concepts and their independent taste reviews: https://github.com/arimendelow/desk/tree/main/ouro-public-web/article-november-updates/art",
   "crop": "1536x576 from the 1536x1024 master (rows 240-816), WebP q86 (Pillow 11.3)",
-  "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9",
+  "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662",
   "generation": [
    {
     "master": "glue-unstuck-master",
-    "master_sha256": "4b01f801d22f9922c37f9b388e9486b41409ba40679bd5220a251cbae7aae09d",
+    "master_sha256": "15ea8d4f736ef77bc24afea673c4d934f3b4e9b2cb0d2047e5911257f4747c6c",
     "prompt": "(Summary of the prompt.) Wide storybook scene in Ouro's world at dawn, the moment after being the glue: three little storybook buildings where work lives (a post office with a mailbox, a meeting hall, a workshop), their doors wide open; the glowing trail runs from Ouro to each doorstep and blank papers and envelopes stream along it, in and out of the doors, as Ouro (on-model) goes in and does the work. Front right, the freed person relaxes against a mossy rock with a mug of tea, one foot in a striped sock; front centre, a capped glue bottle on its side and the person's empty shoe still stuck in a dried glue puddle. No text, letters, numbers, logos or symbols anywhere.",
     "input_images": [
      "brand/ouro.png",
      "brand/headers/ourostack.webp (decoded to PNG)"
     ],
     "kept": "https://github.com/arimendelow/desk/blob/main/ouro-public-web/article-november-updates/art/glue-unstuck-master.png",
-    "note": "Edited from the robots version (kept in the desk's rejected/ folder) after Ari's steer, 2026-11-14: \"it's not glue between your agents, its glue between agents and all the different surfaces\". The robots became the places where work lives; then the meeting hall's bell tower was lowered to fit the crop. Then the person and his rock moved left, so he clears the right edge of a phone hero by more than 16 px."
+    "note": "Edited from the robots version (kept in the desk's rejected/ folder) after Ari's steer, 2026-11-14: \"it's not glue between your agents, its glue between agents and all the different surfaces\". The robots became the places where work lives; then the meeting hall's bell tower was lowered to fit the crop. Then the person and his rock moved left, so he clears the right edge of a phone hero by more than 16 px. Then, after an independent review read the papers reaching the man as Ouro relaying work to him, the trail ends at Ouro and the work stays between Ouro and the open doors."
    }
   ]
  },
@@ -20610,11 +20610,11 @@
   "generated": "2026-11-14, for Ari",
   "approval": "Ari asked for new headers for both essays, 2026-11-14: \"the header images both also need more work. 'what is agent experience' header doesnt tell me anything, and 'stop being the glue' header is both super weird AND ouro is broken\", then \"i suggest rethinking from first principles\". Concepts and their independent taste reviews: https://github.com/arimendelow/desk/tree/main/ouro-public-web/article-november-updates/art",
   "crop": "1536x576 from the 1536x1024 master (rows 240-816), WebP q86 (Pillow 11.3)",
-  "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0",
+  "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585",
   "generation": [
    {
     "master": "glue-unstuck-dark-master",
-    "master_sha256": "089a2b89fd70c65d5c551726699a50b0b76b2e89ee2ba7d1029067d57b99b991",
+    "master_sha256": "87a0d5e081db3df3f3c457b4af171de696cbed34833664b998165b08ea4de2cc",
     "prompt": "(Summary of the prompt.) The day master edited to night in the style of headers/desk-dark.webp: the same scene and composition under a deep blue starry sky with a crescent moon and village lights; lanterns on the stalls and by the person's rock, the robots' eyes, the trail and the streaming papers glow warm. No text, letters, numbers, logos or symbols anywhere.",
     "input_images": [
      "master:glue-unstuck-master",
@@ -20678,9 +20678,9 @@
   "file": "upscaled/glue-unstuck.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9",
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662",
    "master": "glue-unstuck-master",
-   "master_sha256": "4b01f801d22f9922c37f9b388e9486b41409ba40679bd5220a251cbae7aae09d",
+   "master_sha256": "15ea8d4f736ef77bc24afea673c4d934f3b4e9b2cb0d2047e5911257f4747c6c",
    "crop": [
     0,
     240,
@@ -20689,23 +20689,23 @@
    ]
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master glue-unstuck-master (sha256 4b01f801d22f9922c37f9b388e9486b41409ba40679bd5220a251cbae7aae09d), then cut to the header's box [0, 240, 1536, 816] at 4x [0, 960, 6144, 3264]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/glue-unstuck.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9679 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master glue-unstuck-master (sha256 15ea8d4f736ef77bc24afea673c4d934f3b4e9b2cb0d2047e5911257f4747c6c), then cut to the header's box [0, 240, 1536, 816] at 4x [0, 960, 6144, 3264]",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/glue-unstuck.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9674 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-14",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1815042,
-  "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+  "bytes": 1794014,
+  "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
  },
  {
   "file": "upscaled/glue-unstuck-dark.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0",
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585",
    "master": "glue-unstuck-dark-master",
-   "master_sha256": "089a2b89fd70c65d5c551726699a50b0b76b2e89ee2ba7d1029067d57b99b991",
+   "master_sha256": "87a0d5e081db3df3f3c457b4af171de696cbed34833664b998165b08ea4de2cc",
    "crop": [
     0,
     240,
@@ -20714,15 +20714,15 @@
    ]
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master glue-unstuck-dark-master (sha256 089a2b89fd70c65d5c551726699a50b0b76b2e89ee2ba7d1029067d57b99b991), then cut to the header's box [0, 240, 1536, 816] at 4x [0, 960, 6144, 3264]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/glue-unstuck-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9678 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master glue-unstuck-dark-master (sha256 87a0d5e081db3df3f3c457b4af171de696cbed34833664b998165b08ea4de2cc), then cut to the header's box [0, 240, 1536, 816] at 4x [0, 960, 6144, 3264]",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/glue-unstuck-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9659 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-14",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1904692,
-  "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+  "bytes": 1780378,
+  "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
  },
  {
   "file": "scenes/ax-trail-map-640.webp",
@@ -21388,7 +21388,7 @@
   "file": "scenes/glue-unstuck-640.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -21396,14 +21396,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 61350,
-  "sha256": "9f24f02219e74d37edec492d17c440b73c8e84e2a83fabf2ab36e05876c89090"
+  "bytes": 61928,
+  "sha256": "f0296f421a85088b5b5781b29f4c0f3327966217c455245f1eca87e15f0974ae"
  },
  {
   "file": "scenes/glue-unstuck-640.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -21411,14 +21411,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 53159,
-  "sha256": "e9cd9a5153246807b401b328b2cc06bc254a4136748c6aea3f04710281987f0a"
+  "bytes": 53718,
+  "sha256": "5336fdb1056462504965c8c422dd2869d1414d5fdff81c3f1631108a84618db1"
  },
  {
   "file": "scenes/glue-unstuck-960.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -21426,14 +21426,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 118082,
-  "sha256": "021c88635ba3d7ec6628b8f10985b97ba9cccfb148be2ce4b93e7dd20f204c96"
+  "bytes": 119286,
+  "sha256": "ba8479be0a8cc0a9b3d3830f5fd3b5126e367c72e47641d35a29e3eec5813383"
  },
  {
   "file": "scenes/glue-unstuck-960.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -21441,14 +21441,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 99339,
-  "sha256": "880388cd15e30ac58da210f63c040ca6b6a760f74ed60532f06d5e81a730101a"
+  "bytes": 99753,
+  "sha256": "e7205711a57c491d45406dfa13d0481f94a595f1a5ba6a0667133a5b6c9fef17"
  },
  {
   "file": "scenes/glue-unstuck-1536.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -21456,14 +21456,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 189618,
-  "sha256": "9b6cdf2f42298080c758b2262e3e6732c8739fb864ebc0566b6194c411c74524"
+  "bytes": 190175,
+  "sha256": "94b54ceb887ff8c562b9d36cfbe6575a2833b3b45e807763c404943f3a6a38d7"
  },
  {
   "file": "scenes/glue-unstuck-2304.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -21471,14 +21471,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 301587,
-  "sha256": "73d5f5a9612493d416db6eeeebbe02f9260902ff3f192a05b83c7a7c1c2bc3de"
+  "bytes": 298560,
+  "sha256": "0a0030ace6f97e448f5fbe7fa7a6ff0d22e7370d32d150dbd7fddeaf7bf9a55a"
  },
  {
   "file": "scenes/glue-unstuck-3072.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -21486,14 +21486,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 391166,
-  "sha256": "575e80d87faae47bc4e6ffff4b83ff572b67506597a469a1a5fc5e26e5a94b68"
+  "bytes": 386534,
+  "sha256": "36fc1aa82b2a3048d01527313c164c9f9492a48e80ab1aa6dd0037c8cd56c3ac"
  },
  {
   "file": "scenes/glue-unstuck-3072.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -21501,14 +21501,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 551022,
-  "sha256": "780bba85134b7feeef2763bb6b74d6842e591b5ec7a42a57ad72d5814aa0527e"
+  "bytes": 537954,
+  "sha256": "7046f2484f62d52e8122283acf6a5f92485087c8ee5296bd5918d2d5a63ea9e4"
  },
  {
   "file": "scenes/glue-unstuck-3840.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -21516,14 +21516,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 473818,
-  "sha256": "ace6818a3868cc9b4eddd0c872fcbd4802c8b0122ad8055891afaa3e11494c19"
+  "bytes": 467136,
+  "sha256": "e439eced1a42ca18cf882e5f3043956d6564a5ea3f9728e403612ce9666d0297"
  },
  {
   "file": "scenes/glue-unstuck-5120.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -21531,14 +21531,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 598649,
-  "sha256": "5be4a4c0c615173960f4093d2fa4b108c76ce983124d0ab3dfc6f56fdc8e0a03"
+  "bytes": 589471,
+  "sha256": "7152bd8b89a3dab228aa17d8957eaf4112833912abdf5e89724411d5b0cca27b"
  },
  {
   "file": "scenes/glue-unstuck-7680.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -21546,14 +21546,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 835648,
-  "sha256": "ccead9d9374a96c155e82025a53f4290db92d92c70c68db1ebb181ab86a263c4"
+  "bytes": 824719,
+  "sha256": "47cab92a962b39d04979596f07f0511d7635e716ed355d1772ea74de88aa55a8"
  },
  {
   "file": "scenes/glue-unstuck-7680.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -21561,14 +21561,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1479624,
-  "sha256": "29abfcf59a8f51e647099fbb73fd7c9e6d0f04bdfd3154870f1a5248c0e6bbdb"
+  "bytes": 1477028,
+  "sha256": "2815f4a46b02f1eb3bd16f21c1f13c8affb9ec41fc0e961b5ec2d4690a54b3af"
  },
  {
   "file": "phone/glue-unstuck-384.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 384x144 (Lanczos)",
@@ -21576,14 +21576,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 144,
-  "bytes": 23946,
-  "sha256": "f39cc79c98443bbdca2afa5076fb6ba034d2b6e897232d2ab69ff59c40a11a43"
+  "bytes": 24068,
+  "sha256": "c7d1b589e3b0b3271ff79501866c6b20b9eb5114cead61539a668260348af0d8"
  },
  {
   "file": "phone/glue-unstuck-384.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 384x144 (Lanczos)",
@@ -21591,14 +21591,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 144,
-  "bytes": 21328,
-  "sha256": "7d4da8297e5a43c85a797ef675b05a776075cce473a9a5daa15cc2cad314c96d"
+  "bytes": 21363,
+  "sha256": "40a9942cec18bee5941e0644d72538b6e70075ef3f8fd9c7cb0c54e949c9980b"
  },
  {
   "file": "phone/glue-unstuck-768.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 768x288 (Lanczos)",
@@ -21606,14 +21606,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 288,
-  "bytes": 81952,
-  "sha256": "9b866a683fc816ebe3a106bbd7d9eba2fb6dc20b2fbe617cfcd3226b62a9c8f9"
+  "bytes": 83148,
+  "sha256": "699741aed7f4cad68253d31b4b6f3a7782b14e7c24777bd089929e9358192f77"
  },
  {
   "file": "phone/glue-unstuck-768.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 768x288 (Lanczos)",
@@ -21621,14 +21621,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 288,
-  "bytes": 72215,
-  "sha256": "9da93839ef742d014d0548db2377b26f227877602b46757ff4a833e5cfc01dae"
+  "bytes": 72481,
+  "sha256": "36ebc26fe8e97d0f09d6766e36b9a3322f0c8017158ef29c23aaa88d47c50839"
  },
  {
   "file": "phone/glue-unstuck-1152.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1152x432 (Lanczos)",
@@ -21636,14 +21636,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 432,
-  "bytes": 157620,
-  "sha256": "fc927ee30ba0c7f5493314f1037242e1894451f645eb0b1c6b79f6e9e1ea9bfd"
+  "bytes": 158858,
+  "sha256": "3b70c8537f154556a08b4052431623976babe3b968474f9d4844c478e7bf86d7"
  },
  {
   "file": "phone/glue-unstuck-1152.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1152x432 (Lanczos)",
@@ -21651,14 +21651,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 432,
-  "bytes": 136407,
-  "sha256": "d3bdbd15b78f084b1943366ab9c41901fca0d2e3da655aeadf0f96f2b9ca4414"
+  "bytes": 136518,
+  "sha256": "775f8d7528b803148ed1279c64ded6514302bde752625ecda1915692ee7b4d14"
  },
  {
   "file": "phone/glue-unstuck-1536.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1536x576 (Lanczos)",
@@ -21666,14 +21666,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 576,
-  "bytes": 237656,
-  "sha256": "994af993eb266ed61298459b5e75775a02292dfbb4f7ab8f37d4b59761d9e793"
+  "bytes": 237816,
+  "sha256": "2270d1beb54281d4eb9b7873690d46c535727e7e59f2069f39711c43e8638d93"
  },
  {
   "file": "phone/glue-unstuck-1536.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck.webp",
-   "sha256": "1beba710295f1eb1ff6c660850b24be82d51302093b2b993f1484ac8227a313f"
+   "sha256": "c0c7a9c87430838cd43f906597486ce84c17688420df952e2a279cbf79c66dee"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1536x576 (Lanczos)",
@@ -21681,14 +21681,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 576,
-  "bytes": 198499,
-  "sha256": "97b008a1063be9a08a473f74e3177e0de19b478440716ad890228739be859fd9"
+  "bytes": 197949,
+  "sha256": "6162a3c50990f974adec1662794d6e8d5b18038dd342cea0027412baa788b198"
  },
  {
   "file": "social/glue-unstuck.jpg",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [184, 0, 1336, 576] then resize to 1280x640 (Lanczos)",
@@ -21696,14 +21696,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 357840,
-  "sha256": "20b5c57c148310504da29ba12259c55d27389dc45bb8775f00378ac647e52b78"
+  "bytes": 360387,
+  "sha256": "0bdf0ff2faea8005f2820664477d384697ca1fcadd5bcd1923791e991161b082"
  },
  {
   "file": "og/glue-unstuck.jpg",
   "derivedFrom": {
    "file": "headers/glue-unstuck.webp",
-   "sha256": "3f4579e87b5d73b3db949417ba3521acc8950dde1e19b9762ae14f04dc85c7c9"
+   "sha256": "0dd98b41b2bc12460e47a3b5195b13dd02c917b2f8e59a64aa9436a8eef72662"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [212, 0, 1309, 576] then resize to 1200x630 (Lanczos)",
@@ -21711,14 +21711,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 335378,
-  "sha256": "7e4450ac54dc2c7a06b0140f18f7de046cdd5187f567e91e42a5b14af9c12c57"
+  "bytes": 337829,
+  "sha256": "451287245a466755dc30dfd0c0fc3839c349f3dec2e86e54b1f807a49122e472"
  },
  {
   "file": "scenes/glue-unstuck-dark-640.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -21726,14 +21726,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 59490,
-  "sha256": "ebe1cbc92dec031714e56c5ee6f83e0e1ec56dbc49ad67bbb4ea6d3155ec8771"
+  "bytes": 57020,
+  "sha256": "fdf90f09bd9621f5c0a37af57393e439b5c284b5eb2ff02c26b137bb1f79a6bf"
  },
  {
   "file": "scenes/glue-unstuck-dark-640.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -21741,14 +21741,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 52930,
-  "sha256": "83c834857366e198a2fff58030dda73c6140c553e5cfeb32bd50598cc46f8f95"
+  "bytes": 50751,
+  "sha256": "707fa2c5fc8e71951b85c237f3950be0262755d8b1b67cbd663d29bb2b09ba0d"
  },
  {
   "file": "scenes/glue-unstuck-dark-960.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -21756,14 +21756,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 117298,
-  "sha256": "79f6d5540d1b110d9c1dcbb06854a54204f430d6140d0004bed3a4799d2dc57f"
+  "bytes": 112746,
+  "sha256": "fc29601c7d6aa5f08098f1deffcca46f0d0eb1ef4be2ee0d40ef73f0f8a29e6a"
  },
  {
   "file": "scenes/glue-unstuck-dark-960.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -21771,14 +21771,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 102320,
-  "sha256": "5dcd8713d6a6803999840d193c8923107b24599de3021b4e150ab9b8862a9268"
+  "bytes": 96917,
+  "sha256": "97395714362603b55c4cb674b36bf92183a5eed5064148b8cba2bf8881563ed4"
  },
  {
   "file": "scenes/glue-unstuck-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -21786,14 +21786,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 199804,
-  "sha256": "48291a9704f964c21be9f9cc3e689d514541cba35ab4f75cb2991841d38e05b9"
+  "bytes": 189623,
+  "sha256": "34b3fcf44ee125b7ac6e287a8e9f249c815611750af309496dd1482dd2beffc2"
  },
  {
   "file": "scenes/glue-unstuck-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -21801,14 +21801,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 317042,
-  "sha256": "6a9db611c5efcd8df401969eebc335e11430a689c7f8c9b9a05a143331204843"
+  "bytes": 303165,
+  "sha256": "e335a7d368aaa3934dcce65c3e73b0f09c0953708e2566f9a1c264f8000be099"
  },
  {
   "file": "scenes/glue-unstuck-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -21816,14 +21816,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 414020,
-  "sha256": "0752848c0f24ca682a21aa5c58ba2c5cf3a289b8719e6e2d87c0b50a8ef55b95"
+  "bytes": 394345,
+  "sha256": "29fdc15923be5337db1d2fc9f85f78619b884e160b9e4a77f7159a777d85b558"
  },
  {
   "file": "scenes/glue-unstuck-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -21831,14 +21831,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 563700,
-  "sha256": "1d76013018810b79d2d9234806c41600be52bb21136fc1039f788908c89cb23d"
+  "bytes": 540538,
+  "sha256": "3630ab729f8473cb4e8c3d870d80c51aa05cf807a49428d369e0927f8ecf80d7"
  },
  {
   "file": "scenes/glue-unstuck-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -21846,14 +21846,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 502457,
-  "sha256": "b65da2336191c19a7b578127bbde2eb2559f7ce21a2174d839373be36d715c4a"
+  "bytes": 477909,
+  "sha256": "b310d58a8095b855ecc90dc1aa5bcd7d8e2cf0934285cce7d5f0dad3d83af7ce"
  },
  {
   "file": "scenes/glue-unstuck-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -21861,14 +21861,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 635602,
-  "sha256": "62c43a2b0fb9a82827cae65dbaa26ebff4f868da73277560823596fd61041163"
+  "bytes": 604732,
+  "sha256": "b1ad2e329cfc13488a722b453877d9a6ce96906020dea4c055c5c04cb7436cf2"
  },
  {
   "file": "scenes/glue-unstuck-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -21876,14 +21876,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 886950,
-  "sha256": "40d77d72fd74759669c10ef28371f263ba87676a1c48353d240dd4ca9c37414b"
+  "bytes": 842812,
+  "sha256": "84c0f85f96a4dc28ebaa99e585d316ab9d582168751590d6c1decf6dd3551f27"
  },
  {
   "file": "scenes/glue-unstuck-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -21891,14 +21891,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1524412,
-  "sha256": "ff73b82a08bdfa7baa5bba0494d99929bc0a7e869d0a695eef9907aed2b83d02"
+  "bytes": 1443616,
+  "sha256": "dd424356812b080f41e49ef62aaf96a4d1c368bb8479d6d42912541c2d121569"
  },
  {
   "file": "phone/glue-unstuck-dark-384.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 384x144 (Lanczos)",
@@ -21906,14 +21906,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 144,
-  "bytes": 23656,
-  "sha256": "f927be702470fdc969450344f3401ce96786a0bebde9ff4310aa517c5e1260ff"
+  "bytes": 22814,
+  "sha256": "ec7b6a2f10cdf849dd392aa849511e12b191b9658db08d3fc54dc2fea49bcd31"
  },
  {
   "file": "phone/glue-unstuck-dark-384.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 384x144 (Lanczos)",
@@ -21921,14 +21921,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 144,
-  "bytes": 20995,
-  "sha256": "304d69a29e52b06f945e48c6c23b199863711d61c0afacbd868fd70674c7005c"
+  "bytes": 20412,
+  "sha256": "8f57d101b354437dd1404baf42ec68efda1fbedd287dbe7a2464c6656832e95d"
  },
  {
   "file": "phone/glue-unstuck-dark-768.webp",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 768x288 (Lanczos)",
@@ -21936,14 +21936,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 288,
-  "bytes": 82638,
-  "sha256": "8d3cc0ded38007a1ca3bbb7dc005e75f8a7333d4c5600ae343e0c45385ac4415"
+  "bytes": 78074,
+  "sha256": "d6c40aa445410e1a23c9f4b01a8f0023cd20449efce2af79b5cebf49d70bdee8"
  },
  {
   "file": "phone/glue-unstuck-dark-768.avif",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 1536, 576] then resize to 768x288 (Lanczos)",
@@ -21951,14 +21951,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 288,
-  "bytes": 72833,
-  "sha256": "25827885dee12d63c9f7216129ecfbe032aaea8c2e3c311801e96ee5743a08b1"
+  "bytes": 69346,
+  "sha256": "35363add772aa0ccbe4c5ca5a4f6d83db82b422b3e36f9051f021ed7ef445c70"
  },
  {
   "file": "phone/glue-unstuck-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1152x432 (Lanczos)",
@@ -21966,14 +21966,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 432,
-  "bytes": 160622,
-  "sha256": "9fea3386aadaa448e73383e5c936cd0d513e8db66bcca15846d3b17d021da911"
+  "bytes": 154176,
+  "sha256": "40742b244442a36cbaf878f7f12f30020f05f31070cbc814d9692af323589717"
  },
  {
   "file": "phone/glue-unstuck-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1152x432 (Lanczos)",
@@ -21981,14 +21981,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 432,
-  "bytes": 140085,
-  "sha256": "180e62a63c0fa2907b793d118d4e3d63dbdba4dae6efd2bdaae336a68df3ec74"
+  "bytes": 134288,
+  "sha256": "157ed6704279459aa11e669f70443337c5d7eb7ef7c9b83be22d5cf37a793525"
  },
  {
   "file": "phone/glue-unstuck-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1536x576 (Lanczos)",
@@ -21996,14 +21996,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 576,
-  "bytes": 244332,
-  "sha256": "269c24c496b38dadf227c6c3068f64fe683c07d37b87206462aba920a879cbe5"
+  "bytes": 232426,
+  "sha256": "7a5212b8cdd7878a82c94736c7cdde58411aaf3fc1cfbacc856ab75dd6f185f1"
  },
  {
   "file": "phone/glue-unstuck-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/glue-unstuck-dark.webp",
-   "sha256": "aa06ac767f4abf25c71651e5e6ec8af634759f9e4704c3919146bc13834f8f1b"
+   "sha256": "1a6f2154ec76e6a51c5d3fbc3b17b79acdd8a1387ca4943ddf441a4de83bd2a2"
   },
   "use": "phone hero (8:3)",
   "operation": "crop box [0, 0, 6144, 2304] of the 4x master then resize to 1536x576 (Lanczos)",
@@ -22011,14 +22011,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 576,
-  "bytes": 205945,
-  "sha256": "4698069ffdadf7f0b11ca6b45b4a64ab809a43b18f80d2832e1d1217a95cfdd5"
+  "bytes": 197446,
+  "sha256": "8a970ce787940d54e71e8143dec5bdf47ac86679cf940ab503adb420586ea40f"
  },
  {
   "file": "social/glue-unstuck-dark.jpg",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [184, 0, 1336, 576] then resize to 1280x640 (Lanczos)",
@@ -22026,14 +22026,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 365472,
-  "sha256": "da368488384656475b9629e996382b477668869783bc82502ebdfa7a23352a19"
+  "bytes": 349496,
+  "sha256": "53284b5005079086dfc723137f965ebfbc5f7c88689249bc031a5cb362b70731"
  },
  {
   "file": "og/glue-unstuck-dark.jpg",
   "derivedFrom": {
    "file": "headers/glue-unstuck-dark.webp",
-   "sha256": "886bfec293b418fbb14cea6978bdc82bc809ecb30b1be6f8ad1026dd5618e6c0"
+   "sha256": "26ed5094f25d5de5d0e3595ec0642cec7bf22075e222118c58b49e3ac6fec585"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [212, 0, 1309, 576] then resize to 1200x630 (Lanczos)",
@@ -22041,7 +22041,7 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 342324,
-  "sha256": "192d19096db1435b5914abb7546932b9060dc932a00afcb8f3639cddef39406a"
+  "bytes": 326621,
+  "sha256": "bea64e2bcd210bca640140400ccd43354fe67db5c0a06b3fb4d11ea20abe639e"
  }
 ]
