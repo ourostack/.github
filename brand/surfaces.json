@@ -4,6 +4,7 @@
   "canonicalRaw": "https://raw.githubusercontent.com/ourostack/.github/main/brand/",
   "org": "ourostack",
   "excluded": {
+    "ouro-ui-windows": "A spike with no release yet (created 2026-11-14), so no header or social preview is drawn. Draw its header and register readme and social entries when it ships its first release.",
     "playwright": "Fork of microsoft/playwright. Its main mirrors upstream exactly as the base for upstream PR branches, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "swift-toolkit": "Fork of readium/swift-toolkit, the reader engine Gatefold uses. Its default branch (develop) mirrors upstream exactly as the base for the branches where we prepare Gatefold's reader fixes to send upstream, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "hyperellipse": "Fork of mikhailmogilnikov/hyperellipse, the corner-shape polyfill Ouro UI's squircles use where a browser has no native corner-shape (ourostack/ouro-ui-core docs/decisions/2026-11-13-squircles-switch-avatars.md). Its main mirrors upstream exactly until we need to tweak it, so it keeps upstream's README; its About line (labs) says why we fork it.",
@@ -117,6 +118,13 @@
       "id": "about:ouro-ui-apple",
       "kind": "github-about",
       "repo": "ourostack/ouro-ui-apple",
+      "family": "ouro-ui",
+      "homepage": "https://ui.ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-ui-windows",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-ui-windows",
       "family": "ouro-ui",
       "homepage": "https://ui.ouroboros.bot/"
     },
