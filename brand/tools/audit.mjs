@@ -444,29 +444,54 @@ async function canonical() {
   return { id: "canonical:brand", kind: "canonical", status: problems.length ? "stale" : "current", problems, fix: "Commit the file and its provenance entry together, then let main serve them (python3 brand/tools/derive.py --check)." };
 }
 
-// ---------- masters: each 4x master is cut from its scene's current header ----------
-// A redrawn header needs a new master (upscale.py), or every width cut from the old master shows the old drawing.
+// ---------- masters: every derived file comes from its source's current bytes ----------
+// A redrawn header needs a new master (upscale.py), and everything cut from a header or a master needs cutting
+// again, or it shows the old drawing. A site width wider than the header (scenes/ above 1536 px, phone/ above 768 px)
+// must come from the scene's 4x master: stretched from the header, it is blurry.
 function masters() {
   const problems = [];
-  const scenes = [];
-  for (const e of provenance.values()) {
-    if (!e.file.startsWith("upscaled/") || !e.derivedFrom?.file) continue;
-    let have;
-    try {
-      have = sha(readFileSync(join(BRAND, e.derivedFrom.file)));
-    } catch {
-      have = "missing";
+  const fixes = new Set();
+  const shaOf = new Map();
+  const current = (file) => {
+    if (!shaOf.has(file)) {
+      try {
+        shaOf.set(file, sha(readFileSync(join(BRAND, file))));
+      } catch {
+        shaOf.set(file, "missing");
+      }
     }
-    if (have === e.derivedFrom.sha256) continue;
-    problems.push(`brand/${e.file} was upscaled from an older brand/${e.derivedFrom.file} (sha256 ${e.derivedFrom.sha256.slice(0, 12)}, now ${have.slice(0, 12)})`);
-    scenes.push(e.file.slice("upscaled/".length).replace(/\.webp$/, ""));
+    return shaOf.get(file);
+  };
+  const sceneOf = (file) => file.replace(/^[^/]+\//, "").replace(/(-\d+)?\.\w+$/, "");
+  for (const e of provenance.values()) {
+    const from = e.derivedFrom;
+    if (!from?.file) continue;
+    const have = current(from.file);
+    if (have !== from.sha256) {
+      problems.push(
+        have === "missing"
+          ? `brand/${e.file} was cut from brand/${from.file}, which is not in brand/`
+          : `brand/${e.file} was cut from an older brand/${from.file} (sha256 ${from.sha256.slice(0, 12)}, now ${have.slice(0, 12)})`,
+      );
+      fixes.add(from.file.startsWith("upscaled/") || e.file.startsWith("upscaled/") ? `master:${sceneOf(e.file)}` : `cut:${sceneOf(e.file)}`);
+    }
+    const width = Number(e.file.match(/-(\d+)\.\w+$/)?.[1]);
+    const wide = (e.file.startsWith("scenes/") && width > 1536) || (e.file.startsWith("phone/") && width > 768);
+    if (wide && !from.file.startsWith("upscaled/")) {
+      problems.push(`brand/${e.file} is wider than its header but was cut from brand/${from.file}, not the scene's 4x master`);
+      fixes.add(`master:${sceneOf(e.file)}`);
+    }
   }
+  const named = (kind) => [...fixes].filter((f) => f.startsWith(kind)).map((f) => f.slice(kind.length));
+  const steps = [];
+  if (named("master:").length) steps.push(`for ${named("master:").join(" ")}: run python3 brand/tools/upscale.py <scene> when its master is missing or older than its header, then cut what comes from it again (derive.py <scene> for a scene in crops.json, derive_wide.py and derive_night_phone.py <scene> for a night scene)`);
+  if (named("cut:").length) steps.push(`for ${named("cut:").join(" ")}: cut the named files again from the current header (python3 brand/tools/derive.py <scene> --only '<file glob>')`);
   return {
     id: "masters:brand",
     kind: "masters",
     status: problems.length ? "stale" : "current",
     problems,
-    fix: `Run python3 brand/tools/upscale.py ${scenes.join(" ") || "<scene>"}, then python3 brand/tools/derive.py ${scenes.join(" ") || "<scene>"} for what is cut from the master.`,
+    fix: steps.length ? `${steps.join("; ")}. Then sync the sites that copy them.` : "",
   };
 }
 
