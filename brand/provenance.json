@@ -225,55 +225,15 @@
   "file": "headers/ouro-ui-apple.webp",
   "for": "https://github.com/ourostack/ouro-ui-apple",
   "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
-  "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
-  "crop": "1536x576 from the 1536x1024 master, WebP q86",
-  "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9",
+  "generated": "Light master v2, 2026-11-13, replacing the first Ouro UI for Apple art",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13; this v2 master was inspected before use, and the light and dark masters share the same scene band so they align.",
+  "crop": "1536x576 from the letterboxed 1536x1024 master (rows 224–799), WebP q86 (sharp)",
+  "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
   "generation": [
    {
-    "master": "apple-c",
-    "master_sha256": "fb75b7883c26fc4cdd6ab4fa1d6486d9a2fcb3317cc8b7af4831679b76c1494e",
-    "prompt": "Wide storybook banner in \"Ouro's world\" at dawn, the same world, light and rendering as the LAST reference image: premium Pixar-like 3D, warm golden sunrise from the right, pastel peach-and-blue sky, misty hills, dewy green meadow with tiny warm glints, and a glowing braided trail of green and warm amber light winding through the meadow.\n\nOuro (reference image 1): copy its exact pose: the glossy green cartoon snake with pale-green segmented belly, big friendly black-and-white eyes and gentle smile; its head at the top-left of an open \"O\" curl, and the short tapered tail tip rising up on the right side beside its head, with a clear gap between head and tail. One head, one tail, no limbs. Ouro holds nothing.\n\nScene for Ouro UI for Apple, \"Ouro HX for people and Ouro AX for agents, on iPhone, iPad and Mac\": on a low wooden garden table in the meadow, left of centre, stand three plain rounded devices in a neat family row — a small phone, a tablet and a laptop — in soft silver with no logos. Each screen glows with the same glossy green card style as reference image 2: rounded pale-cream pill buttons, a toggle and a slider, no text. A small round friendly white robot with a dark face screen and teal eyes stands behind the laptop pressing one of its pale buttons. Ouro, large, sits curled on the grass to the right of the table, smiling at the viewer.\n\nComposition: a very wide banner. Keep the table, devices, robot and Ouro inside the middle horizontal band between 30% and 72% of the image height; the top quarter is open sky, the bottom quarter is soft meadow foreground. Nothing important touches the left or right edge.\n\nNo text, letters, numbers, logos or symbols anywhere; screens show only the soft green card controls.",
-    "input_images": [
-     "brand/ouro.png",
-     "brand/ouro-hx.png",
-     "master:hero-c (sha256 062445636216ed5d8a1756fa2afb44daa57401900b23c29993f70fc62e9aa45d)"
-    ]
-   },
-   {
-    "master": "hero-c",
-    "master_sha256": "062445636216ed5d8a1756fa2afb44daa57401900b23c29993f70fc62e9aa45d",
-    "prompt": "Edit the first image. Keep it exactly the same: same Ouro (the green snake, identical face, same \"O\" curl with the tail tip beside its head), same light, sky, trail, desk, factory, lectern, green card easel and picnic group, same rendering.\n\nChanges only:\n1. On the hillside just above and behind the picnic group, at the far right but not touching the right edge, add three or four small round fluffy white sheep with tiny friendly robot faces grazing, and the wooden shepherd's crook from the third reference image leaning on a short wooden fence beside them.\n2. Shift the toy factory a little to the right so its left wall has a small gap of meadow before the left edge of the image.\n3. Give the picnic group a little more breathing room from the right edge.\n\nNo text, letters, numbers, logos or symbols anywhere.",
-    "input_images": [
-     "master:hero-b (sha256 c6e1638ca88c888f89c1ff67f44b40ba98939bdef0cb372d21bd64f68a498cab)",
-     "brand/ouro.png",
-     "brand/shepherd.png"
-    ]
-   },
-   {
-    "master": "hero-b",
-    "master_sha256": "c6e1638ca88c888f89c1ff67f44b40ba98939bdef0cb372d21bd64f68a498cab",
-    "prompt": "Wide storybook panorama of \"Ouro's world\" at dawn, the same world, light and rendering as the LAST reference image: premium Pixar-like 3D, warm golden sunrise from the right, pastel peach-and-blue sky with small soft clouds, misty valleys, dewy green meadows with tiny warm glints, and a glowing braided trail of green and warm amber light winding through the meadow and looping into a big circle.\n\nOuro (reference image 1) is the hero: exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, its body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail. Ouro sits large in the exact centre on the glowing trail, smiling at the viewer.\n\nOuro's places, spread along the trail on the same middle band, each small and charming:\n- the warm walnut wooden table from reference image 2 under a blossom tree, with a neat stack of papers and a small brass lamp;\n- the cosy cream-and-charcoal toy factory from reference image 4 on a hill, a wisp of steam from its chimney;\n- a wooden reading lectern holding one large clean white page covered only in soft grey lines;\n- a glossy green card with rounded pale buttons and a toggle (from reference image 5) standing on a little easel;\n- the two people and the white and slate-blue robots from reference image 3 sitting on a checked picnic blanket, waving.\n\nComposition: a very wide banner. Keep ALL characters and places inside the middle horizontal band between 33% and 72% of the image height; the top third is open sky, the bottom quarter is soft meadow foreground. Ouro is the largest figure. Nothing touches the left or right edge. Balanced and uncluttered.\n\nNo text, letters, numbers, logos or symbols anywhere.",
-    "input_images": [
-     "brand/ouro.png",
-     "brand/desk.png",
-     "brand/friends.png",
-     "brand/factory.png",
-     "brand/ouro-hx.png",
-     "master:hero-a (sha256 bdaf810e6226ba32a2761e13c0c516faf8864e6fec716ecbdff4dcb7df160901)"
-    ]
-   },
-   {
-    "master": "hero-a",
-    "master_sha256": "bdaf810e6226ba32a2761e13c0c516faf8864e6fec716ecbdff4dcb7df160901",
-    "prompt": "Wide storybook panorama of \"Ouro's world\" at dawn. Premium Pixar-like 3D rendering, warm golden sunrise light from the right, pastel peach-and-blue sky with small soft clouds, misty valleys, rolling green meadows sparkling with dew and tiny warm glints. Use the LAST reference image only for light, palette and storybook mood: do NOT include its glass characters or its bicycle.\n\nOuro (reference image 1) is the hero: exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, the body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail. Ouro sits large in the exact centre of the frame on a gentle grassy knoll, on a glowing braided trail of green and warm amber light that winds across the valley and loops into a great circle around the knoll.\n\nAround Ouro, its friends and places, all in the same warm 3D style and all on the same middle horizontal band:\n- Left of centre: the warm walnut wooden table from reference image 2, standing in the meadow under a small blossom tree, with a tidy stack of paper and a little lamp on it.\n- Far left, on a hill: the cosy cream-and-charcoal toy factory with a chimney and a warm glowing window from reference image 4, a wisp of white steam from the chimney.\n- Right of centre: the two people and two small robots from reference image 3 (the woman in a rust sweater, the man in a navy sweater, the white robot and the slate-blue robot) sitting together on a checked picnic blanket, waving at Ouro.\n- Far right in the distant hills: a few small round white robots grazing like sheep beside a wooden shepherd's crook leaning on a fence.\n\nComposition: a very wide banner. Keep ALL characters and landmarks inside the middle horizontal band between 33% and 72% of the image height; the top third is open sky, the bottom quarter is soft meadow foreground. Ouro is the largest figure. Nothing touches the left or right edge.\n\nNo text, letters, numbers, logos or symbols anywhere.",
-    "input_images": [
-     "brand/ouro.png",
-     "brand/desk.png",
-     "brand/friends.png",
-     "brand/factory.png",
-     "0-hero-C-dawn.png"
-    ]
+    "master": "apple-light-master-v2",
+    "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+    "prompt": "(Summary of the result.) Ouro UI for Apple at dawn: a phone, tablet and laptop with green card controls on a wooden garden bench; a small white robot with two clear white hands holding the top of the laptop; Ouro to the right as a closed \"O\" ring with one head and one short tail tip beside the head. No text, letters, numbers, logos or symbols anywhere."
    }
   ]
  },
@@ -513,18 +473,54 @@
   "file": "headers/gatefold.webp",
   "for": "https://github.com/ourostack/gatefold",
   "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
-  "generated": "Light master v2, 2026-11-13, edited from the earlier gatefold master",
-  "approval": "Ari called the earlier gatefold art slop, 2026-11-13: its open book had three pages and its phone folded in three. This master redraws the same picnic with a two-page book and a plain phone.",
-  "crop": "1536x576 from the 1536x1024 master (rows 248–824), WebP q86",
-  "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4",
+  "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
+  "crop": "1536x576 from the 1536x1024 master, WebP q86",
+  "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7",
   "generation": [
    {
-    "master": "gatefold-light-master-v2",
-    "prompt": "(Summary of the prompt.) The gatefold picnic redrawn: an open storybook with exactly two pages, a stack of books, a flowered mug and an ordinary single-screen phone on a plaid blanket in a dawn meadow, with Ouro curled beside them. No text, letters, numbers, logos or symbols anywhere.",
+    "master": "gatefold-a",
+    "master_sha256": "a3bebc946b1a090ffbeac543d934f1c73adfd7df8c03072c18fca84d6e411416",
+    "prompt": "Wide storybook banner in \"Ouro's world\" at dawn, the same world, light and rendering as the LAST reference image: premium Pixar-like 3D, warm golden sunrise from the right, pastel peach-and-blue sky, misty hills, dewy green meadow with tiny warm glints, and a glowing braided trail of green and warm amber light winding through the meadow.\n\nOuro (reference image 1): exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail.\n\nScene for Gatefold, \"a native reader for iPhone, iPad and Mac, built for folding two-screen phones\": on a soft tartan blanket under a blossoming tree, slightly left of centre, a large storybook stands open like a gatefold, its pages unfolding into three panels like a fold-out map, each page showing only soft grey lines and a small soft watercolour landscape. Beside it on the blanket, a small plain silver two-screen folding phone stands half-open like a little book, both screens glowing softly with blank pages. Ouro, large, is curled on the blanket to the right, reading happily. A cup of cocoa and a stack of three closed books nearby. Cosy, quiet, bookish.\n\nComposition: a very wide banner. Keep the book, phone, Ouro and props inside the middle horizontal band between 30% and 72% of the image height; the top quarter is open sky, the bottom quarter is soft meadow foreground. Nothing important touches the left or right edge.\n\nNo text, letters, numbers, logos or symbols anywhere; pages and screens show only soft grey lines.",
     "input_images": [
-     "gatefold.png (the earlier light scene)"
-    ],
-    "master_sha256": "172541ec9b1b30d3e1b459f18fb639c2ac5da0d490787ac9641306b4ef5bc866"
+     "brand/ouro.png",
+     "master:hero-c (sha256 062445636216ed5d8a1756fa2afb44daa57401900b23c29993f70fc62e9aa45d)"
+    ]
+   },
+   {
+    "master": "hero-c",
+    "master_sha256": "062445636216ed5d8a1756fa2afb44daa57401900b23c29993f70fc62e9aa45d",
+    "prompt": "Edit the first image. Keep it exactly the same: same Ouro (the green snake, identical face, same \"O\" curl with the tail tip beside its head), same light, sky, trail, desk, factory, lectern, green card easel and picnic group, same rendering.\n\nChanges only:\n1. On the hillside just above and behind the picnic group, at the far right but not touching the right edge, add three or four small round fluffy white sheep with tiny friendly robot faces grazing, and the wooden shepherd's crook from the third reference image leaning on a short wooden fence beside them.\n2. Shift the toy factory a little to the right so its left wall has a small gap of meadow before the left edge of the image.\n3. Give the picnic group a little more breathing room from the right edge.\n\nNo text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "master:hero-b (sha256 c6e1638ca88c888f89c1ff67f44b40ba98939bdef0cb372d21bd64f68a498cab)",
+     "brand/ouro.png",
+     "brand/shepherd.png"
+    ]
+   },
+   {
+    "master": "hero-b",
+    "master_sha256": "c6e1638ca88c888f89c1ff67f44b40ba98939bdef0cb372d21bd64f68a498cab",
+    "prompt": "Wide storybook panorama of \"Ouro's world\" at dawn, the same world, light and rendering as the LAST reference image: premium Pixar-like 3D, warm golden sunrise from the right, pastel peach-and-blue sky with small soft clouds, misty valleys, dewy green meadows with tiny warm glints, and a glowing braided trail of green and warm amber light winding through the meadow and looping into a big circle.\n\nOuro (reference image 1) is the hero: exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, its body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail. Ouro sits large in the exact centre on the glowing trail, smiling at the viewer.\n\nOuro's places, spread along the trail on the same middle band, each small and charming:\n- the warm walnut wooden table from reference image 2 under a blossom tree, with a neat stack of papers and a small brass lamp;\n- the cosy cream-and-charcoal toy factory from reference image 4 on a hill, a wisp of steam from its chimney;\n- a wooden reading lectern holding one large clean white page covered only in soft grey lines;\n- a glossy green card with rounded pale buttons and a toggle (from reference image 5) standing on a little easel;\n- the two people and the white and slate-blue robots from reference image 3 sitting on a checked picnic blanket, waving.\n\nComposition: a very wide banner. Keep ALL characters and places inside the middle horizontal band between 33% and 72% of the image height; the top third is open sky, the bottom quarter is soft meadow foreground. Ouro is the largest figure. Nothing touches the left or right edge. Balanced and uncluttered.\n\nNo text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "brand/ouro.png",
+     "brand/desk.png",
+     "brand/friends.png",
+     "brand/factory.png",
+     "brand/ouro-hx.png",
+     "master:hero-a (sha256 bdaf810e6226ba32a2761e13c0c516faf8864e6fec716ecbdff4dcb7df160901)"
+    ]
+   },
+   {
+    "master": "hero-a",
+    "master_sha256": "bdaf810e6226ba32a2761e13c0c516faf8864e6fec716ecbdff4dcb7df160901",
+    "prompt": "Wide storybook panorama of \"Ouro's world\" at dawn. Premium Pixar-like 3D rendering, warm golden sunrise light from the right, pastel peach-and-blue sky with small soft clouds, misty valleys, rolling green meadows sparkling with dew and tiny warm glints. Use the LAST reference image only for light, palette and storybook mood: do NOT include its glass characters or its bicycle.\n\nOuro (reference image 1) is the hero: exactly the same glossy green cartoon snake, pale-green segmented belly, big friendly black-and-white eyes, gentle smile, the body curled into a round \"O\" with the short tail tip curling up beside its head. One head, one tail, no limbs, never biting its tail. Ouro sits large in the exact centre of the frame on a gentle grassy knoll, on a glowing braided trail of green and warm amber light that winds across the valley and loops into a great circle around the knoll.\n\nAround Ouro, its friends and places, all in the same warm 3D style and all on the same middle horizontal band:\n- Left of centre: the warm walnut wooden table from reference image 2, standing in the meadow under a small blossom tree, with a tidy stack of paper and a little lamp on it.\n- Far left, on a hill: the cosy cream-and-charcoal toy factory with a chimney and a warm glowing window from reference image 4, a wisp of white steam from the chimney.\n- Right of centre: the two people and two small robots from reference image 3 (the woman in a rust sweater, the man in a navy sweater, the white robot and the slate-blue robot) sitting together on a checked picnic blanket, waving at Ouro.\n- Far right in the distant hills: a few small round white robots grazing like sheep beside a wooden shepherd's crook leaning on a fence.\n\nComposition: a very wide banner. Keep ALL characters and landmarks inside the middle horizontal band between 33% and 72% of the image height; the top third is open sky, the bottom quarter is soft meadow foreground. Ouro is the largest figure. Nothing touches the left or right edge.\n\nNo text, letters, numbers, logos or symbols anywhere.",
+    "input_images": [
+     "brand/ouro.png",
+     "brand/desk.png",
+     "brand/friends.png",
+     "brand/factory.png",
+     "0-hero-C-dawn.png"
+    ]
    }
   ]
  },
@@ -2520,136 +2516,136 @@
   "file": "scenes/gatefold-640.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 51152,
-  "sha256": "4ed9c3b8701b45a719b80596a3d72f6516f4b130e0a5762652f7b94cc1fd0b67"
+  "bytes": 46638,
+  "sha256": "282ea06ff163bf3d8f68a0e331683003769633c028e8d91f1b6157a432ae466b"
  },
  {
   "file": "scenes/gatefold-640.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 59193,
-  "sha256": "3560f2904dd316c0d03d8807cc53b179179274ac9388219c45975e8505cd45d5"
+  "bytes": 39348,
+  "sha256": "8999a03df28d33df2ab4b2b4dce65431f703268f8f9315e24498dcec66fb40b1"
  },
  {
   "file": "scenes/gatefold-960.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 97912,
-  "sha256": "d0bcefe49277aff7d23293fc02086fbd4ab4c21bb2f3f8e3c9cc696ac792b853"
+  "bytes": 89746,
+  "sha256": "45f7deb592ae3f771efe788f6ca7f1c579f9398ff135716c642301f3032cf60b"
  },
  {
   "file": "scenes/gatefold-960.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 102660,
-  "sha256": "286bdb60a6854af2b879b759ec2e394006c596aca69df60c71b212eb03cba04d"
+  "bytes": 70109,
+  "sha256": "514e55658c78237ded09ce230ac5fc4358adfce6d04d80a059ac5740f25447e3"
  },
  {
   "file": "scenes/gatefold-1536.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 179551,
-  "sha256": "0ad5dd3c0eb43dc14c0311bc7cf9cb2d2f17fd3da0bd39640c1064ef4f086fd8"
+  "bytes": 134499,
+  "sha256": "c835f55482189e2dfe30b9babdf6bba2d832e533c984a4707cb6a2a09f6eee56"
  },
  {
   "file": "phone/gatefold-384.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "phone hero (4:3)",
-  "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "operation": "crop box [528, 0, 1296, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 30554,
-  "sha256": "54b059e399d74cb7f64ae5ee8b945c7b0281e5ddebf6e13007bc79e027e13b76"
+  "bytes": 28100,
+  "sha256": "ce453f57dc160cf8df0bae140120c82e379a47de8b285cf07693da7bbb5bdaa4"
  },
  {
   "file": "phone/gatefold-384.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "phone hero (4:3)",
-  "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "operation": "crop box [528, 0, 1296, 576] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 33472,
-  "sha256": "0d3c021141a8bfd0a9085a780989ef0d563be3dfda0ec441fef257a5c004e3a2"
+  "bytes": 22700,
+  "sha256": "adb405de6dae8ae22060e91665feeb0a209d47d144d81eef25060c3158dc1ab7"
  },
  {
   "file": "phone/gatefold-768.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "phone hero (4:3)",
-  "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "operation": "crop box [528, 0, 1296, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 85388,
-  "sha256": "f27542f94e65f290ab8fe7caf789fd084d4389be0c5077a6ab5b84f596764fa6"
+  "bytes": 78960,
+  "sha256": "50724c8dcca6f0d000aeec0d0b61be4db4b709e856b6a4834ccb0514ddf206ee"
  },
  {
   "file": "phone/gatefold-768.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "phone hero (4:3)",
-  "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "operation": "crop box [528, 0, 1296, 576] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 76966,
-  "sha256": "0070ba7edeabe04307e210d585dc60c3a72206f81403fc244202b6238817d1cc"
+  "bytes": 55978,
+  "sha256": "4d39b88de8c7a237eaf7c5ee4e1ae0737fa8f54e1a129dd4c86558d2606727d8"
  },
  {
   "file": "social/gatefold.jpg",
@@ -2670,16 +2666,16 @@
   "file": "og/gatefold.jpg",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "92c4760b6b1282fdeb6ce3251204925215084e28e6f6ce4becf411eeec1bf8e7"
   },
   "use": "Open Graph and Twitter card (1200x630)",
-  "operation": "crop box [310, 0, 1407, 576] then resize to 1200x630 (Lanczos)",
-  "encoder": "sharp JPEG quality 88, 4:4:4, mozjpeg",
+  "operation": "crop box [212, 0, 1309, 576] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 268190,
-  "sha256": "d063f007fcb6eefdbf1576e2c9bdf49a884de9347df18370be0da565a4afbc65"
+  "bytes": 254964,
+  "sha256": "166b4f472a9f8f8d1c60e775d0270df590ada29b09936d038b6c404936b337cd"
  },
  {
   "file": "scenes/homebrew-tap-640.webp",
@@ -3675,136 +3671,136 @@
   "file": "scenes/ouro-ui-apple-640.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "Pillow WebP quality 82 method 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libwebp) WebP quality 82 effort 6",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 50052,
-  "sha256": "ca1c9c2681f0151f105ab214c8f404932471143097911ec263b54d2643d437ce"
+  "bytes": 50466,
+  "sha256": "64107b58085bee9aa109cae84ed5e3982065fa4f1bd3eda20eee0e4f0d15f577"
  },
  {
   "file": "scenes/ouro-ui-apple-640.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 43323,
-  "sha256": "5fa05fad3e05906600bfdd7f2d13fbd0788a3364f99e14c6fb1bd476b42e2ebb"
+  "bytes": 62584,
+  "sha256": "cd045f8c70bf5d0f9e272b8a071f1e9614491f229b64df5fe235d3644f72eb03"
  },
  {
   "file": "scenes/ouro-ui-apple-960.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "Pillow WebP quality 82 method 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libwebp) WebP quality 82 effort 6",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 94826,
-  "sha256": "5822ba24c82a0e9a9e65fb49df85ca547adb149b362b305f91b554befd8926fa"
+  "bytes": 96234,
+  "sha256": "4e52a5d134f57ea4000a54479c354a992dd6573eebb0bb63dd0761d1b33b917c"
  },
  {
   "file": "scenes/ouro-ui-apple-960.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 79102,
-  "sha256": "2a28f3e3e01e56c8c5a44103f6530c6a4bae59cdd7255e6f71318b00a80d843d"
+  "bytes": 108461,
+  "sha256": "972823eb70b1d4b6fc8dda80edddfb3d8ec351e99319329f3c46af8a96918a73"
  },
  {
   "file": "scenes/ouro-ui-apple-1536.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 150094,
-  "sha256": "37876a5660d7b610e78f07bda5e2e2b3eea067ae16c357d42cc875cb1c4f1fbf"
+  "bytes": 186743,
+  "sha256": "8d1e75468e0b7c987802bece7bf28876628fd06b759727edb4953c14c385408d"
  },
  {
   "file": "phone/ouro-ui-apple-384.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 384x216 (Lanczos)",
-  "encoder": "Pillow WebP quality 82 method 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libwebp) WebP quality 82 effort 6",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 25488,
-  "sha256": "c4f766cdad6a46e40c638ba22b19b081c2944364c76e8676f084bf956d05fc80"
+  "bytes": 25698,
+  "sha256": "84a65118214eecaf9664fd387e2e2128ce9360386553352a3868fc94b3cb2e3c"
  },
  {
   "file": "phone/ouro-ui-apple-384.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 384x216 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 21428,
-  "sha256": "a9a991ef4e703aaac70afe332fb0889ea42064e8b22b407d40b64b56fc2af44a"
+  "bytes": 30619,
+  "sha256": "b66c517a80e595cca03f3cf9ed65ef5ab49b2d9923cb653e8c5ac3b237baa6ad"
  },
  {
   "file": "phone/ouro-ui-apple-768.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 768x432 (Lanczos)",
-  "encoder": "Pillow WebP quality 82 method 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libwebp) WebP quality 82 effort 6",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 72614,
-  "sha256": "bab0b583d7f24cd5ad82c92350a8917b3a4e8618c30e0ce282738b7cb86ad34f"
+  "bytes": 73760,
+  "sha256": "ce16485aca1d0d8800708c8c8508270b623094a0a2d17ff4df51e946e32738ff"
  },
  {
   "file": "phone/ouro-ui-apple-768.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 768x432 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 56764,
-  "sha256": "badd3350cad4d7264ecd01d95e3a458fcb7251b89092cbce4a320e126a262ca1"
+  "bytes": 77551,
+  "sha256": "fd0ce6b058ccf6be29eda547ce58e4591936d9a16f5cab54bcbad33dca43d91a"
  },
  {
   "file": "social/ouro-ui-apple.jpg",
@@ -3825,16 +3821,16 @@
   "file": "og/ouro-ui-apple.jpg",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple.webp",
-   "sha256": "ac557ed7510250f9516f0817a5ad8121f7c3c5bd1f77792411388aba408340e9"
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [172, 0, 1269, 576] then resize to 1200x630 (Lanczos)",
-  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "encoder": "sharp (mozjpeg) JPEG quality 88, 4:4:4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 272207,
-  "sha256": "570138939fec2965f3ee306fa5e1a07d090a416ea2c5bba04bc9baaa837e3aa8"
+  "bytes": 280271,
+  "sha256": "8a21251b62eee231530ab2283fdcdabc096bf890f7c84a7c8b08819f4d745141"
  },
  {
   "file": "scenes/ouro-ui-core-640.webp",
@@ -7630,91 +7626,91 @@
   "file": "scenes/gatefold-2304.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 235256,
-  "sha256": "0009f3fb7adc188807bbe61100ddd7d89f187bb94b34bced88ebed9350fbcd21"
+  "bytes": 215002,
+  "sha256": "6eba7c4758a9cf32a38e04adbf217bb724c1cca3a063ce22af922bdeee2b6296"
  },
  {
   "file": "scenes/gatefold-3072.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 299025,
-  "sha256": "a7aba4727c1a6aa558c7720b9e207f9aafb0307fc6f52d8f35ae8d4e5f237af6"
+  "bytes": 286386,
+  "sha256": "b0e663bc719e36abae3b66133c9b475cfa4dade07ed10dc30d999a39d30533dc"
  },
  {
   "file": "scenes/gatefold-3072.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 395692,
-  "sha256": "d042c6f5ff6effe514e919317e4374ded794275712099896e799dfdda1c6db33"
+  "bytes": 424408,
+  "sha256": "c9d20707d054e98e3fd7a1c5bd0e419c7aac5f220ac29fa84b284e2a27ba4bfd"
  },
  {
   "file": "scenes/gatefold-3840.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 359828,
-  "sha256": "f6e6695fdf3bef0de26e7a137e93bd2bcb6824ea2f6cfb592cce055bde3480d9"
+  "bytes": 355947,
+  "sha256": "351e0d5942630412548a2b921fd70a98a81620edea9c3207643c65f2489edf5e"
  },
  {
   "file": "scenes/gatefold-5120.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 458582,
-  "sha256": "fe40442f87eebff00d136ba7dddf92b2c60919e6ef1705b29e55b14568018b2e"
+  "bytes": 463688,
+  "sha256": "36c1fb5a04025dd5d311e7da38ecba109b5dd9779ebf816f13176fae7b95d436"
  },
  {
   "file": "scenes/gatefold-7680.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "f03968049f6fa04e7789e2ba8e658706fd4cffb336e5045d589304925c2ace32"
+   "sha256": "e14e68fce53407125adf5edba927ce2b35caf873c8b068d13ea1e17d6ca1ce8d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x master, a Lanczos upscale of the 1536x576 crop (no Real-ESRGAN was at hand); it adds pixels, not detail.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 652504,
-  "sha256": "7162ddf8e7fb1e3c034205fd49b0cd746edb01055074982dd81cc64ac3c43a40"
+  "bytes": 663550,
+  "sha256": "fac004ec640e08ef2d938496a010097ca90040a5512385f11b5a4f158bfb15b5"
  },
  {
   "file": "scenes/gatefold-7680.webp",
@@ -8574,92 +8570,140 @@
  {
   "file": "scenes/ouro-ui-apple-2304.avif",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 2304x864 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 2304x864 (Lanczos)",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 2304,
   "height": 864,
-  "bytes": 233702,
-  "sha256": "a0ffc092f84bc7c01681ef576552bc635cbc73d45244c51a33674f1da3fb3b7b"
+  "bytes": 244165,
+  "sha256": "715d81aa021315f1a76882b391dac05e6102789ae9b8adcb4c594cadbefc2ea1"
  },
  {
   "file": "scenes/ouro-ui-apple-3072.avif",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3072,
   "height": 1152,
-  "bytes": 303284,
-  "sha256": "aea01f5ab027bb41e40c9c988ffacf8a73114f9fa2dd0b1b84efc31d47341835"
+  "bytes": 305377,
+  "sha256": "0447d67f519c0dff13d1517d87f2cb8ef527203798a4f6b4115e185499d9ec54"
  },
  {
   "file": "scenes/ouro-ui-apple-3072.webp",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "Pillow WebP quality 82 method 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
+  "encoder": "sharp (libwebp) WebP quality 82 effort 6",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3072,
   "height": 1152,
-  "bytes": 432764,
-  "sha256": "034910fb241847dff11f636533c1c19699108588173740e40f041a6fe8b60e5e"
+  "bytes": 373130,
+  "sha256": "c13a2c7b97b6bc2f8485d5b1542ce02e070f156541e237c113583209cae9a67a"
  },
  {
   "file": "scenes/ouro-ui-apple-3840.avif",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 3840x1440 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3840x1440 (Lanczos)",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3840,
   "height": 1440,
-  "bytes": 370602,
-  "sha256": "792eb9b7f389eb1c73f9d8d73de8ef5ebb04749568ab236a7e54591f4e05087d"
+  "bytes": 366436,
+  "sha256": "c6570b24de46a22ac53852c71ef7fdb07e9444d7398507e2af4dc023d35cc34c"
  },
  {
   "file": "scenes/ouro-ui-apple-5120.avif",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 5120x1920 (Lanczos)",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 5120x1920 (Lanczos)",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 5120,
   "height": 1920,
-  "bytes": 471645,
-  "sha256": "336af2e767e220c227f92dd826f7a8e5fc5e6d53a26c15f12f430a62972b830c"
+  "bytes": 462557,
+  "sha256": "5f982474a1560e32242243e8fd947066139ce58e5bcc78e2e768684147804b60"
  },
  {
   "file": "scenes/ouro-ui-apple-7680.avif",
   "derivedFrom": {
-   "file": "upscaled/ouro-ui-apple.webp",
-   "sha256": "08cdf9a788fed4b3a583cba339b861d2ed35cfc3f26e48297bf70d7ffb8933e6"
+   "file": "headers/ouro-ui-apple.webp",
+   "sha256": "270082ebb2474c6eca32d7b4a92086bde33580a93412bc55886ec37fa1f6c596",
+   "master": "apple-light-master-v2",
+   "master_sha256": "9e89bbe65e232a66c18c786b499f9ec1c789ab30d782e739fb4473bbf392b4a8",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
-  "encoder": "Pillow AVIF quality 60 speed 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 7680x2880 (Lanczos), 1.25x up from that upscale; no new detail is drawn",
+  "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 7680,
   "height": 2880,
-  "bytes": 664582,
-  "sha256": "c23f3eb8393d7cc9b78091dc6bf0162265a540b8175ebc96bc7412569bd0b070"
+  "bytes": 650852,
+  "sha256": "ffaf13b29c610cccf0107343ea06ca693aba11f055744684188b67ecda01c021"
  },
  {
   "file": "scenes/ouro-ui-apple-7680.webp",
@@ -11564,18 +11608,15 @@
   "file": "headers/ouro-ui-apple-dark.webp",
   "for": "https://ouroboros.bot/blog/take-the-agents-seat/",
   "model": "GitHub Copilot CLI built-in image_generation tool, 1536x1024, quality high",
-  "generated": "Dark master, 2026-11-13, edited from the light master",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13; the dark one is the same Ouro UI for Apple scene at night.",
-  "crop": "1536x576 from the 1536x1024 master (rows 200–776), WebP q86",
-  "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f",
+  "generated": "Dark master v2, 2026-11-13, replacing the first Ouro UI for Apple art",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13; this v2 master was inspected before use, and the light and dark masters share the same scene band so they align.",
+  "crop": "1536x576 from the letterboxed 1536x1024 master (rows 224–799), WebP q86 (sharp)",
+  "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
   "generation": [
    {
-    "master": "ouro-ui-apple-dark-master",
-    "master_sha256": "f2d9bf5370d56f8bd8111beb1abf758253a4870868eb84d2c5646e9d55d048ea",
-    "prompt": "(Summary of the prompt.) The light Ouro UI for Apple scene edited to night: the same composition, Ouro, garden table, phone, tablet, laptop and robot, under a deep blue starry sky; the device screens and the braided trail glow warm green and amber in the dark. Ouro keeps one head and one short tail tip beside the head. No text, letters, numbers, logos or symbols anywhere.",
-    "input_images": [
-     "ouro-ui-apple.png (the light scene)"
-    ]
+    "master": "apple-dark-master-v2",
+    "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+    "prompt": "(Summary of the result.) The same Ouro UI for Apple scene at night under a deep blue starry sky with a moon; the device screens glow amber and the braided trail glows in the dark; the robot keeps two clear white hands on the laptop and Ouro stays a closed \"O\" ring with one head. No text, letters, numbers, logos or symbols anywhere."
    }
   ]
  },
@@ -11583,241 +11624,289 @@
   "file": "scenes/ouro-ui-apple-dark-640.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
   "encoder": "sharp (libwebp) WebP quality 82 effort 6",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 43100,
-  "sha256": "b72a52466aa8f0eab6b67c8364b0db224e3e539c9105586c99281aeadaff40b4"
+  "bytes": 48246,
+  "sha256": "205fe04c3ec002a5a697ec22dc7eba460dfdb6a5c675747f16eb3f2b08a76744"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-640.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 48432,
-  "sha256": "94ca87862f402bb340d1d545b09200b59c00b14fd0a22ac45936f6800f6a98b4"
+  "bytes": 57293,
+  "sha256": "4c6aa441c8c3897a968e414b824445e5aa1dd319d112e41ad6f0ae6737017d9d"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-960.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
   "encoder": "sharp (libwebp) WebP quality 82 effort 6",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 83606,
-  "sha256": "d872da8b374487bf8a0042c7cf925378d6d6bf416d0b8371baf2316838763f72"
+  "bytes": 94692,
+  "sha256": "377d6b97147d23375ccd5cc3bf1503729eb1791880718e40adfdc202c44d691e"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-960.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 84365,
-  "sha256": "9b79eb800c66f9ec6fb5aee29ce6838447e884ddfd9c0386966ff389dfa41807"
+  "bytes": 102220,
+  "sha256": "472d9c7b357402d29e398b7ca61a5daa4f390ba420bb06ad359deb8b89043f6f"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 152334,
-  "sha256": "4065994f34edb72a566a0044bf63fe05c0fff6429f537fa9ba53b0488994f972"
+  "bytes": 183847,
+  "sha256": "8476739dd95052b5ab236cc71bc926bf84cae3dc39cde60dbf5ebc9fa973461e"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-2304.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 2304x864 (Lanczos)",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 2304x864 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 2304,
   "height": 864,
-  "bytes": 194937,
-  "sha256": "b1bdf1c215fa599a5797ecfb0ad99c65db25d803525f3f94c58175ce21330bc1"
+  "bytes": 241692,
+  "sha256": "52000fb644e94134fe6da0c3aeec125e4f43e5e339681da26144b2bc9de9e186"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-3072.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3072,
   "height": 1152,
-  "bytes": 245807,
-  "sha256": "24a65969f043088b3aba615e421a3b9766653b471e35f07b978d74517fdd818f"
+  "bytes": 303512,
+  "sha256": "6ec2a84eb17b9a383e16d0c9de5ea5ef978ef66d1b6fb93e31296ec5c1221697"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-3840.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 3840x1440 (Lanczos)",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3840x1440 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3840,
   "height": 1440,
-  "bytes": 300888,
-  "sha256": "1ba262f2dade4e73aaa64b65f9b101eeb5e832938b62397e4ceff7fed2587b0b"
+  "bytes": 364809,
+  "sha256": "baaea3a0c34ee2ac4a76642a69c5a4b10c0f716b27ad4b9a731cb133378ba35d"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-5120.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 5120x1920 (Lanczos)",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 5120x1920 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 5120,
   "height": 1920,
-  "bytes": 382602,
-  "sha256": "4d4e15970c9d520d7261c3a0ef928e6c7da070c6527d45429c458d465cc189fb"
+  "bytes": 459665,
+  "sha256": "ac3f391b7bc4024596cfe7579e5b93a34f77b8f0cd8be5cc5a56b3ce013fd11e"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-7680.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 7680x2880 (Lanczos), 1.25x up from that upscale; no new detail is drawn",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 7680x2880 (Lanczos), 1.25x up from that upscale; no new detail is drawn",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 7680,
   "height": 2880,
-  "bytes": 539660,
-  "sha256": "1a17673351fe64d06391436fc436df1f41a39d04e5fe1af70836f297a3a1728e"
+  "bytes": 640472,
+  "sha256": "d952af606fc6f9bf32cbe0206154feeeb7515b86d4740263105d0ffad5eb51a4"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-3072.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1",
+   "master": "apple-dark-master-v2",
+   "master_sha256": "1a7cb2de033fd13cd55235e816a012d93860e3663bcc20e50f0c2aa00019c7da",
+   "crop": [
+    0,
+    224,
+    1536,
+    800
+   ]
   },
   "use": "site hero, responsive width",
-  "operation": "6144 px Lanczos upscale of the header (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
+  "operation": "6144 px Lanczos upscale of the lossless master band (no Real-ESRGAN) resized to 3072x1152 (Lanczos)",
   "encoder": "sharp (libwebp) WebP quality 82 effort 6",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 3072,
   "height": 1152,
-  "bytes": 313716,
-  "sha256": "f064b4cff14b90f21630d4d07a0d31dbab22c13ad5ce4d35db28aef406b51659"
+  "bytes": 377344,
+  "sha256": "2af040c48cbb5fc3fb927106221a2cbf67866e6cfebaf5d24d593c7a3f673dfd"
  },
  {
   "file": "phone/ouro-ui-apple-dark-384.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 384x216 (Lanczos)",
   "encoder": "sharp (libwebp) WebP quality 82 effort 6",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 21662,
-  "sha256": "43dc1371b527ced2422ff286d6490465ac0a6436b757b03845dc37a29c75dd5a"
+  "bytes": 24836,
+  "sha256": "375377767532f7934d06aad177c96a218911b2ffad6b3d6e0db846dfae03ffa9"
  },
  {
   "file": "phone/ouro-ui-apple-dark-384.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 384x216 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 22754,
-  "sha256": "2a11739ab6b38b0e1d178896f89775a8eabba4c5baf6e4a8c3e6a2d32cc850bc"
+  "bytes": 28045,
+  "sha256": "59001a80106d81051144e333616e86cd849f3ff94943634065766b886e275ed4"
  },
  {
   "file": "phone/ouro-ui-apple-dark-768.webp",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 768x432 (Lanczos)",
   "encoder": "sharp (libwebp) WebP quality 82 effort 6",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 59346,
-  "sha256": "c678eb05011af31c5596b53dde03e286287f06949996451a7342dc528454a846"
+  "bytes": 73216,
+  "sha256": "93450c3675d9643edd296ea8a376eaf8fd9e1c3a47fc400c58063215f9f32792"
  },
  {
   "file": "phone/ouro-ui-apple-dark-768.avif",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [328, 0, 1352, 576] then resize to 768x432 (Lanczos)",
   "encoder": "sharp (libheif/aom) AVIF quality 60 effort 4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 56327,
-  "sha256": "eca22402aef21b1263ca473e5e756ab5df2c797eb019a3637e98dff21d5446d5"
+  "bytes": 73945,
+  "sha256": "e57fc58d56aa3c7f416e5237a98599909b202404d2305a1331e26d0155e38dfc"
  },
  {
   "file": "og/ouro-ui-apple-dark.jpg",
   "derivedFrom": {
    "file": "headers/ouro-ui-apple-dark.webp",
-   "sha256": "ca67e7d9c1b9defd27b244e7eed85fc348da714d076369968f14834dfa680b7f"
+   "sha256": "211a892dc4cbb0f91f0666bdb447fde80f829834ea56bb9d24d9802c584819a1"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [172, 0, 1269, 576] then resize to 1200x630 (Lanczos)",
   "encoder": "sharp (mozjpeg) JPEG quality 88, 4:4:4",
-  "approval": "Ari asked for night versions of the site heroes, 2026-11-13. Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "approval": "Ari called the first Ouro UI for Apple art slop (Ouro an open U, the robot’s hands mush), 2026-11-13, and the new light and dark masters were inspected before use. Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 219518,
-  "sha256": "bba683a9a19e550cb5879800cebc666af5165a9370f9f4dc5c14bab55ed2b59b"
+  "bytes": 264399,
+  "sha256": "db1fa2539640748991474cdaf6f586f97bcee4de688dd0ec07dd46640cd506be"
  },
  {
   "file": "headers/ouro-native-apple-app-shell-dark.webp",
