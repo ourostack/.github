@@ -1,5 +1,5 @@
 {
-  "_about": "Where each scene's subject sits, as an x centre in the 1536-pixel-wide header. derive.py cuts every derived crop around it. wide = the 2:1 social and 1.9:1 OG crops; phone = the 4:3 phone hero. Picked by eye on 2026-11-06 so Ouro and the product both stay in frame. Phone centres moved on 2026-11-06 so Ouro stands whole, tail and all, with about 96 px of scene to his right (measured from his green extent in each header); several canonical crops had him touching or past the right edge. phoneAspect (optional, default [4, 3]) widens the phone crop for a scene whose characters stand too far apart for 4:3; sites size the phone hero from the file's own width and height.",
+  "_about": "Where each scene's subject sits, as an x centre in the 1536-pixel-wide header. derive.py cuts every derived crop around it. wide = the 2:1 social and 1.9:1 OG crops; phone = the 4:3 phone hero. Picked by eye on 2026-11-06 so Ouro and the product both stay in frame. Phone centres moved on 2026-11-06 so Ouro stands whole, tail and all, with about 96 px of scene to his right (measured from his green extent in each header); several canonical crops had him touching or past the right edge. phoneAspect (optional, default [4, 3]) widens the phone crop for a scene whose characters stand too far apart for 4:3; sites size the phone hero from the file's own width and height. A night scene (<scene>-dark) is cut with its day twin's centres; it gets its own entry only where its drawing sits differently.",
   "ourostack": {
     "wide": 920,
     "phone": 1010,
@@ -70,7 +70,7 @@
   },
   "gatefold": {
     "wide": 760,
-    "phone": 912
+    "phone": 1024
   },
   "homebrew-tap": {
     "wide": 700,
@@ -78,7 +78,7 @@
   },
   "m365crawl": {
     "wide": 848.5,
-    "phone": 784
+    "phone": 964
   },
   "ouro-apps-site": {
     "wide": 640,
@@ -87,6 +87,10 @@
   "ouro-native-apple-app-shell": {
     "wide": 700,
     "phone": 792
+  },
+  "ouro-native-apple-app-shell-dark": {
+    "wide": 700,
+    "phone": 884
   },
   "ouro-ui-apple": {
     "wide": 720,
@@ -108,9 +112,13 @@
     "wide": 760,
     "phone": 1008
   },
+  "ouro-workbench-dark": {
+    "wide": 760,
+    "phone": 1104
+  },
   "ouroboros-skills": {
     "wide": 973.5,
-    "phone": 734,
+    "phone": 811,
     "phoneAspect": [
       12,
       5
