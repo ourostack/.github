@@ -3,6 +3,7 @@
 
     python3 brand/tools/derive_night_phone.py           # write the files and their provenance entries
     python3 brand/tools/derive_night_phone.py --check   # exit 1 if a file differs from provenance.json
+    python3 brand/tools/derive_night_phone.py ourostack-dark   # just these scenes
 
 The day scenes get these widths from derive.py. These night scenes are not in
 crops.json: their 768 px phone crops were framed by hand (one stretches a strip
@@ -36,31 +37,38 @@ NIGHT = {
 }
 
 
-def build():
+def build(scenes=()):
     for scene, spec in NIGHT.items():
+        if scenes and scene not in scenes:
+            continue
         header_rel = f"headers/{scene}.webp"
         header_bytes = (BRAND / header_rel).read_bytes()
         header = Image.open(io.BytesIO(header_bytes)).convert("RGB")
         up_rel = f"upscaled/{scene}.webp"
         box = spec["box"]
+
+        def stretched(im, k, what):
+            """The source with its right strip stretched as the 768 px file's was, at k times header pixels."""
+            if "strip" not in spec:
+                return im, ""
+            x, to = (v * k for v in spec["strip"])
+            strip = im.crop((x, 0, im.width, im.height)).resize((to, im.height), Image.LANCZOS)
+            out = Image.new("RGB", (x + to, im.height))
+            out.paste(im.crop((0, 0, x, im.height)), (0, 0))
+            out.paste(strip, (x, 0))
+            return out, f"right {im.width - x} px strip of the {what} (x {x}\u2013{im.width}) stretched to {to} px so Ouro clears the phone edge, then "
+
         if (BRAND / up_rel).exists():
             up_bytes = (BRAND / up_rel).read_bytes()
             src = Image.open(io.BytesIO(up_bytes)).convert("RGB")
             k = src.width // header.width
+            src, pre = stretched(src, k, "4x master")
             src_box = [v * k for v in box]
             window = src.crop(src_box)
             base = {"derivedFrom": {"file": up_rel, "sha256": sha(up_bytes)}, "approval": UPSCALE_APPROVAL}
-            op = f"crop box {src_box} of the 4x master (the 768 px phone file's window {list(box)} at 4x)"
+            op = f"{pre}crop box {src_box} of the 4x master (the 768 px phone file's window {list(box)} at 4x)"
         else:
-            src = header
-            pre = ""
-            if "strip" in spec:
-                x, to = spec["strip"]
-                strip = header.crop((x, 0, header.width, header.height)).resize((to, header.height), Image.LANCZOS)
-                src = Image.new("RGB", (x + to, header.height))
-                src.paste(header.crop((0, 0, x, header.height)), (0, 0))
-                src.paste(strip, (x, 0))
-                pre = f"right {header.width - x} px strip (x {x}\u2013{header.width}) stretched to {to} px so Ouro clears the phone edge, then "
+            src, pre = stretched(header, 1, "header")
             window = src.crop(box)
             base = {"derivedFrom": {"file": header_rel, "sha256": sha(header_bytes)}, "approval": DERIVED_APPROVAL}
             op = f"{pre}crop box {list(box)} of the header (no 4x master is in brand/)"
@@ -79,12 +87,17 @@ def build():
 
 def main():
     check = "--check" in sys.argv[1:]
+    scenes = [a for a in sys.argv[1:] if a != "--check"]
+    unknown = [s for s in scenes if s not in NIGHT]
+    if unknown:
+        sys.exit(f"not a night scene here: {', '.join(unknown)}")
     if not (features.check("webp") and features.check("avif")):
         sys.exit("Pillow needs WebP and AVIF support")
     prov = json.loads(PROVENANCE.read_text())
     by_file = {e["file"]: e for e in prov}
     bad = []
-    for rel, data, entry in build():
+    n = 0
+    for rel, data, entry in build(scenes):
         path = BRAND / rel
         if check:
             if not path.exists() or sha(path.read_bytes()) != by_file.get(rel, {}).get("sha256"):
@@ -95,6 +108,7 @@ def main():
         by_file[rel] = {"file": rel, **{k: v for k, v in entry.items() if k != "approval"},
                         "approval": entry["approval"], "width": im.width, "height": im.height,
                         "bytes": len(data), "sha256": sha(data)}
+        n += 1
     if check:
         if bad:
             print("differs from provenance.json:\n  " + "\n  ".join(bad))
@@ -102,7 +116,7 @@ def main():
         print("every night phone file matches provenance.json")
         return
     PROVENANCE.write_text(json.dumps(list(by_file.values()), indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {len(NIGHT) * len(WIDTHS) * 2} night phone files")
+    print(f"wrote {n} night phone files")
 
 
 if __name__ == "__main__":
