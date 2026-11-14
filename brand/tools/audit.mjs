@@ -444,6 +444,32 @@ async function canonical() {
   return { id: "canonical:brand", kind: "canonical", status: problems.length ? "stale" : "current", problems, fix: "Commit the file and its provenance entry together, then let main serve them (python3 brand/tools/derive.py --check)." };
 }
 
+// ---------- masters: each 4x master is cut from its scene's current header ----------
+// A redrawn header needs a new master (upscale.py), or every width cut from the old master shows the old drawing.
+function masters() {
+  const problems = [];
+  const scenes = [];
+  for (const e of provenance.values()) {
+    if (!e.file.startsWith("upscaled/") || !e.derivedFrom?.file) continue;
+    let have;
+    try {
+      have = sha(readFileSync(join(BRAND, e.derivedFrom.file)));
+    } catch {
+      have = "missing";
+    }
+    if (have === e.derivedFrom.sha256) continue;
+    problems.push(`brand/${e.file} was upscaled from an older brand/${e.derivedFrom.file} (sha256 ${e.derivedFrom.sha256.slice(0, 12)}, now ${have.slice(0, 12)})`);
+    scenes.push(e.file.slice("upscaled/".length).replace(/\.webp$/, ""));
+  }
+  return {
+    id: "masters:brand",
+    kind: "masters",
+    status: problems.length ? "stale" : "current",
+    problems,
+    fix: `Run python3 brand/tools/upscale.py ${scenes.join(" ") || "<scene>"}, then python3 brand/tools/derive.py ${scenes.join(" ") || "<scene>"} for what is cut from the master.`,
+  };
+}
+
 // ---------- run ----------
 const results = [];
 let envError = null;
@@ -465,6 +491,7 @@ async function run(s) {
 }
 await Promise.all(registry.surfaces.map(run));
 if ("canonical:brand".startsWith(only) || only === "") results.push(await canonical().catch((e) => ({ id: "canonical:brand", kind: "canonical", status: "unchecked", problems: [e.message] })));
+if ("masters:brand".startsWith(only) || only === "") results.push(masters());
 if (only === "" || "unregistered:".startsWith(only)) results.push(...(await coverage().catch((e) => [{ id: "unregistered:?", status: "unchecked", problems: [e.message], fix: "Set GH_TOKEN and rerun." }])));
 results.sort((a, b) => a.id.localeCompare(b.id));
 
