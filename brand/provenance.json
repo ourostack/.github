@@ -5623,6 +5623,56 @@
   ]
  },
  {
+  "file": "headers/workshop.webp",
+  "for": "https://ouroboros.bot/",
+  "model": "GitHub Copilot app built-in image_generation tool, 1536x1024, quality high",
+  "generated": "Light master v2, 2026-11-14, for the ouroboros.bot home hero",
+  "approval": "Ari asked to rethink the ouroboros.bot home page, 2026-11-14 10:50 PT: \"rn i'm drowning in ouro the snake LOL\" and \"mostly i want folks to think 'whoa i can really trust that ari is the best at working with agents and building tools for them' :) surprise and delight!!!! <3 do what you gotta, generate whatever images you need\". The new home hero: Ari's workshop busy with friendly robot agents shipping parcels down the glowing trail, with Ouro once, small, as a find-Ouro easter egg in a flower pot on the left windowsill.",
+  "crop": "1536x512 from the 1536x1024 master (rows 236–748), WebP q86",
+  "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56",
+  "generation": [
+   {
+    "master": "workshop-light-master-v2",
+    "master_sha256": "3f20557ade07ed75c2bdb4f117edd20dff4ebb9aee6423cf798d126029ea5c44",
+    "prompt": "(Summary of the prompt.) Edit of workshop-light-master-v1 with brand/ouro.png: Ouro in the flower pot redrawn on-model (one head, one tail, the \"O\" curl, the same face); the chalkboard changed from a row of step boxes to one drawing of a finished outcome (a little house with a heart window and a checkmark), because Ari's method delegates outcomes, not steps. Everything else unchanged.",
+    "input_images": [
+     "master:workshop-light-master-v1 (sha256 57f850314450e7831164ba28e4734e77ff55ecd9d31228a06d6029b5f9126ae3)",
+     "brand/ouro.png"
+    ],
+    "why": "Ouro in the pot was off-model in v1, and the chalkboard showed steps instead of an outcome"
+   },
+   {
+    "master": "workshop-light-master-v1",
+    "master_sha256": "57f850314450e7831164ba28e4734e77ff55ecd9d31228a06d6029b5f9126ae3",
+    "prompt": "(Summary of the prompt.) Wide storybook scene in \"Ouro's world\" at dawn, the same rendering as the style reference: an open-sided timber workshop on a hilltop; a man in a navy blazer seen three-quarters from behind at a standing desk with a coffee mug, pointing at a chalkboard; five or six small friendly robots at stations (a drafting table, a test bench with a green lamp, a brass one reading a scroll through a magnifier, one carrying parcels tied with green ribbon and stamped with checkmarks, one pushing a cart of parcels onto the glowing green-and-amber trail that winds down to a village); Ouro only once, very small, peeking out of a terracotta flower pot on the left windowsill. Key elements in the middle band for a 3:1 crop. No text.",
+    "input_images": [
+     "brand/headers/ourostack.webp (style reference)",
+     "brand/ouro.png (Ouro)"
+    ]
+   }
+  ]
+ },
+ {
+  "file": "headers/workshop-dark.webp",
+  "for": "https://ouroboros.bot/",
+  "model": "GitHub Copilot app built-in image_generation tool, 1536x1024, quality high",
+  "generated": "Dark master, 2026-11-14, edited from the light master",
+  "approval": "Ari asked to rethink the ouroboros.bot home page, 2026-11-14 10:50 PT: \"rn i'm drowning in ouro the snake LOL\" and \"mostly i want folks to think 'whoa i can really trust that ari is the best at working with agents and building tools for them' :) surprise and delight!!!! <3 do what you gotta, generate whatever images you need\". The new home hero: Ari's workshop busy with friendly robot agents shipping parcels down the glowing trail, with Ouro once, small, as a find-Ouro easter egg in a flower pot on the left windowsill.",
+  "crop": "1536x512 from the 1536x1024 master (rows 236–748), WebP q86",
+  "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024",
+  "generation": [
+   {
+    "master": "workshop-dark-master-v1",
+    "master_sha256": "71819b3ba3128b4923e538a78158dc37e4743ee8f0d4fbf6a077c7c923c3bb1b",
+    "prompt": "(Summary of the prompt.) Edit of the light master (workshop-light-master-v2) with brand/headers/ourostack-dark.webp as the night-style reference: the same composition, characters and objects; a starry night, a crescent moon, misty moonlit hills, lit village windows, warm workshop lamps keeping the foreground bright, the robots' eyes glowing, the trail brighter, fireflies. No text.",
+    "input_images": [
+     "master:workshop-light-master-v2 (sha256 3f20557ade07ed75c2bdb4f117edd20dff4ebb9aee6423cf798d126029ea5c44, the light master)",
+     "brand/headers/ourostack-dark.webp (night-style reference)"
+    ]
+   }
+  ]
+ },
+ {
   "file": "scenes/housesitter-640.webp",
   "derivedFrom": {
    "file": "headers/housesitter.webp",
@@ -19777,5 +19827,715 @@
   "height": 640,
   "bytes": 179707,
   "sha256": "784c4b9a34aaa9c634e45f21f48bfa1ccffc9c2ad4cc9f06b81ad8fee5826c2a"
+ },
+ {
+  "file": "upscaled/workshop.webp",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56",
+   "master": "workshop-light-master-v2",
+   "master_sha256": "3f20557ade07ed75c2bdb4f117edd20dff4ebb9aee6423cf798d126029ea5c44",
+   "crop": [
+    0,
+    236,
+    1536,
+    748
+   ]
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master workshop-light-master-v2 (sha256 3f20557ade07ed75c2bdb4f117edd20dff4ebb9aee6423cf798d126029ea5c44), then cut to the header's box [0, 236, 1536, 748] at 4x [0, 944, 6144, 2992]",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/workshop.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9712 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-14",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 2048,
+  "bytes": 1523538,
+  "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+ },
+ {
+  "file": "upscaled/workshop-dark.webp",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024",
+   "master": "workshop-dark-master-v1",
+   "master_sha256": "71819b3ba3128b4923e538a78158dc37e4743ee8f0d4fbf6a077c7c923c3bb1b",
+   "crop": [
+    0,
+    236,
+    1536,
+    748
+   ]
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master workshop-dark-master-v1 (sha256 71819b3ba3128b4923e538a78158dc37e4743ee8f0d4fbf6a077c7c923c3bb1b), then cut to the header's box [0, 236, 1536, 748] at 4x [0, 944, 6144, 2992]",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/workshop-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9710 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-14",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 2048,
+  "bytes": 1561156,
+  "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+ },
+ {
+  "file": "scenes/workshop-640.webp",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 53122,
+  "sha256": "3a58917dde7827acb1ba7600553e63b68b1e61351a0ffce81cb32230b554ea56"
+ },
+ {
+  "file": "scenes/workshop-640.avif",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 45472,
+  "sha256": "1a8e9007f982efc842ff5c6bb60dda1745d30aca36ba96e14c5224c83fd41678"
+ },
+ {
+  "file": "scenes/workshop-960.webp",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 98496,
+  "sha256": "505d1c2f94db6165e27b043286c415b615a2bc7c7037ce6f27f1b89bbbf1ac6d"
+ },
+ {
+  "file": "scenes/workshop-960.avif",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 81695,
+  "sha256": "0b359da83b54dbc43a6ef5500b2d98e0ff2664267a6d992b1ab8011b383760dc"
+ },
+ {
+  "file": "scenes/workshop-1536.avif",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 512,
+  "bytes": 154148,
+  "sha256": "868bd51d463a49b6549089a557ac93379c75ea880237cff80d2200e74ad81547"
+ },
+ {
+  "file": "scenes/workshop-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 768,
+  "bytes": 242917,
+  "sha256": "dba585a09b5d02e09034213cbfb07ddeabae360b9c7ac8fd5c4ef46dee937a39"
+ },
+ {
+  "file": "scenes/workshop-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 317602,
+  "sha256": "35a556d71729dd188fdc6273d7e0b3e9cd4f5bafb5cf0107922d9f5e453ba5fd"
+ },
+ {
+  "file": "scenes/workshop-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 461702,
+  "sha256": "9d34eb8207252e6f901f21bc96271dffb2b8b611b6ecaf37d90a3738e750d344"
+ },
+ {
+  "file": "scenes/workshop-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x1280 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 1280,
+  "bytes": 383733,
+  "sha256": "bd8a7ec2f5899d1b11a462b151a7fa51525fdba3de894ae241b86603f4578866"
+ },
+ {
+  "file": "scenes/workshop-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x1707 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 1707,
+  "bytes": 488260,
+  "sha256": "a9f583bc17317dded867b1afa82a9b6f33c31870157985c17b7333b79926ce10"
+ },
+ {
+  "file": "scenes/workshop-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 679428,
+  "sha256": "d1c0a54d4835b82031390d529eecbeef08d51210aec11373daa9bb6fbd31029b"
+ },
+ {
+  "file": "scenes/workshop-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 1228654,
+  "sha256": "9939cbf727101bfe625d93f6ff8be5ef98834a5936d4a20c2667f8797387b5da"
+ },
+ {
+  "file": "phone/workshop-384.webp",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 36082,
+  "sha256": "38864c52422d1240b76ad1da56be5c110ec52af315e480cbd716d2131c433cd0"
+ },
+ {
+  "file": "phone/workshop-384.avif",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 30667,
+  "sha256": "27166b1b4733602aaa1c0572ccd35e11e31012a2cc6a4bf46564662d514ca088"
+ },
+ {
+  "file": "phone/workshop-768.webp",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 92328,
+  "sha256": "8b9339d2f8fcaa9a90ead62c559319b95e0251085377130db816db9f10b6de5a"
+ },
+ {
+  "file": "phone/workshop-768.avif",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 69221,
+  "sha256": "801a7cc8b16012e94e54d6ff7e8fcbc2f3fe277a84aa75d3d2456ad3a19684c5"
+ },
+ {
+  "file": "phone/workshop-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 864,
+  "bytes": 166442,
+  "sha256": "3b9a77b4af82c3e4f9aea94d90a3f5b70fcd996c03c01f40dde9ee58dc83fe34"
+ },
+ {
+  "file": "phone/workshop-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 864,
+  "bytes": 120193,
+  "sha256": "05fd48efa6eff38bfc52ff3886c28b75829f9b7d306dd07765025e2757419cf2"
+ },
+ {
+  "file": "phone/workshop-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1151,
+  "bytes": 228414,
+  "sha256": "ef3fa646c200d34d6ed4afbd0bc8f714aa296281ce28b04797104f5293e40ea6"
+ },
+ {
+  "file": "phone/workshop-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop.webp",
+   "sha256": "8123a28c7db18aa0386c8d085eff728b9b93ad8965ee1c6bb8b8c88d99dce63e"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1151,
+  "bytes": 155423,
+  "sha256": "d44c18cf52304620da4c598ff793279c4e261ce436277c5b675cc11a1c0ab836"
+ },
+ {
+  "file": "social/workshop.jpg",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [8, 0, 1032, 512] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 316401,
+  "sha256": "34acd363662ec854ec8dc4a23f668a036176de13a87f4bcc73bb872c512a2570"
+ },
+ {
+  "file": "og/workshop.jpg",
+  "derivedFrom": {
+   "file": "headers/workshop.webp",
+   "sha256": "e594b225425c1ae46897ade456c3f96df93b2b9ac8389fdf44fcea95f0ec6e56"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [32, 0, 1007, 512] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 293930,
+  "sha256": "f07c4ad25ca168047a2fe71c1f2662458664156f2e961f6546d6eab05b661e2d"
+ },
+ {
+  "file": "scenes/workshop-dark-640.webp",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 52638,
+  "sha256": "72e2ea185d00d1b92fcffb5759fda37a61e210e056521c08b360f4f22e88d78d"
+ },
+ {
+  "file": "scenes/workshop-dark-640.avif",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 45391,
+  "sha256": "523e2ca31cde63a6b914a80df5ef9680ca4d77f46e51fa057d6fe90ad6659bbc"
+ },
+ {
+  "file": "scenes/workshop-dark-960.webp",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 97902,
+  "sha256": "1cf0da3531940010720796c660704b0a3558bf34ff53e87f1ba925280fe89985"
+ },
+ {
+  "file": "scenes/workshop-dark-960.avif",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 83750,
+  "sha256": "82d86d30b16441ec78bad952d3fca8ef804f48a461804634005a35d2e34e7ed2"
+ },
+ {
+  "file": "scenes/workshop-dark-1536.avif",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 512,
+  "bytes": 160451,
+  "sha256": "19cfb77bab85d8ce6b79be40944bad3715d1752b06624e0d508a91380c268322"
+ },
+ {
+  "file": "scenes/workshop-dark-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 768,
+  "bytes": 251829,
+  "sha256": "60b3fe649c7d6caf7b1172e9f39962e60c78027301d80001d3a21cdc628c562d"
+ },
+ {
+  "file": "scenes/workshop-dark-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 329998,
+  "sha256": "e88deb2a7822dec820facb08dae4b179003ee87a449fa5fc9ee9f6ebf723b6a3"
+ },
+ {
+  "file": "scenes/workshop-dark-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 469700,
+  "sha256": "4100355f08cc27992e914ca883ff42d06a724a67109d88d1ed94a3a5ba560f57"
+ },
+ {
+  "file": "scenes/workshop-dark-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x1280 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 1280,
+  "bytes": 400821,
+  "sha256": "4061d474975cdf6ff516753db20eac41243040e1e9d534fc2b95a9b499483a4a"
+ },
+ {
+  "file": "scenes/workshop-dark-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x1707 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 1707,
+  "bytes": 509526,
+  "sha256": "84f8729a366782b528aa0de4dabbcc520dc1c982c4cc7f13ce1dc5665327f5a9"
+ },
+ {
+  "file": "scenes/workshop-dark-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 712059,
+  "sha256": "adb1783e70c4d3b4a8820bd024b612ca8fc6c014954421a914fbf2e4d16cf9dd"
+ },
+ {
+  "file": "scenes/workshop-dark-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 1250084,
+  "sha256": "472a38282cfbc50aa106622234fd85c5a877e09d52db6f09be9c1cf035932afa"
+ },
+ {
+  "file": "phone/workshop-dark-384.webp",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 37186,
+  "sha256": "b1953119b5e6c66dbff75d841873686ced70670f4f89d240f6d24ecfae35dff6"
+ },
+ {
+  "file": "phone/workshop-dark-384.avif",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 384x288 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 288,
+  "bytes": 31633,
+  "sha256": "bf1663b7d694c5ed59513026b80da4d42a0c709a6f0facb9fe0b60c163e937e2"
+ },
+ {
+  "file": "phone/workshop-dark-768.webp",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 93406,
+  "sha256": "dd73da2ea0dc78532acbc6101934feba031d52ba330a7a154fa413834fa21635"
+ },
+ {
+  "file": "phone/workshop-dark-768.avif",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [278, 0, 961, 512] then resize to 768x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 576,
+  "bytes": 72564,
+  "sha256": "dd4dfe3fb38a0e73331c3112d19279d5c2bee2acb36f091b9a96a93aafc883a3"
+ },
+ {
+  "file": "phone/workshop-dark-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 864,
+  "bytes": 170942,
+  "sha256": "3aeb2c9a3232ee1b48c34b08311f048171273f7989bd9184331cca6580ca146a"
+ },
+ {
+  "file": "phone/workshop-dark-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 864,
+  "bytes": 123036,
+  "sha256": "1125f3e26713058b825c9b521e4d69ead7f92a3b2c8ed5442e9eecb7bd7a19cb"
+ },
+ {
+  "file": "phone/workshop-dark-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1151,
+  "bytes": 234010,
+  "sha256": "257e73c7004f73d0547f601179de96ff8dba53df6afcb42dc10137bf73dcbba4"
+ },
+ {
+  "file": "phone/workshop-dark-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/workshop-dark.webp",
+   "sha256": "41d9add39d72dce76d5657719311cbbb3fd56b253e26d1c610242bd2431c9bfb"
+  },
+  "use": "phone hero (4:3)",
+  "operation": "crop box [1112, 0, 3844, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1151,
+  "bytes": 159227,
+  "sha256": "86b1308b44c8b75a0adf4831fc8e3855c2c10d128071fd7de3aa60f883feece7"
+ },
+ {
+  "file": "social/workshop-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [8, 0, 1032, 512] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 323796,
+  "sha256": "a3ca1351606e393a172ed425f79e05fd987a33a918896f05de3cd8add91309ee"
+ },
+ {
+  "file": "og/workshop-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/workshop-dark.webp",
+   "sha256": "1be4971acb218da7b2282c4081db56f38ed9301f17789a2f5058d0c2bfd1e024"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [32, 0, 1007, 512] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 301432,
+  "sha256": "a84c97218a5f4caf081fc86a542ec59863e37bc000c777b56dea3aae5e9bfb9c"
  }
 ]
