@@ -6,6 +6,7 @@
   "excluded": {
     "playwright": "Fork of microsoft/playwright. Its main mirrors upstream exactly as the base for upstream PR branches, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "swift-toolkit": "Fork of readium/swift-toolkit, the reader engine Gatefold uses. Its default branch (develop) mirrors upstream exactly as the base for the branches where we prepare Gatefold's reader fixes to send upstream, so it keeps upstream's README; its About line (labs) says why we fork it.",
+    "hyperellipse": "Fork of mikhailmogilnikov/hyperellipse, the corner-shape polyfill Ouro UI's squircles use where a browser has no native corner-shape (ourostack/ouro-ui-core docs/decisions/2026-11-13-squircles-switch-avatars.md). Its main mirrors upstream exactly until we need to tweak it, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "image-gen-mcp": "Archived.",
     "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here."
   },
@@ -155,6 +156,13 @@
       "homepage": "https://ouroboros.bot/housesitter/"
     },
     {
+      "id": "about:hackamore",
+      "kind": "github-about",
+      "repo": "ourostack/hackamore",
+      "family": "tools",
+      "homepage": "https://github.com/ourostack/hackamore"
+    },
+    {
       "id": "about:homebrew-tap",
       "kind": "github-about",
       "repo": "ourostack/homebrew-tap",
@@ -209,6 +217,13 @@
       "repo": "ourostack/ouro-workbench",
       "family": "labs",
       "homepage": ""
+    },
+    {
+      "id": "about:hyperellipse",
+      "kind": "github-about",
+      "repo": "ourostack/hyperellipse",
+      "family": "labs",
+      "homepage": "https://hyperellipse.vercel.app"
     },
     {
       "id": "profile",
@@ -294,6 +309,13 @@
       "kind": "github-readme",
       "repo": "ourostack/gatefold",
       "header": "headers/gatefold.webp"
+    },
+    {
+      "id": "readme:hackamore",
+      "kind": "github-readme",
+      "repo": "ourostack/hackamore",
+      "header": "headers/ourostack.webp",
+      "note": "hackamore has no scene of its own yet, so its README and social preview carry the profile's (ourostack/.github#69). When its scene is drawn, point both at it."
     },
     {
       "id": "readme:homebrew-tap",
@@ -438,6 +460,14 @@
       "kind": "github-social-preview",
       "repo": "ourostack/gatefold",
       "image": "social/gatefold.jpg"
+    },
+    {
+      "id": "social:hackamore",
+      "kind": "github-social-preview",
+      "repo": "ourostack/hackamore",
+      "image": "social/ourostack.jpg",
+      "note": "hackamore has no scene of its own yet, so its README and social preview carry the profile's (ourostack/.github#69). When its scene is drawn, point both at it.",
+      "held": "Its preview can only be uploaded from a browser signed in to github.com as an ourostack admin, and the Edge profile upload-social-previews.mjs copies is signed in as arimendelow_microsoft, which can't administer ourostack. Sign in there as arimendelow and run node brand/tools/upload-social-previews.mjs hackamore, then drop this hold (ourostack/.github#69)."
     },
     {
       "id": "social:homebrew-tap",
