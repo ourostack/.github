@@ -94,16 +94,26 @@ def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
     return (left, 0, left + width, im.height)
 
 
+def crops_for(scene):
+    """A scene's crop centres: its own, or for a night scene (<scene>-dark) not in crops.json, its day twin's,
+    because each night header is the day header's drawing at night, framed the same."""
+    if scene in CROPS:
+        return CROPS[scene]
+    if scene.endswith("-dark") and scene.removesuffix("-dark") in CROPS and (BRAND / f"headers/{scene}.webp").exists():
+        return CROPS[scene.removesuffix("-dark")]
+    return None
+
+
 def build(scenes=()):
     """Yield (relative path, bytes, provenance entry without sha) for every derived file, or for the named scenes'."""
-    for scene in sorted(CROPS):
-        if scene.startswith("_") or (scenes and scene not in scenes):
+    for scene in sorted(scenes) if scenes else sorted(CROPS):
+        if scene.startswith("_"):
             continue
         src_rel = f"headers/{scene}.webp"
         src_bytes = (BRAND / src_rel).read_bytes()
         src = Image.open(io.BytesIO(src_bytes)).convert("RGB")
         base = {"derivedFrom": {"file": src_rel, "sha256": sha(src_bytes)}}
-        c = CROPS[scene]
+        c = crops_for(scene)
 
         # Responsive widths of the whole scene, for site heroes.
         for w in (640, 960, 1536):
@@ -209,9 +219,9 @@ def main():
             only.append(args.pop(0))
         elif a != "--check":
             scenes.append(a)
-    unknown = [s for s in scenes if s not in CROPS]
+    unknown = [s for s in scenes if crops_for(s) is None]
     if unknown:
-        sys.exit(f"not in brand/tools/crops.json: {', '.join(unknown)}")
+        sys.exit(f"not in brand/tools/crops.json, and not the night twin of a scene there: {', '.join(unknown)}")
     if not (features.check("webp") and features.check("avif")):
         sys.exit("Pillow needs WebP and AVIF support")
     prov = json.loads(PROVENANCE.read_text())

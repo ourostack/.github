@@ -482,9 +482,29 @@ function masters() {
       fixes.add(`master:${sceneOf(e.file)}`);
     }
   }
+  // A night scene (<scene>-dark) carries every width its day twin has, so a site never falls back to a blurrier
+  // night file, or to the day art, where the day art is sharp.
+  for (const folder of ["phone", "scenes"]) {
+    const widths = new Map();
+    for (const name of readdirSync(join(BRAND, folder))) {
+      const m = name.match(/^(.+)-(\d+)\.\w+$/);
+      if (!m) continue;
+      if (!widths.has(m[1])) widths.set(m[1], new Set());
+      widths.get(m[1]).add(Number(m[2]));
+    }
+    for (const [scene, have] of widths) {
+      if (!scene.endsWith("-dark")) continue;
+      const day = widths.get(scene.slice(0, -"-dark".length));
+      const missing = [...(day ?? [])].filter((w) => !have.has(w)).sort((x, y) => x - y);
+      if (!missing.length) continue;
+      problems.push(`brand/${folder}/${scene} has no ${missing.join(", ")} px file, which its day twin has`);
+      fixes.add(`night:${scene}`);
+    }
+  }
   const named = (kind) => [...fixes].filter((f) => f.startsWith(kind)).map((f) => f.slice(kind.length));
   const steps = [];
   if (named("master:").length) steps.push(`for ${named("master:").join(" ")}: run python3 brand/tools/upscale.py <scene> when its master is missing or older than its header, then cut what comes from it again (derive.py <scene> for a scene in crops.json, derive_wide.py and derive_night_phone.py <scene> for a night scene)`);
+  if (named("night:").length) steps.push(`for ${named("night:").join(" ")}: cut the missing widths from the night master (python3 brand/tools/derive.py <scene> --only 'phone/<scene>-<width>.*', or derive_wide.py <scene> for scenes/)`);
   if (named("cut:").length) steps.push(`for ${named("cut:").join(" ")}: cut the named files again from the current header (python3 brand/tools/derive.py <scene> --only '<file glob>')`);
   return {
     id: "masters:brand",
