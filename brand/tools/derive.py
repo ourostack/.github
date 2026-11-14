@@ -3,6 +3,12 @@
 
     python3 brand/tools/derive.py          # write the files and their provenance entries
     python3 brand/tools/derive.py --check  # exit 1 if a file differs from provenance.json
+    python3 brand/tools/derive.py labs desk                    # just these scenes
+    python3 brand/tools/derive.py labs --only 'phone/*-1152.*'  # just the outputs matching a glob
+
+Name the scenes (and, with --only, the files) a change touches, so the rest keep
+their committed bytes: another encoder build, or a master that is not in brand/
+any more, would otherwise rewrite or stop on files the change has nothing to do with.
 
 Nothing here draws anything new. Each file is an honest crop, resize or
 recomposition of a header or a character mark already in brand/, so Ouro stays
@@ -19,6 +25,7 @@ libwebp/libaom build may encode different bytes; if so, commit the new files and
 their new provenance together.
 """
 import hashlib
+import fnmatch
 import io
 import json
 import sys
@@ -87,10 +94,10 @@ def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
     return (left, 0, left + width, im.height)
 
 
-def build():
-    """Yield (relative path, bytes, provenance entry without sha) for every derived file."""
+def build(scenes=()):
+    """Yield (relative path, bytes, provenance entry without sha) for every derived file, or for the named scenes'."""
     for scene in sorted(CROPS):
-        if scene.startswith("_"):
+        if scene.startswith("_") or (scenes and scene not in scenes):
             continue
         src_rel = f"headers/{scene}.webp"
         src_bytes = (BRAND / src_rel).read_bytes()
@@ -171,7 +178,7 @@ def build():
             "operation": f"crop box {list(box)} then resize to 1200x630 (Lanczos)", "encoder": ENCODERS["jpg"]}
 
     # Touch and app-manifest icons: the approved rich render on the dawn sky.
-    for mark in ("ouro", "ouro-hx"):
+    for mark in () if scenes else ("ouro", "ouro-hx"):
         src_rel = f"{mark}.png"
         src_bytes = (BRAND / src_rel).read_bytes()
         render = Image.open(io.BytesIO(src_bytes)).convert("RGBA")
@@ -193,13 +200,26 @@ def build():
 
 
 def main():
-    check = "--check" in sys.argv
+    args = sys.argv[1:]
+    check = "--check" in args
+    only, scenes = [], []
+    while args:
+        a = args.pop(0)
+        if a == "--only":
+            only.append(args.pop(0))
+        elif a != "--check":
+            scenes.append(a)
+    unknown = [s for s in scenes if s not in CROPS]
+    if unknown:
+        sys.exit(f"not in brand/tools/crops.json: {', '.join(unknown)}")
     if not (features.check("webp") and features.check("avif")):
         sys.exit("Pillow needs WebP and AVIF support")
     prov = json.loads(PROVENANCE.read_text())
     by_file = {e["file"]: e for e in prov}
     bad = []
-    for rel, data, entry in build():
+    for rel, data, entry in build(scenes):
+        if only and not any(fnmatch.fnmatch(rel, g) for g in only):
+            continue
         digest = sha(data)
         path = BRAND / rel
         if check:
