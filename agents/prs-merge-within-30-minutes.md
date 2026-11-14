@@ -6,6 +6,8 @@ Shared guidance for every agent and person working in ourostack, spoonjoy and ar
 
 **30 minutes is a goal, never a deadline.** It is arbitrary. Every PR should be ready before it is opened and merge on green within minutes, and CI runs as fast as possible, with sub-minute checks wherever we can. Ari, 2026-11-10: "that 'within 30 minutes' thing - it's an arbitrary target, 'the pursuit of excellence requires no justification' :) generally, everything should be as svelte and fast as possibel! gave 30 mins cuz there were all these PRs sitting around for days at a time and i needed to push you agents." The clock exists to stop PRs sitting open for days. It never justifies discarding or abandoning work: a late PR gets finished and landed (the table below), not closed to beat the clock. On trunk-based work, the fix is a smaller PR next time. An open PR holds finished work away from main, goes stale against everyone else's changes, and turns into a pile of conflicts and reruns that someone has to untangle later. Small PRs that land fast keep main the one true picture of the work.
 
+Merging is only part of the clock: the change must also be live for users within [single-digit minutes at most, and seconds wherever we can build it](changes-live-in-seconds.md).
+
 ## The flow: done first, then publish, and green means merged
 
 Ari, 2026-11-07: "can we have auto merge on pass by default? and we keep it safe by having agents only publish prs once it passes all the reviews and non-ci validation etc".
