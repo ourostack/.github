@@ -60,7 +60,7 @@ The agent harness where it all started: agents with memory and real tools.
 - **Desk**, work that outlives the session: [desk](https://github.com/ourostack/desk) · [factory](https://github.com/ourostack/factory)
 - **Ouro UI**, interfaces for people (HX) and agents (AX): [ouro-ui](https://github.com/ourostack/ouro-ui) · [ouro-ui-apple](https://github.com/ourostack/ouro-ui-apple) · [ouro-ui-core](https://github.com/ourostack/ouro-ui-core)
 - **Apps**, for reading and writing: [ouro-md](https://github.com/ourostack/ouro-md) · [gatefold](https://github.com/ourostack/gatefold) (in TestFlight)
-- **Tools**, for building and shipping: [flow-review](https://github.com/ourostack/flow-review) · [m365crawl](https://github.com/ourostack/m365crawl) · [housesitter](https://github.com/ourostack/housesitter) · [apple-distribution-kit](https://github.com/ourostack/apple-distribution-kit) · [ouro-native-apple-app-shell](https://github.com/ourostack/ouro-native-apple-app-shell) · [homebrew-tap](https://github.com/ourostack/homebrew-tap)
+- **Tools**, for building and shipping: [flow-review](https://github.com/ourostack/flow-review) · [m365crawl](https://github.com/ourostack/m365crawl) · [housesitter](https://github.com/ourostack/housesitter) · [hackamore](https://github.com/ourostack/hackamore) · [apple-distribution-kit](https://github.com/ourostack/apple-distribution-kit) · [ouro-native-apple-app-shell](https://github.com/ourostack/ouro-native-apple-app-shell) · [homebrew-tap](https://github.com/ourostack/homebrew-tap)
 - **Home**, this front door and our sites: [.github](https://github.com/ourostack/.github) · [ouroboros-website](https://github.com/ourostack/ouroboros-website) · [ouro-apps-site](https://github.com/ourostack/ouro-apps-site)
 
 ## Labs 🧪
@@ -69,7 +69,7 @@ The agent harness where it all started: agents with memory and real tools.
 
 Forks and experiments, tried in the open. Useful to us, honest about what they are, and **not supported**. Each one's README says why it exists.
 
-[cmux](https://github.com/ourostack/cmux) · [playwright](https://github.com/ourostack/playwright) · [swift-toolkit](https://github.com/ourostack/swift-toolkit) · [playwright-focus-proof](https://github.com/ourostack/playwright-focus-proof) · [ouro-workbench](https://github.com/ourostack/ouro-workbench) · [image-gen-mcp](https://github.com/ourostack/image-gen-mcp) (archived)
+[cmux](https://github.com/ourostack/cmux) · [playwright](https://github.com/ourostack/playwright) · [swift-toolkit](https://github.com/ourostack/swift-toolkit) · [hyperellipse](https://github.com/ourostack/hyperellipse) · [playwright-focus-proof](https://github.com/ourostack/playwright-focus-proof) · [ouro-workbench](https://github.com/ourostack/ouro-workbench) · [image-gen-mcp](https://github.com/ourostack/image-gen-mcp) (archived)
 
 <br clear="left">
 
