@@ -10,7 +10,7 @@ The rich renders are the primary marks. Use one-colour silhouettes only for tiny
 
 - `brand/ouro.png`: approved Ouro rich render, with its background removed.
 - `brand/desk.png`: approved empty wooden Desk render, with its background removed.
-- `brand/ouro-hx.png`: approved Ouro HX render: a human uses an interface while an agent builds it.
+- `brand/ouro-hx.png`: Ouro HX render: a person's mitten presses go on an interface while an agent's mitten builds it.
 - `brand/ouro-md.png`: the existing native icon from `ourostack/ouro-md/Resources/AppIcon.png`, unchanged.
 - `brand/shepherd.png`: Ouro Shepherd render, Ouro with a shepherd's staff, accepted for current use.
 - `brand/friends.png`: Friends render, Ouro with two people and two robots; Friends and Friends Relay share it.
