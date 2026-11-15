@@ -21728,7 +21728,7 @@
   "generated": "2026-11-14, for Ari",
   "approval": "Ari asked for new headers for both essays, 2026-11-14: \"the header images both also need more work. 'what is agent experience' header doesnt tell me anything, and 'stop being the glue' header is both super weird AND ouro is broken\", then \"i suggest rethinking from first principles\". Concepts and their independent taste reviews: https://github.com/arimendelow/desk/tree/main/ouro-public-web/article-november-updates/art",
   "crop": "1536x576 from the 1536x1024 master (rows 220-796), WebP q86 (Pillow 11.3)",
-  "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b",
+  "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214",
   "generation": [
    {
     "master": "ax-trail-map-master",
@@ -21762,6 +21762,24 @@
     "aligned_ecc": 0.7357,
     "date": "2026-11-14",
     "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
+   },
+   {
+    "what": [
+     "the meadow trail is kept: it is the route the map board shows, so it means something",
+     "the map's made-up green ring pin is gone and its painted path is plain tan paint",
+     "Ouro's coil sits on the grass with a contact shadow"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "ccca1d1b2ab8cacfe4b50a9517876fba9b96638f81956bb8df0dda36d690fef4",
+     "72c5d817a29f753d03a88c7ccb55649faa19328a2debb50a238f2aee2414f435",
+     "2160aaef5e98fdc192bac534898fb9ed8c98d19faac61ede14c654725bc1441c"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
    }
   ]
  },
@@ -21772,7 +21790,7 @@
   "generated": "2026-11-14, for Ari",
   "approval": "Ari asked for new headers for both essays, 2026-11-14: \"the header images both also need more work. 'what is agent experience' header doesnt tell me anything, and 'stop being the glue' header is both super weird AND ouro is broken\", then \"i suggest rethinking from first principles\". Concepts and their independent taste reviews: https://github.com/arimendelow/desk/tree/main/ouro-public-web/article-november-updates/art",
   "crop": "1536x576 from the 1536x1024 master (rows 220-796), WebP q86 (Pillow 11.3)",
-  "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d",
+  "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d",
   "generation": [
    {
     "master": "ax-trail-map-dark-master",
@@ -21805,6 +21823,25 @@
     "aligned_ecc": 0.6605,
     "date": "2026-11-14",
     "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
+   },
+   {
+    "what": [
+     "the meadow trail is kept: it is the route the map board shows, so it means something",
+     "the map's made-up green ring pin is gone and its painted path is plain tan paint",
+     "Ouro's coil sits on the grass with a contact shadow",
+     "the night version of the same edits"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "4d3b0fe411c2ac5088b60867f43c529c369b2d7e66219abdf83b64f8ead20875",
+     "43ef3bc0dac628b0c0b6e85ce2917606db65e1f898b4680dd329711175fbe0ad",
+     "e3bbca3376b017a67ed9e1e638d39c273550443cac160268c6a9d9b0822ba404"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
    }
   ]
  },
@@ -21941,95 +21978,35 @@
   "file": "upscaled/ax-trail-map.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b",
-   "master": "ax-trail-map-master",
-   "master_sha256": "cbcea2ba3bc782a73f63a73d80dfe893c5cd3e4ac8efd9c5af36390c61dbdb79",
-   "crop": [
-    0,
-    220,
-    1536,
-    796
-   ]
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master ax-trail-map-master (sha256 cbcea2ba3bc782a73f63a73d80dfe893c5cd3e4ac8efd9c5af36390c61dbdb79), then cut to the header's box [0, 220, 1536, 796] at 4x [0, 880, 6144, 3184]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/ax-trail-map.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9681 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-14",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ax-trail-map.webp (sha256 d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/ax-trail-map.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9768 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1259676,
-  "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f",
-  "edits": [
-   {
-    "what": "Ouro redrawn on model: one open O curl with the short tail tip beside his head (the tail tip no longer rests on his chin like a hand)",
-    "region_4x_master": [
-     2600,
-     100,
-     4400,
-     1900
-    ],
-    "changed_box": [
-     2600,
-     100,
-     4400,
-     1900
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "452fa11a2436988c8013033ac09eecbc25eaab38c8b3767eb0f94c17535f8e9b",
-    "aligned_ecc": 0.7357,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   }
-  ]
+  "bytes": 1257178,
+  "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
  },
  {
   "file": "upscaled/ax-trail-map-dark.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d",
-   "master": "ax-trail-map-dark-master",
-   "master_sha256": "e300ab116b944180e9077cedb096513b014293677e44cc72f417f036bc13afb5",
-   "crop": [
-    0,
-    220,
-    1536,
-    796
-   ]
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master ax-trail-map-dark-master (sha256 e300ab116b944180e9077cedb096513b014293677e44cc72f417f036bc13afb5), then cut to the header's box [0, 220, 1536, 796] at 4x [0, 880, 6144, 3184]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/ax-trail-map-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9643 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-14",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ax-trail-map-dark.webp (sha256 57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/ax-trail-map-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9709 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1363230,
-  "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd",
-  "edits": [
-   {
-    "what": "Ouro redrawn on model: one open O curl with the short tail tip beside his head (the tail tip no longer rests on his chin like a hand)",
-    "region_4x_master": [
-     2600,
-     100,
-     4400,
-     1900
-    ],
-    "changed_box": [
-     2600,
-     100,
-     4400,
-     1900
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "c9c9cce461ac4426555f3af4d58a83adac497be86ca853055f1234c72631f902",
-    "aligned_ecc": 0.6605,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   }
-  ]
+  "bytes": 1362980,
+  "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
  },
  {
   "file": "upscaled/glue-unstuck.webp",
@@ -22069,7 +22046,7 @@
   "file": "scenes/ax-trail-map-640.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -22077,14 +22054,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 49760,
-  "sha256": "d1ae840c38cb8fa2337d2d5fd32c1de445af2c38a1914e6794ba76bb52d656dc"
+  "bytes": 50252,
+  "sha256": "ec0984d99161a92328e075b0e6c2e13bab6cd0079b798ff894672fe408cb3837"
  },
  {
   "file": "scenes/ax-trail-map-640.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -22092,14 +22069,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 42031,
-  "sha256": "7169012d5e5f72025aa411de94f8aaf062f9ad7fbb2157896ba6d2c23e27a72a"
+  "bytes": 42138,
+  "sha256": "3a47c3e6be457d5bb4fedc344fd004b602a2420b69a5550cca4a351251775ff7"
  },
  {
   "file": "scenes/ax-trail-map-960.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -22107,14 +22084,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 92214,
-  "sha256": "fdd902531460a677dac01aaa17b3890c98101563275bacc18dc48178bc10c149"
+  "bytes": 91998,
+  "sha256": "50d4cab5a9838e19aa797a37f094caebb273fdeaba9bcd53271ec1ccbfd2f3c8"
  },
  {
   "file": "scenes/ax-trail-map-960.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -22122,14 +22099,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 72037,
-  "sha256": "0465cc83c83d8b3046064bb79c2da6c87c5dff6878409eb63051e5a834ee5fed"
+  "bytes": 71723,
+  "sha256": "35ea24f31032ad235fb0f6ce58a8cd3e33c7dfde9d5092d8b35bf53eb6d4e7ab"
  },
  {
   "file": "scenes/ax-trail-map-1536.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -22137,14 +22114,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 130507,
-  "sha256": "59704c7c90ac8c9e93b60108f684354d55be0e207b48ced09f4110505d67d2a4"
+  "bytes": 129858,
+  "sha256": "7a94c05f5be26dfcebfe58456f3f1f45873e66d5d38189862a13288f80ea1524"
  },
  {
   "file": "scenes/ax-trail-map-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -22152,14 +22129,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 207281,
-  "sha256": "8bc4953a75ff3cab21475fe4c0293f7dcee9ecc0666f0e72854160ca8cef305b"
+  "bytes": 199978,
+  "sha256": "d6caf60b122f7d10b314964906432c869a30d5a5ffe540b12c9fd1f22341f2c7"
  },
  {
   "file": "scenes/ax-trail-map-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -22167,14 +22144,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 267727,
-  "sha256": "3783183af673ae6ffe4d1d188ce8ce5adc703567753f6de0cf54542657c406ef"
+  "bytes": 256453,
+  "sha256": "5b4dc74fe52893df8f969abb5ca6ccd91d808f705c7b257a70b7ce9b0e48ace6"
  },
  {
   "file": "scenes/ax-trail-map-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -22182,14 +22159,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 402916,
-  "sha256": "980d135a1cdde1ce8452ce014285ca9044a937578952d0a3282f689fc76e8186"
+  "bytes": 385294,
+  "sha256": "1100f30c7d5b0d4af48721ce67818cd14fb2e4577a4958793c7e2552f5e7038e"
  },
  {
   "file": "scenes/ax-trail-map-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -22197,14 +22174,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 322698,
-  "sha256": "820c1d4db3fde73d8fbe4c62d94f564d6f6e89b4d107b87b612b6c0bf9206bbd"
+  "bytes": 311887,
+  "sha256": "84d70df669d88df90f661ad40f06e0d306336b775150efe95efa418d615c51a6"
  },
  {
   "file": "scenes/ax-trail-map-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -22212,14 +22189,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 409529,
-  "sha256": "6c51bb75bfe63a8db4e228caea34c7737fdcc4d6413a51a9756faf83bf496b1e"
+  "bytes": 395941,
+  "sha256": "0119e0ecee4063487fc00029cc119e7185a9c6febefcc9ca9049ba176b42915f"
  },
  {
   "file": "scenes/ax-trail-map-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -22227,14 +22204,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 579791,
-  "sha256": "f331578e706e18accde505b6e8d3d1dcb4f87678f9dc5819f678f9fcd45c4a0b"
+  "bytes": 557514,
+  "sha256": "594d82cb38a5582f5b4a3f15d7e80b024ed3a33e69202fa073757c352e89ae5c"
  },
  {
   "file": "scenes/ax-trail-map-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -22242,14 +22219,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1105344,
-  "sha256": "9a4f055b4df1f9dc856bf6cb99951935e17db4a6beb92ffd27b5587bb3390a96"
+  "bytes": 1037262,
+  "sha256": "43cfbc1fe440a7bb1f49092b29ebebc2788702b87d82f190da6b0ec12631d453"
  },
  {
   "file": "phone/ax-trail-map-384.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 384x288 (Lanczos)",
@@ -22257,14 +22234,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 32676,
-  "sha256": "ee82059346ac50fe269c3492c85d7303b04fc1b3409d5f675705164d361ba161"
+  "bytes": 33032,
+  "sha256": "f2ece7d0abc5cc681ff38d5b5b142534daa1ab38439426da0f52c13676f7d411"
  },
  {
   "file": "phone/ax-trail-map-384.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 384x288 (Lanczos)",
@@ -22272,14 +22249,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 27459,
-  "sha256": "0ca505040156dde3eb86a8aa3e0c1c62bae7443b3d549a1f4b075fbfc71f64c8"
+  "bytes": 27811,
+  "sha256": "ea9d00f1585054e4882a044ede7cbb475d6c6f6920641ad6bb544b04b213a09e"
  },
  {
   "file": "phone/ax-trail-map-768.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 768x576 (Lanczos)",
@@ -22287,14 +22264,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 88522,
-  "sha256": "d4913b191010252bef46111f2feaff8cdb92555ca77027e96d98ff9df21260ba"
+  "bytes": 87340,
+  "sha256": "ffdbcd99b8490c95e31348d55581e744f0a17eaafc1ddab9ed578cc10e46b02a"
  },
  {
   "file": "phone/ax-trail-map-768.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 768x576 (Lanczos)",
@@ -22302,14 +22279,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 68458,
-  "sha256": "6af3e477c65f6a95a190d4dda97639ef8387a2cfb9e79833b11e0445c7f4b254"
+  "bytes": 68460,
+  "sha256": "0dec16fb4816cfb981c777b6b22025900210849df7271adbea5972abcaaf4b03"
  },
  {
   "file": "phone/ax-trail-map-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22317,14 +22294,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 148480,
-  "sha256": "477e84656895bc2aceaaeb91e714abec16ad0af4417bc6a63539f1ae3350c253"
+  "bytes": 141656,
+  "sha256": "66f014c39e0be5a8ae68ca44d3c64a77329ad429834685eeec33e0b135ac610e"
  },
  {
   "file": "phone/ax-trail-map-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22332,14 +22309,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 106914,
-  "sha256": "d5c22040f5b4e2d6170121a2ef52a2fa671407d3dc47d9a3240267d39037ab40"
+  "bytes": 102481,
+  "sha256": "a6825a20d54f8637fd3494a06f91ec3cebaa16f8061ba5af7a99f9602bacb730"
  },
  {
   "file": "phone/ax-trail-map-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22347,14 +22324,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 205882,
-  "sha256": "1d69d9367ff40913f0f567ca53a0a964459c844f7007872a3f6c9fdd06b617af"
+  "bytes": 192738,
+  "sha256": "ab4822e42b5faa7c571acd8336a11570fb8b3af55fa3b555b27f26b321244a6c"
  },
  {
   "file": "phone/ax-trail-map-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map.webp",
-   "sha256": "3d539fa9d3e736cfb41aba7f086dfebd20557c98cfefe13ae57f92fd313fb70f"
+   "sha256": "526c1f7833d8cee108c47dfc968e28f60a33637b083a51e461a05b3f65fc3287"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22362,14 +22339,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 138399,
-  "sha256": "734e8d7d6dae1df9ca1e0eb4764ebbb71f89deadbebb30c40eb2f94c00670ea9"
+  "bytes": 131591,
+  "sha256": "10fa1caa4c9aac45133d4a6fc1dfda3ed2cc7265e1273b6d7ca0d782b9e1bb28"
  },
  {
   "file": "social/ax-trail-map.jpg",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [84, 0, 1236, 576] then resize to 1280x640 (Lanczos)",
@@ -22377,14 +22354,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 301577,
-  "sha256": "85c7f47b2e749a861bdb3fdc3b838c2a3d58909c6c90e2f56a6e263482ea12d2"
+  "bytes": 299544,
+  "sha256": "7611d297ed05aa122976023d75665a6b2b76d0652082b51591294b1162c40044"
  },
  {
   "file": "og/ax-trail-map.jpg",
   "derivedFrom": {
    "file": "headers/ax-trail-map.webp",
-   "sha256": "7a1be3ffeb86024568c3fdcfe95c34e1df325f4dbd7ea6989bc7b8d8c89f4d8b"
+   "sha256": "d319645c1b2f83a18f44451686c041e0f8aeccecb2ae029ec96f2a406cbc7214"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [112, 0, 1209, 576] then resize to 1200x630 (Lanczos)",
@@ -22392,14 +22369,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 282103,
-  "sha256": "42b9217d45b16b9407199088ee7e54b9fe2cd96e2d24b9537c4d50507f2c2ca4"
+  "bytes": 279793,
+  "sha256": "cc14eccedaca667611aac3c37f28d277ff3f47b990867d1906f476bfe022269e"
  },
  {
   "file": "scenes/ax-trail-map-dark-640.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -22407,14 +22384,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 51374,
-  "sha256": "c6972a231881ee14f4ab9b095d734e1bddc40ca809f35ceee2c540c554544b3e"
+  "bytes": 51288,
+  "sha256": "49e078817cf899d5dfb2eea423051d4b6843a2c913b4ac4a3bb268bd71d3ebb1"
  },
  {
   "file": "scenes/ax-trail-map-dark-640.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -22422,14 +22399,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 44492,
-  "sha256": "b870e612cf87dedb88a65ceedb1918983a5a5bfecdf2aac36adb3203492cf45f"
+  "bytes": 44254,
+  "sha256": "6000d3ca4a242a377fd83213d9696bbb16300e6527d13c6a29a25fdc3830e3b0"
  },
  {
   "file": "scenes/ax-trail-map-dark-960.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -22437,14 +22414,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 95834,
-  "sha256": "9b4f4772748070f3731fae84feb820679604e619e156b6623e413053cf4f139f"
+  "bytes": 95344,
+  "sha256": "f56e898d6bf427f302e251483a627d3fbb23c4d1036ef2cf688313ef5672666d"
  },
  {
   "file": "scenes/ax-trail-map-dark-960.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -22452,14 +22429,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 77855,
-  "sha256": "20d9038bdc77c8223dbea0fc1839e4534c9c4a673010f6a635d9cd05cbea6aa5"
+  "bytes": 77134,
+  "sha256": "2a80d029aaa1fa27d4597a7590fe1bf48df90ea05d2b0189c99a7eaff46467e6"
  },
  {
   "file": "scenes/ax-trail-map-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -22467,14 +22444,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 142152,
-  "sha256": "e16cdd6ed204879c15c5c290e66520adfc522838c3775db76a89891f70be9182"
+  "bytes": 139946,
+  "sha256": "89ee10286376e070fd0f8c9ac910a9b1949f38ce68febcdd70588f81d3826588"
  },
  {
   "file": "scenes/ax-trail-map-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -22482,14 +22459,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 231441,
-  "sha256": "125094511d3686fb5edc9b67cbf1c9ce743bec9c3d704991d35baf345cbc18e4"
+  "bytes": 219809,
+  "sha256": "3652503749070cfdd4ce9d0bf6578ed9ac1ec5a9013d3a440aeca783eb566c93"
  },
  {
   "file": "scenes/ax-trail-map-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -22497,14 +22474,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 298872,
-  "sha256": "40be7b06c8534e6a55094dd634a85c8914febdc2d6cc85ba1afc36abf154652e"
+  "bytes": 284345,
+  "sha256": "3cd2abffe3339cd8cb45cbf1bd34bda229e994824e61714b0db25aa7c7fe07ed"
  },
  {
   "file": "scenes/ax-trail-map-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -22512,14 +22489,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 432744,
-  "sha256": "15baae274db4a36fc3bc1463ce18e2b84ca022ce32e6431181c37aaa3879ff94"
+  "bytes": 401304,
+  "sha256": "77683f6e85823d3f7849648d0217b1e6c851f5f6ba4abcd60bc38d960a557a10"
  },
  {
   "file": "scenes/ax-trail-map-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -22527,14 +22504,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 360012,
-  "sha256": "d4c8f6504e186b25d35a0477b74fa27bc9c081a6c7699ed816b855ef33351ac0"
+  "bytes": 346977,
+  "sha256": "86055ff1cd1b4bd4deab1b5c566526c51ac02ca29e0483a72c9e16e6421aa095"
  },
  {
   "file": "scenes/ax-trail-map-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -22542,14 +22519,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 456372,
-  "sha256": "f1b14de5e72074f8843a053b0f88ff50a9f509a2bb02e840d6ad5ebc613432ec"
+  "bytes": 442907,
+  "sha256": "e435462091817d1e9566c1aaba19ba538df9005e6c2abbbd5857c971511b6155"
  },
  {
   "file": "scenes/ax-trail-map-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -22557,14 +22534,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 642549,
-  "sha256": "4fb0de0c436e683b0de5da33790b1b743cd0d8223538642f3611695bd04ae3de"
+  "bytes": 623726,
+  "sha256": "618ffab53527f1ac8193d4c9493e8a5457f7069d18f559c3ef1c96b0b5b48c73"
  },
  {
   "file": "scenes/ax-trail-map-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -22572,14 +22549,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1176426,
-  "sha256": "501005fd8a3f45bfb2af5528adf2b834f5c3e93f168e6a6439b1276be7180c4f"
+  "bytes": 1091668,
+  "sha256": "76fea4f59a7dab4bc2a7373c05baa125ec9ead14e6d80fa80cd830bd0b42c454"
  },
  {
   "file": "phone/ax-trail-map-dark-384.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 384x288 (Lanczos)",
@@ -22587,14 +22564,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 32896,
-  "sha256": "0dbb204d9d6011c1747ae078982f6039f6aa7e6449212c3cf60d5c5de12a19a6"
+  "bytes": 33066,
+  "sha256": "7ea15a757503782dc471f1c597c37ba078339b882382d3c8270857a85fab1bf6"
  },
  {
   "file": "phone/ax-trail-map-dark-384.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 384x288 (Lanczos)",
@@ -22602,14 +22579,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 28472,
-  "sha256": "d1dddefce93340f0687749c64c67af6bda21e84ba9cb5288e0e53f81c2f00ff0"
+  "bytes": 28529,
+  "sha256": "714ad8e34aa5429cd1c16d1bb13ce5d938a8bd9dc3daf5ae0c9548c91b32fba8"
  },
  {
   "file": "phone/ax-trail-map-dark-768.webp",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 768x576 (Lanczos)",
@@ -22617,14 +22594,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 89416,
-  "sha256": "6c6cd6345fa3f0b7fcd609d7d9b34c17cd0d72424452b43cffffbb19cef3aa65"
+  "bytes": 87878,
+  "sha256": "3b912f350596dd68502e9140e6d00954597d8b8a756b2d4c8876e01fc9eb89cf"
  },
  {
   "file": "phone/ax-trail-map-dark-768.avif",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [276, 0, 1044, 576] then resize to 768x576 (Lanczos)",
@@ -22632,14 +22609,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 71228,
-  "sha256": "3e117e967ca4ef2950e44bde749144afa75eb0f5d81ce46e0e0200c27af64233"
+  "bytes": 70426,
+  "sha256": "f43979c6c67f126a3429c154428623e8b63baf79ffeca70b359f3722db9efaf1"
  },
  {
   "file": "phone/ax-trail-map-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22647,14 +22624,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 153150,
-  "sha256": "9b405caccb68a903184c44b3be2789527339fa556392145ab34cb41af0f3dabe"
+  "bytes": 144468,
+  "sha256": "14022834950ec7daf5f1245fe4b7046e193cc50f9e80e7d3638ee6e4075f8b67"
  },
  {
   "file": "phone/ax-trail-map-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22662,14 +22639,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 112850,
-  "sha256": "43b7b38ba0e1362d2ce0f725587eec18f51ffcf93e910cc04e4a7cc7e7e9acbf"
+  "bytes": 106314,
+  "sha256": "386aa64dedde34a2ba808b4b877871f86bbc94213209571600ece898dbe5907d"
  },
  {
   "file": "phone/ax-trail-map-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22677,14 +22654,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 212222,
-  "sha256": "e8f6e9743f2ee9fb23fa5484fd74567f7e88a004245114fd156ac1d7e10447cc"
+  "bytes": 195744,
+  "sha256": "b7d5ddacc303f2ae8080e97379db31f3bb6ddbf72983f395c57a9d6dbe979e43"
  },
  {
   "file": "phone/ax-trail-map-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ax-trail-map-dark.webp",
-   "sha256": "dfad97f09788378d96c6336c20565dbb7b339b23106d85c10ce03540258c2acd"
+   "sha256": "a528f4b04efbf910a2843f9ab1d5394c7d6456c57b93ed3584dd235ae08595ee"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1104, 0, 4176, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22692,14 +22669,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 145929,
-  "sha256": "6ee7c6eb3317532df163186996a36808a5798bf682554281ea8ba1e35237af0c"
+  "bytes": 137146,
+  "sha256": "4ca3ee55c395223ad74158b92a068e453ef5f8631d3ec306ea1f34403270666d"
  },
  {
   "file": "social/ax-trail-map-dark.jpg",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [84, 0, 1236, 576] then resize to 1280x640 (Lanczos)",
@@ -22707,14 +22684,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 306703,
-  "sha256": "dc3251b6ced831069a87b22a6265884ff84bd7ecd1e3f6e3b9773294b77f968c"
+  "bytes": 301735,
+  "sha256": "70b64d6b5314ad21d93e1a650ba487fa035261583d9f112d8758513df9e8d49d"
  },
  {
   "file": "og/ax-trail-map-dark.jpg",
   "derivedFrom": {
    "file": "headers/ax-trail-map-dark.webp",
-   "sha256": "134e8214db0376e356ff3b4b60012d575b820ef0aba4f71c220521851d6ef35d"
+   "sha256": "57b6cd4ade323ab5d873621c5e7627cd90740d647b4ce9b58617188e95ac123d"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [112, 0, 1209, 576] then resize to 1200x630 (Lanczos)",
@@ -22722,8 +22699,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 286700,
-  "sha256": "022e37c55529003c8786ee3ed393484a0f8aaa38e39c6d313d41961340d74159"
+  "bytes": 281699,
+  "sha256": "059f700d38dfbdec3f0ba542f80f9c46bf88e6edf7a4b26542132d3a11ac6ca0"
  },
  {
   "file": "scenes/glue-unstuck-640.webp",
