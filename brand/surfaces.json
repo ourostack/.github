@@ -4,7 +4,6 @@
   "canonicalRaw": "https://raw.githubusercontent.com/ourostack/.github/main/brand/",
   "org": "ourostack",
   "excluded": {
-    "ouro-ui-windows": "A spike with no release yet (created 2026-11-14), so no header or social preview is drawn. Draw its header and register readme and social entries when it ships its first release.",
     "playwright": "Fork of microsoft/playwright. Its main mirrors upstream exactly as the base for upstream PR branches, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "swift-toolkit": "Fork of readium/swift-toolkit, the reader engine Gatefold uses. Its default branch (develop) mirrors upstream exactly as the base for the branches where we prepare Gatefold's reader fixes to send upstream, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "hyperellipse": "Fork of mikhailmogilnikov/hyperellipse, the corner-shape polyfill Ouro UI's squircles use where a browser has no native corner-shape (ourostack/ouro-ui-core docs/decisions/2026-11-13-squircles-switch-avatars.md). Its main mirrors upstream exactly until we need to tweak it, so it keeps upstream's README; its About line (labs) says why we fork it.",
@@ -118,6 +117,13 @@
       "id": "about:ouro-ui-apple",
       "kind": "github-about",
       "repo": "ourostack/ouro-ui-apple",
+      "family": "ouro-ui",
+      "homepage": "https://ui.ouroboros.bot/"
+    },
+    {
+      "id": "about:ouro-ui-android",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-ui-android",
       "family": "ouro-ui",
       "homepage": "https://ui.ouroboros.bot/"
     },
@@ -374,6 +380,18 @@
       "header": "headers/ouro-ui-apple.webp"
     },
     {
+      "id": "readme:ouro-ui-android",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-ui-android",
+      "header": "headers/ouro-ui-android.webp"
+    },
+    {
+      "id": "readme:ouro-ui-windows",
+      "kind": "github-readme",
+      "repo": "ourostack/ouro-ui-windows",
+      "header": "headers/ouro-ui-windows.webp"
+    },
+    {
       "id": "readme:ouro-ui-core",
       "kind": "github-readme",
       "repo": "ourostack/ouro-ui-core",
@@ -528,6 +546,20 @@
       "repo": "ourostack/ouro-ui-apple",
       "image": "social/ouro-ui-apple.jpg",
       "held": "Re-cut from its redrawn header (ourostack/.github#73). The upload needs github.com signed in as arimendelow in the Edge profile upload-social-previews.mjs copies, which is signed in as arimendelow_microsoft. Sign in there as arimendelow, run node brand/tools/upload-social-previews.mjs ouro-ui-apple ouroboros-skills gatefold friends-relay m365crawl, then drop these holds."
+    },
+    {
+      "id": "social:ouro-ui-android",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-ui-android",
+      "image": "social/ouro-ui-android.jpg",
+      "held": "Uploaded with every new social preview through Ari's upload item (via the Agent loop teaching guide session): sign in to github.com as arimendelow in the Edge profile upload-social-previews.mjs copies and run node brand/tools/upload-social-previews.mjs ouro-ui-android ouro-ui-windows, then drop this hold."
+    },
+    {
+      "id": "social:ouro-ui-windows",
+      "kind": "github-social-preview",
+      "repo": "ourostack/ouro-ui-windows",
+      "image": "social/ouro-ui-windows.jpg",
+      "held": "Uploaded with every new social preview through Ari's upload item (via the Agent loop teaching guide session): sign in to github.com as arimendelow in the Edge profile upload-social-previews.mjs copies and run node brand/tools/upload-social-previews.mjs ouro-ui-android ouro-ui-windows, then drop this hold."
     },
     {
       "id": "social:ouro-ui-core",
