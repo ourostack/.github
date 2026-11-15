@@ -10,3 +10,5 @@ Each folder is exactly what a fresh reviewer (rubber-duck agent) was given: the 
 | p4 | ouro-ui-windows-dark | NOTHING |
 | p5 | ouro-ui-android, orchard (light) | NOTHING |
 | p6 | ouro-ui-android-dark, orchard | NOTHING |
+| p7 | workshop (light) | NOTHING |
+| p8 | workshop-dark | NOTHING |
