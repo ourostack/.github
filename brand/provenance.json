@@ -31,9 +31,12 @@
  },
  {
   "file": "friends.png",
-  "source": "https://github.com/arimendelow/desk/blob/main/ouro-public-web/public-pages-holistic-plan/icons/final/friends-render-transparent.png",
-  "approval": "Ari-approved Friends rich render (2026-10-14), shared by Friends and Friends Relay; transparent export of the same artwork. The single-colour SVG is not used here",
-  "sha256": "170f94f7162ba8be5baeb2a3788c6d7b96d09c317c8eab9332515ce227af1f70"
+  "source": "Redrawn 2026-11-15 with an image model from the previous brand/friends.png (layout and robots), the faceless glass person in brand/upscaled/ouro-hx.webp (material) and brand/ouro.png (Ouro on model); two edits (cast, then unlit heads). Alpha from Apple Vision subject lifting; edge colours decontaminated.",
+  "approval": "Ari's decision 2026-11-15, relayed by the teaching guide: fix the marks that fail render QA and the art rule (agents/art-one-universe.md); bar: \"you should be totally confident i will land on each thing and go 'whoa this is great'\". Replaces the two realistic human faces and five-finger hands with the cast's faceless glass people and mittens; Ouro touches and is touched by his friends.",
+  "sha256": "6ec8c561b1cd57e10a5a535bf56385210fd36d92469b5835fc1e8b0161c45159",
+  "prompt": "Square app-icon 3D render on flat light grey: Ouro with two people and two small robots, close together like friends. Ouro centre, exactly on model (one round O, open top right, short tail tip, same face). Two faceless people behind him, chubby figurines of milky frosted mint-jade glass with a warm glow in the chest, smooth faceless round heads, rounded bodies, mitten hands with a thumb, moss-green knitted scarves; one shorter, one taller; each rests one mitten on Ouro's coil. Two small robots sitting in front (cream with grey joints; slate blue with cream joints), mitten hands with a thumb. One soft light; no text, symbols, sparkles, trails or extra objects. Then: heads evenly milky, not lit from inside.",
+  "checked": "Blind defect review at 64 and 128 px and 4x: no blocking defects.",
+  "bytes": 895332
  },
  {
   "file": "factory.png",
@@ -43,9 +46,12 @@
  },
  {
   "file": "butler.png",
-  "source": "https://github.com/arimendelow/desk/blob/main/ouro-public-web/public-pages-holistic-plan/icons/butler/candidates/butler-candidate-1.png",
-  "approval": "Ari-approved Ouro Butler render, 2026-10-20 (\"candidate 1 is perfect\")",
-  "sha256": "6f7fec86d52a090defefcde55082b9af56410926c8afef96f08542c2291fdff8"
+  "source": "brand/butler.png (Ari-approved 2026-10-20, \"candidate 1 is perfect\") with only the serving changed: the tail tip now bends flat under a round silver tray with a raised rim and curls over its front edge, and the cloche stands on the tray. Patch drawn with an image model from a crop of the old mark, aligned (ECC affine) and feathered into the untouched original; alpha from Apple Vision subject lifting in the patch only; edge colours decontaminated.",
+  "approval": "Ari's decision 2026-11-15, relayed by the teaching guide: fix the marks that fail render QA and the art rule (agents/art-one-universe.md); bar: \"you should be totally confident i will land on each thing and go 'whoa this is great'\". Render QA finding fixed: the cloche balanced on the flat tip of the tail with no plate or grip.",
+  "sha256": "2fba5d3e85a7f8c261d50a58bad2db7c1d30fe1566b3df11440723b5a4b28c9f",
+  "prompt": "Close-up crop of a 3D icon: a green snake's tail tip holding up a silver cloche. Keep framing, head, cloche size and position, lighting and background. Slip a round polished silver serving tray with a slightly raised rim under the cloche; the tail tip bends flat under the middle of the tray like a waiter's open palm and its end curls up over the front rim so it grips the tray. The tray's underside reflects a soft green from the tail. No text, sparkles, glow, extra objects, hands or arms.",
+  "checked": "Blind defect review at 64 and 128 px and 4x: no blocking defects.",
+  "bytes": 540345
  },
  {
   "file": "headers/ourostack.webp",
@@ -5617,11 +5623,12 @@
  },
  {
   "file": "icons/ouro.svg",
-  "source": "https://github.com/arimendelow/desk/blob/main/ouro-public-web/public-pages-holistic-plan/icons/final/ouro.svg",
-  "use": "favicon (rel=icon); the one-colour silhouette, for tiny placements only",
-  "approval": "Ari-approved Ouro small-use silhouette (2026-10-14); copied unchanged from the file ouroboros.bot and ui.ouro.bot already serve",
-  "bytes": 3004,
-  "sha256": "234f30ad9272eb6b6e394bd7627fd994a44637bc9cdad4a584b1f329b45a6cdc"
+  "source": "Redrawn 2026-11-15 from the previous silhouette's body outline (its one continuous O, open at the top right, with the short tail tip) and the face of brand/ouro.png: two white eyes with dark pupils and a highlight, and the smile. The tail tip is eased away from the head so the gap reads; under 24 px a pixel-fitted 16 px drawing of the same Ouro replaces it (CSS media query inside the SVG), and with a dark colour scheme the green lifts a step so it holds on dark tabs.",
+  "use": "favicon (rel=icon) for ouroboros.bot",
+  "approval": "Ari's decision 2026-11-15, relayed by the teaching guide: fix the marks that fail render QA and the art rule (agents/art-one-universe.md); bar: \"you should be totally confident i will land on each thing and go 'whoa this is great'\". Replaces the one-colour silhouette whose eye cut-outs read as '?' and ')' at tab size.",
+  "bytes": 3672,
+  "sha256": "57916a0ab69e59a5826ccd22ebc4694df6aa64ae2e1e0ab6e46059a34c854428",
+  "checked": "Rendered in Chromium and WebKit at 16, 32 and 48 CSS px, device pixel ratio 1 and 2, light and dark colour scheme, on light and dark tab strips; blind defect review: no blocking defects."
  },
  {
   "file": "icons/ouro-hx.svg",
