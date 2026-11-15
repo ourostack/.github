@@ -28,5 +28,12 @@ Shared guidance for every agent and person making pictures for ourostack, spoonj
 1. Compare each character, zoomed in, side by side with its reference sheet.
 2. Look at the picture at about 400 px wide, as on a phone, and at every crop it will be cut to.
 3. Show it to a fresh reviewer who sees only the picture, and ask what is happening in one sentence. If they hesitate or read something else, fix it or drop it.
+4. **Blind defect hunt: no picture ships without it.** Give a fresh reviewer only the image and crops of each figure at 4x. Don't tell them what changed and don't share the author's description. Ask: "list everything physically wrong".
+   - Count heads, arms, hands, legs and tails per figure, and trace every limb to its joint.
+   - Check that every held object has a hand holding it.
+   - Check each object's facing against the camera and its use (a ship's wheel faces the bow, a door hangs on its hinges).
+   - Check day and night separately.
+
+   It ships only when that reviewer finds nothing. The author's notes and a "fixed what was asked" check never count as a pass. Ari, 2026-11-15, after reviewers twice passed an airship hero whose person had three arms and whose helm faced the camera.
 
 Whoever sees art on a surface that misses this bar fixes it, or tells that surface's owner with the evidence.
