@@ -572,7 +572,7 @@
   "generated": "Light master v2, 2026-11-13, edited from the earlier gatefold master",
   "approval": "Ari called the earlier gatefold art slop, 2026-11-13: its open book had three pages and its phone folded in three. This master redraws the same picnic with a two-page book and a plain phone.",
   "crop": "1536x576 from the 1536x1024 master (rows 248–824), WebP q86",
-  "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4",
+  "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de",
   "generation": [
    {
     "master": "gatefold-light-master-v2",
@@ -581,6 +581,28 @@
      "gatefold.png (the earlier light scene)"
     ],
     "master_sha256": "172541ec9b1b30d3e1b459f18fb639c2ac5da0d490787ac9641306b4ef5bc866"
+   }
+  ],
+  "edits": [
+   {
+    "what": [
+     "the glowing trail that ran through the meadow, meaning nothing here, is gone; the grass, flowers and sparkle continue",
+     "the book's pages show only their pictures, the stacked books' spines and the mug are plain, and the little house on the page has no emblem",
+     "the dotted strings of light beads threaded through the flowers at both edges are gone; scattered dew glints stay"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "cb4789309be8be9e977d888642f5616d854c20c52b58bcaa3116d62f97be262b",
+     "1b8dd8e4e047f8ff66cd98d007f61d9d827f0238368a2bf3d82633deb9950684",
+     "c57b22a2a7c775bd3b94baa62fc874a86bc17569649d0aa44d27002f8885ae3d",
+     "27910172592687764844b91d3e92dd8f6fcfd5c01db88edd7671b8114215db90",
+     "0e4a5e0813888796cbf6bb63a28e923c149dcaba1990a2125907c3e041f35770"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
    }
   ]
  },
@@ -3004,7 +3026,7 @@
   "file": "scenes/gatefold-640.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -3012,14 +3034,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 49924,
-  "sha256": "2cd8c6ea7b76836fc1ba871695718bf7e5c60ba6d4be34de83fbe3cb2b076a0f"
+  "bytes": 47162,
+  "sha256": "a2a73c116a9b5c1fc0c9689d2f01f2a74b450413948c1946e61d94751172b977"
  },
  {
   "file": "scenes/gatefold-640.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -3027,14 +3049,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 42065,
-  "sha256": "cc636e74098cb2f64ed1b3554723f9949aff9ef530a3a3cfd59d5909e7b927c5"
+  "bytes": 40281,
+  "sha256": "b75da3f9e276a0d6c062eec56a0e9f20e07649f0e96a09119cb649ea7f877e93"
  },
  {
   "file": "scenes/gatefold-960.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -3042,14 +3064,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 94820,
-  "sha256": "fb53073beb72742bd859518fc27574a8ed1d5b63c1584d3c58e81127f856ee3a"
+  "bytes": 89022,
+  "sha256": "b516446ae7600d625d2412480f4e4b0c6289b138f2b8961095cee6186885fd03"
  },
  {
   "file": "scenes/gatefold-960.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -3057,14 +3079,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 76290,
-  "sha256": "e301d7b2368d2d82ca976a33dae31484ecb19ca5735fb47a918588db73b1bb65"
+  "bytes": 71066,
+  "sha256": "50060a5840531eb737b66b86c578b6bfd84c50f23e2fc3fe5c4dc6186c7f56b4"
  },
  {
   "file": "scenes/gatefold-1536.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -3072,14 +3094,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 146457,
-  "sha256": "4117c77fdf292f863d2b45aec303ae5a5e11e10de8ce1eb55a641fc78b80e423"
+  "bytes": 133313,
+  "sha256": "d9edf95c185e56acdbb18604c65da257d13ccc1dc911bbbbae464082fcf115c3"
  },
  {
   "file": "phone/gatefold-384.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
@@ -3087,14 +3109,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 30016,
-  "sha256": "ec2e1c1f9c9269f4dbccf6e524ce0e6abe249c68381a98edfa9f74275406e8cd"
+  "bytes": 29350,
+  "sha256": "a4d17ebd3ee144432cf377a33712767d5105a29c2b7b426b2eab18b4c73d4309"
  },
  {
   "file": "phone/gatefold-384.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
@@ -3102,14 +3124,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 24829,
-  "sha256": "5fbc1e43ecdc1a0d5b49f80189f9614415ea58459dfc1bf58dbc21997acc1cfc"
+  "bytes": 23996,
+  "sha256": "dae4752d2131dedb27644753b6f33b4d0eb2aa580ea2b1c9244c5609c7e4768c"
  },
  {
   "file": "phone/gatefold-768.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
@@ -3117,14 +3139,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 84686,
-  "sha256": "e481f56a0c51dfbf2cd2280336cf2cb53f3e91d105a71d6c9b8e177737805435"
+  "bytes": 80874,
+  "sha256": "27a78958a4c5f1492058d84a3f2b3ca0ccfea71d9d8f4a2f9612cc763891ad46"
  },
  {
   "file": "phone/gatefold-768.avif",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
@@ -3132,14 +3154,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 63118,
-  "sha256": "b4ea4459ea15387e5f20e045aa4aff13d29afec52ec29effca8f73c0060630d1"
+  "bytes": 60110,
+  "sha256": "eaaaab5271a111c3200d6777c9e7f5c648f07aad90371724e012fb9d25c9de64"
  },
  {
   "file": "social/gatefold.jpg",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [244, 0, 1396, 576] then resize to 1280x640 (Lanczos)",
@@ -3147,14 +3169,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 286830,
-  "sha256": "4450b95edc666cfbdc3bc2926dae1985575b9731a2270ac8d409a59431d28718"
+  "bytes": 273061,
+  "sha256": "4baf7dde7b41dba3337b8a8230cd11da04ee09331b3640ac8bbec2bf47ae2624"
  },
  {
   "file": "og/gatefold.jpg",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [282, 0, 1379, 576] then resize to 1200x630 (Lanczos)",
@@ -3162,8 +3184,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 265963,
-  "sha256": "ee4ce8e3297922f8237e2e565fdf836a5eef27b18d1059f0d96fcc968406cbd7"
+  "bytes": 253077,
+  "sha256": "ccfd955fa6d4a7f284e2aec5a37a7e803cbe04b34fe971d6909694c8a9dd9163"
  },
  {
   "file": "scenes/homebrew-tap-640.webp",
@@ -7032,18 +7054,18 @@
   "file": "upscaled/gatefold.webp",
   "derivedFrom": {
    "file": "headers/gatefold.webp",
-   "sha256": "da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4"
+   "sha256": "1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/gatefold.webp (sha256 da7b8bd40fcd27d3579edf450715926825ed4a8df7c40e3333ea91aea107d7f4); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/gatefold.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9778 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-13",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/gatefold.webp (sha256 1275e3dba70bb285c3206597c880c06f5692df1c1a34c0fe76b8bf309dae49de); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/gatefold.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9786 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1511274,
-  "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+  "bytes": 1401056,
+  "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
  },
  {
   "file": "upscaled/homebrew-tap.webp",
@@ -8322,7 +8344,7 @@
   "file": "scenes/gatefold-2304.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -8330,14 +8352,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 231271,
-  "sha256": "788874ce62a1f1c30c8db9f0af001f2a84f94dfaae20814625d51f5502e9012a"
+  "bytes": 213301,
+  "sha256": "d5d1d4e9f94a59e11e6d51a67ce004b5956afc36a249bc5097161e48b9c57047"
  },
  {
   "file": "scenes/gatefold-3072.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8345,14 +8367,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 308084,
-  "sha256": "2f0612a51cec23b37213f803933b2dbfd59143aa2674f617ed9ab15ad0873341"
+  "bytes": 280846,
+  "sha256": "a7a49314119c3530950f68633ad6db7a1b80683f21dfd072fdd8883442f8ce64"
  },
  {
   "file": "scenes/gatefold-3072.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8360,14 +8382,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 455868,
-  "sha256": "c647aca2b591636460d114ceb2a43df9cbaa132ed914b581d78cdae8ebc263ac"
+  "bytes": 416886,
+  "sha256": "2524f1e8464e896452264f75ce09e0c2cd9a3b14f7737085596d3e8ea7d7f6c6"
  },
  {
   "file": "scenes/gatefold-3840.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -8375,14 +8397,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 382228,
-  "sha256": "7659def2d17e9f6d6971e876f8c7fcb2cffe7ba672d5bdb984cca105603ebb1a"
+  "bytes": 347329,
+  "sha256": "b8e55d83ce8105208972f218ab4f2c76b6d3e98e53016ef78b691b8b7c8c2e93"
  },
  {
   "file": "scenes/gatefold-5120.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -8390,14 +8412,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 496076,
-  "sha256": "3b80aec12c500c2f1d176043d063d10d4b2d7925d8e4831f566afe6be2eb40a6"
+  "bytes": 448552,
+  "sha256": "581154b9215c02845d0310f1b1e1aae2c61b9ca83d5076df1f920058b08dad29"
  },
  {
   "file": "scenes/gatefold-7680.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8405,14 +8427,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 704473,
-  "sha256": "69b1bef932ad9b28b7788159a7aa76fc197a0c9ce9d12b32b1c949089460e5a3"
+  "bytes": 636497,
+  "sha256": "6e453b453ce3f2a8f1ce207e0d202ffd1ea0915796e28c4f4a0386f6e4c1030e"
  },
  {
   "file": "scenes/gatefold-7680.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8420,8 +8442,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1232640,
-  "sha256": "0c7979c8ada9afa144f8098ae0162f15a459577ae72476489d6fd4d8e7c40032"
+  "bytes": 1140374,
+  "sha256": "63398b3e3dbeb0fea6169d84b3489d75f01188b26d850734dd21aa76816695d4"
  },
  {
   "file": "scenes/homebrew-tap-2304.avif",
@@ -10857,7 +10879,7 @@
   "file": "phone/gatefold-1152.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -10865,14 +10887,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 141306,
-  "sha256": "669e5c1a0d6e7eaaadf8c362e3a4c5d7b68a9e82475109485a95f8d7ef8eae8b"
+  "bytes": 136956,
+  "sha256": "5c9f1781d775780a8f5d7dfa4ac3317a18b553889f3cd8ac4d2933f7fcaf5ad8"
  },
  {
   "file": "phone/gatefold-1152.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -10880,14 +10902,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 99187,
-  "sha256": "9d6a920298ffcc3d5acba4e021ba2d9aa630284006d260b0fec5bac2de5bc711"
+  "bytes": 94289,
+  "sha256": "a459f1d74030c40b0831b3ff58b789f1fbcbd032028f3572958a508a46a6588c"
  },
  {
   "file": "phone/gatefold-1536.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -10895,14 +10917,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 197940,
-  "sha256": "4c28f764d59e157372c26c9a33e0da8b3bcc5e07ed552c795f6847e8cc19835c"
+  "bytes": 187382,
+  "sha256": "7656e34f702fd5af678d91d8a81ecea8dcbe8f762c366e66fe0b81dbf5c0c95a"
  },
  {
   "file": "phone/gatefold-1536.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold.webp",
-   "sha256": "7ed45e867583f340bebe442de671fa488971ed0f7544d9026d62c77818b4c941"
+   "sha256": "f4417ad28b8729f05fcdea9149bc1a8dc3ef36efb0add63f24afd11ddccb8c83"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -10910,8 +10932,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 131448,
-  "sha256": "e3944d329aef35ca4b1333dca217ac5d65e666a1af0a4c53d596662c6408475b"
+  "bytes": 124362,
+  "sha256": "73902861aa67eb73f02eec83fc4dbe260588e69ee6e2b690632d67ced3b370ca"
  },
  {
   "file": "phone/homebrew-tap-1152.webp",
@@ -13444,7 +13466,7 @@
   "generated": "Dark master, 2026-11-13, edited from the light master v2",
   "approval": "Ari asked for night versions of the site's heroes, 2026-11-13: the same picnic, at night.",
   "crop": "1536x576 from the 1536x1024 master (rows 248–824), WebP q86",
-  "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21",
+  "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317",
   "generation": [
    {
     "master": "gatefold-dark-master",
@@ -13454,13 +13476,36 @@
     ],
     "master_sha256": "b18be0894c518a52a455f58180fcb57c386c7ca22a933f3482f6a3d7794abfb4"
    }
+  ],
+  "edits": [
+   {
+    "what": [
+     "the glowing trail that ran through the meadow, meaning nothing here, is gone; the grass, flowers and sparkle continue",
+     "the book's pages show only their pictures, the stacked books' spines and the mug are plain, and the little house on the page has no emblem",
+     "the night version of the same edits",
+     "the dotted strings of light beads threaded through the flowers at both edges are gone; scattered dew glints stay"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "c01d9bb228cd8a7d7e659bcc1f780edc10101bdd56a616011757080c38678b41",
+     "921fbcb8dc1795c1f48c7cb4930d77e94134d2a1e87c27daaa7ba0b746f85cdb",
+     "4faf2fc9111786372e7b1abdc46e91c9e347d1cd4a39b00b587f89f21e35bbce",
+     "f85fb77bc34ebc2536b73f0b1917f5c66f711095cae441f916d204a3b6024a15",
+     "7a8cd3d47f437ca8bab9f5971f105c0413075cdabe60fe75ea1c68a07ebdc8ed"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
+   }
   ]
  },
  {
   "file": "scenes/gatefold-dark-640.webp",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -13468,14 +13513,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 44502,
-  "sha256": "1834d949599aa88691c8483abd2b767a6f77093013506e52e877f423c585e0a2"
+  "bytes": 42456,
+  "sha256": "2bd14f3d849e380abd4b3a403eb88915b98cc116bcc658789ca8ba7199e85ba8"
  },
  {
   "file": "scenes/gatefold-dark-640.avif",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -13483,14 +13528,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 37351,
-  "sha256": "d8b17f2c7acedb1f87fd5775ec7c4f266afe687ae996dd4e6693d26e466f7053"
+  "bytes": 35927,
+  "sha256": "459489065d078246733e3c537ad3f75b84a83187197424d6a9eb27e680c1b287"
  },
  {
   "file": "scenes/gatefold-dark-960.webp",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -13498,14 +13543,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 86136,
-  "sha256": "e81418101fdcf6a348489f25827cab17b04aa9d9fed4c1a151ee68e704ded336"
+  "bytes": 81504,
+  "sha256": "464e4171d8f5628e211509c0a4c62763b7f897e222cca0f98694c83adb42a152"
  },
  {
   "file": "scenes/gatefold-dark-960.avif",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -13513,14 +13558,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 69026,
-  "sha256": "923175bcabde376586a0db500a013e33823d572befe79518a7cee94256fa26ce"
+  "bytes": 65701,
+  "sha256": "ec61be1a5e35d3c89ee0d683b9d69acc92021fd9f1e0b5eb2fec9a23744f3e75"
  },
  {
   "file": "scenes/gatefold-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -13528,14 +13573,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 129904,
-  "sha256": "7033dc2c4e75692c9010cdf514bcca5ebd2536b2852edb46456371a8d67debaf"
+  "bytes": 122895,
+  "sha256": "737dc0f43161d6d6cf0116a90a990b6459e44f39180d7214acb7160e148189db"
  },
  {
   "file": "scenes/gatefold-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -13543,14 +13588,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 205251,
-  "sha256": "6bcb60f8b09c2ff2c1034b22f6e340a3f9aa66ebfab87715fc72c8bf5ab04faa"
+  "bytes": 191651,
+  "sha256": "6fbaab5205287fb876de80f86baa7afa687ddb83b0ce68d7dde77c28f0c5c482"
  },
  {
   "file": "scenes/gatefold-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -13558,14 +13603,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 272818,
-  "sha256": "8b364652267be11accd9ddbda5cc85dee4acec6615c96258c70d8a03532b34fe"
+  "bytes": 252621,
+  "sha256": "a1fac723d0a51d0ed92b74ee66cc20e52530706570aac168d7e1d9e86e17fd2f"
  },
  {
   "file": "scenes/gatefold-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -13573,14 +13618,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 338984,
-  "sha256": "d803497fde5daa44e312c5490a483a5c4638a2bce401d990f4a4b48c0e907429"
+  "bytes": 311925,
+  "sha256": "d7db5e353dfb68f10f168d20bbad4dbd9265f95536a7194d033e02d5290e6d5c"
  },
  {
   "file": "scenes/gatefold-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -13588,14 +13633,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 442281,
-  "sha256": "5ad54e34850b8dfff729c8be9fdebc96355a01ebe3f2bbccf2973947a5c7b09c"
+  "bytes": 401754,
+  "sha256": "42bd4068082d5ae468ef546ad4dabf32e1b377b9373ef12466130d90784a9065"
  },
  {
   "file": "scenes/gatefold-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -13603,14 +13648,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 630069,
-  "sha256": "b1783cdf57f10af2450314e3841db7d9059e69c1eb4672ce10c9e1c595f41378"
+  "bytes": 573767,
+  "sha256": "685d72af8ba9a1df3c418321a5211c761a2225e94260454b70e565cce49ab4e4"
  },
  {
   "file": "scenes/gatefold-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -13618,14 +13663,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 391616,
-  "sha256": "792fb106580b39e476cf8b5ffe6c3c213911ec11fd796daaf4bd54c666dbdbb2"
+  "bytes": 363402,
+  "sha256": "27c055039aeb0f6d30c55bac062abb081f0ec9a285cab3afd6a43f9fc4c482c6"
  },
  {
   "file": "phone/gatefold-dark-384.webp",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
@@ -13633,14 +13678,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 27290,
-  "sha256": "d47901cb38457e004ed06a5801b75e88604c64200d7ff84226a3779355c82a00"
+  "bytes": 27016,
+  "sha256": "247aad883aec1ccfd59d96ab42821834b353fe79987216058e9a04b0931dd516"
  },
  {
   "file": "phone/gatefold-dark-384.avif",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 384x288 (Lanczos)",
@@ -13648,14 +13693,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 22555,
-  "sha256": "b1d34088159de18d7fc15a7d514af9cb5b5a1841cb35f096374d74f58398cabe"
+  "bytes": 22244,
+  "sha256": "67141df6f0616a221bfe146f8b6a94451c5573bef6845d7620b48b81c8b05b3b"
  },
  {
   "file": "phone/gatefold-dark-768.webp",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
@@ -13663,14 +13708,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 75900,
-  "sha256": "b33976f376082844b8ff6d3eb2ee1a4f0ec4be3e18fe0fe274eda918bf25fa91"
+  "bytes": 73046,
+  "sha256": "cce922bcc7b88d56a820c96a9551fcf10085844f74e9898440311e7c672968bd"
  },
  {
   "file": "phone/gatefold-dark-768.avif",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [640, 0, 1408, 576] then resize to 768x576 (Lanczos)",
@@ -13678,14 +13723,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 57243,
-  "sha256": "cff25491d0824174fa4d33968446af4c7efa699286a3fa321949c718db6eca5b"
+  "bytes": 55751,
+  "sha256": "a23ddd812ccf03d6ccd18fb8258778a6d23f84bb2aeb50ac1f9988a4ddc46c49"
  },
  {
   "file": "og/gatefold-dark.jpg",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [282, 0, 1379, 576] then resize to 1200x630 (Lanczos)",
@@ -13693,8 +13738,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 240071,
-  "sha256": "367e49f50c8123a91f75e445676f9fe794aaa0f169003de4769b1f74f3e16824"
+  "bytes": 232072,
+  "sha256": "1247cad7786ed05525051dc3ab3e3b501cfdc101296baea3a3665523d2dd17bb"
  },
  {
   "file": "headers/friends-relay-dark.webp",
@@ -19887,18 +19932,18 @@
   "file": "upscaled/gatefold-dark.webp",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/gatefold-dark.webp (sha256 904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/gatefold-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9741 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-13",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/gatefold-dark.webp (sha256 db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/gatefold-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9748 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1385154,
-  "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+  "bytes": 1269782,
+  "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
  },
  {
   "file": "upscaled/ouro-native-apple-app-shell-dark.webp",
@@ -20375,7 +20420,7 @@
   "file": "phone/gatefold-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -20383,14 +20428,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 126756,
-  "sha256": "cfcf43aefdc9368b04886522e56ff936fda119fc4e34b96e3f5e604055524743"
+  "bytes": 121496,
+  "sha256": "d2aa7cdd636fe3a5ece12c21940145a54ff4f3661c31ccad9aa8ecbbe9fbaa7c"
  },
  {
   "file": "phone/gatefold-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -20398,14 +20443,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 91759,
-  "sha256": "cba69f41acf201cc066679f699d932dae9ff8ecc2a6ad6f5e33a3f65effff758"
+  "bytes": 87999,
+  "sha256": "ecf0142a66d40e699fef6d73693cde29789b2e04cd339c339d4e1431d6987350"
  },
  {
   "file": "phone/gatefold-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -20413,14 +20458,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 178168,
-  "sha256": "75dd260755bc930b37c6fbc612c9c878bf0bd6ad55f09fbe65a3d882b2a9a03e"
+  "bytes": 170182,
+  "sha256": "bdf05fe6c143c2ad5868951cdb2d0dd221178363578115ff65b32362da706ba2"
  },
  {
   "file": "phone/gatefold-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2560, 0, 5632, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -20428,8 +20473,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 122471,
-  "sha256": "09c26773413f9f7a508d13b40b37c7540f4142dcf0340da51743aa3f7c17fe5c"
+  "bytes": 116017,
+  "sha256": "1880ea6e4bb4954459e2c7492952296024a03a4a0506159f9f4691ebf199d3d8"
  },
  {
   "file": "phone/homebrew-tap-dark-1152.webp",
@@ -23750,7 +23795,7 @@
   "file": "scenes/gatefold-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/gatefold-dark.webp",
-   "sha256": "a468841cf2634f12ff82bfc6673c07972434b5eb0d9402491fd98b1b96aa4966"
+   "sha256": "c9ec8a6301c20801e7ccc1e0da22317f086724ef52eea8ed62f6c60219bda407"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -23758,14 +23803,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1074048,
-  "sha256": "09da37df0f6dade81079b43d668e4ac5fd6bc06a4b103a4c37815924d6c4befe"
+  "bytes": 990034,
+  "sha256": "f2982912a39adea014e8a63f238d6eb41b9c2940723fdc43268b6315047cc1d4"
  },
  {
   "file": "social/gatefold-dark.jpg",
   "derivedFrom": {
    "file": "headers/gatefold-dark.webp",
-   "sha256": "904c26b0d9bb9a5c50fd20f28a311046bad865484e6cf3cc29e28f99598d0e21"
+   "sha256": "db13ea199103785fc00e8c8b5b6314705f81c00ee8d99349510996e8e552d317"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [244, 0, 1396, 576] then resize to 1280x640 (Lanczos)",
@@ -23773,8 +23818,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 258627,
-  "sha256": "fbf9f8bd3d9441d828e8511142b001ec03394e2df9b72812f4d12b2e4966e018"
+  "bytes": 249790,
+  "sha256": "b9b2ac8fb8528adba396fc64f9382da738bcb501e56b0ae6b9507e533e02912d"
  },
  {
   "file": "scenes/ouro-ui-apple-dark-7680.webp",
