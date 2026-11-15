@@ -94,28 +94,30 @@ def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
     return (left, 0, left + width, im.height)
 
 
-def whole_with_sky(src, cw, ch):
-    """The whole header at the card's width, on the card's foot, with its sky carried up to fill
-    the card: the top rows' colours, smoothed sideways into a soft gradient, fading into the
-    scene's own sky over its top 32 px. Nothing is drawn."""
-    h = round(src.height * cw / src.width)
-    scene = src.resize((cw, h), Image.LANCZOS)
-    pad = ch - h
-    top = scene.crop((0, 0, cw, 24)).resize((cw, 1), Image.BOX)
-    wide = Image.new("RGB", (cw + 800, 1))
-    wide.paste(top.resize((400, 1)).transpose(Image.FLIP_LEFT_RIGHT).crop((0, 0, 400, 1)).resize((400, 1)), (0, 0))
-    wide.paste(top, (400, 0))
-    wide.paste(top.transpose(Image.FLIP_LEFT_RIGHT).crop((cw - 400, 0, cw, 1)), (cw + 400, 0))
-    wide = wide.resize((cw + 800, 8)).filter(ImageFilter.GaussianBlur(120)).crop((400, 4, cw + 400, 5))
-    out = Image.new("RGB", (cw, ch))
-    out.paste(wide.resize((cw, pad + 32), Image.BILINEAR), (0, 0))
-    fade = Image.linear_gradient("L").resize((cw, 32))
-    out.paste(scene, (0, pad))
-    band = wide.resize((cw, 32), Image.BILINEAR)
-    out.paste(band, (0, pad), Image.eval(fade, lambda v: 255 - v))
-    return out, (f"whole scene resized to {cw}x{h} (Lanczos) on the card's foot; the {pad} px above carry the "
-                 "scene's top 24 rows of sky up, averaged per column and blurred sideways (Gaussian radius 120), "
-                 "fading into the scene over its top 32 px")
+SKY_OVERLAP = 32  # rows each brand/skies file shares with the top of its header
+
+
+def whole_with_sky(scene, src, cw, ch, centre):
+    """The whole header with its real sky (brand/skies/<scene>.webp, from the scene's master or an
+    outpaint of it) stacked above, cut to the card's aspect from the foot up and resized. Every
+    pixel is picture: no band, gradient or fade."""
+    sky_rel = f"skies/{scene}.webp"
+    sky = Image.open(BRAND / sky_rel).convert("RGB")
+    overlap = SKY_OVERLAP
+    above = sky.height - overlap
+    tall = Image.new("RGB", (src.width, above + src.height))
+    tall.paste(src, (0, above))
+    # The sky's last rows repeat the header's top rows: cross-fade them so no seam shows.
+    fade = Image.new("L", (src.width, sky.height), 255)
+    fade.paste(Image.linear_gradient("L").rotate(180).resize((src.width, overlap)), (0, above))
+    tall.paste(sky, (0, 0), fade)
+    h = min(tall.height, round(src.width * ch / cw))
+    w = round(h * cw / ch)
+    box = crop_centre(tall, w, centre)
+    box = (box[0], tall.height - h, box[2], tall.height)
+    return tall.crop(box).resize((cw, ch), Image.LANCZOS), (
+        f"the header with {sky_rel} above it, its last {overlap} rows cross-faded into the header's top ({src.width}x{tall.height}), crop box {list(box)} "
+        f"then resize to {cw}x{ch} (Lanczos)"), sky_rel
 
 def crops_for(scene):
     """A scene's crop centres: its own, or for a night scene (<scene>-dark) not in crops.json, its day twin's,
@@ -198,18 +200,20 @@ def build(scenes=()):
 
         # GitHub social preview (1280x640) and Open Graph / Twitter card (1200x630): a window
         # around "wide" (or "og" for the narrower card), or, for a scene whose cast is wider
-        # than either card ("wideFit": "whole"), the whole header with its sky continued above.
+        # than either card ("wideFit": "whole"), the whole header under its real sky (brand/skies/).
         for kind, (cw, ch), centre, use in (
                 ("social", (1280, 640), c["wide"], "GitHub social preview (1280x640)"),
                 ("og", (1200, 630), c.get("og", c["wide"]), "Open Graph and Twitter card (1200x630)")):
+            extra = {}
             if c.get("wideFit") == "whole":
-                im, op = whole_with_sky(src, cw, ch)
+                im, op, sky_rel = whole_with_sky(scene, src, cw, ch, centre)
+                extra = {"alsoFrom": {"file": sky_rel, "sha256": sha((BRAND / sky_rel).read_bytes())}}
             else:
                 box = crop_centre(src, round(src.height * cw / ch), centre)
                 im = src.crop(box).resize((cw, ch), Image.LANCZOS)
                 op = f"crop box {list(box)} then resize to {cw}x{ch} (Lanczos)"
             yield f"{kind}/{scene}.jpg", encode(im, "jpg"), {
-                **base, "use": use, "operation": op, "encoder": ENCODERS["jpg"]}
+                **base, **extra, "use": use, "operation": op, "encoder": ENCODERS["jpg"]}
 
     # Touch and app-manifest icons: the approved rich render on the dawn sky.
     for mark in () if scenes else ("ouro", "ouro-hx"):
