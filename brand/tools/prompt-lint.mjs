@@ -52,7 +52,7 @@ const RISKS = [
   {
     id: "single-rope-climb",
     test: (s) => /\bclimb\w*\b[^.;]*\b(a|the|one) (single )?(rope|shroud|line)\b/i.test(s),
-    message: "A figure climbing one rope came back with a foot off the rope in two of three candidates (airship cand-A, cand-B). Use a support for every contact: a rope ladder's rungs, a mast step.",
+    message: "A figure climbing one rope came back not gripping it, or with a foot off it, in two of three airship candidates (#115). Use a support for every contact: a rope ladder's rungs, a mast step.",
   },
 ];
 
@@ -172,7 +172,7 @@ export function lint(text) {
   }
   const all = [...sections.values()].flat().join("\n");
   if (/\b(scarf|scarves|cape|flag|pennant|ribbon|streamer|tassel)\b/i.test(all) && !/\bwind\b/i.test(all)) {
-    warn("Setting", "soft things (a scarf, a flag) with no wind named hang wrong next to ones that stream (airship cand-B); name one wind direction in the setting and repeat it on each soft item", "wind");
+    warn("Setting", "soft things (a scarf, a flag) with no wind named hang wrong: a loose scarf end read as a third limb (airship, #115); name one wind direction in the setting and repeat it on each soft item", "wind");
   }
   return { errors, warnings };
 }
