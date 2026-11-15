@@ -6,10 +6,10 @@ What the one-shot prompting guide cites. Nothing here ships; it is the record of
 
 - `core-prompt.md`: the one prompt the three candidates were generated from (1536x1024, built-in image tool, with a world reference and `brand/ouro.png`).
 - `cand-A.jpg`, `cand-B.jpg`, `cand-C.jpg`: the three whole candidates, downsized to 1400 px.
-- `cand-B-three-fixes.jpg`: the lane picked B and needed three targeted fixes. Left is before, right is after:
-  1. the amber rigger's feet were not both on the rope;
-  2. the person's scarf hung straight down while Loop's streamed in the wind;
-  3. Loop's grip on the wheel.
+- `cand-B-three-fixes.jpg`: the lane picked B and needed three targeted fixes before it shipped in ourostack/.github#115. Left is before, right is after, in the words of its provenance:
+  1. the amber rigger "hung beside the shroud without gripping it";
+  2. the person's scarf: "one end hung down beside the reaching arm and could read as a third limb";
+  3. Loop's far mitten "floated past the wheel, detached from his arm".
 - `cand-A-C-crops.jpg`: figures from A (top) and C (bottom). In both, the person's "open, relaxed mitten" came out as a hand with spread fingers, and in A the rigger has one foot off the rope.
 
 Findings that held across all three: no extra limbs (the prompt counted every arm and said what each hand holds); three distinct agents, each with its own outfit and expression; Ouro on the rail cap, lit by the scene; one consistent perspective. What failed: hands asked to be "open", a free climb on a single rope, a scarf with no wind, glass bodies drawn as tiled cells, and the person drawn as a thin stick figure because no build was given.
