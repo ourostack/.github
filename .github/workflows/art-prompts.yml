@@ -1,0 +1,28 @@
+name: art prompts
+
+# Lints every image prompt written to the one-shot template (agents/art-prompting.md) and tests the
+# linter. A prompt that fails here would come back with a known blocker, so fix the prompt first.
+on:
+  push:
+    branches: [main]
+    paths: ["**/*.prompt.md", "brand/tools/prompt-lint*", "agents/art-prompting.md", ".github/workflows/art-prompts.yml"]
+  pull_request:
+    paths: ["**/*.prompt.md", "brand/tools/prompt-lint*", "agents/art-prompting.md", ".github/workflows/art-prompts.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test the linter
+        run: node --test brand/tools/prompt-lint.test.mjs
+      - name: Lint every prompt
+        run: git ls-files -z '*.prompt.md' | xargs -0 node brand/tools/prompt-lint.mjs

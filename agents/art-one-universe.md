@@ -28,6 +28,8 @@ Shared guidance for every agent and person making pictures for ourostack, spoonj
 
 ## How to check a picture before anyone sees it
 
+Before generating, write the prompt to the one-shot template in [art-prompting.md](art-prompting.md) and lint it; most blockers below start as a missing or risky word in the prompt.
+
 1. Compare each character, zoomed in, side by side with its reference sheet.
 2. Look at the picture at about 400 px wide, as on a phone, and at every crop it will be cut to.
 3. Show it to a fresh reviewer who sees only the picture, and ask what is happening in one sentence. If they hesitate or read something else, fix it or drop it.
