@@ -33,7 +33,8 @@ NIGHT = {
     "ouroboros-skills-dark": {"box": (120, 0, 1502, 576), "use": "phone hero (768:320)"},
     "ourostack-dark": {"box": (498, 0, 1522, 512), "use": "phone hero (2:1)"},
     # Right 46 px strip (x 1490-1536) stretched to 70 px, as the 768 px file was.
-    "playwright-focus-proof-dark": {"box": (88, 0, 1560, 575), "use": "phone hero (2.56:1)", "strip": (1490, 70)},
+    # "small": derive.py would cut its 384 and 768 px files at the day twin's window, so this script cuts them too.
+    "playwright-focus-proof-dark": {"box": (88, 0, 1560, 575), "use": "phone hero (2.56:1)", "strip": (1490, 70), "small": True},
 }
 
 
@@ -85,6 +86,34 @@ def build(scenes=()):
                     "encoder": ENCODERS[fmt]}
 
 
+def build_small(scenes=()):
+    """The 384 and 768 px phone files of a hand-framed night scene, from its header, for a scene marked "small"."""
+    for scene, spec in NIGHT.items():
+        if not spec.get("small") or (scenes and scene not in scenes):
+            continue
+        header_rel = f"headers/{scene}.webp"
+        header_bytes = (BRAND / header_rel).read_bytes()
+        im = Image.open(io.BytesIO(header_bytes)).convert("RGB")
+        box, pre = spec["box"], ""
+        if "strip" in spec:
+            x, to = spec["strip"]
+            strip = im.crop((x, 0, im.width, im.height)).resize((to, im.height), Image.LANCZOS)
+            out = Image.new("RGB", (x + to, im.height))
+            out.paste(im.crop((0, 0, x, im.height)), (0, 0))
+            out.paste(strip, (x, 0))
+            pre = f"right {im.width - x} px strip (x {x}\u2013{im.width}) stretched to {to} px so Ouro clears the phone edge, then "
+            im = out
+        window = im.crop(box)
+        for w in (384, 768):
+            h = round((box[3] - box[1]) * w / (box[2] - box[0]))
+            r = window.resize((w, h), Image.LANCZOS)
+            for fmt in ("webp", "avif"):
+                yield f"phone/{scene}-{w}.{fmt}", encode(r, fmt), {
+                    "derivedFrom": {"file": header_rel, "sha256": sha(header_bytes)}, "approval": DERIVED_APPROVAL,
+                    "use": spec["use"], "operation": f"{pre}crop box {list(box)} and resize to {w}x{h} (Lanczos)",
+                    "encoder": ENCODERS[fmt]}
+
+
 def main():
     check = "--check" in sys.argv[1:]
     scenes = [a for a in sys.argv[1:] if a != "--check"]
@@ -97,7 +126,7 @@ def main():
     by_file = {e["file"]: e for e in prov}
     bad = []
     n = 0
-    for rel, data, entry in build(scenes):
+    for rel, data, entry in [*build_small(scenes), *build(scenes)]:
         path = BRAND / rel
         if check:
             if not path.exists() or sha(path.read_bytes()) != by_file.get(rel, {}).get("sha256"):
