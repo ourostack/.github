@@ -21,6 +21,7 @@ Shared guidance for every agent and person making pictures for ourostack, spoonj
 - **People don't break the three smells.** From [ouroboros.bot](https://ouroboros.bot/): you're doing it by hand; you're teaching it twice; control keeps coming back to you. People decide and judge; agents do the work. People never push, carry, build or type, and never hover to approve every step.
 - **No recognizable humans** (Ari, 2026-11-14). People are faceless, in the shared universe's figure style; never a likeness of a real person.
 - **Everything makes physical sense.** Check hands, tools, legs and seats zoomed in. CIT's figures wear mittens with a thumb and never point with a finger.
+- **Devices are current-generation or clearly vintage, never a few years old.** Ari, 2026-11-15, on phones with a notch but no Dynamic Island: "use either very modern devices, or vintage ones - here, you're using phones that are recognizably 5ish years old … make all art greenfield! using tech that would feel dated (but not vintage) it makes the art read as dated." Today's phones, laptops and screens, or an obvious antique (rotary phone, brass telescope, typewriter); nothing in between.
 - **No picture fades into the page.** Hard edges, no text glow, and words beside or above the art, never over it.
 
 ## How to check a picture before anyone sees it
@@ -32,6 +33,7 @@ Shared guidance for every agent and person making pictures for ourostack, spoonj
    - Count heads, arms, hands, legs and tails per figure, and trace every limb to its joint.
    - Check that every held object has a hand holding it.
    - Check each object's facing against the camera and its use (a ship's wheel faces the bow, a door hangs on its hinges).
+   - Check any device that reads dated: anything that isn't current-generation or clearly vintage.
    - Check day and night separately.
 
    It ships only when that reviewer finds nothing. The author's notes and a "fixed what was asked" check never count as a pass. Ari, 2026-11-15, after reviewers twice passed an airship hero whose person had three arms and whose helm faced the camera.
