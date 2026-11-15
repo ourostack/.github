@@ -203,7 +203,7 @@ function main(argv) {
     if (!path) return usage("--rate needs a provenance.json path");
     const result = oneShotRate(JSON.parse(readFileSync(path, "utf8")));
     if (json) console.log(JSON.stringify(result, null, 2));
-    else if (!result.candidates) console.log("one-shot rate: no candidates logged yet (see agents/art-prompting.md#the-loop)");
+    else if (!result.candidates) console.log("one-shot rate: no candidates logged yet (see agents/art-prompting.md#3-the-loop)");
     else console.log(`one-shot rate: ${result.clean}/${result.candidates} whole candidates had zero blockers (${Math.round(result.rate * 100)}%)`);
     return 0;
   }
