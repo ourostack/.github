@@ -1,5 +1,5 @@
 {
-  "_about": "Where each scene's subject sits, as an x centre in the 1536-pixel-wide header. derive.py cuts every derived crop around it. wide = the 2:1 social and 1.9:1 OG crops; phone = the 4:3 phone hero. Picked by eye on 2026-11-06 so Ouro and the product both stay in frame. Phone centres moved on 2026-11-06 so Ouro stands whole, tail and all, with about 96 px of scene to his right (measured from his green extent in each header); several canonical crops had him touching or past the right edge. phoneAspect (optional, default [4, 3]) widens the phone crop for a scene whose characters stand too far apart for 4:3; sites size the phone hero from the file's own width and height. A night scene (<scene>-dark) is cut with its day twin's centres; it gets its own entry only where its drawing sits differently.",
+  "_about": "Where each scene's subject sits, as an x centre in the 1536-pixel-wide header. derive.py cuts every derived crop around it. wide = the 2:1 social and 1.9:1 OG crops; phone = the 4:3 phone hero. Picked by eye on 2026-11-06 so Ouro and the product both stay in frame. Phone centres moved on 2026-11-06 so Ouro stands whole, tail and all, with about 96 px of scene to his right (measured from his green extent in each header); several canonical crops had him touching or past the right edge. phoneAspect (optional, default [4, 3]) widens the phone crop for a scene whose characters stand too far apart for 4:3; sites size the phone hero from the file's own width and height. A night scene (<scene>-dark) is cut with its day twin's centres; it gets its own entry only where its drawing sits differently. og (optional) moves the narrower 1.9:1 OG crop's centre on its own, where the 2:1 centre would cut a figure. wideFit \"whole\" (optional) makes the social and OG cards from the whole header, its own sky carried up above it, for a scene whose cast is wider than either card (render QA, 2026-11-14: these crops cut Ouro or a person at the edge).",
   "ourostack": {
     "wide": 920,
     "phone": 1010,
@@ -41,12 +41,13 @@
     "phone": 826
   },
   "factory": {
-    "wide": 740,
+    "wide": 780,
     "phone": 850,
     "phoneAspect": [
       2,
       1
-    ]
+    ],
+    "og": 810
   },
   "flow-review": {
     "wide": 900,
@@ -58,7 +59,8 @@
   },
   "friends-relay": {
     "wide": 768,
-    "phone": 705
+    "phone": 705,
+    "wideFit": "whole"
   },
   "friends": {
     "wide": 640,
@@ -69,8 +71,9 @@
     ]
   },
   "gatefold": {
-    "wide": 760,
-    "phone": 1024
+    "wide": 820,
+    "phone": 1024,
+    "og": 830
   },
   "homebrew-tap": {
     "wide": 700,
@@ -102,7 +105,8 @@
   },
   "ouro-ui-core": {
     "wide": 760,
-    "phone": 1084
+    "phone": 1084,
+    "wideFit": "whole"
   },
   "ouro-work": {
     "wide": 700,
@@ -130,7 +134,8 @@
     "phoneAspect": [
       12,
       5
-    ]
+    ],
+    "wideFit": "whole"
   },
   "shepherd": {
     "wide": 640,
@@ -198,6 +203,7 @@
     "phoneAspect": [
       8,
       3
-    ]
+    ],
+    "wideFit": "whole"
   }
 }

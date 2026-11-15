@@ -31,7 +31,7 @@ import json
 import sys
 from pathlib import Path
 
-from PIL import Image, features
+from PIL import Image, ImageFilter, features
 
 ROOT = Path(__file__).resolve().parents[2]
 BRAND = ROOT / "brand"
@@ -93,6 +93,29 @@ def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
     left = max(0, min(im.width - width, round(centre - width / 2)))
     return (left, 0, left + width, im.height)
 
+
+def whole_with_sky(src, cw, ch):
+    """The whole header at the card's width, on the card's foot, with its sky carried up to fill
+    the card: the top rows' colours, smoothed sideways into a soft gradient, fading into the
+    scene's own sky over its top 32 px. Nothing is drawn."""
+    h = round(src.height * cw / src.width)
+    scene = src.resize((cw, h), Image.LANCZOS)
+    pad = ch - h
+    top = scene.crop((0, 0, cw, 24)).resize((cw, 1), Image.BOX)
+    wide = Image.new("RGB", (cw + 800, 1))
+    wide.paste(top.resize((400, 1)).transpose(Image.FLIP_LEFT_RIGHT).crop((0, 0, 400, 1)).resize((400, 1)), (0, 0))
+    wide.paste(top, (400, 0))
+    wide.paste(top.transpose(Image.FLIP_LEFT_RIGHT).crop((cw - 400, 0, cw, 1)), (cw + 400, 0))
+    wide = wide.resize((cw + 800, 8)).filter(ImageFilter.GaussianBlur(120)).crop((400, 4, cw + 400, 5))
+    out = Image.new("RGB", (cw, ch))
+    out.paste(wide.resize((cw, pad + 32), Image.BILINEAR), (0, 0))
+    fade = Image.linear_gradient("L").resize((cw, 32))
+    out.paste(scene, (0, pad))
+    band = wide.resize((cw, 32), Image.BILINEAR)
+    out.paste(band, (0, pad), Image.eval(fade, lambda v: 255 - v))
+    return out, (f"whole scene resized to {cw}x{h} (Lanczos) on the card's foot; the {pad} px above carry the "
+                 "scene's top 24 rows of sky up, averaged per column and blurred sideways (Gaussian radius 120), "
+                 "fading into the scene over its top 32 px")
 
 def crops_for(scene):
     """A scene's crop centres: its own, or for a night scene (<scene>-dark) not in crops.json, its day twin's,
@@ -173,19 +196,20 @@ def build(scenes=()):
                     "operation": f"crop box {up_box} of the 4x master then resize to {w}x{h} (Lanczos)",
                     "encoder": ENCODERS[fmt]}
 
-        # GitHub social preview, 1280x640.
-        box = crop_centre(src, round(src.height * 2), c["wide"])
-        im = src.crop(box).resize((1280, 640), Image.LANCZOS)
-        yield f"social/{scene}.jpg", encode(im, "jpg"), {
-            **base, "use": "GitHub social preview (1280x640)",
-            "operation": f"crop box {list(box)} then resize to 1280x640 (Lanczos)", "encoder": ENCODERS["jpg"]}
-
-        # Open Graph / Twitter card, 1200x630.
-        box = crop_centre(src, round(src.height * 1200 / 630), c["wide"])
-        im = src.crop(box).resize((1200, 630), Image.LANCZOS)
-        yield f"og/{scene}.jpg", encode(im, "jpg"), {
-            **base, "use": "Open Graph and Twitter card (1200x630)",
-            "operation": f"crop box {list(box)} then resize to 1200x630 (Lanczos)", "encoder": ENCODERS["jpg"]}
+        # GitHub social preview (1280x640) and Open Graph / Twitter card (1200x630): a window
+        # around "wide" (or "og" for the narrower card), or, for a scene whose cast is wider
+        # than either card ("wideFit": "whole"), the whole header with its sky continued above.
+        for kind, (cw, ch), centre, use in (
+                ("social", (1280, 640), c["wide"], "GitHub social preview (1280x640)"),
+                ("og", (1200, 630), c.get("og", c["wide"]), "Open Graph and Twitter card (1200x630)")):
+            if c.get("wideFit") == "whole":
+                im, op = whole_with_sky(src, cw, ch)
+            else:
+                box = crop_centre(src, round(src.height * cw / ch), centre)
+                im = src.crop(box).resize((cw, ch), Image.LANCZOS)
+                op = f"crop box {list(box)} then resize to {cw}x{ch} (Lanczos)"
+            yield f"{kind}/{scene}.jpg", encode(im, "jpg"), {
+                **base, "use": use, "operation": op, "encoder": ENCODERS["jpg"]}
 
     # Touch and app-manifest icons: the approved rich render on the dawn sky.
     for mark in () if scenes else ("ouro", "ouro-hx"):
