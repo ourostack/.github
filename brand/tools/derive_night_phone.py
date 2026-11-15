@@ -27,7 +27,7 @@ WIDTHS = (1152, 1536)
 
 # The window of each scene's committed phone/<scene>-768 file, in header pixels.
 NIGHT = {
-    "ouro-ui-core-dark": {"box": (700, 0, 1468, 576), "use": "phone hero (4:3)"},
+    "ouro-ui-core-dark": {"box": (623, 0, 1429, 576), "use": "phone hero (7:5)"},
     "ouro-ui-apple-dark": {"box": (328, 0, 1352, 576), "use": "phone hero (16:9)"},
     "ouro-hx-dark": {"box": (268, 0, 1292, 576), "use": "phone hero (16:9)"},
     "ouroboros-skills-dark": {"box": (120, 0, 1502, 576), "use": "phone hero (768:320)"},
