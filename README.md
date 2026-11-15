@@ -14,6 +14,8 @@ What the one-shot prompting guide cites. Nothing here ships; it is the record of
 
 Findings that held across all three: no extra limbs (the prompt counted every arm and said what each hand holds); three distinct agents, each with its own outfit and expression; Ouro on the rail cap, lit by the scene; one consistent perspective. What failed: hands asked to be "open", a free climb on a single rope, a scarf with no wind, glass bodies drawn as tiled cells, and the person drawn as a thin stick figure because no build was given.
 
+- `notes.md`: the review notes behind each finding, round by round.
+
 ## door/ (Ari's LinkedIn banner, CIT galaxy)
 
 - `rounds-r1-r4-r6-r21.jpg`: rounds 1, 4, 6 and 21 of the master. In r1 a neon ring portal and a porthole leaf; in r4 and r6 the Stoker walks out of its door toward us; r21 has the Stoker walking away from us into its door. The 14 blind hunts in between mostly found seams left by patching.
