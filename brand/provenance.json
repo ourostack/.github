@@ -1161,7 +1161,7 @@
   "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
   "crop": "1536x576 from the 1536x1024 master, WebP q86",
-  "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4",
+  "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df",
   "generation": [
    {
     "master": "homebrew-b",
@@ -1205,6 +1205,27 @@
      "brand/friends.png",
      "brand/factory.png",
      "0-hero-C-dawn.png"
+    ]
+   }
+  ],
+  "edits": [
+   {
+    "what": [
+     "the glowing trail that ran through the meadow, meaning nothing here, is gone; the grass, flowers and sparkle continue",
+     "the tap is closed over a full, plain mug (no glowing stream); night is a real relight of the same frame: stars, a crescent moon and the still's fire as key light, not the pasted day render"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "0da6a0ea683f6d81182e3743eab54288716be240da7974e143dd1958b460b76a",
+     "ea129bcac71f359ee8e7c636af1409c763f80addd61d970507d078c897c56b04",
+     "3bfce5b6434020368c8967e4e5ce7fc8de07453a02a60249f3ff483073f13a36",
+     "411eac74659596edc036e74a73a9b8e0d285c68698ec4b8c9f684ccf1557881f"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "the coordinator's brief: homebrew-tap gets a real night relight, not the pasted day render",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
     ]
    }
   ]
@@ -2904,7 +2925,7 @@
   "file": "scenes/homebrew-tap-640.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -2912,14 +2933,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 49116,
-  "sha256": "0c510c395c15e386e512f978d27466d837508e51c46a99892579e9f9f40e84b4"
+  "bytes": 48724,
+  "sha256": "cf2734cefcd618f92fb206876cd8058d9b700128f20e1d9d175368e1fa9e745c"
  },
  {
   "file": "scenes/homebrew-tap-640.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -2927,14 +2948,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 42656,
-  "sha256": "54892ee1e8d5866b7dbf419d8032ed8c93986c951bf693779630ee280dbcc97d"
+  "bytes": 42091,
+  "sha256": "dd40b5a9e9fd0d40d52ad74f2f2a2c90cac0d1eb8bc7c6a15b353f66f39df17c"
  },
  {
   "file": "scenes/homebrew-tap-960.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -2942,14 +2963,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 96446,
-  "sha256": "4db7d76cf69cc7fca06f7e5ea51915eb362789e28f7e32b154264af9e7b30d96"
+  "bytes": 96384,
+  "sha256": "83262f04fb7da4b1f477d24496569110863a28d30e82cf62f42f152a0eadd312"
  },
  {
   "file": "scenes/homebrew-tap-960.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -2957,14 +2978,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 79943,
-  "sha256": "93e46b87752a9c63a6bbd48c8b9a1ee1e371ecd6fdc6172b0a19b910e8d158ba"
+  "bytes": 79013,
+  "sha256": "8421741380389d368249be3e765b3e474a3a4361cbd7e31f90a734e3e7e4db8b"
  },
  {
   "file": "scenes/homebrew-tap-1536.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -2972,14 +2993,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 158874,
-  "sha256": "4ef137cf106e95bb10de3fe98a6bcbbda7f386df9e60eef8e4877f55ac41f6eb"
+  "bytes": 154398,
+  "sha256": "72647dc84a4e45935ea6087a3fd2e91932f7ae6a88f16cc0a234d8a1ef87416f"
  },
  {
   "file": "phone/homebrew-tap-384.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 384x288 (Lanczos)",
@@ -2987,14 +3008,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 31492,
-  "sha256": "d919271470e07b6898d742fd9538c01eeb340f78edea87aad9ba58ba412a3a5f"
+  "bytes": 31228,
+  "sha256": "abf29423f273ec0b932fdd239d8e379cdac2859e14ee3b49354bc48df287969f"
  },
  {
   "file": "phone/homebrew-tap-384.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 384x288 (Lanczos)",
@@ -3002,14 +3023,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 26791,
-  "sha256": "b7c81429af9a37aba15b86e61ac2aaf6f365f919e1b882b87b58767355295130"
+  "bytes": 26411,
+  "sha256": "230dfcb4739ff95dcf30bcc3851249e76d2cf3721f66e9c32ba88e2b0c8730e3"
  },
  {
   "file": "phone/homebrew-tap-768.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 768x576 (Lanczos)",
@@ -3017,14 +3038,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 92436,
-  "sha256": "016ddf5cbe9347515a90ec2a513872382c98ab1544d6c89910698637ff4bb74a"
+  "bytes": 89564,
+  "sha256": "edbfe70b40becf83f4701b6e45ef31626d97c2cdb8640da0fa51ad271c94e167"
  },
  {
   "file": "phone/homebrew-tap-768.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 768x576 (Lanczos)",
@@ -3032,14 +3053,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 70786,
-  "sha256": "d6b2f1b317e28bfa20481ac41957bf3d5d847eb31c337ea9e43f4a2e6557e9cf"
+  "bytes": 68240,
+  "sha256": "58ed98663a8aeea066d38f1b21f7c48dcb8d153533e2e43af6edee19c94e4a75"
  },
  {
   "file": "social/homebrew-tap.jpg",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [124, 0, 1276, 576] then resize to 1280x640 (Lanczos)",
@@ -3047,14 +3068,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 315603,
-  "sha256": "a98ad9a3db3c0c34e24a428bc5110f1dc1c0fc62a5b0f162c2ffd1a311dc54b6"
+  "bytes": 306639,
+  "sha256": "fc06145f29493ffcde6f7dcdcd4d5142187395393750d6024f58ede829022c22"
  },
  {
   "file": "og/homebrew-tap.jpg",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [152, 0, 1249, 576] then resize to 1200x630 (Lanczos)",
@@ -3062,8 +3083,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 294572,
-  "sha256": "78a2e7d6d110f85dc39e394e16c257db3faf5a8879ea91cb6926edf641cea44d"
+  "bytes": 286361,
+  "sha256": "205606bbcae50ab02c459660f4e32a4f2593c1e4f1e5940a5294df6e2bb4bec6"
  },
  {
   "file": "scenes/m365crawl-640.webp",
@@ -6766,18 +6787,18 @@
   "file": "upscaled/homebrew-tap.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap.webp",
-   "sha256": "20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4"
+   "sha256": "9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/homebrew-tap.webp (sha256 20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/homebrew-tap.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9764 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-12",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/homebrew-tap.webp (sha256 9b9368580aa55a6b807bb29e5402df06d5d9aec923c3f72ba2be8310697577df); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/homebrew-tap.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9758 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1558258,
-  "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+  "bytes": 1541578,
+  "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
  },
  {
   "file": "upscaled/housesitter.webp",
@@ -8281,7 +8302,7 @@
   "file": "scenes/homebrew-tap-2304.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -8289,14 +8310,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 243846,
-  "sha256": "943e3c5199f82974630c2efd70d4d3c03860abf9f6338d64d6d56d53af365296"
+  "bytes": 245320,
+  "sha256": "b8e6fd1274a57a7c24abb2f81f4e6b5b00f06e118c415c0d05ab4c4ad3163831"
  },
  {
   "file": "scenes/homebrew-tap-3072.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8304,14 +8325,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 320932,
-  "sha256": "aaabe9ffb64ed5212858d604cb7b1656ddd127d1cd05d11fc9fe7d6173e73011"
+  "bytes": 322301,
+  "sha256": "3724c999674abe3b313dea43bacc17b6f3e82cd027e30d88bad2a100cbcae87b"
  },
  {
   "file": "scenes/homebrew-tap-3072.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8319,14 +8340,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 458398,
-  "sha256": "33bd681f141703e3b01aa60153395d24a20def6e396bc7456948f6a748d0e80c"
+  "bytes": 455480,
+  "sha256": "26a76263eebb450eb3ae44cde7675e4e331d31ced57b93a6287f0ac62012d66b"
  },
  {
   "file": "scenes/homebrew-tap-3840.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -8334,14 +8355,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 395689,
-  "sha256": "a1c84173fa437ee831f2f62262ed66b7808dc5ecce24faeb4c015cb0b809910b"
+  "bytes": 398009,
+  "sha256": "24c2c135b7cf4f1615b521a3ffff792feaa5a1579007c0f65b75613e4522808b"
  },
  {
   "file": "scenes/homebrew-tap-5120.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -8349,14 +8370,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 509954,
-  "sha256": "3124220ef20477d66ac6340a08850f4314338b0638eb8ac7fc03d32a2a3e442b"
+  "bytes": 511445,
+  "sha256": "d1304ac6639c61fb6fbd499ab7b921c37fbd36616432e32df9c359cbfa7b75c3"
  },
  {
   "file": "scenes/homebrew-tap-7680.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8364,14 +8385,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 725633,
-  "sha256": "0ea4b0d94c2fd14347e7357a14af91321985a703199dd67d869a0a9d73b2f13b"
+  "bytes": 723511,
+  "sha256": "382e51700f4c0e748c67df1214593c161eb22590cfe28b2820fb0d481519b0a7"
  },
  {
   "file": "scenes/homebrew-tap-7680.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8379,8 +8400,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1274720,
-  "sha256": "315b44330c888e9e40be89a31a21b81c2a7757fae244be985ae653905cc973a7"
+  "bytes": 1241474,
+  "sha256": "897f3db000e14801603eb6ec2e9e6fd19e5853a5e9fd568f4eec5d0985a00e6e"
  },
  {
   "file": "scenes/housesitter-2304.avif",
@@ -10771,7 +10792,7 @@
   "file": "phone/homebrew-tap-1152.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -10779,14 +10800,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 156170,
-  "sha256": "52665f124302ed096479c98eda987e5b48c6c97fe5d48d7fe35a7c987f9727a1"
+  "bytes": 152342,
+  "sha256": "d22f9f7009b30a652ba684a2d060ed8871db9a45e3cff13dc4ebc8a8fe6a3db3"
  },
  {
   "file": "phone/homebrew-tap-1152.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -10794,14 +10815,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 113322,
-  "sha256": "bcf2c3e810178f6e791a5a5a7928e59c37244664113452330e8e394e9977d0a4"
+  "bytes": 111403,
+  "sha256": "7649a0f265fd5ecca4d627f363efbc09f047e5e10f8d910db8a06f23993b9416"
  },
  {
   "file": "phone/homebrew-tap-1536.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -10809,14 +10830,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 217892,
-  "sha256": "89e45ca25743a3253c7aa4df341ba0a38ced19b1489de0463417dae2e0aaab79"
+  "bytes": 212818,
+  "sha256": "ab67e2e29a41a0e01068f072094cbe6530a69bdd32453b5ebd6b8f783c8e96c5"
  },
  {
   "file": "phone/homebrew-tap-1536.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap.webp",
-   "sha256": "45129365113e10ddb09df90cb505e032ec1cb0abb0eefcf9ff988d82ea8a774d"
+   "sha256": "d4a3fe65514e77d664fffabb0f5727293abb3b801f40ca56d49610f5cde3dd26"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -10824,8 +10845,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 150233,
-  "sha256": "dab054edf7a86450d4a3392ffd790a0830722820434f59f6ddfb73481cc97b5f"
+  "bytes": 147065,
+  "sha256": "8e0c85caf18a7142dc2652ef24111fb4bb4c9a0562178fde8b4bc267fcfb5480"
  },
  {
   "file": "phone/housesitter-1152.webp",
@@ -15625,7 +15646,7 @@
   "generated": "Dark master, 2026-11-13, edited from the light header",
   "approval": "Ari asked for night art for every hero that has a dark-mode reader, 2026-11-13: the same scene, characters and composition, at night.",
   "crop": "1536x576 from the 1536x1024 master (rows 224–800, where the light header sat when letterboxed), WebP q86",
-  "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e",
+  "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9",
   "generation": [
    {
     "master": "homebrew-tap-dark-master",
@@ -15635,272 +15656,285 @@
      "headers/homebrew-tap.webp (the light header, sha256 20a21ea38d2fb4c131fadeed68c5bdd3697d1dee141f4a69bb754b09fdbd01c4), letterboxed at rows 224–800"
     ]
    }
+  ],
+  "edits": [
+   {
+    "what": [
+     "the glowing trail that ran through the meadow, meaning nothing here, is gone; the grass, flowers and sparkle continue",
+     "the tap is closed over a full, plain mug (no glowing stream); night is a real relight of the same frame: stars, a crescent moon and the still's fire as key light, not the pasted day render"
+    ],
+    "method": "relit from the new day header by the GitHub Copilot CLI image_generation tool (same frame, light and sky only), registered back onto the day header's frame; then targeted edits as for the other scenes",
+    "generated_sha256": [
+     "79f8fbd241abd4ccf46e9cfa8dce2c1200b8d15d6a2bfc649e4a90317cd189d7",
+     "2c959f6bd993b3153eb69195a93e1aa17945ee5ebf5037148f7e2b27798bfb18",
+     "fdbfec186867be640cafd4de46b2a90f32f294e3af60de3eac9773550605679e",
+     "d8a1e6946078b3bd1d5c4e3c4cec53c274fa78b8ccc0b8040d03f3588be8bc24"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "the coordinator's brief: homebrew-tap gets a real night relight, not the pasted day render",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
+   }
   ]
  },
  {
   "file": "upscaled/homebrew-tap-dark.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e",
-   "master": "homebrew-tap-dark-master",
-   "master_sha256": "279ff700638b7fd888a9e7d59f60748a4b7b5f788cbd0202f83715a5e596f20d",
-   "crop": [
-    0,
-    224,
-    1536,
-    800
-   ]
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master homebrew-tap-dark-master (sha256 279ff700638b7fd888a9e7d59f60748a4b7b5f788cbd0202f83715a5e596f20d), cut to the header's box [0, 224, 1536, 800] first",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/homebrew-tap-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9682 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-13",
-  "encoder": "sharp WebP quality 90 effort 6",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/homebrew-tap-dark.webp (sha256 932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/homebrew-tap-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9752 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
+  "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1515796,
-  "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+  "bytes": 1345684,
+  "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
  },
  {
   "file": "scenes/homebrew-tap-dark-640.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 55617,
-  "sha256": "4b4deaf050b05d99bd848cd7550f43c38309aa47b11ea7051807229850f3392b"
+  "bytes": 38791,
+  "sha256": "72df6871c0972faa6b4a2fe144c04223aef0b92a538ea4c4f7da3c8f05645237"
  },
  {
   "file": "scenes/homebrew-tap-dark-640.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 50314,
-  "sha256": "c24d8c081b1018fa61d21db65ceec816160bea08db7992d7ec7fa8d307f8aa40"
+  "bytes": 45256,
+  "sha256": "68bc22f7f68ae6b2012c11b214c7f16de988095e665934c66ff0bd6f8c8bad5e"
  },
  {
   "file": "scenes/homebrew-tap-dark-960.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 99594,
-  "sha256": "17972c3e982dbcb913d11ce712ec514e3f3ea6cc1a7f0e9f9e1909c696070138"
+  "bytes": 74826,
+  "sha256": "3b0b78050c38495d7f32aa17f44a179170c6aeb4e9258e350bb8d5f29d1756f5"
  },
  {
   "file": "scenes/homebrew-tap-dark-960.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 97558,
-  "sha256": "cade7041f686b3b9104e44a6a9876569d34c6f116b6c1072a8e4833e0096f9b1"
+  "bytes": 89864,
+  "sha256": "589d06beed49b03b5863421efa592c6515a3841ee96a00727565f898db9f62ae"
  },
  {
   "file": "scenes/homebrew-tap-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "site hero, responsive width",
-  "operation": "whole scene, 1536x576",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 184477,
-  "sha256": "7d0edc1119e4db668f0304a584dc7efe1424c15abbf2b8ba68b7b1487cd0e452"
+  "bytes": 145396,
+  "sha256": "a88a245398f4285626f20fc34451dc4ce572bf33e1358cbda70ced2edfe3f1f7"
  },
  {
   "file": "scenes/homebrew-tap-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 300585,
-  "sha256": "ed38f830cd45b6eb8d6a2df0276e00e5f6efb936cb7ac2085679d18f4bfa43c5"
+  "bytes": 222573,
+  "sha256": "0538a003c7ba36b737f8a53ca7157e911c5d24c823a48a8fce9b629d7635b17f"
  },
  {
   "file": "scenes/homebrew-tap-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 389453,
-  "sha256": "91366bd944f4bda410cab2658da72472a837ac2a825ba9d5cd7dd4efa821eafb"
+  "bytes": 290080,
+  "sha256": "147987781a6f9b75ad4c899ae12e52458286f3270a882ab0eefb2f1091f5d7fc"
  },
  {
   "file": "scenes/homebrew-tap-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 457258,
-  "sha256": "a7f2d95af0ff2a244d4782025369dcbe249591a7235012b7e5c7254203556176"
+  "bytes": 404168,
+  "sha256": "392099e4f5aa5cbc2a2c43eb746c6c53211f7d195d958ae0868115cd0b3f2733"
  },
  {
   "file": "scenes/homebrew-tap-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 474291,
-  "sha256": "81f6715c611da667378ae02030c8e181c9ceacdb4b062dc3070c5af8217bfd87"
+  "bytes": 355012,
+  "sha256": "d4e9fd163ffae5e4a5a06084e2756944c317234bbed7334a7f1c744de617db02"
  },
  {
   "file": "scenes/homebrew-tap-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 606702,
-  "sha256": "1624ad00eec42af2f6fb27d9ef8ef51b1f902f611f40542f06e4154b7b0d0def"
+  "bytes": 454188,
+  "sha256": "ec7d25cf617acc146a63b42a2adcc8c0026023393f23cf1b34811f14dee21a11"
  },
  {
   "file": "scenes/homebrew-tap-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
-  "encoder": "sharp AVIF quality 60 effort 4",
-  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 857124,
-  "sha256": "702ccf11e525976ff85363abc02c315c6a93b4f7f711a8cd72d5ef2055e88bb3"
+  "bytes": 639595,
+  "sha256": "414573962ef4fa001616310f79cfdacb20949a2e05a73661378dbaed61f7a95a"
  },
  {
   "file": "phone/homebrew-tap-dark-384.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 384x288 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 34166,
-  "sha256": "3249d5590394bb4d8080e5685775d1e2882701241ed7946dcd6cd1b49d0a12c3"
+  "bytes": 24851,
+  "sha256": "322a6021a8640de13cd2dc7987ba448392d18ee95360104802a4fc9cfa8522df"
  },
  {
   "file": "phone/homebrew-tap-dark-384.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 384x288 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 32176,
-  "sha256": "f6424515c25c80f0adf6a9d17e97e6c9fd7adb1f69382da38f2ba2b6cb051b6a"
+  "bytes": 29862,
+  "sha256": "dce1a95ea91a436f2005136476424381f32b6e1f7eb651bf74bb7b0c19ece91e"
  },
  {
   "file": "phone/homebrew-tap-dark-768.avif",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 768x576 (Lanczos)",
-  "encoder": "sharp AVIF quality 60 effort 4",
+  "encoder": "Pillow AVIF quality 60 speed 4",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 84166,
-  "sha256": "3b20f98b5db56ec227d8681312a406d994023b112d1156c36c2a9b5c7094ed33"
+  "bytes": 66005,
+  "sha256": "dd0630d11f62a3f1ebdc6f6d5e2883f4deece38f3d32aa2a3641cd4bd25c22ec"
  },
  {
   "file": "phone/homebrew-tap-dark-768.webp",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [518, 0, 1286, 576] then resize to 768x576 (Lanczos)",
-  "encoder": "sharp WebP quality 82 effort 6",
+  "encoder": "Pillow WebP quality 82 method 6",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 90232,
-  "sha256": "2cb8f0f3e966d8eaad2a9c7edbec504b2d91e5de2b8f38c514ec92e65431e094"
+  "bytes": 83544,
+  "sha256": "9f7c35bb922d167e9cd4790e846b77ae648559f9278836132eca4233bd1e27e8"
  },
  {
   "file": "og/homebrew-tap-dark.jpg",
   "derivedFrom": {
    "file": "headers/homebrew-tap-dark.webp",
-   "sha256": "6121af684c703f96d36dc3ea3b562d59ec1877c5c45e5f837100a8160f5bdd4e"
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [152, 0, 1249, 576] then resize to 1200x630 (Lanczos)",
-  "encoder": "sharp JPEG quality 88, 4:4:4, mozjpeg",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 264989,
-  "sha256": "6be3a1ab1fea61c0dcb078a6697d063df2ad8f06d4836207ab255369988cc710"
+  "bytes": 273270,
+  "sha256": "635b2e060b1f2c3f8138baf45948124e54fcd2692d55251a32a19f8705283762"
  },
  {
   "file": "headers/housesitter-dark.webp",
@@ -20220,7 +20254,7 @@
   "file": "phone/homebrew-tap-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -20228,14 +20262,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 157458,
-  "sha256": "cbf7be15b075932af9cf3e3f572984bdb38e39738718096697a9f22dc5f78daf"
+  "bytes": 139078,
+  "sha256": "6a463301c6d276002ce0978dd5b048bdd85ad7a5a5d6a1845a141d2ff8ec4d40"
  },
  {
   "file": "phone/homebrew-tap-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -20243,14 +20277,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 113204,
-  "sha256": "802848fc6d9ccb2261772b1e3acf5abc690ac017243dccad53c62940da82628c"
+  "bytes": 104164,
+  "sha256": "97d0a6fcd47867198a7b57e8b8349b72368dca8f5ed03484f545670fa3964c5c"
  },
  {
   "file": "phone/homebrew-tap-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -20258,14 +20292,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 218982,
-  "sha256": "b53f58f11fbacc19433c63ab899da57291da0415bd7f2cc2d40d4033343bd377"
+  "bytes": 194404,
+  "sha256": "c31f6d209c2d6fc799fde1a20e6869e085ea1326c13df88552199aaee71e529c"
  },
  {
   "file": "phone/homebrew-tap-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/homebrew-tap-dark.webp",
-   "sha256": "6693c6b919896029bda06e67cd0b5bfcca32a2518c41d07dcc690c37c3eb3d7c"
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [2072, 0, 5144, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -20273,8 +20307,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 148338,
-  "sha256": "e11acc9ad3bfaaa8b79731b6d9c0028133cc757d235e3bbdce8b856dbcb1ddbc"
+  "bytes": 136222,
+  "sha256": "aec0c404fc7a97500c7e392338b65ee49240edbdfbe14b0f4725f4f6067e994b"
  },
  {
   "file": "phone/housesitter-dark-1152.webp",
@@ -26407,5 +26441,35 @@
   "height": 630,
   "bytes": 341632,
   "sha256": "18babca001ac5b7513e33fe0dc833c5ca962cb00f4af8b33db7c541ddff6fb0a"
+ },
+ {
+  "file": "scenes/homebrew-tap-dark-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/homebrew-tap-dark.webp",
+   "sha256": "527048d3f1b7bd0451956502a1a866d48f5484f4dead5de87a8cd0c6d8c5bb3d"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2880,
+  "bytes": 1089876,
+  "sha256": "2fe483dcf1eb7f5a8fa0a9547cb04cd0faa0adb476dade9d76713179c42f73be"
+ },
+ {
+  "file": "social/homebrew-tap-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/homebrew-tap-dark.webp",
+   "sha256": "932150f2657d8335cf50de2dbca02b3b53534053e4f5c09b42b02d11b35e59e9"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [124, 0, 1276, 576] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 291420,
+  "sha256": "7e5de9c6279f276dc219be040ec7ede83002e53e2993770be688236cf0d5fa5a"
  }
 ]
