@@ -414,7 +414,7 @@
   "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
   "crop": "1536x576 from the 1536x1024 master, WebP q86",
-  "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082",
+  "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa",
   "generation": [
    {
     "master": "friends-a",
@@ -502,6 +502,28 @@
     "aligned_ecc": 0.9783,
     "date": "2026-11-14",
     "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
+   },
+   {
+    "what": [
+     "the two realistic people are now two faceless glass people with mittens and scarves; the envelopes, speech bubbles and light strings are gone",
+     "the far picnic is its own group now, not a tiny copy of the near one: a glass person in a mustard beanie waving back, a glass person in a rust scarf and a small copper robot, on a blue-and-white blanket",
+     "the two near robots are individuals: the slate-blue one is a different model (boxy head, visor face, short antenna), not the white one in another colour",
+     "the robots' chests are plain; night is a real relight of the same frame (stars, crescent moon, a lantern on the blanket, the glass people's own glow)"
+    ],
+    "method": "the 1536 px header, letterboxed into a 1536x1024 grey canvas, was edited by the GitHub Copilot CLI image_generation tool; each output was registered back onto the header (ORB features, similarity transform, scale within 0.1%) and only the changed region was pasted back, feathered (the trail's own pixels for trail removal, a named box for a fix); a few marks of a few pixels were inpainted (OpenCV Telea) or patched from the neighbouring surface; everything else keeps the previous header's pixels",
+    "generated_sha256": [
+     "bbf22aa4e14d3050e8a262788873a01f784a67754e170069d2e0faa293e30ae9",
+     "d853b5f3e2cea9556e6ca1af6f06ceaae06335d1d08bb74446e7fec2f820aabb",
+     "3405f71efda0a151b163cf0765efd49916babd660648b783cca904dcbce84466",
+     "049f6968769f90260096755391d8dd3bd765315ed3da4278356b79097a857961",
+     "1ecb9783fa98323e34d437efd05e165cd26eba2392eb8921a5e7448d7b194d8b"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "no recognizable humans (agents/art-one-universe.md): people are the faceless glass figures with mittens, as in ouro-hx",
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
    }
   ]
  },
@@ -2379,7 +2401,7 @@
   "file": "scenes/friends-640.webp",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -2387,14 +2409,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 45248,
-  "sha256": "0b81ed625b39a43600d87be2a280cca8f9ead4946c918bec6aad628422cb0d19"
+  "bytes": 44790,
+  "sha256": "bcb63aab4c188fb4629ce57e116d5415691c2adb03b2ea985578d872475a11e3"
  },
  {
   "file": "scenes/friends-640.avif",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -2402,14 +2424,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 39595,
-  "sha256": "a7db78a626806226456f5e98b7417e48e502196a416058e3e250be0949109f03"
+  "bytes": 39056,
+  "sha256": "d1f1fbcc22cae3432feec29542e37a7aa843c2350b20af1ff603e7704985558d"
  },
  {
   "file": "scenes/friends-960.webp",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -2417,14 +2439,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 85604,
-  "sha256": "292a6799276dc3237f2e7084ab1236685840051ac4aac9070e6cf001517cb363"
+  "bytes": 85202,
+  "sha256": "b86aaafe8a5a99a815c38b82b8f165522024b8e716745851f92fa1e5af8292bb"
  },
  {
   "file": "scenes/friends-960.avif",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -2432,14 +2454,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 71193,
-  "sha256": "78e5725f4ff7125083f199216f88b3123396ded0f88c14a2ce43dda1b4c7fd9d"
+  "bytes": 69391,
+  "sha256": "1c6e3fd344bc7babea0829dbbefce536f6e57c9ff0a8deda4cbb2db36be0ecb2"
  },
  {
   "file": "scenes/friends-1536.avif",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -2447,14 +2469,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 138054,
-  "sha256": "e7905bf7f8235481a7de8af0c8bfd28cbd9dba9f087e48c090fb2ad0daad7a4f"
+  "bytes": 125519,
+  "sha256": "863d099c186643a8c289657571c0247e68c4a1cebb3c87e8716f7ef06c6fb21c"
  },
  {
   "file": "phone/friends-384.webp",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 384x216 (Lanczos)",
@@ -2462,14 +2484,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 24256,
-  "sha256": "ca883d279e8de5c071cdfbee6f493e8815d79a02697998ce6accd4b8e5d4a184"
+  "bytes": 23686,
+  "sha256": "470315c79822ed034f4cec4685a5055a4bed1bfb29b72b7f76be8f61bf2d4e44"
  },
  {
   "file": "phone/friends-384.avif",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 384x216 (Lanczos)",
@@ -2477,14 +2499,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 20639,
-  "sha256": "90072a48ae9ae40474d3b1617b247bb870e649defbbfda4297e2dc33e29d15ae"
+  "bytes": 20363,
+  "sha256": "3a1f19b781a433c99636fe5b617a687a1d86535b6cacbdc73154142e17965d17"
  },
  {
   "file": "phone/friends-768.webp",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 768x432 (Lanczos)",
@@ -2492,14 +2514,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 66994,
-  "sha256": "6ae606fa95cb75977c5f8c186439229b76247b6fc11edf2612b348fe2171cd6b"
+  "bytes": 64660,
+  "sha256": "e33cfe1ee295e71e194d98b2e77566d2a141caaa4e922cbec5feef74392842b6"
  },
  {
   "file": "phone/friends-768.avif",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 768x432 (Lanczos)",
@@ -2507,14 +2529,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 52920,
-  "sha256": "6ac89585450c3b4017157133108eba48d6405bf14887e330a58eebd3553e8ee5"
+  "bytes": 49995,
+  "sha256": "73873342eafe030039556dfc5e84c023176d1189d91ca662efaa06f1fa1a95dd"
  },
  {
   "file": "social/friends.jpg",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [64, 0, 1216, 576] then resize to 1280x640 (Lanczos)",
@@ -2522,14 +2544,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 273331,
-  "sha256": "a99589357a03417e1a3325f687a1de7bc34b11a39f51e7bc7d5c343279e588cc"
+  "bytes": 266822,
+  "sha256": "d6dbcb8b5ae2e7bc1bbb4b7de2b34df505c6ed790cdc4abdc8f0c20c2b5fbe5e"
  },
  {
   "file": "og/friends.jpg",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [92, 0, 1189, 576] then resize to 1200x630 (Lanczos)",
@@ -2537,8 +2559,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 252906,
-  "sha256": "beec5b932ae717f08c5edb1edb339946e34c09d89d52ef6c243865f485e06678"
+  "bytes": 246883,
+  "sha256": "4b61f64ffd8e0bc3c648cbc7b305db9c651e7c28e105fbe3e7004fe004bdc2b1"
  },
  {
   "file": "scenes/friends-relay-640.webp",
@@ -6671,60 +6693,18 @@
   "file": "upscaled/friends.webp",
   "derivedFrom": {
    "file": "headers/friends.webp",
-   "sha256": "ba2642f6494d64bfc42a36754a175a858efa5bf49015e1e1dacc6133af21b082"
+   "sha256": "cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/friends.webp (sha256 6464c49cf5ed6d6c76da735accb11eeae69baaa658d2b66b4f251c13ea4a04aa); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/friends.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9785 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-12",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/friends.webp (sha256 cd1040a91d852a303ae9b0705fd8937089e4c26b1ade0428cb9e78eb6fc0ddfa); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/friends.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9786 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1295828,
-  "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59",
-  "edits": [
-   {
-    "what": "the white robot's five-finger waving hand became a mitten with one thumb",
-    "region_4x_master": [
-     880,
-     1060,
-     1904,
-     2084
-    ],
-    "changed_box": [
-     1180,
-     1440,
-     1480,
-     1740
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "37507f13a4b26541de6f9169bb003cdea15463ca13c2b15d87bfaceca6ee4156",
-    "aligned_ecc": 0.9934,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   },
-   {
-    "what": "the slate-blue robot's five-finger waving hand became a mitten with one thumb",
-    "region_4x_master": [
-     3400,
-     1100,
-     4424,
-     2124
-    ],
-    "changed_box": [
-     3780,
-     1500,
-     4050,
-     1780
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "e3f902f08dd8a24933b8f053efce33a38d044f94e19b81fb2184992596636867",
-    "aligned_ecc": 0.9783,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   }
-  ]
+  "bytes": 1258938,
+  "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
  },
  {
   "file": "upscaled/friends-relay.webp",
@@ -7986,7 +7966,7 @@
   "file": "scenes/friends-2304.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -7994,14 +7974,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 213218,
-  "sha256": "5fd59f3823b8fdee40cac471e5dc121be1b7345547505f32c2d736b99683d157"
+  "bytes": 200922,
+  "sha256": "565e407ef995d7c46c0d86e4cd11f3a5e1fddc6821aa7311160a6bf953abc3c6"
  },
  {
   "file": "scenes/friends-3072.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8009,14 +7989,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 278931,
-  "sha256": "b132e835598bcf608a90aa836a3b1530df0c7c9882d753792b6e5004dd46a547"
+  "bytes": 260094,
+  "sha256": "2b7a6cad9634f7b99122fe482b834a8d2be43d5cfb5cf4cd43bcd735877ea7e3"
  },
  {
   "file": "scenes/friends-3072.webp",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -8024,14 +8004,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 395886,
-  "sha256": "22c81c8e8a687f7169201a75773d31b665e05cf4a79031b25adba651a280af67"
+  "bytes": 377330,
+  "sha256": "0c3952ebc9224e21c0895e638959bb4bafefd33000fde3b5898260d3683c6837"
  },
  {
   "file": "scenes/friends-3840.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -8039,14 +8019,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 343924,
-  "sha256": "1973d758a41258a5453aa04e0a6930f7ab1c939aff5e63905b0a824fe340cd7b"
+  "bytes": 318139,
+  "sha256": "0c44f6334d6084e48f8096c556fb283cc0edbeb06abadee4d33663116be65b15"
  },
  {
   "file": "scenes/friends-5120.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -8054,14 +8034,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 439037,
-  "sha256": "615371a472e47c5484beac3f61463431504af14f2a5992c0449d260c379eea36"
+  "bytes": 404734,
+  "sha256": "5b8da26f6b8f178d5f212f8e0c432113754896c9cbd0c3fe7a8379937f0d4cc0"
  },
  {
   "file": "scenes/friends-7680.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8069,14 +8049,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 626666,
-  "sha256": "25f89589f2581ffcc6c6e37f3c80e18c36af205351b2684cfc089f5eef16ed76"
+  "bytes": 575646,
+  "sha256": "c8a872b33e7f8f0713d765417b2c49dd4a33272dd45fd9a4a55d070cb0112917"
  },
  {
   "file": "scenes/friends-7680.webp",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -8084,8 +8064,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1078506,
-  "sha256": "1bd9185166e4976d135a984ec9547684e5168b0cb6d5417688b1453f18a73a26"
+  "bytes": 1028856,
+  "sha256": "8fb43935e917e243b1d0a9992f4491fde7b0bba81424edbdce21934ff007dbc0"
  },
  {
   "file": "scenes/friends-relay-2304.avif",
@@ -10611,7 +10591,7 @@
   "file": "phone/friends-1152.webp",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1152x648 (Lanczos)",
@@ -10619,14 +10599,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 648,
-  "bytes": 119586,
-  "sha256": "df5757ad8ee751f99eec2335019682b778fbaa6b0a98e05cfb851ebd8d26811d"
+  "bytes": 113622,
+  "sha256": "d03d85524c8795f3fa2e7cafb2a2a5a04e9af178557056cea31b7d3e1519496e"
  },
  {
   "file": "phone/friends-1152.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1152x648 (Lanczos)",
@@ -10634,14 +10614,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 648,
-  "bytes": 89600,
-  "sha256": "2ad48be7de83d1a5015f0f55dce285850ee8ebe5e17c6adf0cf742fa1f704712"
+  "bytes": 83557,
+  "sha256": "453d01ac45497608a872a2e5b0b571e306d5990b0347dc3cbea947083b682f6d"
  },
  {
   "file": "phone/friends-1536.webp",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1536x864 (Lanczos)",
@@ -10649,14 +10629,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 864,
-  "bytes": 166152,
-  "sha256": "db1b9373046ac95eb71a141ef30021b849513a1b521b8b7da4c7e12caf5bdd1d"
+  "bytes": 158186,
+  "sha256": "81f3fb23dd675eb99c683d311bebcd2b50f1178d6418db8b1cc6c5b239e35e1a"
  },
  {
   "file": "phone/friends-1536.avif",
   "derivedFrom": {
    "file": "upscaled/friends.webp",
-   "sha256": "6cb7f6ba498cefc3ecc7769a98412f5877f89617652aa851c54ffb10a2656b59"
+   "sha256": "072b597c18f331f12e59e46846f0c6cce53f6ffe962a71cbd37dab5df8c872cf"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1536x864 (Lanczos)",
@@ -10664,8 +10644,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 864,
-  "bytes": 120624,
-  "sha256": "30b0812bbfb97d7876d5facfeb580418a961e8a0d923a57593a8f5dc2297bd0c"
+  "bytes": 110989,
+  "sha256": "a640a247abcd2994bce22424e51bcf6fa14e7ca270260e366f1422f402287569"
  },
  {
   "file": "phone/friends-relay-1152.webp",
@@ -15306,7 +15286,7 @@
   "generated": "Dark master, 2026-11-13, edited from the light header",
   "approval": "Ari asked for night art for every hero that has a dark-mode reader, 2026-11-13: the same scene, characters and composition, at night.",
   "crop": "1536x576 from the 1536x1024 master (rows 224–800, where the light header sat when letterboxed), WebP q86",
-  "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28",
+  "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76",
   "generation": [
    {
     "master": "friends-dark-master",
@@ -15357,6 +15337,27 @@
     "aligned_ecc": 0.9796,
     "date": "2026-11-14",
     "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
+   },
+   {
+    "what": [
+     "the two realistic people are now two faceless glass people with mittens and scarves; the envelopes, speech bubbles and light strings are gone",
+     "the far picnic is its own group now, not a tiny copy of the near one: a glass person in a mustard beanie waving back, a glass person in a rust scarf and a small copper robot, on a blue-and-white blanket",
+     "the two near robots are individuals: the slate-blue one is a different model (boxy head, visor face, short antenna), not the white one in another colour",
+     "the robots' chests are plain; night is a real relight of the same frame (stars, crescent moon, a lantern on the blanket, the glass people's own glow)"
+    ],
+    "method": "relit from the new day header by the GitHub Copilot CLI image_generation tool (same frame, light and sky only), registered back onto the day header's frame; then targeted edits as for the other scenes",
+    "generated_sha256": [
+     "11dca42aba93a8166cfe94b7624dd9be00fb006225cfbb54c639908400242a5c",
+     "b64bfef80c027b9392267ba315cac637edee0217ff1664cb31d356bd81069d2c",
+     "dcdbd5d3414108a496af4b6756692d9a193df14ac8ed32a6b84127a58d0defd2",
+     "1ba5d4bf24710a95f1e765a9fca900b56a78ed576b3f408e2cb9f29bad3693b3"
+    ],
+    "date": "2026-11-15",
+    "why": [
+     "no recognizable humans (agents/art-one-universe.md): people are the faceless glass figures with mittens, as in ouro-hx",
+     "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
+     "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
+    ]
    }
   ]
  },
@@ -15364,74 +15365,24 @@
   "file": "upscaled/friends-dark.webp",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28",
-   "master": "friends-dark-master",
-   "master_sha256": "70deb5a864018a467b9b26fe965f772b7259f1e92c55786a2d49e5f787a7968d",
-   "crop": [
-    0,
-    224,
-    1536,
-    800
-   ]
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master friends-dark-master (sha256 70deb5a864018a467b9b26fe965f772b7259f1e92c55786a2d49e5f787a7968d), cut to the header's box [0, 224, 1536, 800] first",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/friends-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9680 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-13",
-  "encoder": "sharp WebP quality 90 effort 6",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/friends-dark.webp (sha256 e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/friends-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9746 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-15",
+  "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1421388,
-  "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2",
-  "edits": [
-   {
-    "what": "the white robot's five-finger waving hand became a mitten with one thumb",
-    "region_4x_master": [
-     880,
-     1060,
-     1904,
-     2084
-    ],
-    "changed_box": [
-     1180,
-     1440,
-     1480,
-     1740
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "a9681682eac85606751dd7b55981214764904fba59b4d25df7d776410ac6db9d",
-    "aligned_ecc": 0.9938,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   },
-   {
-    "what": "the slate-blue robot's five-finger waving hand became a mitten with one thumb",
-    "region_4x_master": [
-     3400,
-     1100,
-     4424,
-     2124
-    ],
-    "changed_box": [
-     3780,
-     1500,
-     4050,
-     1780
-    ],
-    "method": "the square cut from the 4x master was edited by the GitHub Copilot CLI image_generation tool; only the pixels in the changed box that differ from the source were pasted back (feathered), and the header got the same pixels Lanczos-downsized; everything else keeps its bytes",
-    "generated_sha256": "710f6da2b864d36a8d0a01ad27caa405d59dc4223fee05b533d4bd64dfb2fd08",
-    "aligned_ecc": 0.9796,
-    "date": "2026-11-14",
-    "why": "render QA, 2026-11-14 (Ari: \"you gotta fix these render issues!\")"
-   }
-  ]
+  "bytes": 1275718,
+  "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
  },
  {
   "file": "scenes/friends-dark-640.avif",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -15439,14 +15390,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 44910,
-  "sha256": "f330d935a6acaff18697deb23eefb12efa11365660a1e291efeb22d46d18a455"
+  "bytes": 38718,
+  "sha256": "9dd2b4daee34fcde677c436036d21939e0edc66708a85d321aebeaae3a2493a2"
  },
  {
   "file": "scenes/friends-dark-640.webp",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -15454,14 +15405,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 50326,
-  "sha256": "55a2642f1cbbae55110c5f51c15e3f0bb19fe7d1fab9239c8e2b68f9f042841a"
+  "bytes": 44192,
+  "sha256": "37054ebed8b5803ebea5eec248eaaa3c71284a824321cc9ee70a2cb9667152c2"
  },
  {
   "file": "scenes/friends-dark-960.avif",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -15469,14 +15420,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 81517,
-  "sha256": "ca336277585170efee69def3f3299e25a3f9ee7626a365f233eeb68c15097e36"
+  "bytes": 72507,
+  "sha256": "26d71ec864d6564b2448f4f39f28b3f18c91f9bc30024fd9d8cd22dfda2f24ea"
  },
  {
   "file": "scenes/friends-dark-960.webp",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -15484,14 +15435,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 96664,
-  "sha256": "0f71fbbbf41e9b240e1ff9a639074ec01e519801a8ca08bc581f3cbca7539567"
+  "bytes": 87328,
+  "sha256": "5cdac7e018a1b6b42461d14dccc6c0ad5ad7d8e61935a016caa073dbe3411001"
  },
  {
   "file": "scenes/friends-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -15499,14 +15450,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 154114,
-  "sha256": "1367158e821b3cc8983eaed9ca3110b8fbcfbfcc594ac99f65034433fcd53ee7"
+  "bytes": 138445,
+  "sha256": "76f792b85ee2312e33ea098e6785c99f306334127a6613363ec7c93027b60e8c"
  },
  {
   "file": "scenes/friends-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -15514,14 +15465,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 245651,
-  "sha256": "658b63fbb8bd12b6b1e53b921141563e3203573f3144cdcfce73322804f1e69a"
+  "bytes": 213599,
+  "sha256": "1bea4483ce4f80255a00a15a9a4c2aeb246db4cccf5739b2916e33b549c2ff42"
  },
  {
   "file": "scenes/friends-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -15529,14 +15480,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 320239,
-  "sha256": "77880343501077fdcf964e44ded553c9a432a14734bc8d1ecf23faf0c439ff88"
+  "bytes": 277627,
+  "sha256": "826d70bad730ca76b5468e3daa9847f036306e263db94a7834736e57570f5806"
  },
  {
   "file": "scenes/friends-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -15544,14 +15495,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 446070,
-  "sha256": "9174a3aec16abf1a0aa587a536e2d7a35c83597fe0634ab9c053e0901c245462"
+  "bytes": 382210,
+  "sha256": "6cfc1ceee91b66b1cba2ae4ed5a025180fffd843a53ca5bded08091d28bedb1c"
  },
  {
   "file": "scenes/friends-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -15559,14 +15510,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 388248,
-  "sha256": "01f455fce6e7be16474c1f7a1339e8aa9c98926b1870fb55c52bf1876aa9c7d7"
+  "bytes": 340002,
+  "sha256": "14dcf39e6123ba0a20c2921ed28d5cb06cebe38bee20bcdedc5578131bd2bcb1"
  },
  {
   "file": "scenes/friends-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -15574,14 +15525,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 496807,
-  "sha256": "ae67070a4d2005e84e899e8f8f22a19ed2cef6250377bd7e904cef8df123d85d"
+  "bytes": 433420,
+  "sha256": "829bc10348c4ad6c5c8e0f6c468eec425ab46e7139da8c957bf78417bc0c1785"
  },
  {
   "file": "scenes/friends-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -15589,14 +15540,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 706101,
-  "sha256": "078585a20a9dc5df78b072942deb64603385a4e6acd7ed14a143dd7646c30d13"
+  "bytes": 608464,
+  "sha256": "6b860f3e62baeae151f3c7220a17b5280860d8faf57acbe4032966e6172320f9"
  },
  {
   "file": "phone/friends-dark-384.avif",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 384x216 (Lanczos)",
@@ -15604,14 +15555,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 23508,
-  "sha256": "56db5c59e9fd560068a4b326f27a0a87061b916b57cca979c8fa0f5aae0e7b8e"
+  "bytes": 20440,
+  "sha256": "75c318f6efe498c97b3eea79b5b9a455d5d7157936f22d5b0216826f7f11da1a"
  },
  {
   "file": "phone/friends-dark-384.webp",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 384x216 (Lanczos)",
@@ -15619,14 +15570,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 216,
-  "bytes": 26836,
-  "sha256": "ec8f78821822aa4dd27ba42ccff217d39b00f3377b34454ad6915c7d4c0b6b87"
+  "bytes": 23672,
+  "sha256": "b10be0e43fa2c56a9922625833559e48d6a0347147f1dff73d05539390ac7ae8"
  },
  {
   "file": "phone/friends-dark-768.avif",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 768x432 (Lanczos)",
@@ -15634,14 +15585,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 61127,
-  "sha256": "e978392178eec3c727a1c826268a81c7685dbb1027b49fb745ce5db7b4361ccc"
+  "bytes": 55269,
+  "sha256": "9e892c89664ea4c1fbf4d96d17aa3dc2aeec9b30c2819aea74533a5dd02a969d"
  },
  {
   "file": "phone/friends-dark-768.webp",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [116, 0, 1140, 576] then resize to 768x432 (Lanczos)",
@@ -15649,14 +15600,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 432,
-  "bytes": 73732,
-  "sha256": "75f322e3c6be2391684c0bf2f7d6100dbf1b2c67382d38c425d43532b4bccfd5"
+  "bytes": 68234,
+  "sha256": "c98f5b2b1881b496b9e08fc7a1b44de037d451fb5e6903f51febfcd4ffd87de8"
  },
  {
   "file": "og/friends-dark.jpg",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [92, 0, 1189, 576] then resize to 1200x630 (Lanczos)",
@@ -15664,8 +15615,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 270531,
-  "sha256": "45e022ac610caa59f79222a5adfd8d2aae11672f4fcef0c320db08fe850b1280"
+  "bytes": 249965,
+  "sha256": "9b6379ab36eea4531cc06e2b826fc5a2bbd2dff817fd22bc9c29d3f03983a1e5"
  },
  {
   "file": "headers/homebrew-tap-dark.webp",
@@ -20089,7 +20040,7 @@
   "file": "phone/friends-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1152x648 (Lanczos)",
@@ -20097,14 +20048,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 648,
-  "bytes": 137372,
-  "sha256": "f939e2f74e7676bc001f93e6f2da91a60c7b3363c5a0fa3afd347c605875cb03"
+  "bytes": 117888,
+  "sha256": "5c917babc5dc7225bee85d0324aaa278717d4976fcc0f83c5d34ec7b5b2b3b72"
  },
  {
   "file": "phone/friends-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1152x648 (Lanczos)",
@@ -20112,14 +20063,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 648,
-  "bytes": 106057,
-  "sha256": "25ca1ce459e9022a5773792cafed0ccaa8b703e60f01b77e8614cda06d967442"
+  "bytes": 90734,
+  "sha256": "0ccfab2cdbf3878aae376b3e53310b0a4b0e67578bd5cd9a26e8ca72952c821e"
  },
  {
   "file": "phone/friends-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1536x864 (Lanczos)",
@@ -20127,14 +20078,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 864,
-  "bytes": 193262,
-  "sha256": "6b9e788871d511f29ffa270dacc0640fe901fe8912f4860ece6c3cc325f66ab3"
+  "bytes": 162308,
+  "sha256": "d726fc11078e9c06afa8e8664dbe6d133670a34e8384eef73c55bfa6f3f71cbd"
  },
  {
   "file": "phone/friends-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "phone hero (16:9)",
   "operation": "crop box [464, 0, 4560, 2304] of the 4x master then resize to 1536x864 (Lanczos)",
@@ -20142,8 +20093,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 864,
-  "bytes": 142217,
-  "sha256": "75c92e30ed453c80b78961e8e63a51462caea26add0f31cb5ad847ea27a0ad0b"
+  "bytes": 121884,
+  "sha256": "38033a66dbc6ab8f147f8b80f885357d2cfe869b63f2ac1f788df4d5a2a5acd3"
  },
  {
   "file": "phone/friends-relay-dark-1152.webp",
@@ -23561,7 +23512,7 @@
   "file": "scenes/friends-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/friends-dark.webp",
-   "sha256": "694f8f948f7f9dbe7f5940ecef3323285730be8f57b75f565d76e8a9bc5412a2"
+   "sha256": "11219f562a7612ef2c01d2ff38af09e8c8587a46134a27502f3b13e858a338c9"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -23569,14 +23520,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1210184,
-  "sha256": "09ff822be6e9dd41593e2ec766680f44dd642d380fecd5b41bd4ab0105099a68"
+  "bytes": 1001078,
+  "sha256": "5fe293ce4e1806ff6e32a5f91582dee9c62eb3a6d05dba27234da6ba655ec57f"
  },
  {
   "file": "social/friends-dark.jpg",
   "derivedFrom": {
    "file": "headers/friends-dark.webp",
-   "sha256": "1f408b5d0f6f40116d9684fecd3efb2d2411691e2d386d7d59643e59e7f5be28"
+   "sha256": "e8e183b81b5a489aad77195c9c517ef87d67f5a7139b9860b08c6455d2550e76"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [64, 0, 1216, 576] then resize to 1280x640 (Lanczos)",
@@ -23584,8 +23535,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 291839,
-  "sha256": "9ad4949c10bdeec7d15b99f61fe96f7b8761962bd5ba0f9eaa03a32ea39913c2"
+  "bytes": 269732,
+  "sha256": "c5685991966cb5e1398c715e2de80d8363ae1a8c5388960e2dbbae1aba38285b"
  },
  {
   "file": "scenes/friends-relay-dark-7680.webp",
