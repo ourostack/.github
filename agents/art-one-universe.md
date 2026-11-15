@@ -36,6 +36,10 @@ Shared guidance for every agent and person making pictures for ourostack, spoonj
    - Check any device that reads dated: anything that isn't current-generation or clearly vintage.
    - Check day and night separately.
 
-   It ships only when that reviewer finds nothing. The author's notes and a "fixed what was asked" check never count as a pass. Ari, 2026-11-15, after reviewers twice passed an airship hero whose person had three arms and whose helm faced the camera.
+   Sort what the reviewer finds:
+   - **Blockers, fixed to zero:** anything physically wrong (limbs, holds, facing, mechanism orientation, a dated device, impossible geometry such as a door that can't fit its opening), and any defect you can see at the shipped size or at 2x, mushy hands included.
+   - **Polish, visible only in the 4x crops** (render noise on metal, a missing contact shadow): fix it if it's cheap, otherwise log it on the review list and ship.
+
+   It ships only when that reviewer finds no blockers. The author's notes and a "fixed what was asked" check never count as a pass. Ari, 2026-11-15, after reviewers twice passed an airship hero whose person had three arms and whose helm faced the camera.
 
 Whoever sees art on a surface that misses this bar fixes it, or tells that surface's owner with the evidence.
