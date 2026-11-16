@@ -8,6 +8,13 @@
 #   gh ouro-pr --title "..." --body-file notes.md --base main
 #   gh ouro-pr --dry-run             # print what it would do
 #
+# Run it from a clone when the alias is not installed:   bash <clone>/tools/ouro-pr/ouro-pr.sh [flags]
+# Merge a PR opened some other way, with the same message rules:   gh ouro-pr merge <number-or-url>
+#
+# Every merge it asks for carries an explicit message: "<PR title> (#n)" and the PR body with any AI or bot
+# credit line (Co-authored-by, Assisted-by, ...) removed. Without one GitHub copies the branch commits' co-author
+# trailers onto main, and a cloud session's commit signer forces the AI trailer onto those commits.
+#
 # It pushes the branch (never with force), opens the PR, and turns on auto-merge, which joins the
 # merge queue where the repository has one. Where GitHub offers no auto-merge (private repositories
 # on a free plan) it says so: merge it yourself the moment it is green.
@@ -15,8 +22,12 @@
 set -euo pipefail
 
 main() {
-title="" body_file="" base="" dry=0
+title="" body_file="" base="" dry=0 merge_pr=""
 extra=()
+if [ "${1:-}" = merge ]; then
+  [ $# -ge 2 ] || { echo "ouro-pr: merge needs a pull request number or URL" >&2; exit 2; }
+  merge_pr=$2; shift 2
+fi
 while [ $# -gt 0 ]; do
   case "$1" in
     --title|-t|--body-file|-F|--base|-B)
@@ -32,6 +43,40 @@ done
 
 say() { printf 'ouro-pr: %s\n' "$*" >&2; }
 run() { if [ "$dry" = 1 ]; then printf '[dry-run]' >&2; printf ' %q' "$@" >&2; echo >&2; else "$@"; fi; }
+
+# The message a merge lands with: "<title> (#n)" and the body without AI or bot credit lines.
+AI_CREDIT='^[[:space:]]*[A-Za-z-]+-by[[:space:]]*:.*(\[bot\]|(^|[^A-Za-z0-9])(copilot|claude|anthropic|openai|chatgpt|gpt|codex|gemini|cursor|devin|aider)([^A-Za-z]|$))'
+merge_message() {
+  local pr=$1
+  if msg_subject=$(gh pr view "$pr" --json number,title --jq '"\(.title) (#\(.number))"' 2>/dev/null); then
+    msg_body=$(gh pr view "$pr" --json body --jq .body)
+  else
+    msg_subject="$title"
+    msg_body=$(cat "$body_file")
+  fi
+  msg_body=$(printf '%s\n' "$msg_body" | tr -d '\r' | grep -v -i -E "$AI_CREDIT" | cat -s || true)
+}
+# gh pr merge <flags> <pr> with that message.
+merge_with_message() {
+  local pr=${*: -1} flags=("${@:1:$#-1}")
+  merge_message "$pr"
+  run gh pr merge "${flags[@]}" --subject "$msg_subject" --body "$msg_body" "$pr"
+}
+
+# `merge <pr>`: merge a pull request opened some other way, with the same message rules.
+if [ "${merge_pr:-}" ]; then
+  pr_repo=$(gh pr view "$merge_pr" --json url --jq '.url | capture("github.com/(?<r>[^/]+/[^/]+)/pull").r')
+  method=$(gh api "repos/$pr_repo" --jq 'if .allow_squash_merge then "--squash" elif .allow_merge_commit then "--merge" else "--rebase" end')
+  if err=$(merge_with_message --auto "$method" "$merge_pr" 2>&1); then
+    say "auto-merge on: it merges itself when its checks pass."
+  elif printf '%s' "$err" | grep -qiE "(clean|unstable) status"; then
+    merge_with_message "$method" --delete-branch "$merge_pr"
+  else
+    say "could not merge: $err"
+    exit 1
+  fi
+  exit 0
+fi
 
 branch=$(git symbolic-ref --short HEAD 2>/dev/null) || { say "not on a branch"; exit 2; }
 repo=$(gh repo view "$(git remote get-url origin)" --json nameWithOwner,defaultBranchRef --jq '.nameWithOwner + " " + .defaultBranchRef.name')
@@ -115,7 +160,7 @@ required=$((a + b))
 
 if [ "$auto" != true ]; then
   say "GitHub offers no auto-merge in $name (private repository on a free plan)."
-  say "Merge it the moment it is green: gh pr merge $method --delete-branch $url"
+  say "Merge it the moment it is green: gh ouro-pr merge $url"
   echo "$url"
   exit 0
 fi
@@ -126,8 +171,8 @@ else
   # Without required checks, auto-merge would merge at once (or GitHub refuses it with "clean" or
   # "unstable status"). Then wait for whatever checks the PR does run, and merge only if they pass.
   if [ "$dry" = 1 ]; then
-    if [ "$required" -gt 0 ]; then run gh pr merge --auto "$method" "$url"; else say "no required checks: would wait for the PR's own checks, then merge"; fi
-  elif [ "$required" -gt 0 ] && err=$(gh pr merge --auto "$method" "$url" 2>&1); then
+    if [ "$required" -gt 0 ]; then merge_with_message --auto "$method" "$url"; else say "no required checks: would wait for the PR's own checks, then merge"; fi
+  elif [ "$required" -gt 0 ] && err=$(merge_with_message --auto "$method" "$url" 2>&1); then
     say "auto-merge on: it merges itself when its checks pass."
   elif [ "$required" -gt 0 ] && ! printf '%s' "$err" | grep -qiE "(clean|unstable) status"; then
     say "could not turn on auto-merge: $err"
@@ -141,9 +186,9 @@ else
       gh pr checks "$url" 2>&1 | grep -q "no checks reported" || break
     done
     if gh pr checks "$url" --watch --fail-fast --interval 20 >&2; then
-      gh pr merge "$method" --delete-branch "$url"
+      merge_with_message "$method" --delete-branch "$url"
     elif gh pr checks "$url" 2>&1 | grep -q "no checks reported"; then
-      gh pr merge "$method" --delete-branch "$url"
+      merge_with_message "$method" --delete-branch "$url"
     else
       n=$(gh pr view "$url" --json statusCheckRollup --jq '[.statusCheckRollup[] | select(.conclusion == "FAILURE" or .conclusion == "TIMED_OUT" or .conclusion == "CANCELLED" or .conclusion == "STARTUP_FAILURE" or .conclusion == "ACTION_REQUIRED" or .state == "FAILURE" or .state == "ERROR")] | length' 2>/dev/null) || n=
       case $n in

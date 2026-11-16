@@ -73,3 +73,7 @@ It reads with the workflow's own token, which sees every public repository (toda
 | GitHub merge queue and auto-merge | Merges when green | Adopt: every repository has auto-merge on, and `gh ouro-pr` turns it on per PR. |
 
 None of them reads a PR's checks and merge state to say *why* it is stuck at a 30-minute scale across three owners, so the clock is our own small script.
+
+## Merge with an explicit message
+
+Cloud sessions' commit signer forces a `Co-authored-by: copilot-swe-agent[bot]` trailer onto branch commits, and GitHub's squash merge copies it onto `main` (the repository's squash-message setting does not stop that). Our rule is no AI attribution on `main`, so every merge passes its own message: `gh ouro-pr` and `gh ouro-pr merge <pr>` use `--subject "<title> (#n)"` and `--body` with AI and bot credit lines removed, as does Desk's merge-when-green relay. The [no-ai-trailer guard](../.github/workflows/no-ai-trailer.yml) fails `main`, and its sweep every ten minutes covers every repository.
