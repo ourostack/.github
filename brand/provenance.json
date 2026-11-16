@@ -33395,9 +33395,9 @@
   "file": "upscaled/garden-line.webp",
   "derivedFrom": {
    "file": "headers/garden-line.webp",
-   "sha256": "f89e67426887c1dcd00e3402b5e436a4c45c768642f548a975e8cd2c3df74c3d",
+   "sha256": "885efcc86772d06ed9aa3cae268889284a93365975841a2bf8c49172d3c37f5e",
    "master": "garden-line-master",
-   "master_sha256": "f2470ddda3ac7d59ace302a14528ca1a1a8ed3f22cbc219fdd2c5c7505841a0f",
+   "master_sha256": "09a4516a67e8976666a658e07703db4b34d229168d59fb9309966e6647765c8a",
    "crop": [
     0,
     196,
@@ -33406,15 +33406,15 @@
    ]
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master garden-line-master (sha256 f2470ddda3ac7d59ace302a14528ca1a1a8ed3f22cbc219fdd2c5c7505841a0f), then cut to the header's box [0, 196, 1536, 772] at 4x [0, 784, 6144, 3088]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/garden-line.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9712 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master garden-line-master (sha256 09a4516a67e8976666a658e07703db4b34d229168d59fb9309966e6647765c8a), then cut to the header's box [0, 196, 1536, 772] at 4x [0, 784, 6144, 3088]",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/garden-line.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9706 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1298630,
-  "sha256": "91ec5ed27eab651d902631f918d9c8cb7511a8947f106046d980dd5260effb34"
+  "bytes": 1299122,
+  "sha256": "bf410cb9506bc7e204053c5c73b173ab1ed29db544dcc0e321e806e4b2239769"
  },
  {
   "file": "upscaled/butler-steady.webp",
@@ -33437,22 +33437,22 @@
   "file": "upscaled/garden-line-dark.webp",
   "derivedFrom": {
    "file": "headers/garden-line-dark.webp",
-   "sha256": "96385a8f0d2d6fa6fc74d9a7bb77176e734cef5442d0c903b4d5adf500ed7ad3"
+   "sha256": "a2a6c296119056dceb118ddb25be611791544fc63f4b0852b35043f7a4eea57a"
   },
   "alsoFrom": {
    "file": "upscaled/garden-line.webp",
-   "sha256": "91ec5ed27eab651d902631f918d9c8cb7511a8947f106046d980dd5260effb34"
+   "sha256": "bf410cb9506bc7e204053c5c73b173ab1ed29db544dcc0e321e806e4b2239769"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "the day's 4x master upscaled/garden-line.webp (sha256 91ec5ed27eab651d902631f918d9c8cb7511a8947f106046d980dd5260effb34) given the light and colour of headers/garden-line-dark.webp (sha256 96385a8f0d2d6fa6fc74d9a7bb77176e734cef5442d0c903b4d5adf500ed7ad3) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's, so each night size has the day's exact structure (nightFromDay in crops.json)",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/garden-line-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9642 (floor 0.95); same crop, subject and aspect",
+  "operation": "the day's 4x master upscaled/garden-line.webp (sha256 bf410cb9506bc7e204053c5c73b173ab1ed29db544dcc0e321e806e4b2239769) given the light and colour of headers/garden-line-dark.webp (sha256 a2a6c296119056dceb118ddb25be611791544fc63f4b0852b35043f7a4eea57a) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's, so each night size has the day's exact structure (nightFromDay in crops.json)",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/garden-line-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9639 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". The day's 4x Real-ESRGAN master given only this night's light and colour, so the night has no texture the day lacks; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1082236,
-  "sha256": "ebb2b9efb64dc4ad6de060398e353c795ac99d4d9a41958fe9bbfd50d0959436"
+  "bytes": 1085292,
+  "sha256": "9b7d3af322703e790e4f711b2ae5266834c4802ff81149fd3e7a28bab7fa86df"
  },
  {
   "file": "upscaled/butler-steady-dark.webp",
