@@ -194,7 +194,7 @@
   "file": "headers/ouro-hx.webp",
   "for": "https://github.com/ourostack/ouro-ui",
   "model": "GitHub Copilot app built-in image_generation tool; core at 1536x1024, quality high, widened by two outpaint edits, then resized to the header by Lanczos, WebP q86",
-  "generated": "2026-11-15, full redraw to the airship bar: on a mountain cabin's deck at dawn, a faceless person in clear glass, holding a coffee, presses a big glass toggle on a walnut test board while a small coral agent on a crate studies the brass gauge through a loupe; Ouro, cat-sized, basks on a folded cloth on the table",
+  "generated": "2026-11-15, full redraw to the airship bar: on a mountain cabin's deck at dawn, a faceless person in clear glass, holding a coffee, presses a big glass toggle on a walnut test board while a small coral agent on a crate studies the gauge through a loupe; Ouro, cat-sized, basks on a folded cloth on the table",
   "approval": "Ari, 2026-11-15, 18:15 PT, on github.com/ourostack's headers: \"dunno what you're talking about, these are all old!!\"; the coordinator set the bar as ouroboros.bot's airship hero (.github#152): Ouro small and part of the scene, people in clear or lightly frosted glass with natural adult proportions, agents with no drawn mouths, premium-film render (agents/art-one-universe.md)",
   "crop": "1536x512, the whole 3:1 frame of the 3072x1024 master (core at x 768-2304) resized by Lanczos; no crop",
   "generation": [
@@ -240,18 +240,54 @@
     ]
    },
    {
+    "step": "edit",
+    "what": "every hand made a mitten with one thumb: the person's mug and lever hands and both of the agent's hands",
+    "sha256": [
+     "128fd3910dfd3b80f169a6de66f8d34a91ca943b12c592145619e804fdc9a62e",
+     "1a861e3ed4cc4381a78f282d0d8280f02e79c68e338423d31af4fd63609d9f87",
+     "f009f3062eadd9832d136c1f8f14a82c06e61efd01ddddb96d3181d413690113"
+    ]
+   },
+   {
+    "step": "edit",
+    "what": "the test board laid nearly flat, tilted toward the person, and the top handrail turned at the corner post",
+    "sha256": [
+     "c39af269b32e33d7f8b7fb79ded5264fef8cbc8b308be81bcb25327e7af1c2ef",
+     "3c861bd4861601df6efc4b32d3f0869d079f7d83c178a22cfd25731e8adf37f8"
+    ]
+   },
+   {
+    "step": "edit",
+    "what": "the bench's missing front-right leg added, the table's legs made two matching sawhorses with one consistent front edge, dew-glint dot chains removed from the rails and the pine",
+    "sha256": [
+     "52f105031d20e055b7ffd7bbf09ff73576556896e1ba129a1bcb7415c2f5fa87",
+     "c228981ec12300b2478827569149408b92ac55809aee252a8137f0205b37b5f5",
+     "55fbfe6d12ea80f09932f081f3c3c9f57f57e9157fae1115e952920615d75b75",
+     "2bc90436f9460f6cb429d70b9e56a1eb1f6f7e0861aba8300a8e30166425243d",
+     "500f0d3430973f141f0ec56e2e30740ff855c8fbec50dbadeefadc8c88d611af",
+     "77f9d6737fcdbac67eeeb88cca79d2317fa2e2e2ffca02e8a26bb7f7530b77a8"
+    ]
+   },
+   {
+    "step": "edit",
+    "what": "the sun disc removed (the sun is behind the viewer, matching the front light: a pink dawn sky), the rails' heights matched at the corner post by a small warp of existing pixels, and the agent's eye arcs flattened to gentle arches (pixels only, no generation)",
+    "sha256": [
+     "508803368717aebc9fbe3efcb44afd7b7c52ac6e3ea28fee07d99f7008a563d2"
+    ]
+   },
+   {
     "method": "every edit was made on a crop, ECC-aligned (affine) back onto the picture and pasted only inside a feathered mask over the changed part; everything else keeps the candidate's pixels"
    }
   ],
-  "checked": "blind defect hunts of the 1536x512 header and its 4x tiles, 2026-11-15: round 1 found a dash and red curves on the agent's visor and numeral-like marks on the gauge's rim; after the edits below, round 2: no defects found",
-  "master_sha256": "d42e4a9db1220fe6676f4125a478a4dab394f2ee9adbf09917cd0ca992e52132",
+  "checked": "blind defect hunts of the 1536x512 header and its 4x tiles, 2026-11-15: earlier rounds as below; after the hand and board fixes, rounds 3-5 found a thumbless lever hand, a bench missing a leg, dew-glint dot chains on the rails, a thick table edge, rails meeting the corner post at different heights, a sun behind front-lit figures and steep '^ ^' visor eyes; after the edits below, the final round: see the PR",
+  "master_sha256": "70b4e9cf859b8163a1e3116deb32cc15ca143f7335e94c35bd86d90bd93c5e3b",
   "width": 1536,
   "height": 512,
-  "bytes": 239270,
-  "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c",
+  "bytes": 237748,
+  "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8",
   "previous": {
-   "sha256": "e367e8c8831b77694d72995b346b1bb9c7fd3f0a5403dc27c2870bf85f265eea",
-   "generated": "2026-11-14, v7 redraw to Ari's round-5 review: no lid, no rocket, Ouro bigger in the brand O on the crate, person filled with brass core and emerald glow, less haze, one smooth glass material; then Ouro's eyes redrawn as the brand face (white eyes, black pupils, highlight, per brand/ouro.png) in one targeted edit of the eyes only, composited back"
+   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c",
+   "generated": "2026-11-15, full redraw to the airship bar: on a mountain cabin's deck at dawn, a faceless person in clear glass, holding a coffee, presses a big glass toggle on a walnut test board while a small coral agent on a crate studies the brass gauge through a loupe; Ouro, cat-sized, basks on a folded cloth on the table"
   }
  },
  {
@@ -3919,7 +3955,7 @@
   "file": "scenes/ouro-hx-640.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -3927,14 +3963,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 44414,
-  "sha256": "1de903e9ca785cd99e31edea901cffce38f4809288a80b41ac15777017ea8c02"
+  "bytes": 44158,
+  "sha256": "c10b935a59f283a34dca0f02fb25e32ec8c5f5db8259a486bc5182bdb7b26c72"
  },
  {
   "file": "scenes/ouro-hx-640.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -3942,14 +3978,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 36192,
-  "sha256": "92ebccc20c8efd87f8f3e81aecc6c4377bf2f53f02e8e01446e45e25503ce498"
+  "bytes": 35768,
+  "sha256": "00982364391809138f321fa4c1fae427aef6cf7be5120d1f56147f13e3add675"
  },
  {
   "file": "scenes/ouro-hx-960.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -3957,14 +3993,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 87692,
-  "sha256": "5e402a5be78875f36554b33889a98247bcc60c1fa1efe7cb39c842deab42e272"
+  "bytes": 86878,
+  "sha256": "4f5cc00c0c0ed067d185c8afb4730129bc0d38bdfaad98db4375c7997ff56f79"
  },
  {
   "file": "scenes/ouro-hx-960.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -3972,14 +4008,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 70605,
-  "sha256": "e5e487aab827441373595d10963d052e5cdab2b0fb425e412730d51886715273"
+  "bytes": 69886,
+  "sha256": "d1cd4d7535e7673c5a14e9d0fae4807659552ebcb0ceccb4944c132bba35f6bc"
  },
  {
   "file": "scenes/ouro-hx-1536.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -3987,14 +4023,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 158820,
-  "sha256": "d65cf607c7b2eec95a6f251342a83ec8591634236dec950dd4f0947d314a377b"
+  "bytes": 157103,
+  "sha256": "fb7982400b1196a9b79c7e4955872ca3da24b0e0dfec270de82cb127950f5947"
  },
  {
   "file": "phone/ouro-hx-384.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 384x192 (Lanczos)",
@@ -4002,14 +4038,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 23040,
-  "sha256": "b1e7d0386fb38e2abf3fe15b8b98d394f58c9e2ea91899bd6d5e32dba8066a35"
+  "bytes": 23306,
+  "sha256": "4cd7ca185e73fc2857c0c70336ec3c0c3b675f7a6570a45be536163ad6923612"
  },
  {
   "file": "phone/ouro-hx-384.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 384x192 (Lanczos)",
@@ -4017,14 +4053,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 19239,
-  "sha256": "f0de50d7b048862c2f27ab66b25e58dd570eac491e4603be98f1d8c78bd4369e"
+  "bytes": 19142,
+  "sha256": "01b72b711c27aa259b8e08c20fabc89428729d21176e2708c0036e751ce058c8"
  },
  {
   "file": "phone/ouro-hx-768.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 768x384 (Lanczos)",
@@ -4032,14 +4068,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 74214,
-  "sha256": "e0500beff556bc7b53d326744ebd083c1b3fbbbf1917fe43af417abf8a91dc77"
+  "bytes": 74036,
+  "sha256": "5d8b8b8f60a05de68dfdb34dd32fab7de1606ca31aa7ea38423de12323d0c790"
  },
  {
   "file": "phone/ouro-hx-768.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 768x384 (Lanczos)",
@@ -4047,14 +4083,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 58565,
-  "sha256": "92af366b5eb3565f4426acc8289357234d96fc081fded9113fe8f718d19e93bb"
+  "bytes": 58032,
+  "sha256": "b5471d05c51d2901c56dba1e2a12b17d9241ef958507a474a6e098b9376fa7b1"
  },
  {
   "file": "social/ouro-hx.jpg",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 1280x640 (Lanczos)",
@@ -4062,14 +4098,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 300533,
-  "sha256": "4dc90cb54680822858182170571c28e343939c77987b7de3531aa39aca2b9aff"
+  "bytes": 299245,
+  "sha256": "1a1f769ee551ca805d39110d8398b9715a50766d5c3007913b41f23ff7a0c93b"
  },
  {
   "file": "og/ouro-hx.jpg",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [312, 0, 1287, 512] then resize to 1200x630 (Lanczos)",
@@ -4077,8 +4113,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 280150,
-  "sha256": "e0b8c5d1c12ef8d08965f572e292decbb4002e40a191568ba59821f1b12a560b"
+  "bytes": 279404,
+  "sha256": "0c996632a3757d14265cd4ec5105ba49f067e7c82f8210618b6a0f72adec6797"
  },
  {
   "file": "scenes/ouro-md-640.webp",
@@ -7417,18 +7453,18 @@
   "file": "upscaled/ouro-hx.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx.webp",
-   "sha256": "d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c"
+   "sha256": "cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouro-hx.webp (sha256 d8ce2873694b8501843b5aa5c0343feafb360c071524f9b0218798c843169d5c); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/ouro-hx.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9678 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouro-hx.webp (sha256 cec815cd8d1b40fca67882a46fb0fe434720e8acee829f9a9eb52b0353ee07c8); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/ouro-hx.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9672 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 1671724,
-  "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+  "bytes": 1889898,
+  "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
  },
  {
   "file": "upscaled/ouro-md.webp",
@@ -9213,7 +9249,7 @@
   "file": "scenes/ouro-hx-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -9221,14 +9257,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 229235,
-  "sha256": "c81495f8224784f20b51504df024a6813d7af458486dbb8e67b44d8e5cf2f5f1"
+  "bytes": 238107,
+  "sha256": "5f8ab83eb5a4e28337a814b75ada086d7b3ddc06bdec124f3c42bdf7f0fb905f"
  },
  {
   "file": "scenes/ouro-hx-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -9236,14 +9272,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 318296,
-  "sha256": "ab97313562d65085c24482c10ef33f00c86d1058494c84d60aa49e2b0bfb4d0d"
+  "bytes": 337880,
+  "sha256": "7de148ca136b5a3d09fe88c37ff1a07f477e93b2b90aeaeee8903ddc2505449c"
  },
  {
   "file": "scenes/ouro-hx-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -9251,14 +9287,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 451748,
-  "sha256": "ca3d468dd903a8aa80cb6810e0e8ff1eb2d0233abf9e24e126c5985401976a1b"
+  "bytes": 472424,
+  "sha256": "150526a8ed359fd54671b1febcea98b64ed5ce3ee1ee16d242c796f385821a01"
  },
  {
   "file": "scenes/ouro-hx-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -9266,14 +9302,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 405610,
-  "sha256": "a179bd27098cee85009e0d53059b5e6db56f37dd7d2db61ca1002932a643e0bf"
+  "bytes": 437094,
+  "sha256": "fc7d5c8819cdf576703312332e2a1688d6f3632264cedc75c229acc0a0a48ab0"
  },
  {
   "file": "scenes/ouro-hx-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -9281,14 +9317,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 543543,
-  "sha256": "986e7d84ef00b60371c9f7c0d3117b932701becd8a1339dbea8d79aaf1fac26e"
+  "bytes": 598059,
+  "sha256": "e73671e5963a9782d239d509035e0991c6e29d4b1c0e2bb8c886d14975588a23"
  },
  {
   "file": "scenes/ouro-hx-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -9296,14 +9332,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 799887,
-  "sha256": "26744fdd525f5abfc2f8df11276f0819740bde675b30246dee95f7bcc37cc456"
+  "bytes": 885360,
+  "sha256": "479a6908dfa8a73e7a20815136b26e4a3109e8b6f5fe1f516fa20cac035d0b50"
  },
  {
   "file": "scenes/ouro-hx-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -9311,8 +9347,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1353356,
-  "sha256": "0b4cae0add98cd38ababde0bd28448163508a0c79e715de930656c94deb6027c"
+  "bytes": 1459336,
+  "sha256": "308b88cd45a384d931b0243736ab94246f7a2f94b3a1c4fcc2a93cb142011fbd"
  },
  {
   "file": "scenes/ouro-md-2304.avif",
@@ -11478,7 +11514,7 @@
   "file": "phone/ouro-hx-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -11486,14 +11522,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 129328,
-  "sha256": "77d51869470bfb26b8cdf2c452a16bf0e399d51554f1fcbdb6a4e7bbc0ccd43c"
+  "bytes": 130656,
+  "sha256": "a3fd7d03c2d4b808de765e0f49fe7d5b965724ca408a53cc5e1d7a017fe9d5e3"
  },
  {
   "file": "phone/ouro-hx-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -11501,14 +11537,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 98032,
-  "sha256": "2579ead890c71ca0585ce35563446b3bcd5f969129a03e82a84b1b80e8d42eb0"
+  "bytes": 99516,
+  "sha256": "be68cb326a1e4be90b7f48c582a881777bdce1a4911f99c84f9702a223fb9087"
  },
  {
   "file": "phone/ouro-hx-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -11516,14 +11552,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 190710,
-  "sha256": "e0608c453dc0e315aa227bbf2e7be827bc82c5065f4571246c1f20424bd97e79"
+  "bytes": 194244,
+  "sha256": "5018f475217dcc09ba8ba0cb037d0a972e8b2f363787fef4d69fa0d950d31df7"
  },
  {
   "file": "phone/ouro-hx-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx.webp",
-   "sha256": "7ab430df01e5411d79e15bb234e1a917df0f4444eac815b488b914e4d635fce0"
+   "sha256": "b64bd5e0fed0faf77fefe1d56dc2a5bd9c39c7430e2041fa22e1627c6da27a87"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -11531,8 +11567,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 138383,
-  "sha256": "684b67042db6f4fb1bc89fc0fada9668a475fb3cf73d3cd9b78bcac7ca978ee1"
+  "bytes": 141331,
+  "sha256": "51efca090b3134247f9bee19e0c54b4eb7db8c5aed399364f5cf04e71913aa6c"
  },
  {
   "file": "phone/ouro-md-1152.webp",
@@ -17454,56 +17490,76 @@
   "model": "GitHub Copilot app built-in image_generation tool, 1536x1024, quality high; a relight edit of the shipped day header",
   "generated": "2026-11-15, the night twin of the redrawn day header: the same deck by moonlight, with the cabin's windows and lantern lit",
   "approval": "Ari, 2026-11-15, 18:15 PT, on github.com/ourostack's headers: \"dunno what you're talking about, these are all old!!\"; the coordinator set the bar as ouroboros.bot's airship hero (.github#152): Ouro small and part of the scene, people in clear or lightly frosted glass with natural adult proportions, agents with no drawn mouths, premium-film render (agents/art-one-universe.md)",
-  "crop": "1536x512: the relight was drawn on the day header letterboxed into 1536x1024 and cut back by an ORB similarity fit (scale 1.0000, rotation -0.03 degrees, offset 256.7 px)",
+  "crop": "1536x512: the relight was drawn on the fixed day header letterboxed into 1536x1024 and cut back by an ORB similarity fit (scale 1.0001, rotation 0.04 degrees, offset 256.0 px)",
   "generation": [
    {
     "step": "relight",
-    "prompt": "Relight this picture as the same moment at night. The wide picture band in the middle is the picture; the flat grey bars above and below it are empty canvas: paint them as more night sky above and more wet deck boards below, continuing the picture seamlessly. Keep the same frame, composition, camera, every figure, pose, object and its position exactly as they are [the cast and props listed]. Only the light and time of day change. Night light: a deep blue starry sky with a bright moon low over the ridges on the right in place of the sun, its silver reflection on the still lake; soft cool moonlight from the right as the key light with silver rim light on every figure; the hanging lantern on the cabin wall is lit and the cabin windows glow warm amber, casting warm light across the deck onto the person, the table and the board; the person's glass head and hands glow softly warm from within; the robot's two crescent visor eyes glow; soft mist in the valley. The robot's visor shows only its two glowing eyes and nothing else. The person stays faceless. The gauge's face stays blank. The snake stays exactly as drawn. Same premium animated-film render. No text, letters, numbers, logos or symbols. No glowing trails or lines of light. No vignette or fade.",
+    "prompt": "Relight this picture as the same moment at night. The wide picture band in the middle is the picture; the flat grey bars above and below it are empty canvas: paint them as more night sky above and more wet deck boards below, continuing the picture seamlessly. Keep the same frame, composition, camera, every figure, pose, object and its position exactly as they are: the faceless glass person in the navy overshirt and grey beanie holding a white mug and pressing the big glass toggle; the small coral robot on the wooden crate holding the brass loupe up to its visor; Ouro coiled into one round ring on the folded cloth; the walnut test board, the brass gauge, the table, the log cabin, the railing, the pine, the lake and the ridges. Only the light and time of day change. Night light: a deep blue starry sky with a bright moon low over the ridges on the right in place of the sun, its silver reflection on the still lake; soft cool moonlight from the right as the key light with silver rim light on every figure; the hanging lantern on the cabin wall is lit and the cabin windows glow warm amber, casting warm light across the deck onto the person, the table and the board; the person's glass head and hands glow softly warm from within; the robot's two crescent visor eyes glow; soft mist in the valley. The robot's visor shows only its two glowing eyes and nothing else. The person stays faceless. Every hand of the person and the robot stays exactly as drawn: a smooth mitten with one thumb, never separate fingers. The gauge's face stays blank. The snake stays exactly as drawn. Same premium animated-film render. No text, letters, numbers, logos or symbols. No glowing trails or lines of light. No vignette or fade.",
     "input_images": [
      "headers/ouro-hx.webp (as drawn this round, before encoding)"
     ],
     "tool": "GitHub Copilot app image_generation, 1536x1024, quality high",
-    "sha256": "4d86ccdcb23deb840911d854c45ed377839eebeede35f2255b71a5672e3b2df5"
+    "sha256": "f6d03fd6a85a42a8a917982d4c3094a469b3cedefb464b6d340b01b662f03ee7"
    },
    {
     "step": "edit",
-    "what": "a green letter-like mark on the cloth inside Ouro's ring removed",
-    "sha256": "5489f85af3097ff718a0639d5cc51157c496e7a2f4c1de3a3e2ada3faa4da306"
+    "what": "the lever made solid glass, the agent's eyes filled gentle arcs, warm specks and a dot chain removed from the firs and ridges",
+    "sha256": [
+     "33494e9263f268f0ef710898bd6d34fdf5cd6178863392d6bdbe1f0d58c22dd6",
+     "dc36774ce2ecd013b4c13aedc0d67915cbd53bbf1708aede2dd0b91a94df612d",
+     "a83407cf26393b7b62bf5d3e34d59c6fb95e81f75c24b1347202ab221506be09",
+     "7415d220a4b9a7a7c26affff1b5d72743fa484061797ed3a6bc68dd97a2c6139",
+     "d8b43a9c3a49b6ad0cf70a7c8d5731dade48216c72a112021c80f82da3483a0a"
+    ]
+   },
+   {
+    "step": "edit",
+    "what": "the day's fixes carried over: the board, the rail, the bench leg, the sawhorses and the table edge (each with the fixed day crop as reference), and every hand a mitten with one visible thumb",
+    "sha256": [
+     "51776af70ca95c35b713f15860933fed84d761dfacb4a2d592e18c665eb1994d",
+     "677c2e0c3e23cb89c58e66d6b4e327541d420d85186205c74022b75fab9d5dda",
+     "28b142a98ebb8936e708482eb5d2e5596e140459c7ec1aba44b970f3717a24ff",
+     "34b5a48b6a6f32f9e9437a1f832a30d99f65fdfa3f33033edebcda4fd2166b28",
+     "43cdb187c9733c98424e153d2940dd42fbf11645481be6feccb2268e9f166bea",
+     "ea534cdbcfa451193aa12298be001c9d8d3026f2fdfcb6f94b58298dc042c4b8",
+     "0f51a47a12db984907d4eaa583984fd95888aeb9df50195215126f5b26f7cd1b",
+     "a86d0fe48552171f4d92fd157eff0fefaf15bf2344f40e963ca9af6814a88fd4"
+    ]
    }
   ],
-  "checked": "blind defect hunts of the night header and its 4x tiles, 2026-11-15: rounds 1 and 2 found a green letter-like mark on the cloth inside Ouro's ring; after the edit below, round 3: no defects found",
-  "master_sha256": "9db1616691c16177fc5159acba28d5fd0ade174cebbe1aee0376bcb5a92cf5d1",
+  "checked": "blind defect hunts of the night header and its 4x tiles, 2026-11-15: a fresh relight of the fixed day header; rounds 1-3 found a beam-like lever, letter-like crescent eyes, a dot chain on a ridge, string-light specks on the firs, thumbless hands, a railing bend with no post, the test board facing the camera and mismatched table legs; after the edits below, round 4: no blocking defects",
+  "master_sha256": "17f6074bad19cc6d1a9312276af66384f3caa107cdc53cca3a9cf08c38c429de",
   "width": 1536,
   "height": 512,
-  "bytes": 192276,
-  "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3",
+  "bytes": 184442,
+  "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842",
   "previous": {
-   "sha256": "61c5772312ec7fc49beed020e79e2b16b99bd98b313322becb4244c1a36f7cbf",
-   "generated": "2026-11-14, v7 redraw to Ari's round-5 review: no lid, no rocket, Ouro bigger in the brand O on the crate, person filled with brass core and emerald glow, less haze, one smooth glass material; then Ouro's eyes redrawn as the brand face (white eyes, black pupils, highlight, per brand/ouro.png) in one targeted edit of the eyes only, composited back"
+   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3",
+   "generated": "2026-11-15, the night twin of the redrawn day header: the same deck by moonlight, with the cabin's windows and lantern lit"
   }
  },
  {
   "file": "upscaled/ouro-hx-dark.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouro-hx-dark.webp (sha256 4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/ouro-hx-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9718 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouro-hx-dark.webp (sha256 edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/ouro-hx-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9680 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-15",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 1362686,
-  "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+  "bytes": 1463538,
+  "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
  },
  {
   "file": "scenes/ouro-hx-dark-640.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -17511,14 +17567,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 31475,
-  "sha256": "1a2a6e1eb1fd41a3c06d92cf5e68c0d01d75428d67d0f6cc35854ac38a5cdf01"
+  "bytes": 30077,
+  "sha256": "609095121b57b594d8ec2ea77e2d421c52ab0a8a1bbd55ab7120be58c337d473"
  },
  {
   "file": "scenes/ouro-hx-dark-640.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -17526,14 +17582,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 38710,
-  "sha256": "9186b443e12a30bf5cc06817c719c797805e8196b1be9eef5eca8b0952893ca0"
+  "bytes": 37640,
+  "sha256": "87494f76f7c7f0f02acc415991fbefca707752616092ad0437355d11c880f4c9"
  },
  {
   "file": "scenes/ouro-hx-dark-960.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -17541,14 +17597,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 60338,
-  "sha256": "7f09b7b08fe447995eb215f5b02a6b07c3c925d0537e624b79c954b6cbf5177d"
+  "bytes": 57632,
+  "sha256": "1b3fc6faab8a6830c6345a0cbef31e96efa819cc05303b3c091f7a287d811c9d"
  },
  {
   "file": "scenes/ouro-hx-dark-960.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -17556,14 +17612,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 75648,
-  "sha256": "ffcc00ca08810f9f4bdcf0f613d80cf251c24e489afb655bff7a722f7b55310a"
+  "bytes": 71740,
+  "sha256": "f086c8bc9b8af19505939536a3b53177e58df45819bca4d2311046ba7a3a5f35"
  },
  {
   "file": "scenes/ouro-hx-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -17571,14 +17627,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 119944,
-  "sha256": "0826ce8fd17b443ea4ea0ed00a55094019d43aba093e0efb98f43f814aeb6e37"
+  "bytes": 114865,
+  "sha256": "295dd0eb19e3fc80222b97cd7bc971919d4c6993201f0c3ac3d3d563d27fb2bf"
  },
  {
   "file": "scenes/ouro-hx-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -17586,14 +17642,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 186081,
-  "sha256": "0b9a651c68a269a1ec053f782f8dab9e947e26100e5ced0d15084821e318027d"
+  "bytes": 189899,
+  "sha256": "4fc8dea5f5e426d5c6aa2138b044534e24af5937e69b61a1da5c37fc70ced175"
  },
  {
   "file": "scenes/ouro-hx-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -17601,14 +17657,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 251493,
-  "sha256": "db9230b237d8ad645be708647b03f2bb30032568c6339a187db4a1931c7b59d0"
+  "bytes": 262753,
+  "sha256": "eb333b77bbdf19599aafa3136343cf565847ca42abdf7202a7b8906ce2340093"
  },
  {
   "file": "scenes/ouro-hx-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -17616,14 +17672,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 367232,
-  "sha256": "6fc837cd9bd3bd1d1ae50045e3588b557902dbaa28023f7cc83a4b38ee814f15"
+  "bytes": 371500,
+  "sha256": "c768ab1333ec2d0d084151515c3a826e290810a2ccd0241120502123e82f2bdd"
  },
  {
   "file": "scenes/ouro-hx-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -17631,14 +17687,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 315068,
-  "sha256": "2e91e9a5aba83578dc1c8d3440c264b5cb6764b4ec4193e6e2bc044a584951b6"
+  "bytes": 336786,
+  "sha256": "243094aef50036e96dba233be99cdca2c9a1ada6e8b21b546a6901efea399165"
  },
  {
   "file": "scenes/ouro-hx-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -17646,14 +17702,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 414560,
-  "sha256": "c6e8c7c9ba4b7b2fadcbd4b5c8d030ee17f668f537d684808a90621322c6b774"
+  "bytes": 454446,
+  "sha256": "241c188ced6fb0a5537ebf585be6fe7ef1bb0870140cbbcb98a448c5080fca59"
  },
  {
   "file": "scenes/ouro-hx-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -17661,14 +17717,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 596457,
-  "sha256": "92a91c4e093bd3a4f0b0b04a05055e8d23cb2e4cf4a6e4f0a6cae654ccd72fcf"
+  "bytes": 666122,
+  "sha256": "7244e88a5dc95f9deb72253f501a76a5349c27d625884a7238612f90be346c1d"
  },
  {
   "file": "phone/ouro-hx-dark-384.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 384x192 (Lanczos)",
@@ -17676,14 +17732,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 17295,
-  "sha256": "51fe3779787df5f8dfd1ceacb284fba63678588c2a1729783b57250b11cbdab1"
+  "bytes": 17225,
+  "sha256": "b7de70b8271b24b1ed49a120341e0fba8ecd1885f8ea3adff8fbaaebcb16637c"
  },
  {
   "file": "phone/ouro-hx-dark-384.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 384x192 (Lanczos)",
@@ -17691,14 +17747,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 20510,
-  "sha256": "361e330e1a683c7896ace2079624901049bcc1ca0b50cbabd8ad533227420b3c"
+  "bytes": 20458,
+  "sha256": "6cc400f08c9518946efd0c6ccf87effd68016c1b128819db6b8c848f0dd7c130"
  },
  {
   "file": "phone/ouro-hx-dark-768.avif",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 768x384 (Lanczos)",
@@ -17706,14 +17762,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 50212,
-  "sha256": "8b50fbbc18d08112847ec01194a6197c1868afb94584adad9ecbe7acce06254c"
+  "bytes": 49849,
+  "sha256": "3b55a25fad03359251e6d002d56b787547bdf6706ec505e827de57d64c08fbdc"
  },
  {
   "file": "phone/ouro-hx-dark-768.webp",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 768x384 (Lanczos)",
@@ -17721,14 +17777,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 63976,
-  "sha256": "2ef28c278f137e26df689397c1c70a2f5f308a5091c7d1ec0bd13a0058aabcc9"
+  "bytes": 62346,
+  "sha256": "4945d621af149b0f253c8eed67e729f2b8516230bb2fd5bbc0d6f4fe511db140"
  },
  {
   "file": "og/ouro-hx-dark.jpg",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [312, 0, 1287, 512] then resize to 1200x630 (Lanczos)",
@@ -17736,8 +17792,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 243021,
-  "sha256": "e910ae0410bee465416c3a26a70478b7d36d8dfadd92dc0b621f4408cc1f2572"
+  "bytes": 240805,
+  "sha256": "f57efb40136a99f652907884802c3a983c91c44547a2124c4adf0c12d8c82c23"
  },
  {
   "file": "headers/ouro-md-dark.webp",
@@ -20054,7 +20110,7 @@
   "file": "phone/ouro-hx-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -20062,14 +20118,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 115154,
-  "sha256": "5bf7e61c7cf71bc0696a2aeb86388c78a4a9941b50cc22e9eeb008eae692b8bc"
+  "bytes": 114856,
+  "sha256": "642362a7835a600430fd0b0c86b74475ebab0431226a377232540a755328bbde"
  },
  {
   "file": "phone/ouro-hx-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -20077,14 +20133,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 86223,
-  "sha256": "38f6b6c6da5dd8a5c16f171e0b4360d5b17acdfa8a1f71792bd5727a9898d9e9"
+  "bytes": 88106,
+  "sha256": "49f8b6fe10e8abf62200376c4eb3af1e573d6c80fd16c0c9f3ecbe86eabdaf8a"
  },
  {
   "file": "phone/ouro-hx-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -20092,14 +20148,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 164488,
-  "sha256": "62ecd6fda7d6dcdccf1baa5616834a93d23ab675e001b2b9a8765a7d0a46dd3d"
+  "bytes": 166986,
+  "sha256": "07d70f1201e31b36849754be2c4d4b0bb4451ee9e1abaea958d455c34fbda70f"
  },
  {
   "file": "phone/ouro-hx-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1152, 0, 5248, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -20107,8 +20163,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 118623,
-  "sha256": "9a9436ff20bae1ba8af7e96b212bb1df483121f7d71afa150751bd4a16844f13"
+  "bytes": 124398,
+  "sha256": "56ac0262908590df8db03c04b33ba25c60179abb639b5a76627f505d1fd24638"
  },
  {
   "file": "phone/ouroboros-skills-dark-1152.webp",
@@ -23898,7 +23954,7 @@
   "file": "scenes/ouro-hx-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ouro-hx-dark.webp",
-   "sha256": "8a25d421f0de694569d53e95658ec56f7f6147a2c563ec707876bf73cc8d58ee"
+   "sha256": "682975a86c1a736f30f5e6023658930a2c33a84b52903a5578033a1df1866d59"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -23906,14 +23962,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1027198,
-  "sha256": "d651f830747726ba5661c6f99c367936d9e2dd72ebfb35d069ccdbbba8d0044a"
+  "bytes": 1117292,
+  "sha256": "89331c5a28830c57315b0326a8eb1eb3bbf1367be67750663a3f610fda2ed005"
  },
  {
   "file": "social/ouro-hx-dark.jpg",
   "derivedFrom": {
    "file": "headers/ouro-hx-dark.webp",
-   "sha256": "4175d2261c117bcbb28d23a778b3cf80ac11560c837f5fc349736a1f0ec663e3"
+   "sha256": "edef5bec8ca6147e28b6aca4296751f3aa2df95990006c59117b94ce07ddc842"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [288, 0, 1312, 512] then resize to 1280x640 (Lanczos)",
@@ -23921,8 +23977,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 260775,
-  "sha256": "4c6c6d3a2aa502ca8bc45db84381dd5e76eac32550084f8bb9473b8db233ad8c"
+  "bytes": 257318,
+  "sha256": "7be0897e0d44523b143cc973e55b683f97cb0eb01d73096180f18867363f09b6"
  },
  {
   "file": "scenes/desk-dark-7680.webp",
