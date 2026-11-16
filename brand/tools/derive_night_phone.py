@@ -27,7 +27,6 @@ WIDTHS = (1152, 1536)
 
 # The window of each scene's committed phone/<scene>-768 file, in header pixels.
 NIGHT = {
-    "ouroboros-skills-dark": {"box": (120, 0, 1502, 576), "use": "phone hero (768:320)"},
     # Right 46 px strip (x 1490-1536) stretched to 70 px, as the 768 px file was.
     # "small": derive.py would cut its 384 and 768 px files at the day twin's window, so this script cuts them too.
     "playwright-focus-proof-dark": {"box": (88, 0, 1560, 575), "use": "phone hero (2.56:1)", "strip": (1490, 70), "small": True},
