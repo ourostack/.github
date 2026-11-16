@@ -64,12 +64,26 @@ if [ -z "$body_file" ]; then
   [ -s "$body_file" ] && grep -q '[^[:space:]]' "$body_file" || echo "$title." >"$body_file"
 fi
 
+url=$(gh pr view "$branch" --json url,state --jq 'select(.state == "OPEN") | .url' 2>/dev/null || true)
+
+# A repository whose package.json has a claims:lint script (ouro-ui) runs that lint on a pull
+# request's title and body in CI. Run it here first, before anything is pushed, so a new PR never
+# opens with text its Claims check fails.
+top=$(git rev-parse --show-toplevel)
+case $body_file in /*) ;; *) body_file="$PWD/$body_file" ;; esac
+if [ -z "$url" ] && [ -f "$top/package.json" ] && (cd "$top" && node -e 'process.exit(require("./package.json").scripts?.["claims:lint"] ? 0 : 1)') 2>/dev/null; then
+  if [ -f "$top/pnpm-lock.yaml" ]; then lint=(pnpm -s claims:lint --pr --title "$title" --body-file "$body_file"); else lint=(npm run -s claims:lint -- --pr --title "$title" --body-file "$body_file"); fi
+  if ! (cd "$top" && "${lint[@]}"); then
+    say "the claims lint fails this title or body; nothing was pushed or opened. Fix the text (--title, --body-file) and rerun."
+    exit 1
+  fi
+fi
+
 # Push without force. A rejected push means the remote moved: rebase or merge, then rerun.
 if ! git rev-parse --verify --quiet "refs/remotes/origin/$branch" >/dev/null || [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$branch")" ]; then
   run git push --quiet -u origin "HEAD:refs/heads/$branch"
 fi
 
-url=$(gh pr view "$branch" --json url,state --jq 'select(.state == "OPEN") | .url' 2>/dev/null || true)
 if [ -z "$url" ]; then
   if [ "$dry" = 1 ]; then
     run gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body_file" "${extra[@]+"${extra[@]}"}"
