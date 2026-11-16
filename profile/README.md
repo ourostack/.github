@@ -36,7 +36,7 @@ Interfaces in two halves: Ouro HX, components that feel right to people, and Our
 
 ### [Ouro MD](https://github.com/ourostack/ouro-md)
 
-<a href="https://github.com/ourostack/ouro-md"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-md.webp" alt="Ouro reading a clean page on a wooden lectern, pages drifting in the dawn air"></a>
+<a href="https://github.com/ourostack/ouro-md"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-md.webp" alt="A person reads a fresh page in a teal armchair in a sunroom at dawn while a small robot holds up the next pages, and Ouro naps on the windowsill"></a>
 
 A minimalist Mac Markdown editor for reading what your agents write.
 
