@@ -31,7 +31,6 @@ NIGHT = {
     "ouro-ui-apple-dark": {"box": (328, 0, 1352, 576), "use": "phone hero (16:9)"},
     "ouro-hx-dark": {"box": (268, 0, 1292, 576), "use": "phone hero (16:9)"},
     "ouroboros-skills-dark": {"box": (120, 0, 1502, 576), "use": "phone hero (768:320)"},
-    "ourostack-dark": {"box": (498, 0, 1522, 512), "use": "phone hero (2:1)"},
     # Right 46 px strip (x 1490-1536) stretched to 70 px, as the 768 px file was.
     # "small": derive.py would cut its 384 and 768 px files at the day twin's window, so this script cuts them too.
     "playwright-focus-proof-dark": {"box": (88, 0, 1560, 575), "use": "phone hero (2.56:1)", "strip": (1490, 70), "small": True},
