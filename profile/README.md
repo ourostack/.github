@@ -1,6 +1,6 @@
 <!-- ourostack:brand:start -->
 <p align="center">
-  <a href="https://ouroboros.bot"><img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ourostack.webp" alt="Ouro, the green snake curled into an O, at dawn in a meadow with its friends: the Factory, the Desk under a blossom tree, a reading lectern, the green Ouro HX card, two people and two robots on a picnic blanket, and a flock of robot sheep by a shepherd's crook" width="100%"></a>
+  <a href="https://ouroboros.bot"><img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ourostack.webp" alt="Two people in clear glass share a dawn picnic on a meadow hillside while two small robots serve tea and bread, and Ouro, the green snake, dozes on a quilt beside the hamper" width="100%"></a>
 </p>
 <!-- ourostack:brand:end -->
 
