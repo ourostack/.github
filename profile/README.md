@@ -16,7 +16,7 @@
 
 ### [Desk](https://github.com/ourostack/desk)
 
-<a href="https://github.com/ourostack/desk"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/desk.webp" alt="A small robot in a slate apron files a blank card into a long card tray on a white-oak desk in a bright studio high above a harbour city, while Ouro sleeps on a stack of folders in the sun"></a>
+<a href="https://github.com/ourostack/desk"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/desk.webp" alt="A small blue glass robot in a slate apron files index cards into a wooden card box on a pale oak desk, while Ouro the green snake sleeps coiled on a stack of grey folders beside a slim white lamp, in a softly lit studio with a wall of oak drawers and a glass wall over a harbour city."></a>
 
 Where coding agents keep their work, so it survives the session.
 
