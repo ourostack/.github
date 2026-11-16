@@ -1,0 +1,47 @@
+name: No AI trailer on main
+
+# Fails main when a landed commit credits an AI tool or a bot. Every ourostack repository calls it from its CI:
+#   jobs:
+#     no-ai-trailer:
+#       if: github.event_name == 'push'
+#       uses: ourostack/.github/.github/workflows/no-ai-trailer.yml@main
+# The scheduled sweep covers every repository, including those that have not added the call yet.
+on:
+  workflow_call:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "7-59/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ourostack/.github
+          path: guard-tools
+      - uses: actions/checkout@v4
+        if: github.event_name != 'schedule'
+        with:
+          path: repo
+          fetch-depth: 0
+      - name: Commits this push added
+        if: github.event_name == 'push'
+        working-directory: repo
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          case "$BEFORE" in 0000000000000000000000000000000000000000|"") range="$AFTER~1..$AFTER" ;; *) range="$BEFORE..$AFTER" ;; esac
+          bash ../guard-tools/tools/no-ai-trailer/check.sh "$range"
+      - name: Every repository's recent main commits
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: bash guard-tools/tools/no-ai-trailer/check.sh --sweep
