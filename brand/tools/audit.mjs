@@ -447,7 +447,8 @@ async function canonical() {
 // ---------- masters: every derived file comes from its source's current bytes ----------
 // A redrawn header needs a new master (upscale.py), and everything cut from a header or a master needs cutting
 // again, or it shows the old drawing. A site width wider than the header (scenes/ above 1536 px, phone/ above 768 px)
-// must come from the scene's 4x master: stretched from the header, it is blurry.
+// must come from the scene's 4x master: stretched from the header, it is blurry. A file made from two sources
+// (alsoFrom: a sky, or the day master a nightFromDay night master is built on) is stale when either changes.
 function masters() {
   const problems = [];
   const fixes = new Set();
@@ -466,14 +467,15 @@ function masters() {
   for (const e of provenance.values()) {
     const from = e.derivedFrom;
     if (!from?.file) continue;
-    const have = current(from.file);
-    if (have !== from.sha256) {
+    for (const src of [from, e.alsoFrom].filter((s) => s?.file)) {
+      const have = current(src.file);
+      if (have === src.sha256) continue;
       problems.push(
         have === "missing"
-          ? `brand/${e.file} was cut from brand/${from.file}, which is not in brand/`
-          : `brand/${e.file} was cut from an older brand/${from.file} (sha256 ${from.sha256.slice(0, 12)}, now ${have.slice(0, 12)})`,
+          ? `brand/${e.file} was cut from brand/${src.file}, which is not in brand/`
+          : `brand/${e.file} was cut from an older brand/${src.file} (sha256 ${src.sha256.slice(0, 12)}, now ${have.slice(0, 12)})`,
       );
-      fixes.add(from.file.startsWith("upscaled/") || e.file.startsWith("upscaled/") ? `master:${sceneOf(e.file)}` : `cut:${sceneOf(e.file)}`);
+      fixes.add(src.file.startsWith("upscaled/") || e.file.startsWith("upscaled/") ? `master:${sceneOf(e.file)}` : `cut:${sceneOf(e.file)}`);
     }
     const width = Number(e.file.match(/-(\d+)\.\w+$/)?.[1]);
     const wide = (e.file.startsWith("scenes/") && width > 1536) || (e.file.startsWith("phone/") && width > 768);
