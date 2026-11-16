@@ -7,6 +7,22 @@ import { createRequire } from "node:module";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 
+export const loginOf = async (page) => { await page.goto("https://github.com/"); return page.evaluate(() => document.querySelector('meta[name="user-login"]')?.content ?? ""); };
+
+// Switching accounts is server-side state shared by every copy of the profile, not just this scratch copy: while another
+// account is active, a private Pages site answers 401 to the person's own account everywhere. So callers switch back.
+export async function switchTo(page, user) {
+  await page.goto("https://github.com/switch_account");
+  const select = page.locator(`input[type=submit][aria-label="Select ${user}"]`);
+  if (await select.count()) { await select.first().click(); await page.waitForLoadState("load"); }
+  return loginOf(page);
+}
+
+export async function restoreAccount(page, original) {
+  if (!page || !original) return;
+  if ((await loginOf(page).catch(() => original)) !== original) await switchTo(page, original).catch(() => {});
+}
+
 export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
   const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
   const { chromium } = require("playwright");
@@ -24,22 +40,21 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
     await new Promise((r) => setTimeout(r, 250));
     browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`).catch(() => undefined);
   }
+  let page;
+  let original = "";
   const close = async () => {
+    await restoreAccount(page, original);
     await browser?.close().catch(() => {});
     proc.kill();
     await new Promise((r) => setTimeout(r, 1000));
     try { renameSync(dir, join(homedir(), ".Trash", `github-browser-${Date.now()}`)); } catch {}
   };
   if (!browser) { await close(); throw Object.assign(new Error("Edge did not start"), { exit: 3 }); }
-  const page = await (browser.contexts()[0] ?? (await browser.newContext())).newPage();
-  const login = async () => { await page.goto("https://github.com/"); return page.evaluate(() => document.querySelector('meta[name="user-login"]')?.content ?? ""); };
-  let who = await login();
-  if (who !== user) {
-    // Another account may already be signed in alongside: GitHub's switcher lists it with a Select button.
-    await page.goto("https://github.com/switch_account");
-    const select = page.locator(`input[type=submit][aria-label="Select ${user}"]`);
-    if (await select.count()) { await select.first().click(); await page.waitForLoadState("load"); who = await login(); }
-  }
+  page = await (browser.contexts()[0] ?? (await browser.newContext())).newPage();
+  let who = await loginOf(page);
+  original = who;
+  // Another account may already be signed in alongside: GitHub's switcher lists it with a Select button.
+  if (who !== user) who = await switchTo(page, user);
   if (who !== user) {
     await close();
     throw Object.assign(new Error(`github.com is ${who ? `signed in as ${who}` : "not signed in"} in ${profile}, and ${user} is not in its account switcher; add ${user} there once (Add account), then rerun.`), { exit: 3 });
