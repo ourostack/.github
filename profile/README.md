@@ -46,7 +46,7 @@ A minimalist Mac Markdown editor for reading what your agents write.
 
 ### [Ouroboros](https://github.com/ourostack/ouroboros)
 
-<a href="https://github.com/ourostack/ouroboros"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouroboros.webp" alt="Outside a round-doored hillside home at dawn, a small robot with a satchel of tools sets off down the garden path while its person watches from the doorway with a mug, and Ouro suns himself on the doorstep"></a>
+<a href="https://github.com/ourostack/ouroboros"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouroboros.webp" alt="On a bright early morning outside a modern beach house on the dunes, a small robot with a canvas bag sets off down the boardwalk toward the sea while its person watches from the open glass door with a mug, and Ouro suns himself on the front step"></a>
 
 The agent harness where it all started: agents with memory and real tools.
 
