@@ -27138,11 +27138,11 @@
   "model": "GitHub Copilot app built-in image_generation tool (headless), 1536x1024, quality high: a new core, widened to 3:1 (3072x1024) by two outpaints, then crop edits (one image_generation edit per 1024 crop, pasted inside a mask) and deterministic code (a local hand-narrowing warp, horizon de-glow); 1536x512 by Lanczos",
   "generated": "2026-11-16, a full re-set of the ouroboros.bot home hero (brand-headers lane): the same story and cast. A glass-and-brass airship gondola sails above a sea of clouds in the morning; the faceless man in a leather flight jacket and green scarf, natural adult proportions, no ears, a real jaw and neck, stands at the bow with Ouro, a small emerald-glass snake, on the rail beside him; Loop, the jade helm robot, stands centred behind a round wheel with a mitten on each side of the rim; an amber robot in a red knit cap climbs the rope ladder; a sea-blue robot in a leather apron turns a brass valve. Robots have no mouths; every hand is a mitten with one thumb.",
   "crop": "1536x512, the shipped frame",
-  "master_sha256": "f38708ea2d0e576fca4e68b8487132585b5c5c74c3f7321adb17667989dfb164",
+  "master_sha256": "f94d033170676d8659d7c5549200611308b837370e0d7306fc0ace0a452a681d",
   "width": 1536,
   "height": 512,
-  "bytes": 183450,
-  "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd",
+  "bytes": 182606,
+  "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7",
   "previous": {
    "sha256": "759a5e8c91db921d452cc81656c5a73428069898846ce810a13c65f99b82497a",
    "generated": "2026-11-15, v12 by the ouroboros.bot site-hero lane, the airship, respectable redo: a glass-and-brass airship gondola above a sea of clouds at sunrise. The faceless person at the bow, of natural adult build in a leather flight jacket, a shearling collar and a moss-green scarf, his head smooth frosted glass with a soft warm light, rests one mitten on the rail and holds a closed spyglass lowered at the hip; Ouro, cat-sized, sits on the bow rail beside him as his pet; Loop steers at the helm in goggles and a flying scarf; the amber rigger in a red knit cap climbs a rope ladder; the sea-blue engineer in a leather apron turns a deck valve. Every agent's visor shows two soft eyes, no glyphs. Loop and Ouro are \"he\""
@@ -27327,24 +27327,68 @@
     "step": "hand narrowing: the jade right mitten and the man's spyglass mitten",
     "tool": "deterministic code (hdr/tools/narrow.py, a local smooth pinch), no model"
    }
+  ],
+  "edits": [
+   {
+    "date": "2026-11-17",
+    "what": "follow-up to #227: the man's head made frosted glass with a soft warm inner light; a low golden sun near the horizon (kept off the figures; flattened out of the night's base, so the night has a moon); a bolted clamp at the stay rope's foot; the climbing robot's arms hidden behind its body; the spyglass mitten narrowed.",
+    "steps": [
+     {
+      "step": "edit 24: climber raised forearm behind the top rung (r10; replaced in r11)",
+      "sha256": "f5391fc36524544767c45d829aed66c7106dd534d6e216ffa17552c8ea7c2378",
+      "prompt": "Change only the orange robot's raised arm at the top rung: its forearm reaches up BEHIND the wooden rung, so the rung runs unbroken in front of its wrist and hand; no hand, mitten, nub or stub shows above or below the rung, only the forearm and its brown gauntlet cuff below the rung, disappearing behind it. Keep the rung, the ropes, the robot's red cap, visor with two eyes and everything else exactly the same. No text."
+     },
+     {
+      "step": "edit 25: bolted brass clamp at the stay rope foot, from a reference crop of the other stays' clamp (clamp-ref.png = master crop 652,428,780,556)",
+      "sha256": "915b376563eab97f815de1a4af0623587ad8a4d57b3ed358f984d4235f8885e3",
+      "prompt": "Change only the lower end of the thin stay rope that comes down onto the top of the brass rail in the first picture: fasten it to the rail with a bolted brass clamp exactly like the one in the second picture: a solid brass clamp block bolted onto the top of the rail with two visible bolt heads, the rope's end held in it, clearly drawn as its own shape touching both the rope and the rail. Keep the rail, the scarf, the robot and everything else in the first picture exactly the same. No text."
+     },
+     {
+      "step": "edit 26: man's head frosted glass with a soft warm inner light (guide)",
+      "sha256": "20fee55c5f50e70a0b238c194d9f14d2a49e2d5b84a1d5789170fa84337f3c3e",
+      "prompt": "Change only the man's head and neck: keep exactly the same size, shape, position and pose (seen from behind three-quarters), a real adult head with a slightly elongated oval skull, a gently defined jaw line and a natural neck about 0.4 of the head's width rising from the shearling collar; no ears, no hair, no face. Change only its material: smooth, softly frosted glass with a soft warm inner light, warm white turning gently amber toward the core, like a frosted glass lamp shade lit softly from inside; frosted enough that nothing behind it shows through; not flat opaque white, not a glowing bulb, never green. Keep the collar, scarf, jacket and background exactly the same. No text."
+     },
+     {
+      "step": "edit 27: low golden sun near the horizon (guide), on the MASTER after stitching",
+      "sha256": "5eb8a9713c31e5bd1ff75b6bfd1845d704c1997c52b2c27c4c8ffa0c3f5a4ccf",
+      "prompt": "Change only the sky in this picture: add a low golden morning sun just above the horizon where the sky meets the sea of clouds, a soft round warm golden disc slightly veiled by thin haze, with a gentle warm golden-peach glow in the sky around it that fades smoothly into the soft blue sky higher up and to the sides, and a soft warm sheen on the cloud tops right below it. No sunbeams, no rays, no lens flare, no sparkle. Keep the clouds' shapes, the far peaks and everything else exactly the same and in the same place. No text."
+     },
+     {
+      "step": "edit 28: climber's raised arm hidden behind its body (r11, parent option a)",
+      "sha256": "59a81ae48ec4d9eb9bcead540d16d8e6a5a0497b9e112eda114b178a5b393496",
+      "prompt": "Change only the orange robot's raised arm that reaches up to the top rung: remove that whole arm (upper arm, elbow, forearm and brown cuff) so it is hidden behind the robot's own body; only the rounded shoulder on that side shows. Paint the top rung, the ladder ropes, the canopy and the sky behind where the arm was, continuing naturally and unbroken. Keep the robot's other arm on the rope, its red cap, visor with two eyes, body, legs and boots exactly the same. No new objects, no text."
+     },
+     {
+      "step": "edit 29: climber's near (rope) arm hidden behind its body too, so it hugs the ladder with both arms out of sight (parent option a)",
+      "sha256": "5b13151eaa9c3e5d0f07d0d724cd89c69393c449556c42485091a62acf58078d",
+      "prompt": "Change only the orange robot on the ladder: remove its whole near arm from the shoulder down (upper arm, elbow, forearm, cuff and hand), so that arm is completely hidden behind its body; its rounded shoulder and its back press close against the ladder, its chest against the rungs, as if it hugs the ladder with both arms out of sight in front of it. The ladder's ropes and rungs, with their brackets, run complete and unbroken. Keep the robot's red cap, visor with two eyes, harness, legs and boots on the rung exactly the same. No new objects, no text."
+     },
+     {
+      "step": "edit 30: man's spyglass mitten narrowed again",
+      "tool": "deterministic code (hdr/tools/narrow.py), no model"
+     }
+    ],
+    "checked": "blind r14 (fixed step: Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes: the only BLOCKING item, day and night, is the known climbing robot (both arms now hidden behind its body; STRUCT and BLIND want arms with hands, which is the next redraw); every hand 1.20 or less (spyglass glove 1.12); the night reads as night. Shipped forward over #227 on the coordinator's rule: it adds the frosted warm head and the low sunrise the guide asked for, the stay shackle and a cleaner night.",
+    "previous_sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   }
   ]
  },
  {
   "file": "upscaled/airship.webp",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/airship.webp (sha256 35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/airship.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9740 (floor 0.95); same crop, subject and aspect",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/airship.webp (sha256 de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/airship.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9738 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 1495634,
-  "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+  "bytes": 1494920,
+  "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
  },
  {
   "file": "headers/airship-dark.webp",
@@ -27352,11 +27396,11 @@
   "model": "GitHub Copilot app built-in image_generation tool (headless), 1536x1024, quality high, for a true-midnight relight of a sun-flattened copy of the day; only its light and colour are transferred onto the day's exact structure (tools/relight_transfer.py --radius 24, the moon, stars and centre lantern kept by a nightLights mask), the sky re-transferred from sky pixels only, then a fixed point of the shipped nightFromFlatDay transfer",
   "generated": "2026-11-16, the night twin of the re-set day: the same airship at midnight under a full moon, the centre lantern lit; the same cast in the same places.",
   "crop": "1536x512, the shipped frame",
-  "master_sha256": "abdaaa2e2878e09a091c0484954d6c0ec28dd32845d435c8afa28328ed091045",
+  "master_sha256": "5dc44991dfea6d3fac1c1689aad8dbcc689bcd27900af1cc61ee83c68317b4d5",
   "width": 1536,
   "height": 512,
-  "bytes": 100614,
-  "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e",
+  "bytes": 101142,
+  "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553",
   "previous": {
    "sha256": "74ce54c74641f5dea2376f06fe9160acfe766ca3f9b75fc96b182be350a04c01",
    "generated": "2026-11-15, v12 by the ouroboros.bot site-hero lane, night twin: the airship, respectable redo: a glass-and-brass airship gondola above a sea of clouds at night under the stars. The faceless person at the bow, of natural adult build in a leather flight jacket, a shearling collar and a moss-green scarf, his head smooth frosted glass with a soft warm light, rests one mitten on the rail and holds a closed spyglass lowered at the hip; Ouro, cat-sized, sits on the bow rail beside him as his pet; Loop steers at the helm in goggles and a flying scarf; the amber rigger in a red knit cap climbs a rope ladder; the sea-blue engineer in a leather apron turns a deck valve. Every agent's visor shows two soft eyes, no glyphs. Loop and Ouro are \"he\""
@@ -27377,38 +27421,46 @@
     "step": "light transfer",
     "tool": "tools/relight_transfer.py, tools/sky_transfer.py, tools/nightflat_fixpoint.py (no model)"
    }
+  ],
+  "edits": [
+   {
+    "date": "2026-11-17",
+    "what": "rebuilt with the same nightFromFlatDay + nightLights recipe on the new day: the sky flattened 55% in the flat copy, the moon a soft ramp in nightLights (no dark disc), the man's head and the helm robot's edge kept from the night header (no halo or blur), the hull lattice from the day's 4x.",
+    "checked": "blind r14 (fixed step: Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes: the only BLOCKING item, day and night, is the known climbing robot (both arms now hidden behind its body; STRUCT and BLIND want arms with hands, which is the next redraw); every hand 1.20 or less (spyglass glove 1.12); the night reads as night. Shipped forward over #227 on the coordinator's rule: it adds the frosted warm head and the low sunrise the guide asked for, the stay shackle and a cleaner night.",
+    "previous_sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   }
   ]
  },
  {
   "file": "upscaled/airship-dark.webp",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "alsoFrom": {
    "file": "flat/airship.webp",
-   "sha256": "e7468286e65d8d21d1cdaa378e523f4216cf65d1fd284ad4ee945ae744df7525"
+   "sha256": "6e0f21c78c4687f785c3cf2b7baaf32d8342da50dfd3c9cbac819ec3adc54664"
   },
   "lightsFrom": {
    "file": "flat/airship-lights.png",
-   "sha256": "a2ead48a4526775c1423ee7ca6dc7ab9a5c07125f6c5227c5f008b1469514b0f"
+   "sha256": "ba6c152ce32c2708d031506a6ed999e9cf255f05ff6746d2bdc14aa97ea2fcc3"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "the day's 4x master upscaled/airship.webp (sha256 f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3) wherever the flattened copy flat/airship.webp (sha256 e7468286e65d8d21d1cdaa378e523f4216cf65d1fd284ad4ee945ae744df7525) equals the day (3.0% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/airship.webp (SSIM 0.9750 against it) where its sun pattern was removed, given the light and colour of headers/airship-dark.webp (sha256 8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/airship-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/airship-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9621 (floor 0.95); same crop, subject and aspect",
+  "operation": "the day's 4x master upscaled/airship.webp (sha256 b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216) wherever the flattened copy flat/airship.webp (sha256 6e0f21c78c4687f785c3cf2b7baaf32d8342da50dfd3c9cbac819ec3adc54664) equals the day (3.1% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/airship.webp (SSIM 0.9750 against it) where its sun pattern was removed, given the light and colour of headers/airship-dark.webp (sha256 5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/airship-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/airship-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9628 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 818384,
-  "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+  "bytes": 823498,
+  "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
  },
  {
   "file": "scenes/airship-640.webp",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -27416,14 +27468,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 35992,
-  "sha256": "e5112cffb5f21e440bbb2020bdc3f561f1306767be624a570c6f23860dc852bd"
+  "bytes": 36184,
+  "sha256": "bd0e1e4a7dea3247c48ac930aeb7b651396541a7783d442b3a059898c4795a80"
  },
  {
   "file": "scenes/airship-640.avif",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -27431,14 +27483,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 28823,
-  "sha256": "674b36773b5f074392bc3856eb0c5cc2b32febd5ac6609de294502040a4f0a21"
+  "bytes": 29012,
+  "sha256": "a31a4e262e5b78656b12e543b58eb42d776782513d68c7b59b509bc849d5f24b"
  },
  {
   "file": "scenes/airship-960.webp",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -27446,14 +27498,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 69322,
-  "sha256": "3c5fd62e7dbfe7d9b969a81503d4dd66e39060f8ea632ca1c59294076f7db26f"
+  "bytes": 69384,
+  "sha256": "abe6bd3d7895c4ff4d50557fc531d382da26aeb9b2e49f54940cdaa3226129e9"
  },
  {
   "file": "scenes/airship-960.avif",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -27461,14 +27513,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 53449,
-  "sha256": "d76ed73286a8d3c8bcce8a0f68ca73f4990a6376c891613f0a28b4d3dff62a92"
+  "bytes": 53315,
+  "sha256": "c65cc66975702732f5c6f0e7982b46c25fa3eadcedd39e9e216ae5c08894274f"
  },
  {
   "file": "scenes/airship-1536.avif",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -27476,14 +27528,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 114948,
-  "sha256": "95e50b9acc0fab617aec639dc624e5f4c0eb8d4c34628bd48c8a428a7264850e"
+  "bytes": 114981,
+  "sha256": "f1cd9391fb00cc3bc52dad8d06dfe42b0a82d4fc8290e2a7c9f4bbc0c1ea7ab9"
  },
  {
   "file": "scenes/airship-2304.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -27491,14 +27543,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 183576,
-  "sha256": "2b81368c984d090cc8cf0a2983e56e526c38a39055e36a8bf4467e003a74cacb"
+  "bytes": 183871,
+  "sha256": "5ac33c5a2f4b5b92a57e5ab740e3a2bb1aa41126294ca8cc5d7683feceee259b"
  },
  {
   "file": "scenes/airship-3072.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -27506,14 +27558,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 255543,
-  "sha256": "2b2915a2529f1105e230909ff4953679e7db4b799903ae0f09bddedf540ce65a"
+  "bytes": 256038,
+  "sha256": "8d8e8d7aaa0e48ba86019e2bca3b66968c5de7e313d0850e4e37ccc65da8a1a2"
  },
  {
   "file": "scenes/airship-3072.webp",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -27521,14 +27573,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 387670,
-  "sha256": "271bec6be121dd194ab83d0cd686d7898fb600556e5bd47689699ed98a23e598"
+  "bytes": 388346,
+  "sha256": "e9f693c2acc848f313dac6718a541a1b5ce4fe41093333e4e954aaf9e1025868"
  },
  {
   "file": "scenes/airship-3840.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -27536,14 +27588,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 330915,
-  "sha256": "eca229d44d5d96b775cffd50709fd7f2e1fd49ef3408cb92320f4305141dfb5b"
+  "bytes": 330977,
+  "sha256": "30aa5fb3a8d104215360f8a3c2f74c7739479091814cb2bc3d2abd8bc6b44a1e"
  },
  {
   "file": "scenes/airship-5120.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -27551,14 +27603,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 452660,
-  "sha256": "2f54ecfe6cc6123b75b8dea99d851d2f65c10dfc15b1dd6c7e2cb47ce132f2e8"
+  "bytes": 452148,
+  "sha256": "35f4e82d91578afdfa78e6e9b6cb70dc309f4dba97432fe79dc06cc6f190109a"
  },
  {
   "file": "scenes/airship-7680.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27566,14 +27618,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 675668,
-  "sha256": "5b98f4b8f0e6a2a289b554b547a701e1c1a813fd7ea08276b1fe422b176d5eaf"
+  "bytes": 675694,
+  "sha256": "71fb7e6042578f770a6605ce87730f139f21e1b3421ec3f65c7f589eaf942556"
  },
  {
   "file": "scenes/airship-7680.webp",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27581,14 +27633,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1186818,
-  "sha256": "b04896c79e90904386ded1152b80b56f727b2d9f1107233be403eb5cedafefb1"
+  "bytes": 1200946,
+  "sha256": "3f19aded7ac3914e591ddfcdb5131ef8b493676ff92eb7ce819be9e7596d1d9a"
  },
  {
   "file": "phone/airship-384.webp",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 384x288 (Lanczos)",
@@ -27596,14 +27648,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 32832,
-  "sha256": "c5c69dc680544ec500bcc2a3a1602a90c213d568f3fc8da7b6e3f44434be61cd"
+  "bytes": 32892,
+  "sha256": "2a3802c7565aadc36e139e326b8196c4e4f2870ed74d695818a784e225e1eafc"
  },
  {
   "file": "phone/airship-384.avif",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 384x288 (Lanczos)",
@@ -27611,14 +27663,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 27866,
-  "sha256": "c62b1ddf03efa3c5e26d65a1d60bb4490f3a0c2b00778c18cc867281c6339570"
+  "bytes": 27721,
+  "sha256": "966a6c21b3c2c52f96912643a28cd16d9db9d0ba08e80c2e97ff155633495df9"
  },
  {
   "file": "phone/airship-768.webp",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 768x576 (Lanczos)",
@@ -27626,14 +27678,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 93972,
-  "sha256": "926ee244f634b5fba0304ce935acbd3ff97952e56c239ac7549348f48254067f"
+  "bytes": 94076,
+  "sha256": "8d7bec4f0df447b24791751eb26845c65877510c8f3c56c9324b0ebf08bcd958"
  },
  {
   "file": "phone/airship-768.avif",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 768x576 (Lanczos)",
@@ -27641,14 +27693,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 71845,
-  "sha256": "1bbd8ffac063c835ee4f57a450a9c8ffec8d34738bba0cb07f53154e9cc2f926"
+  "bytes": 71868,
+  "sha256": "18e61fc725a8999bb4d220faec1741109a9f62e7f8fa4d87d3ef219cb7c853ed"
  },
  {
   "file": "phone/airship-1152.webp",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -27656,14 +27708,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 183438,
-  "sha256": "07e07be54847081ba8220dc7ad14112695e722fd5630a5a1b4c9079f52c933c0"
+  "bytes": 182182,
+  "sha256": "1d974c209a8f1911c3b7d80e5022b99b1ef92d4e6a193f160194e94384addd47"
  },
  {
   "file": "phone/airship-1152.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -27671,14 +27723,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 131791,
-  "sha256": "5229eab56410313d1f12b6e306dfa38f40b242b70068ef7f5a4a866551ab4d77"
+  "bytes": 131516,
+  "sha256": "733ac78042b6ee18d2341d42ed2dda2751738b23f4f5d7703459e1e4e5a2a3d2"
  },
  {
   "file": "phone/airship-1536.webp",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
@@ -27686,14 +27738,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1151,
-  "bytes": 268504,
-  "sha256": "fff1c395c041179fa0f3656583ddfe0124fae4c278edf7283b744260e75c20c0"
+  "bytes": 268580,
+  "sha256": "ee96e6b0f302e0762a2b519beafd60eb612277a75ff3e342561781f05fe0a7a7"
  },
  {
   "file": "phone/airship-1536.avif",
   "derivedFrom": {
    "file": "upscaled/airship.webp",
-   "sha256": "f06d9b10da33ad8b42a1cf0786233bd43c783edb84efef8c4a1e64d25aef22c3"
+   "sha256": "b0e83cfdb394fc64cdbc68b2cc23ecd00f3429b63ab96f0c45739c46e825a216"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
@@ -27701,14 +27753,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1151,
-  "bytes": 183278,
-  "sha256": "f68959ea876e35b9ee00fd089c3d3f0bf50c8d9f471cb37fce5761ad50f82238"
+  "bytes": 182990,
+  "sha256": "a41b84d22305a7fba160ad791222136a264729869d4a8f6a21d9a5705c1ba88e"
  },
  {
   "file": "social/airship.jpg",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [98, 0, 1122, 512] then resize to 1280x640 (Lanczos)",
@@ -27716,14 +27768,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 303114,
-  "sha256": "c791aafe672b5c455c2cb19f84cb1ae46cf693902974a40fd3d25a809b6c617b"
+  "bytes": 302825,
+  "sha256": "6be6d29a1b51fbd823c1415b6be9db7a26fb19716c30fecd705dbd24fa448d92"
  },
  {
   "file": "og/airship.jpg",
   "derivedFrom": {
    "file": "headers/airship.webp",
-   "sha256": "35087062f17e4a464cd89e7cd16a7bc5fcf62b590da2f1937edd4d77a78369fd"
+   "sha256": "de27f1c2bfdfe5dcff2e36d29120836e38c2b34108a4d36ac0fb9e4e657261d7"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [132, 0, 1107, 512] then resize to 1200x630 (Lanczos)",
@@ -27731,14 +27783,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 283768,
-  "sha256": "f32b57852e58c70b172b71227bbaa4e0ebcc9ed02398cdc9cdd8cb1950f36e94"
+  "bytes": 283515,
+  "sha256": "47f6d16c8b7a37b99ff60bf14cd593b3179ef926c740789fc04021e4bbfd84fb"
  },
  {
   "file": "scenes/airship-dark-640.webp",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -27746,14 +27798,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 19034,
-  "sha256": "ff2b67cfc0f5f4de2daf5fd3a4a0d281edb835168e86922cb16950231a02efd5"
+  "bytes": 19236,
+  "sha256": "d421f93994d5c62b9969c5da3dfc1342b4f40150028c0756e44cc32085d0d149"
  },
  {
   "file": "scenes/airship-dark-640.avif",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -27761,14 +27813,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 14420,
-  "sha256": "f7a685c54a782bf03c0a0c36794397542ccbaaaeca72bc9d2c2c1aef85c0312a"
+  "bytes": 14570,
+  "sha256": "8105465ebefa0901e0de1d702411d0ba01f4737488aa8b5642f91149a08379c1"
  },
  {
   "file": "scenes/airship-dark-960.webp",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -27776,14 +27828,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 35380,
-  "sha256": "b9af4273da8b3727fd26e96a23d77a2eec1fcb65f1d87686bb78932647fe7ba2"
+  "bytes": 35920,
+  "sha256": "723a8544c35a0b0ec4bb218b9f64a2b3f2618994d67f33de18919907fc5d4dff"
  },
  {
   "file": "scenes/airship-dark-960.avif",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -27791,14 +27843,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 26173,
-  "sha256": "356766f01251a2e6468dad5036714ab0502ad8fd26ae0d0051ca7fb4d892879d"
+  "bytes": 26416,
+  "sha256": "4519cd937fd5087ebb7c01122d832d6e7ff041c41343692c1b3761414f359219"
  },
  {
   "file": "scenes/airship-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -27806,14 +27858,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 53627,
-  "sha256": "cf5baf9e0497bece6bec06c85c54173b98048d99717e69a273aa165dad056b45"
+  "bytes": 54708,
+  "sha256": "98b3d9fbd6e282935530385b945454fdde8ca3634ca7ec973b83de93978205bb"
  },
  {
   "file": "scenes/airship-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -27821,14 +27873,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 86423,
-  "sha256": "b2019001ac02c863644bdd54cbd3259381ebe7df0b15ea9b04f319ac51693f96"
+  "bytes": 86977,
+  "sha256": "79b1956e9bdef9d4f72a40fc797decbbdc57f9d6f7f2beaccf7cbd5173305569"
  },
  {
   "file": "scenes/airship-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -27836,14 +27888,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 120268,
-  "sha256": "d7d0a2ae1010760db274dfe32834f70cf62d24f75175c1e4aefbd1d41120e980"
+  "bytes": 121014,
+  "sha256": "ac6b7284b924021d783ddd9569bbdeea036a3341b60dead3018c06927938c349"
  },
  {
   "file": "scenes/airship-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -27851,14 +27903,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 184726,
-  "sha256": "903551ac0edc6b84bc80f3256c4190f55eb642c2acb6e748192a1f912aa297be"
+  "bytes": 186304,
+  "sha256": "b70bdd9932d35d32cbc37e4579b558e3cc74d2520d6b8db026f84d37d8b8f0f4"
  },
  {
   "file": "scenes/airship-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -27866,14 +27918,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 154222,
-  "sha256": "619a42b8dbdbdd79a989d6a72b79c4c7b158462af0d1644b8524fd1064ffe277"
+  "bytes": 155170,
+  "sha256": "ae7ee95a4550bf1d9b4d4dd55b24c0bcfe19c067f8d59cd4c7580e92a3d95ef8"
  },
  {
   "file": "scenes/airship-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -27881,14 +27933,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 209776,
-  "sha256": "ed183ec30147bc36a097d2092c1d528781ed45a7fc4044f5936b1f712859c33b"
+  "bytes": 210383,
+  "sha256": "dc747de667cb07fa62e16807bd9ea46abecb7fb193f512fb38f0279921d60805"
  },
  {
   "file": "scenes/airship-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27896,14 +27948,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 315101,
-  "sha256": "c910dd7805fcb2ab24c5e58f4e10bb6ed129231d97e7be03eca838d8c1a559c7"
+  "bytes": 315220,
+  "sha256": "a425b6e03292013d7d911c81233967f759efbc21eee2787f2fd28908d507d826"
  },
  {
   "file": "scenes/airship-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27911,14 +27963,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 566784,
-  "sha256": "96bd554297b98a66490d29d5f23ecd1b0895b3f4b75095c26587726f587fdaaf"
+  "bytes": 569058,
+  "sha256": "f9a4e35a4fda43adcd2cb6963e1384e76e884d1e6cee8aebd4dc82a9b5df64f8"
  },
  {
   "file": "phone/airship-dark-384.webp",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 384x288 (Lanczos)",
@@ -27926,14 +27978,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 17960,
-  "sha256": "62529f51aab38590b7354683bae46bad34ec44fc354748e9352ffec2ca42d063"
+  "bytes": 18328,
+  "sha256": "97a3e1e1950bcd465677270e030e58afee4f96f31ef81369a5e7286efad383fd"
  },
  {
   "file": "phone/airship-dark-384.avif",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 384x288 (Lanczos)",
@@ -27941,14 +27993,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 14353,
-  "sha256": "4f5c6767363177759e9a67f3956eecf0c93877ac5c38f997061f04cb5bb523e5"
+  "bytes": 14563,
+  "sha256": "bd19e6ff4478534b873a9b5011fb0394915e7b45e4f624da059dff8321767be1"
  },
  {
   "file": "phone/airship-dark-768.webp",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 768x576 (Lanczos)",
@@ -27956,14 +28008,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 47382,
-  "sha256": "b9ce692cdf1c4f4e25d1f80a49f08b4224dc543c91436f3709b3e8c6bf4528cc"
+  "bytes": 47998,
+  "sha256": "dc2f14f0675f8eeede7e2c1dc45fc260524fb0882666fbd7a9f9583bfb9fd195"
  },
  {
   "file": "phone/airship-dark-768.avif",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [338, 0, 1021, 512] then resize to 768x576 (Lanczos)",
@@ -27971,14 +28023,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 34798,
-  "sha256": "f98b7516fadef1453bd948597f81e9c3935a47d07f9ee0830985038a55e165b5"
+  "bytes": 35567,
+  "sha256": "460d5bcd653122cf8147a89ca81f9f9763ca724e31e0e90c37ae160c7968f14f"
  },
  {
   "file": "phone/airship-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -27986,14 +28038,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 88830,
-  "sha256": "bd28aeb972f554ce5e15c30c12d594c40e22d163c5f3d57b2ad1f979dfb2e120"
+  "bytes": 89980,
+  "sha256": "02ca95985d1e25439fb9e4a92d09583a63b02cb78b6209162327130093f483aa"
  },
  {
   "file": "phone/airship-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -28001,14 +28053,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 61945,
-  "sha256": "e06bd3f00f8f34b179f80091f5810d98c5fb7bbc460391964ade8b2486e6c238"
+  "bytes": 62650,
+  "sha256": "214f363a43b7d058a79ac8dbb4fa985c5b35398ce3451f91b430ceda1b0c3ea9"
  },
  {
   "file": "phone/airship-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
@@ -28016,14 +28068,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1151,
-  "bytes": 127124,
-  "sha256": "7a00dfe51d41695079c49755cef417120997c922bb06389391d81cb3fc923b74"
+  "bytes": 128030,
+  "sha256": "7ff8d5bb22c6d0a64fd2632e2419b971be8adaec75feb20692ae73d774e4ad31"
  },
  {
   "file": "phone/airship-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/airship-dark.webp",
-   "sha256": "337a7f62b589d220af8323d08d9fb14608629ae3e60df0f2754f2ac2678bc99f"
+   "sha256": "3a9b36273150de0c637f67f0c2c5771c65cf60a8988a5bf88857a6890b95deaf"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1352, 0, 4084, 2048] of the 4x master then resize to 1536x1151 (Lanczos)",
@@ -28031,14 +28083,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1151,
-  "bytes": 84346,
-  "sha256": "21a7c72a7490f7e9a1b02dfd49e7be011690f93e8fec7d94a133f41f0f5c5f91"
+  "bytes": 84894,
+  "sha256": "9167e50940d0cc8dfd7148369836a01888861c90478a682c91d23023be978159"
  },
  {
   "file": "social/airship-dark.jpg",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [98, 0, 1122, 512] then resize to 1280x640 (Lanczos)",
@@ -28046,14 +28098,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 184061,
-  "sha256": "dc7aed4e465295ad11e6f3ba7636d23782c97c296631fdd22a748019d98cb07c"
+  "bytes": 186118,
+  "sha256": "db4e56b773e1e353251609e4bd57ed6caa0adde693e8efd08d812aadb75d01fd"
  },
  {
   "file": "og/airship-dark.jpg",
   "derivedFrom": {
    "file": "headers/airship-dark.webp",
-   "sha256": "8f89ff963ef4a8e58bc54fb228db86961fd94b61537b96d0dbb981e30772360e"
+   "sha256": "5a6934ca01c06d30a8f5be69554e9606069d85d13083a0d23326003d752d7553"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [132, 0, 1107, 512] then resize to 1200x630 (Lanczos)",
@@ -28061,8 +28113,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 171726,
-  "sha256": "7e01508eee3fd9a210131f0cda771c454a1c832221fb4523b80f2dd631c44044"
+  "bytes": 173405,
+  "sha256": "9f2bb92cc454e062125f151df38e67ea7ac8e79ec3af7090b0fa8b2bf408e30a"
  },
  {
   "file": "scenes/homebrew-tap-dark-7680.webp",
@@ -36747,13 +36799,13 @@
   "use": "airship's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
   "width": 1536,
   "height": 512,
-  "bytes": 195156,
-  "sha256": "e7468286e65d8d21d1cdaa378e523f4216cf65d1fd284ad4ee945ae744df7525"
+  "bytes": 193616,
+  "sha256": "6e0f21c78c4687f785c3cf2b7baaf32d8342da50dfd3c9cbac819ec3adc54664"
  },
  {
   "file": "flat/airship-lights.png",
   "use": "airship's night-only light sources (nightLights)",
-  "sha256": "a2ead48a4526775c1423ee7ca6dc7ab9a5c07125f6c5227c5f008b1469514b0f"
+  "sha256": "ba6c152ce32c2708d031506a6ed999e9cf255f05ff6746d2bdc14aa97ea2fcc3"
  },
  {
   "file": "flat/shepherd.webp",
