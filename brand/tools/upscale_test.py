@@ -60,6 +60,7 @@ class NightFromFlatDay(unittest.TestCase):
         self.reuse = self.root / "reuse"
         self.reuse.mkdir()
         flat.resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x-dark-flat.png")
+        day.resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x.png")
         self.write()
 
     def tearDown(self):
@@ -70,6 +71,8 @@ class NightFromFlatDay(unittest.TestCase):
         (self.root / "brand/tools/crops.json").write_text(json.dumps(self.crops))
 
     def run_upscale(self, *scenes):
+        if "x-dark" in scenes and "x" not in scenes and not (self.root / "brand/upscaled/x.webp").exists():
+            subprocess.run([sys.executable, str(self.root / "brand/tools/upscale.py"), "--reuse", str(self.reuse), "x"], capture_output=True)
         return subprocess.run([sys.executable, str(self.root / "brand/tools/upscale.py"), "--reuse", str(self.reuse), *scenes],
                               capture_output=True, text=True)
 
