@@ -8,7 +8,8 @@
 #   gh ouro-pr --title "..." --body-file notes.md --base main
 #   gh ouro-pr --dry-run             # print what it would do
 #
-# Run it from a clone when the alias is not installed:   bash <clone>/tools/ouro-pr/ouro-pr.sh [flags]
+# Run from a clone (bash <clone>/tools/ouro-pr/ouro-pr.sh [flags]), it runs main's copy all the same: it fetches it
+# first and runs the local copy only when GitHub cannot be reached, with a warning that says how old that copy is.
 # Merge a PR opened some other way, with the same message rules:   gh ouro-pr merge <number-or-url>
 #
 # Every merge it asks for carries an explicit message: "<PR title> (#n)" and the PR body with any AI or bot
@@ -20,6 +21,46 @@
 # on a free plan) it says so: merge it yourself the moment it is green.
 # The rule it serves: https://github.com/ourostack/.github/blob/main/agents/prs-merge-within-30-minutes.md
 set -euo pipefail
+
+# A copy saved in a clone never updates, and an old one keeps old rules: one without the claims lint opened pull
+# requests whose text failed ouro-ui's Claims check. So every run starts main's copy, which the alias already
+# fetched; this one fetches it (15 seconds at most) and runs it in its place unless the two are the same.
+run_main_copy() {
+  [ -z "${OURO_PR_MAIN:-}" ] || return 0
+  local self=${BASH_SOURCE[0]} latest err pid watcher status
+  latest=$(mktemp "${TMPDIR:-/tmp}/ouro-pr-main.XXXXXX")
+  err=$(mktemp "${TMPDIR:-/tmp}/ouro-pr-err.XXXXXX")
+  gh api -H "Accept: application/vnd.github.raw" repos/ourostack/.github/contents/tools/ouro-pr/ouro-pr.sh >"$latest" 2>"$err" &
+  pid=$!
+  (sleep 15 && kill "$pid" 2>/dev/null) &
+  watcher=$!
+  status=0
+  wait "$pid" || status=$?
+  kill "$watcher" 2>/dev/null || true
+  wait "$watcher" 2>/dev/null || true
+  if [ "$status" -eq 0 ] && head -n 1 "$latest" | grep -q '^#!/usr/bin/env bash'; then
+    rm -f "$err"
+    if cmp -s "$latest" "$self"; then
+      rm -f "$latest"
+      return 0
+    fi
+    OURO_PR_MAIN=1 exec bash "$latest" "$@"
+  fi
+  local modified days why
+  modified=$(stat -c %Y "$self" 2>/dev/null || stat -f %m "$self" 2>/dev/null || echo "")
+  days=$([ -n "$modified" ] && echo "$(( ($(date +%s) - modified) / 86400 )) days" || echo "an unknown time")
+  why=$(head -n 1 "$err" 2>/dev/null)
+  rm -f "$latest" "$err"
+  {
+    echo "ouro-pr: ================================================================"
+    echo "ouro-pr: WARNING: could not fetch main's copy of ouro-pr (${why:-no answer in 15 seconds})."
+    echo "ouro-pr: Running the local copy at $self instead, last changed $days ago."
+    echo "ouro-pr: It may lack rules main has, such as the claims lint. Rerun once GitHub answers."
+    echo "ouro-pr: ================================================================"
+  } >&2
+}
+
+run_main_copy "$@"
 
 main() {
 title="" body_file="" base="" dry=0 merge_pr=""
