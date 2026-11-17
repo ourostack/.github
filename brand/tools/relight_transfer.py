@@ -8,6 +8,9 @@ upscale.py uses it to build the 4x master of a night scene whose day twin sets
 the night header, so every size cut from the night master has the day master's
 exact structure. Real-ESRGAN run on the day and the night separately invents
 different fine texture and glyph-like specks in each; this keeps them identical.
+With "nightFromFlatDay" it does the same from the 4x of a flattened copy of the
+day (the day with its sun pattern removed), so the night keeps the day's shapes
+without its sunlight.
 
 Light multiplies, so the work is done on log(channel + 0.02). In each window of
 (2R+1)^2 px the day's log channel is given the night's local mean and local

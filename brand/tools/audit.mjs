@@ -448,7 +448,8 @@ async function canonical() {
 // A redrawn header needs a new master (upscale.py), and everything cut from a header or a master needs cutting
 // again, or it shows the old drawing. A site width wider than the header (scenes/ above 1536 px, phone/ above 768 px)
 // must come from the scene's 4x master: stretched from the header, it is blurry. A file made from two sources
-// (alsoFrom: a sky, or the day master a nightFromDay night master is built on) is stale when either changes.
+// (alsoFrom: a sky, the day master a nightFromDay night master is built on, or the flattened day a nightFromFlatDay
+// night master is built on) is stale when either changes.
 function masters() {
   const problems = [];
   const fixes = new Set();
@@ -482,6 +483,21 @@ function masters() {
     if (wide && !from.file.startsWith("upscaled/")) {
       problems.push(`brand/${e.file} is wider than its header but was cut from brand/${from.file}, not the scene's 4x master`);
       fixes.add(`master:${sceneOf(e.file)}`);
+    }
+  }
+  // A night built from its day's flattened copy (nightFromFlatDay in crops.json) must name that copy as its master's
+  // second source, the copy must be recorded, and a night is built one way only.
+  const crops = JSON.parse(readFileSync(join(BRAND, "tools", "crops.json"), "utf8"));
+  for (const [day, c] of Object.entries(crops)) {
+    if (day.startsWith("_") || !c?.nightFromFlatDay) continue;
+    const flat = c.nightFromFlatDay;
+    const night = `upscaled/${day}-dark.webp`;
+    if (c.nightFromDay) problems.push(`brand/tools/crops.json sets both nightFromDay and nightFromFlatDay for ${day}`);
+    if (!provenance.has(flat)) problems.push(`brand/${flat} (${day}'s flattened day, nightFromFlatDay) has no provenance entry`);
+    const m = provenance.get(night);
+    if (m && m.alsoFrom?.file !== flat) {
+      problems.push(`brand/${night} was not built from brand/${flat} (nightFromFlatDay for ${day}); it names ${m.alsoFrom?.file ? `brand/${m.alsoFrom.file}` : "no second source"}`);
+      fixes.add(`master:${day}-dark`);
     }
   }
   // A night scene (<scene>-dark) carries every width its day twin has, so a site never falls back to a blurrier
