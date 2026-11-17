@@ -23,6 +23,12 @@ export async function restoreAccount(page, original) {
   if ((await loginOf(page).catch(() => original)) !== original) await switchTo(page, original).catch(() => {});
 }
 
+/** How long to wait for Edge's debugging port: EDGE_START_SECONDS (default 10). A heavily loaded machine needs longer. */
+export function startBudgetMs(env = process.env) {
+  const s = Number(env.EDGE_START_SECONDS);
+  return (Number.isFinite(s) && s > 0 ? s : 10) * 1000;
+}
+
 export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
   const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
   const { chromium } = require("playwright");
@@ -36,7 +42,7 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
   const port = 9300 + Math.floor(Math.random() * 500);
   const proc = spawn(edge, [`--user-data-dir=${dir}`, `--remote-debugging-port=${port}`, "--no-first-run", "--no-default-browser-check", "--headless=new"], { stdio: "ignore" });
   let browser;
-  for (let i = 0; i < 40 && !browser; i++) {
+  for (let i = 0; i < startBudgetMs() / 250 && !browser; i++) {
     await new Promise((r) => setTimeout(r, 250));
     browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`).catch(() => undefined);
   }
@@ -49,7 +55,7 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
     await new Promise((r) => setTimeout(r, 1000));
     try { renameSync(dir, join(homedir(), ".Trash", `github-browser-${Date.now()}`)); } catch {}
   };
-  if (!browser) { await close(); throw Object.assign(new Error("Edge did not start"), { exit: 3 }); }
+  if (!browser) { await close(); throw Object.assign(new Error(`Edge did not start within ${startBudgetMs() / 1000} s; on a loaded machine set EDGE_START_SECONDS higher and rerun`), { exit: 3 }); }
   page = await (browser.contexts()[0] ?? (await browser.newContext())).newPage();
   let who = await loginOf(page);
   original = who;
