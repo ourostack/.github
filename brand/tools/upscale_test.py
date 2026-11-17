@@ -60,6 +60,7 @@ class NightFromFlatDay(unittest.TestCase):
         self.reuse = self.root / "reuse"
         self.reuse.mkdir()
         flat.resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x-dark-flat.png")
+        day.resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x.png")
         self.write()
 
     def tearDown(self):
@@ -70,6 +71,8 @@ class NightFromFlatDay(unittest.TestCase):
         (self.root / "brand/tools/crops.json").write_text(json.dumps(self.crops))
 
     def run_upscale(self, *scenes):
+        if "x-dark" in scenes and "x" not in scenes and not (self.root / "brand/upscaled/x.webp").exists():
+            subprocess.run([sys.executable, str(self.root / "brand/tools/upscale.py"), "--reuse", str(self.reuse), "x"], capture_output=True)
         return subprocess.run([sys.executable, str(self.root / "brand/tools/upscale.py"), "--reuse", str(self.reuse), *scenes],
                               capture_output=True, text=True)
 
@@ -89,6 +92,23 @@ class NightFromFlatDay(unittest.TestCase):
         from_day = np.asarray(transfer(day.resize((W * 4, H * 4), Image.LANCZOS), night), float)
         self.assertLess(np.abs(master - from_flat).mean(), 1.0)
         self.assertGreater(np.abs(master - from_day).mean(), 3 * np.abs(master - from_flat).mean())
+
+    def test_night_lights_keep_the_night_headers_own_light_sources(self):
+        mask = np.zeros((H, W), np.uint8)
+        mask[20:40, 130:150] = 255  # the lamp
+        data = webp(Image.fromarray(mask))
+        (self.root / "brand/flat/x-lights.webp").write_bytes(data)
+        self.prov.append({"file": "flat/x-lights.webp", "sha256": sha(data)})
+        self.crops["x"]["nightLights"] = "flat/x-lights.webp"
+        self.write()
+        r = self.run_upscale("x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        entry = next(e for e in json.loads((self.root / "brand/provenance.json").read_text()) if e["file"] == "upscaled/x-dark.webp")
+        self.assertEqual(entry["lightsFrom"]["file"], "flat/x-lights.webp")
+        night = np.asarray(scene_images()[2].resize((W * 4, H * 4), Image.LANCZOS), float)
+        master = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("RGB"), float)
+        inside = master[100:140, 540:580] - night[100:140, 540:580]
+        self.assertLess(np.abs(inside).mean(), 2.0)
 
     def test_flat_day_without_matching_provenance_is_refused(self):
         self.prov = [e for e in self.prov if e["file"] != "flat/x.webp"] + [{"file": "flat/x.webp", "sha256": "0" * 64}]

@@ -37,13 +37,20 @@ same way from a flattened copy of the day instead: a committed WebP at header
 size (with its own provenance entry) that is the day's drawing with its sun
 pattern removed (beams, stripes, hard leaf and frame shadows). Its master is
 Real-ESRGAN's 4x of that flat day given the night header's light and colour by
-relight_transfer.py. Use it for a night made by light transfer onto a flattened
+relight_transfer.py; wherever the flat day equals the day (every prop it kept
+unflattened) the day's own 4x master is used instead, so the night shares the
+day's exact upscaled detail there (two Real-ESRGAN runs differ in fine detail),
+which also requires the day's master to be current. Use it for a night made by light transfer onto a flattened
 day: nightFromDay would bring the day's sun pattern back into every night size,
 and a separate Real-ESRGAN run on the dark night header invents detail the day
 lacks. The flat day's own 4x is checked against it with the same SSIM floor,
 and the master records the flat day as its second source (alsoFrom), so the
 audit marks it stale when the flat day changes. The two options exclude each
-other.
+other. A day with nightFromFlatDay may also set "nightLights": "flat/<scene>-lights.png",
+a greyscale mask at header size over the night's small light sources (lit lamp
+shades, glowing eyes): they are smaller than the transfer's window, so inside
+the mask the night master takes the night header itself (Lanczos 4x, feathered).
+Keep it tight around those sources and use it for nothing else.
 
 Real-ESRGAN on a GPU does not give the same bytes twice, so the committed WebP is
 the record; rerunning makes a new one with a new sha256.
@@ -181,16 +188,53 @@ def main():
             flat_score = luma_ssim(flat_im, flat_up.resize(flat_im.size, Image.LANCZOS))
             if flat_score < FLOOR:
                 sys.exit(f"{scene}: the 4x of {flat_rel} has SSIM {flat_score:.4f} against it, under {FLOOR}")
-            up = transfer(flat_up, header)
+            # where the flat day IS the day (every prop, figure and object kept unflattened), use the day's own 4x master,
+            # so the night shares the day's exact upscaled detail there; Real-ESRGAN's 4x of the flat day fills only the
+            # pixels whose sun pattern was removed
+            day_rel, day_up_rel = f"headers/{day}.webp", f"upscaled/{day}.webp"
+            day_bytes = (BRAND / day_rel).read_bytes()
+            if by_file.get(day_up_rel, {}).get("derivedFrom", {}).get("sha256") != sha(day_bytes):
+                sys.exit(f"{scene}: {day_up_rel} was not made from the current {day_rel}; run python3 brand/tools/upscale.py {day} first")
+            day_up_bytes = (BRAND / day_up_rel).read_bytes()
+            if sha(day_up_bytes) != by_file[day_up_rel]["sha256"]:
+                sys.exit(f"{scene}: {day_up_rel} differs from its provenance entry; run python3 brand/tools/upscale.py {day} first")
+            day_im = Image.open(io.BytesIO(day_bytes)).convert("RGB")
+            from scipy.ndimage import binary_dilation, gaussian_filter
+            changed = np.abs(np.asarray(flat_im, np.int16) - np.asarray(day_im, np.int16)).max(2) > 6
+            changed = binary_dilation(changed, iterations=2).astype(np.float32)
+            cm = gaussian_filter(np.asarray(Image.fromarray((changed * 255).astype(np.uint8)).resize(flat_up.size, Image.LANCZOS), np.float32) / 255, 3)[..., None]
+            day_up = np.asarray(Image.open(io.BytesIO(day_up_bytes)).convert("RGB"), np.float32)
+            base = Image.fromarray((day_up * (1 - cm) + np.asarray(flat_up, np.float32) * cm).round().clip(0, 255).astype(np.uint8))
+            up = transfer(base, header)
+            lights_rel = CROPS[day].get("nightLights")
+            if lights_rel:
+                # small night-only light sources (lit lamps, glowing eyes) are below the transfer's window, so inside this
+                # mask the night master takes the night header itself (Lanczos 4x), feathered; nothing else does
+                if not (BRAND / lights_rel).exists():
+                    sys.exit(f"{scene}: crops.json names {lights_rel} as {day}'s night lights, but brand/{lights_rel} is missing")
+                lights_bytes = (BRAND / lights_rel).read_bytes()
+                if by_file.get(lights_rel, {}).get("sha256") != sha(lights_bytes):
+                    sys.exit(f"{scene}: brand/{lights_rel} has no matching provenance.json entry")
+                mask = Image.open(io.BytesIO(lights_bytes)).convert("L")
+                if mask.size != header.size:
+                    sys.exit(f"{scene}: {lights_rel} is {mask.size}, not the header's {header.size}")
+                from scipy.ndimage import gaussian_filter
+                m = gaussian_filter(np.asarray(mask.resize(up.size, Image.LANCZOS), np.float32) / 255, 4)[..., None]
+                lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
+                up = Image.fromarray((np.asarray(up, np.float32) * (1 - m) + lit * m).round().clip(0, 255).astype(np.uint8))
             origin = None
             also = {"file": flat_rel, "sha256": sha(flat_bytes)}
             r = max(1, round(RADIUS * flat_up.width / 1536))
-            op = (f"Real-ESRGAN ({MODEL}, realesrgan-ncnn-vulkan) 4x of the day's flattened copy {flat_rel} "
-                  f"(sha256 {also['sha256']}; SSIM {flat_score:.4f} against it) given the light and colour of "
+            op = (f"the day's 4x master {day_up_rel} (sha256 {sha(day_up_bytes)}) wherever the flattened copy {flat_rel} "
+                  f"(sha256 {also['sha256']}) equals the day ({100 * (1 - changed.mean()):.1f}% of the header), and "
+                  f"Real-ESRGAN ({MODEL}, realesrgan-ncnn-vulkan)'s 4x of {flat_rel} (SSIM {flat_score:.4f} against it) where "
+                  f"its sun pattern was removed, given the light and colour of "
                   f"{header_rel} (sha256 {source['sha256']}) by brand/tools/relight_transfer.py (local mean and "
                   f"contrast of log colour in {2 * r + 1} px windows, radius {RADIUS} at 1536 px wide); every shape "
-                  f"is the flat day's, so each night size has the day's structure without its sun pattern "
-                  f"(nightFromFlatDay in crops.json)")
+                  f"is the day master's or the flat day's, so each night size has the day's structure without its sun pattern "
+                  f"(nightFromFlatDay in crops.json)"
+                  + (f"; inside the night-light mask {lights_rel} (lit lamps, glowing eyes) it is the night header itself, "
+                     f"Lanczos 4x" if lights_rel else ""))
         elif day:
             if scene in masters:
                 sys.exit(f"{scene}: built from the day's master (nightFromDay in crops.json); --master does not apply")
@@ -247,6 +291,8 @@ def main():
             entry["derivedFrom"] = {**source, **origin}
         if also:
             entry["alsoFrom"] = also
+        if flat and CROPS[flat[0]].get("nightLights"):
+            entry["lightsFrom"] = {"file": lights_rel, "sha256": sha(lights_bytes)}
         entry.update({
             "use": "4x master for site heroes wider than the 1536 px header",
             "operation": op,
