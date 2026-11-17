@@ -468,7 +468,7 @@ function masters() {
   for (const e of provenance.values()) {
     const from = e.derivedFrom;
     if (!from?.file) continue;
-    for (const src of [from, e.alsoFrom].filter((s) => s?.file)) {
+    for (const src of [from, e.alsoFrom, e.lightsFrom].filter((s) => s?.file)) {
       const have = current(src.file);
       if (have === src.sha256) continue;
       problems.push(
@@ -494,6 +494,11 @@ function masters() {
     const night = `upscaled/${day}-dark.webp`;
     if (c.nightFromDay) problems.push(`brand/tools/crops.json sets both nightFromDay and nightFromFlatDay for ${day}`);
     if (!provenance.has(flat)) problems.push(`brand/${flat} (${day}'s flattened day, nightFromFlatDay) has no provenance entry`);
+    if (c.nightLights && !provenance.has(c.nightLights)) problems.push(`brand/${c.nightLights} (${day}'s night-light mask) has no provenance entry`);
+    if (c.nightLights && provenance.get(night) && provenance.get(night).lightsFrom?.file !== c.nightLights) {
+      problems.push(`brand/${night} was not built with brand/${c.nightLights} (nightLights for ${day})`);
+      fixes.add(`master:${day}-dark`);
+    }
     const m = provenance.get(night);
     if (m && m.alsoFrom?.file !== flat) {
       problems.push(`brand/${night} was not built from brand/${flat} (nightFromFlatDay for ${day}); it names ${m.alsoFrom?.file ? `brand/${m.alsoFrom.file}` : "no second source"}`);
