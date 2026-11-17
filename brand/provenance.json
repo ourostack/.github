@@ -1373,7 +1373,7 @@
   "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\"",
   "crop": "1536x576 from the 1536x1024 master, WebP q86",
-  "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c",
+  "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a",
   "generation": [
    {
     "master": "website-a",
@@ -1437,8 +1437,249 @@
      "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
      "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
     ]
+   },
+   {
+    "date": "2026-11-17",
+    "what": "re-hunt fixes: the farmyard's half-melted figures, the desk legs and lamp, the chimney base, book spines that read as text, and the signboards (flat planks with no underside, their left ends behind a taller shrub); the gate's doors removed so the rose arch stands open (two failed rounds on the gate leaves; stop rule); the moon moved into clear sky. Crop edits listed in steps.",
+    "steps": [
+     {
+      "what": "re-hunt fix: the row of shapeless blob figures behind the low rail left of the cottage replaced by a flowering shrub",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       1163,
+       128,
+       1419,
+       384
+      ],
+      "mask": "box 1266,238,1318,272, feather 2",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the cottage, its walls, roof, door, windows and chimney, the fences, the path, the meadow, the distant hills and the light, and the outline and position of every object.\nChange only the small farmyard to the left of the cottage: there is a row of small shapeless coloured blobs (grey, red, blue-purple, a white puff on red) sitting behind a low wooden bench or rail, which read like melted little people. Remove all of these blobs completely. In their place put a few soft rounded green shrubs with small yellow and pink flowers, the same size and height as the blobs, behind the same low wooden rail. There are no people, figures, animals or faces there at all. Also remove the small pink-red blob beside the fence on the right of the cottage if it is in view, replacing it with grass.\nNo text, letters or symbols.",
+      "input_sha256": "6acc373711f3411fcfb9b7b7071aa8727e7b7d60403627f83e45ad31b03c4b39",
+      "output_sha256": "d4f24a03687dc730af963f9f0966e634040121a167a42804b71383cc33f5aad4"
+     },
+     {
+      "what": "re-hunt fix: the desk's four legs straight and matching (two splayed), the lamp on one stem with its shade seen from above (a second swan-neck arm and the view into the shade's underside removed), the stool clear of the desk legs",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       377,
+       134,
+       633,
+       390
+      ],
+      "mask": "box 450,215,560,312, feather 3",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the wooden gate door at the left edge, the stand with the tilted board at the right edge, the books, the yellow box and the small dome on the desk, the flowers, grass, path and light, and the position of every object.\nChange only the little wooden writing desk, its lamp and the stool under it:\n- The desk has exactly four matching straight square wooden legs, one at each corner, all vertical and the same shape: the two front legs at the front corners of the desk, the two back legs at the back corners, a little higher in the picture and partly behind the front apron, so the desk reads as a correct box seen slightly from above and from the front-left. No splayed or slanting legs, no leg in the middle of the front.\n- The desk lamp: one straight thin stem from a round base up to a cone-shaped shade. Remove the second dark curved swan-neck arm or cord that loops from the top of the shade down to the yellow box; nothing else touches the shade. We look at the lamp slightly from above: we see the outside of the cone shade and a little of its top, and we do NOT see into its open underside (no glowing open rim ellipse below the shade). The shade glows softly warm through its fabric.\n- The stool under the desk: a simple round wooden stool with a round seat seen from above and three or four straight legs, clearly separate from the desk legs.\nNo text, letters or symbols.",
+      "input_sha256": "a8b1d9d87fcc159400164717266eef80668c28a00ebb35cfcb8eb0fb4ea6d4f2",
+      "output_sha256": "c5ba391fedbc2af9e7df585dd458ff03066930c5aa8ad2c728917ca757ee9060"
+     },
+     {
+      "what": "re-hunt fix (STRUCT: the gates' cross-boards converged to a second eye level near y 0.53): the right gate door seen face-on with level cross-boards",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       651,
+       113,
+       907,
+       497
+      ],
+      "mask": "box 734,116,820,494, feather 2",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the climbing roses and leaves, the arch post, the meadow, flowers, path, sky, any part of the green snake, the desk or the signpost in view, the light, and the outline and position of every object.\nChange only the tall wooden garden gate door in the middle of the picture: it is seen straight on, face-on, flat to the viewer. Its two horizontal wooden cross-boards (battens) must be perfectly level: each one exactly horizontal, the two parallel to each other and to the bottom of the picture, not sloping or converging at all. The door's vertical planks stay vertical, its two side edges vertical and the same height, its rounded top the same. Keep the door's position, width, colour, wood grain, its two iron strap hinges with their knuckles on the post, and its round iron ring pull on its backplate exactly where they are; the hinge straps run level along the cross-boards.\nNo text, letters or symbols.",
+      "input_sha256": "23979be8c6e4266f7468c7f07f89ca9c1b59ce16462523e515d499eb0f39e84e",
+      "output_sha256": "cec5229ce4091db73b3893067e613aea88f9dbf4f7effa79e8263376f536faa6"
+     },
+     {
+      "what": "the left gate door the same way; round 1 (fix3, box 348,106,438,498) left a 3.6 px convergence and a lopsided arch and was replaced by round 2, made with the fixed right door mirrored as a reference image",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       264,
+       110,
+       520,
+       494
+      ],
+      "mask": "box 348,100,440,498, feather 2",
+      "size": "1024x1536",
+      "round1": {
+       "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the climbing roses and leaves, the arch post, the meadow, flowers, path, sky, any part of the green snake, the desk or the signpost in view, the light, and the outline and position of every object.\nChange only the tall wooden garden gate door in the middle of the picture: it is seen straight on, face-on, flat to the viewer. Its two horizontal wooden cross-boards (battens) must be perfectly level: each one exactly horizontal, the two parallel to each other and to the bottom of the picture, not sloping or converging at all. The door's vertical planks stay vertical, its two side edges vertical and the same height, its rounded top the same. Keep the door's position, width, colour, wood grain, its two iron strap hinges with their knuckles on the post, and its round iron ring pull on its backplate exactly where they are; the hinge straps run level along the cross-boards.\nNo text, letters or symbols.",
+       "output_sha256": "756cc2f8b2a5f4ed2c5d381d9c07c91a74e29e6ac6cf0b1e7ed89d75421f0842"
+      },
+      "prompt": "Edit the first picture. Keep everything exactly as it is: the same frame, the climbing roses and leaves, the arch post at the left, the meadow, flowers, path, sky, the desk and anything else in view, the light, and the outline and position of every object.\nChange only the tall wooden garden gate door in the middle of the first picture so it is built and shaped exactly like the door in the second picture (the second picture is a reference only): seen straight on, face-on and flat to the viewer, with a symmetric rounded arch top whose highest point is exactly at the door's centre and whose two sides meet the door's left and right edges at the same height; vertical planks; left and right edges vertical and the same height; and two horizontal wooden cross-boards that are perfectly level, exactly horizontal and parallel to each other and to the bottom of the picture. Keep the door's position, width, colour and wood grain, its two iron hinges on the left side joined to the cross-board ends and the post, and its round iron ring pull on its backplate exactly where they are now.\nNo text, letters or symbols.",
+      "input_sha256": "a781dc975482a6c40c9469effc48d1c2084c9787b07142cc53b26a64195c0928",
+      "reference_sha256": "16e9cc5b72a34cca6246d73beb8113e3eae5c7af19c0a95b7b703973ed35eeb1",
+      "output_sha256": "bc3f6b7bac6fda5ddf71d4a17be290611fa8db4fbc6e77631191b25b2c6861de"
+     },
+     {
+      "what": "the arch post above the left gate made continuous (the round-2 paste left a seam at the crop's top edge)",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       242,
+       60,
+       542,
+       510
+      ],
+      "mask": "box 344,90,404,130, feather 4",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the tall wooden garden gate door with its level cross-boards, hinges and ring pull, the climbing roses and leaves, the meadow, flowers, path, sky and light, and the outline and position of every object.\nChange only the short stretch of the wooden arch post and foliage directly above the gate door's rounded top, on its left half: there is a hard horizontal seam across the post there, where the post suddenly changes width and colour, with a dark leafy block and a pasted-looking pink flower below it. Make the post one continuous wooden post running down smoothly to the top of the door, the same width, the same orange-brown wood and the same lit right-hand side face all the way down, with the roses and leaves around it continuing naturally. No seam, no step, no colour change.\nNo text, letters or symbols.",
+      "input_sha256": "31f2c26cb34908cd6c40e4a0b18fd1861e0e10ce8acba67bbf90669ba7f1e046",
+      "output_sha256": "6a80407a8e7da36dffc46cb51c932394b93804b9ef901dc89c9e76d738a95963"
+     },
+     {
+      "what": "re-hunt fix (STRUCT r5+r6: the face-on gate leaves hung from nothing and could never close the opening; after two rounds on the gates, hidden per the lane's stop rule): the left gate door removed, the arch's left post run straight to the ground, the open archway behind",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       266,
+       110,
+       522,
+       494
+      ],
+      "mask": "box 344,104,442,498, feather 3",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the climbing roses and leaves on the arch, the meadow, grass, flowers, path, sky, the little desk at the right edge, the light, and the outline and position of every object.\nChange only the tall wooden gate door in the middle of the picture: remove the door completely, with its cross-boards, hinges and ring pull. In its place, the square wooden arch post that is visible above the door (at the left of the door's top) continues straight down, the same width, the same orange-brown wood and the same lit right-hand side face, all the way to the ground, where it stands in the grass; climbing roses and leaves wind around it like on the arch above. To the right of the post, where the door was, we see straight through the open archway to what is behind it: the sunlit meadow, grass, flowers and the path, continuing naturally from around it. There is no door, gate, panel or board anywhere.\nNo text, letters or symbols.",
+      "input_sha256": "1db16ceb9d784856371906a52cbc882f9921fc00bd78ffa21062f39dc6ed20f0",
+      "output_sha256": "c7f8e320cd7f76f0fc106074a1342b711513287f712aa9cb4fbf56de507d11b1"
+     },
+     {
+      "what": "the right gate door removed the same way",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       650,
+       113,
+       906,
+       497
+      ],
+      "mask": "box 726,108,818,498, feather 2; then boxes 810,168,829,212 and 810,398,829,450 from the same output over the leftover hinge barrels, feather 2",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the green snake at the right edge (its body, head and outline exactly as drawn), the climbing roses and leaves on the arch, the meadow, grass, flowers, path, sky, the light, and the outline and position of every object.\nChange only the tall wooden gate door in the middle of the picture: remove the door completely, with its cross-boards, hinges and ring pull. In its place, the square wooden arch post that is visible above the door (at the right of the door's top) continues straight down, the same width and the same wood, all the way to the ground, where it stands in the grass just to the left of the snake; climbing roses and leaves wind around it like on the arch above. To the left of the post, where the door was, we see straight through the open archway to what is behind it: the sunlit meadow, grass, flowers and the path, continuing naturally from around it. There is no door, gate, panel or board anywhere.\nNo text, letters or symbols.",
+      "input_sha256": "382d6e5fbda6a61387e08d562e3fb37186309bef8b5588ed6ee7d1268cb202a4",
+      "output_sha256": "d5bd96361a01c7603337efb12d10c5008942c68d83face0d16c199752b5e4d07"
+     },
+     {
+      "what": "the leftover plank strip and cut-grass seam at the left post's foot replaced by grass",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       290,
+       320,
+       546,
+       576
+      ],
+      "mask": "box 350,482,478,514, feather 3",
+      "size": "1024x1024",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the wooden post standing in the grass, the climbing roses and leaves, the flowers, rocks, the path, the light, and the outline and position of every object.\nChange only the bottom of the picture just to the right of the wooden post's foot: there is a leftover strip of brown wooden plank lying across the grass, and above it a hard horizontal line where the grass blades are cut off. Remove the plank strip completely and let the grass, small flowers and blades grow up naturally and continuously through that area, matching the grass around it, with no line, seam or cut. The post's foot stays exactly as it is, standing in the grass.\nNo text, letters or symbols.",
+      "input_sha256": "2fa8cb2145a001893bde6177d68a4b9d1f0a1cbf2bcb3437e506c1484d0bc728",
+      "output_sha256": "210ee5392e65da275a8aa705107c8c73da19a087e50eedfb76f4348e2539dcbc"
+     },
+     {
+      "what": "the left post one continuous post from the beam to the grass (the removal left a seam and sun stripes at the crop's top edge)",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       216,
+       40,
+       516,
+       490
+      ],
+      "mask": "box 344,92,394,484, feather 3",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the climbing roses, leaves and pink flowers on and around the arch, the open archway and the meadow, mist, path and flowers seen through it, the signpost and anything else in view, the light, and the outline and position of every object.\nChange only the tall square wooden arch post that runs down the middle of the picture from the arch beam at the top to the grass: right now it changes partway down, with a hard horizontal seam near the top where it turns from darker wood into a lighter strip with diagonal stripes of sunlight across it. Make it one continuous post from top to bottom: the same width all the way, the same darker orange-brown wood as its top part, a softly lit right-hand side face running the full height, natural vertical wood grain, and no seam, step, stripes or bands of light across it. The roses and leaves that wind around it stay where they are.\nNo text, letters or symbols.",
+      "input_sha256": "cdad244ff1573867a3ae65f8506c4dc5136905d936eb040642f78fe4bed6fcce",
+      "output_sha256": "6856ddbd3f1f27f17c1c2e5f7183fa3f8523aed22b411d6523cae85280b02800"
+     },
+     {
+      "what": "the right post widened to full width below the leaves (round 2 on the right post)",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       660,
+       40,
+       960,
+       490
+      ],
+      "mask": "box 782,95,817,486, feather 2",
+      "size": "1024x1536",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the green snake on the right (its body, head and outline exactly as drawn), the climbing roses and leaves, the open archway and the meadow, mist, path and flowers seen through it, the light, and the outline and position of every object.\nChange only the tall square wooden arch post just left of the snake: near the top, above the cluster of leaves, it is a full-width post, but below the leaves it suddenly becomes a thin pole about half as wide. Make it one continuous post from the arch beam down to the grass, the same full width all the way down as at its top, by widening its lower part toward the left (into the archway opening); its right-hand edge next to the snake stays exactly where it is. Same orange-brown wood, natural vertical grain, a softly lit face, standing in the grass at the bottom; no seam, step or jog.\nNo text, letters or symbols.",
+      "input_sha256": "5ddead55902a73cf35563187af3f6926af45e88e55018f109d34e9994194ef4e",
+      "output_sha256": "a5c978363db3cf53aad9215fa02ca4070c9db768b83a71b59cfeb3c38cda4ae8"
+     },
+     {
+      "what": "the right post's remaining junction step hidden behind a fuller rose cluster (stop rule: after two rounds, hide)",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       684,
+       14,
+       940,
+       270
+      ],
+      "mask": "ellipse 780,105,842,180, feather 3",
+      "size": "1024x1024",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the arch beam, the climbing roses and leaves elsewhere, the open archway and the meadow, mist and hills seen through it, any part of the green snake, the light, and the outline and position of every object.\nChange only one spot: where the tall wooden arch post just right of the middle of the picture passes the existing cluster of leaves, a little below the arch beam, the post has an awkward step and a thin pale leftover line. Cover that spot completely with a fuller cluster of the climbing rose: dense green rose leaves and two or three pink roses wrapped around the post, growing from the same vine as the roses above, so that the post disappears behind the foliage there and reappears below it as the same straight post. No seam, line or step is visible.\nNo text, letters or symbols.",
+      "input_sha256": "092dbc0a862c35f423947881957ff88307636289bbd2b76a71cd091ad645826d",
+      "output_sha256": "283868546f22fddcf37a3ec25d7232f87b00b568111a84fd3d9e1de4851635de"
+     },
+     {
+      "what": "re-hunt fix (STRUCT r7, adjudicated REAL; already in the shipped scene): the chimney's base, a rounded bulge melting into the roof with lit windows, made a plain stone base with flat faces and flashing",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       1276,
+       95,
+       1532,
+       351
+      ],
+      "mask": "box 1380,203,1430,242, feather 2",
+      "size": "1024x1024",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the cottage's walls, roof, door, windows and fence, the tall tapered chimney stack with its rim and the smoke above it, the trees, hills, sky and light, and the outline and position of every object.\nChange only the base of the chimney where it meets the roof: right now it is a small box whose left half is a rounded grey bulge that melts into the roof slope with no joint, with two little lit windows in its right half. Replace it with a simple square stone chimney base: two flat faces with straight vertical edges (a shaded left face and a lit right face), no windows, no bulge, sitting on the roof with a clean, straight joint line and a thin dark flashing where it meets the roof tiles. The tapered stack rises from its top exactly as now.\nNo text, letters or symbols.",
+      "input_sha256": "8141a4620934c5723b291dc932eb1a4127d56783519f9209f825fe6bae72ce19",
+      "output_sha256": "03c47bdac296b336470ee08213d8823bf0984bc95b70ec3ff9280c9f576d9dc1"
+     },
+     {
+      "what": "re-hunt fix (BLIND r9: a letter-like glyph on a book spine): the desk's books made plain",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       414,
+       194,
+       542,
+       322
+      ],
+      "mask": "box 466,244,512,267, feather 2",
+      "size": "1024x1024",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the little wooden desk, its legs and top, the lamp, the yellow box and the small dome, the stool, the flowers, grass and light, and the outline and position of every object.\nChange only the closed books lying on the desk at the left: their spines carry small dark marks that look like letters or numbers. Make every book spine and cover completely plain: smooth solid colour with at most a simple plain band, and no marks, letters, numbers, symbols or squiggles of any kind.\nNo text, letters, numbers or symbols anywhere.",
+      "input_sha256": "f234aad1d54d2f6339ad732252d2cb49e71b19aed5c579c5e6e2fba3d92e3bd7",
+      "output_sha256": "d401fa77c3defb3d948561f76705279a6b63328745a35f120300eb074f24ba01"
+     },
+     {
+      "what": "re-hunt fix (STRUCT r11+r12: the signboards showed an underside band and far end faces below eye level): the three boards redrawn as flat planks seen from above and the right; round 1 (fix15, output e59a8bcc...) flipped the bottom board and was discarded, this is round 2",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       20,
+       60,
+       276,
+       444
+      ],
+      "mask": "box 46,128,270,364, feather 3",
+      "size": "1024x1536",
+      "round1_output_sha256": "e59a8bcc0bf7fba1bf07d63169bcf2ba660b01b1a7028fa6804851719ceeca41",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the wooden signpost's post and its pointed cap, the vine band and the vine stems round the post, the roses, leaves, flowers, grass, rocks, the arch and anything else in view, the light, and the outline and position of every object.\nChange only how the three blank wooden signboards on the post are drawn; keep each one's position, size, wood colour and bolt heads, and keep each one's direction exactly:\n- the TOP board points LEFT: its arrow tip is at its left end and its right end is cut square;\n- the MIDDLE board points RIGHT: its arrow tip is at its right end and its left end is cut square;\n- the BOTTOM board points RIGHT: its arrow tip is at its right end and its left end is cut square.\nWe look at the boards from slightly above and from their right, so each board is a flat plank showing only: its flat front face, a thin lit strip along its top edge, and its thickness on its right-hand end only (the square right end of the top board; the right-hand arrow tips of the middle and bottom boards). There is NO dark band along any board's bottom edge (no underside visible), and NO thickness visible on any board's left-hand end or along any lower edge: the square left ends of the middle and bottom boards show only the front face's edge.\nThe boards stay blank: no text, letters, numbers or symbols.",
+      "input_sha256": "32eae1fa2080715e08e420b8676d81cb2a023272617aeb5ad3dbdf700ef4352d",
+      "output_sha256": "af7e94034b412f0206f57215eefe3f38ce56ca95020625475ff9af8117977c29"
+     },
+     {
+      "what": "the middle and bottom boards' left ends (still a 3-4 px end strip after two rounds) hidden behind the lower-left flowering shrub grown taller (stop rule: hide; an earlier leaf-cluster try, fix17, left corners showing and was discarded)",
+      "tool": "GitHub Copilot app built-in image_generation tool (edit), 1024x1024 quality high, pasted back with hdr/tools/patch.py (ECC affine) inside the mask",
+      "box": [
+       0,
+       150,
+       256,
+       406
+      ],
+      "mask": "box 28,188,152,402, feather 4",
+      "size": "1024x1024",
+      "prompt": "Edit this picture. Keep everything exactly as it is: the same frame, the wooden signpost, the three signboards' faces, shapes, directions and bolts, the vine on the post, the roses, leaves, flowers, grass, rocks and anything else in view, the light, and the outline and position of every object.\nChange only the lower left of the picture: the flowering shrub that grows at the lower left, in front of the signpost, grows taller and fuller, rising from the ground as one natural bush of green leaves with small yellow and pink flowers. It stands in front of the left-hand ends of the two lower signboards (the middle board and the bottom board) and hides both left ends completely, including their bottom corners, from about a third of the way along each board to its left end. The bush's top edge is soft and natural, with leaves overlapping the boards. Everything to the right of the bush, and the top board, stays exactly as it is.\nNo text, letters or symbols.",
+      "input_sha256": "1c9e541b643e4c0d10a144950d144569d071ee0aaf31b318a90d1c3ce103570c",
+      "output_sha256": "288fe9631504f01589d289b1d826ecd5413283d2c91fb40fe0afa4b2b2c55ea1"
+     }
+    ],
+    "checked": "re-hunt with the fixed blind step: r13 and r14 (Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes, the same files: BLIND and STRUCT 'No blocking defects' for day and night in both runs; parity 3 boxes, all masked lights (moon, cottage window, desk-lamp shade).",
+    "previous_sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
    }
-  ]
+  ],
+  "bytes": 261798,
+  "width": 1536,
+  "height": 576,
+  "master_sha256": "f0477c5a5a2205aa7c2eb933b4d3fb9e1249f95200f27822a11b172c2f262ed4"
  },
  {
   "file": "headers/ouro-apps-site.webp",
@@ -5930,7 +6171,7 @@
   "file": "scenes/ouroboros-website-640.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -5938,14 +6179,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 55762,
-  "sha256": "75b80a098e9d40251a1de7cb7df9f52e8fcc0dade16362b3d574683f499764e7"
+  "bytes": 57540,
+  "sha256": "41b298d262d830c8e058f97a9b27fa6bd9fd8e8bd62eac171eea1ef946fa11fd"
  },
  {
   "file": "scenes/ouroboros-website-640.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -5953,14 +6194,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 49511,
-  "sha256": "cc1e9dedd86c38ad69eebc8329829c84d67c8abb2f4b500c721eee3a02424c5b"
+  "bytes": 50788,
+  "sha256": "154c598f906d0ecdac8e3707bfdd56514843f6270c335f66581e95558408e3db"
  },
  {
   "file": "scenes/ouroboros-website-960.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -5968,14 +6209,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 108100,
-  "sha256": "5f28504850e9c1162bb7f26f8a7570be414e583ef16e75427912745940d133f0"
+  "bytes": 109346,
+  "sha256": "d6f5c342655b83d2a579066f320b1ad771853f03fe5f7f13631fc69e92e06258"
  },
  {
   "file": "scenes/ouroboros-website-960.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -5983,14 +6224,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 91742,
-  "sha256": "5369abcaf9e9fb3d46fc82274414f883253aa3361b7d9f24b3069f84cdb7f181"
+  "bytes": 93557,
+  "sha256": "07a50ffa69dec1ba21a329704d1da0bbfcdb82c0f3658066102f41035908352d"
  },
  {
   "file": "scenes/ouroboros-website-1536.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -5998,14 +6239,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 179781,
-  "sha256": "9cecf733e05f98dbc28f428f3894dc35b8605894e2a688fa4fe40071a5d0156c"
+  "bytes": 183816,
+  "sha256": "cbf04c63d1f0f4d717dd0ae6ec17f26e82c1523bec1e70fac0d2daec2ded9388"
  },
  {
   "file": "phone/ouroboros-website-384.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 384x288 (Lanczos)",
@@ -6013,14 +6254,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 35770,
-  "sha256": "e637f1a305724ce7914039821082fd7f450c90393bbb6f295a1b5110eeb6e2dd"
+  "bytes": 36814,
+  "sha256": "afc57be76e4c06a42bcb5d5b5d90c86d0eab7df0d59e4b1ff4d7e7af2e304eda"
  },
  {
   "file": "phone/ouroboros-website-384.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 384x288 (Lanczos)",
@@ -6028,14 +6269,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 31698,
-  "sha256": "aed097929b8dd50b3801f1161bc600f5cefbf072ee9cab77fcbd091dfd6d56d3"
+  "bytes": 32588,
+  "sha256": "07fcfa7035bb07e8e80ff193638d20e9efdfb4a4b166b680eed61fea54ec6979"
  },
  {
   "file": "phone/ouroboros-website-768.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 768x576 (Lanczos)",
@@ -6043,14 +6284,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 105748,
-  "sha256": "30fb0f233ec2e17d112511f46228a008d1572983b90ba60d12c8d9e0a49d3fb2"
+  "bytes": 106468,
+  "sha256": "c822276cb5d59dc8ccc00ba7c8a74f71fbbe8a41de947fba083d99042120406a"
  },
  {
   "file": "phone/ouroboros-website-768.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 768x576 (Lanczos)",
@@ -6058,14 +6299,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 84036,
-  "sha256": "712d429a766134aa012e851d6e79797243ebdd9a7b77fa7890b18b20b52c57d5"
+  "bytes": 85952,
+  "sha256": "ee0cab9e3dfb189e70e8513ca1fba5e8ee925674cc4818c8cfd48f79c3a07c71"
  },
  {
   "file": "social/ouroboros-website.jpg",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [124, 0, 1276, 576] then resize to 1280x640 (Lanczos)",
@@ -6073,14 +6314,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 341410,
-  "sha256": "84c14e5709ed312cd41aa242f5c5b7e0d9ca309ef8b6e27aa45ccb2de8b409a1"
+  "bytes": 344262,
+  "sha256": "fee46c38f76731c1361bdad01a7c75278b45ab642227f8a79fa4df886ec30bb5"
  },
  {
   "file": "og/ouroboros-website.jpg",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [152, 0, 1249, 576] then resize to 1200x630 (Lanczos)",
@@ -6088,8 +6329,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 320643,
-  "sha256": "5f4a6d0163cc5669ace32ac7c9099e7fa64120ed5f68bc78d720f1b73d43a4a2"
+  "bytes": 323118,
+  "sha256": "00924e477ded5f2ac59d9e1d1d473fc2ed4e019378edd7cd4535c410e6c99819"
  },
  {
   "file": "scenes/ourostack-640.webp",
@@ -8391,18 +8632,18 @@
   "file": "upscaled/ouroboros-website.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website.webp",
-   "sha256": "76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c"
+   "sha256": "d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouroboros-website.webp (sha256 76eeecf7fb61fc7e7e562bd64e49247b3671cc37c683972dc5618ce14dca826c); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/ouroboros-website.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9756 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-15",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouroboros-website.webp (sha256 d2234bc9733ea800fe9496368641a02cc7ff5f236928546c42bbed0fe5fe972a); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/ouroboros-website.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9753 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1650118,
-  "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+  "bytes": 1742310,
+  "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
  },
  {
   "file": "upscaled/ourostack.webp",
@@ -10979,7 +11220,7 @@
   "file": "scenes/ouroboros-website-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -10987,14 +11228,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 278527,
-  "sha256": "9631c0c5c71b2b3dbf97acb3033c51666c519b9f4bef0ebafff32c7fadef01aa"
+  "bytes": 293065,
+  "sha256": "8f99797cd99f021d992a0f3bcc6c1fca043c109d44a890024a34dc90a6d28fef"
  },
  {
   "file": "scenes/ouroboros-website-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -11002,14 +11243,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 365135,
-  "sha256": "d61d14d8f4c89ece366b265d806aa5290ea9b76f3e38081d443fb0855cd236f2"
+  "bytes": 384890,
+  "sha256": "cc9da087051786df6f11e9c1412eecaefdb08c4c1c633d7aa60f9ff249293ff1"
  },
  {
   "file": "scenes/ouroboros-website-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -11017,14 +11258,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 500716,
-  "sha256": "8f0c98cbaa00ca6fcd0453a57e1382fbd582a935dc5203964282f3d995c10b82"
+  "bytes": 519920,
+  "sha256": "4771356f26e195edf424a75a8fe2d70b74c65990aa4c5ed4f266483238c2f5a2"
  },
  {
   "file": "scenes/ouroboros-website-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -11032,14 +11273,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 447306,
-  "sha256": "1b0aced5f171cbfcad3a328c95d6b1b51a8263bdbebf914065830503a7966403"
+  "bytes": 472346,
+  "sha256": "57470eb3318ece63b3cbea1f0b69d7096d1489e5e5df0cd573d8a3b5e1c40947"
  },
  {
   "file": "scenes/ouroboros-website-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -11047,14 +11288,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 571419,
-  "sha256": "5f0d72e788ac51e7011d350a100277709c5d29bfe13cbb561b066cae58e43087"
+  "bytes": 603854,
+  "sha256": "4cee6f3b4b10d926be26b90200f40d9111d3584c477742067693c3586c76bde4"
  },
  {
   "file": "scenes/ouroboros-website-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -11062,14 +11303,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 806366,
-  "sha256": "b93267ecdff87ddf7f210d3885e8dfc30f6800f9911efd07eef55e14582b12a2"
+  "bytes": 850418,
+  "sha256": "88b72415760e19c5422bc1e062f313a133b441f8c80e187a915414626d27b232"
  },
  {
   "file": "scenes/ouroboros-website-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -11077,8 +11318,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1366200,
-  "sha256": "b20cb8d03fc599bc4d336e749428ba47bf8b96fd95dae9a92ac8297f14e8522a"
+  "bytes": 1406734,
+  "sha256": "beb05a469adbc2f366351fbf1a417e2b13d15bd21eadd99a5cad174be8a68e36"
  },
  {
   "file": "scenes/ourostack-2304.avif",
@@ -13125,7 +13366,7 @@
   "file": "phone/ouroboros-website-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -13133,14 +13374,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 172716,
-  "sha256": "dd2139a19ba43d96720afbfa7cfd2d8b27a56b0580d778d3e32cb086c12449e8"
+  "bytes": 175378,
+  "sha256": "f6332e49f9eba31c9436f1e4825ac476c2fd5b71681aa9eacb810b269b1e0e79"
  },
  {
   "file": "phone/ouroboros-website-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -13148,14 +13389,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 132153,
-  "sha256": "4eb10767051b807d48901f7f97b49cde54e12b383c53ec553bb633168558f9f8"
+  "bytes": 137398,
+  "sha256": "b0d67b4ffe57b16ba5e3d6aeab3a44cb4031904e3358384be612cba12ec8389c"
  },
  {
   "file": "phone/ouroboros-website-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -13163,14 +13404,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 238818,
-  "sha256": "0089220a24ef36c59ad8c858b79231b20b1b568ebf6ca5351aef0c49c04d6b7a"
+  "bytes": 243112,
+  "sha256": "eca7165b3fa64d27571d505ebfa90036f6c35b4494337de6403a7bcf4cc81b03"
  },
  {
   "file": "phone/ouroboros-website-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website.webp",
-   "sha256": "13202af5461ba0e8efd21e7a3ef0e181f139861aaaca35c239eaf25589eda7b5"
+   "sha256": "6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -13178,8 +13419,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 172565,
-  "sha256": "e11225825243eea0cc52faa74cca37b4339fbe741e1ac4d6fd5c76bff18b2fc7"
+  "bytes": 179195,
+  "sha256": "bae19c4610bfcaa71d9c8435a909f0dd64600dd1eca6eab43258dbcc31f427cd"
  },
  {
   "file": "phone/ourostack-1152.webp",
@@ -19404,7 +19645,7 @@
   "generated": "Dark master, 2026-11-13, edited from the light header",
   "approval": "Ari asked for night art for every hero that has a dark-mode reader, 2026-11-13: the same scene, characters and composition, at night.",
   "crop": "1536x576 from the 1536x1024 master (rows 224–800, where the light header sat when letterboxed), WebP q86",
-  "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499",
+  "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213",
   "generation": [
    {
     "master": "ouroboros-website-dark-master",
@@ -19433,31 +19674,83 @@
      "Ari, 2026-11-15, on the glowing trail pasted through every scene: \"that trail doesnt do anything at all\" and, at 10:17, \"i dont have something against glowing paths and such, it just became this weird thing that was in all the images even when it didnt make sense\" / \"dont overcorrect!\" (agents/art-one-universe.md, .github#113): a trail stays where it is part of the scene and goes where it means nothing; the sparkle stays (\"keep the sparkle! keep it all beautiful\")",
      "blind defect hunt (agents/art-one-universe.md, rule 4): fresh reviewers given only the picture and its 4x crops; every blocker they named is fixed"
     ]
+   },
+   {
+    "date": "2026-11-17",
+    "what": "a new night, the same scene with only the light changed: nightFromFlatDay (a flattened copy of the fixed day) with nightLights for the moon, the cottage window and the desk lamp; replaces the drawn night, which had redrawn the door, the farmyard and other props.",
+    "model": "GitHub Copilot app built-in image_generation tool (relight of the fixed day, letterboxed in 1536x1024 grey), 1536x1024 quality high; light only, transferred with relight_transfer.py",
+    "generation": [
+     {
+      "step": "relight",
+      "input": "the fixed day header letterboxed at rows 224-800 in 1536x1024 grey (128), sha256 3354d5c14244397600965aaff845fa3385019085c4973db26cc8cdd043397542",
+      "prompt": "Relight this picture as a calm, clear night. Change only the light and colour; keep every object, shape, outline, pose and position exactly as it is: the green snake curled into one open ring between the two open wooden garden gates under the rose arch; the signpost with its three blank boards on the left; the little writing desk with its lamp, books and stool; the reading stand with its tilted board; the cottage on the right with its door, windows, chimney and fences; the meadow, roses, flowers, rocks and the winding paths; the distant fog, hills and mountains exactly as drawn. Add nothing: no lanterns, lamps, chairs or other objects that are not already in the picture. The flat grey bands above and below the picture stay flat grey.\n\nThe sun is gone: no sun disk, no glare, no sunbeams, no golden haze, no sunlit patches on the meadow or hills, no warm rim light on the snake or the gates, no daylight anywhere. A small soft full moon sits low in the sky exactly where the sun was, with a faint silver sheen on the fog below it. The sky is deep blue night with stars; the hills and mountains are dark blue silhouettes. The desk lamp is switched on: its shade glows warm and casts a small warm pool of light on the desktop. The cottage's small windows glow warm. The paths keep a soft, faint green glow. The snake, the gates, the roses and the signpost are lit only by cool silver moonlight, much darker than in daylight, with no glow, halo or bright rim around them. Deep, clean blacks; a premium animated-film night.\n\nNo text, letters or symbols. No fades or vignettes.",
+      "raw_sha256": "574bef3315d59356fbc7ae717f24a74ad0f682759b8198748af5ea092443ac7b"
+     },
+     {
+      "step": "align",
+      "tool": "hdr/tools/align_night.py",
+      "raw_aligned_sha256": "85a5f5b88702df91b6fc8f97a0cc363f728979585de0dda7d8c9c2e2b1cc7909"
+     },
+     {
+      "step": "moon",
+      "what": "the relight's moon disc (centre 1374.5,55, radius 15) moved up 23 px into clear sky above the mountain ridge (it overlapped the ridge, adjudicated REAL), its old spot inpainted (OpenCV Telea) in the relight copy",
+      "relight_sha256": "a89c1e719723983548e3da811baea06b18f831b3101dbd84fb89ce4feef02f50"
+     },
+     {
+      "step": "flat day",
+      "tool": "hdr/tools/sun_flatten.py --core 1342,27,1381,65 --glare 1280,0,1450,110 --streaks 1330,112,1395,145 (the sun disk inpainted, its glare's broad light replaced by the sky's around it, its reflection on the water inpainted; nothing else changed)",
+      "flat_sha256": "36648670397c829fcf65dda90348f2981112c4713c39806c1132678aaa462981"
+     },
+     {
+      "step": "light transfer",
+      "tool": "relight_transfer.py flat.png raw-aligned-moon.png --keep-mask lights.png --exclude-mask exclude.png (over the removed gate doors, which the relight still has) --radius 24 --max-gain 1.3 --feather 1",
+      "lights": "the moon (circle centre 1374.5,32, radius 15), the lit cottage window (ellipse 1405,247,1424,268) and the desk lamp's shade (quad 525,223 531,223 536,238 520,238)",
+      "lights_sha256": "64537c3c10318575809ca23081fe5972fb8091d8f5dfcdba8e258ad32c98acd3"
+     },
+     {
+      "step": "lamp",
+      "what": "fix/ouroboros-website-dark/lamp.py: the desk lamp lit by light only: a warm gain on the night's own shade pixels inside the quad 525,223 531,223 536,238 520,238 (feather 1.2 px) plus a soft warm glow (Gaussian sigma 14 px at 528,238); no day or relight pixels"
+     }
+    ],
+    "checked": "re-hunt with the fixed blind step: r13 and r14 (Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes, the same files: BLIND and STRUCT 'No blocking defects' for day and night in both runs; parity 3 boxes, all masked lights (moon, cottage window, desk-lamp shade).",
+    "previous_sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
    }
-  ]
+  ],
+  "bytes": 161718,
+  "width": 1536,
+  "height": 576,
+  "master_sha256": "76046a050d655e80402782c66056db42f2328627da54331ba1e9172422143ed1"
  },
  {
   "file": "upscaled/ouroboros-website-dark.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
+  },
+  "alsoFrom": {
+   "file": "flat/ouroboros-website.webp",
+   "sha256": "fbc7f1ce511e3c39f236dda373f5a5dc0054edf7cbbffeea185517ad8a224713"
+  },
+  "lightsFrom": {
+   "file": "flat/ouroboros-website-lights.png",
+   "sha256": "987368b26b4d3e02d8f6c1d9b5fc8de3cba9a864d5c4bb16fdebf9cad57543c6"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ouroboros-website-dark.webp (sha256 4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/ouroboros-website-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9741 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-15",
+  "operation": "the day's 4x master upscaled/ouroboros-website.webp (sha256 6c0e9e882fc808362694977b6f69b02ee37081b668e778fc8622af1ec7771c87) wherever the flattened copy flat/ouroboros-website.webp (sha256 fbc7f1ce511e3c39f236dda373f5a5dc0054edf7cbbffeea185517ad8a224713) equals the day (49.9% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/ouroboros-website.webp (SSIM 0.9748 against it) where its sun pattern was removed, given the light and colour of headers/ouroboros-website-dark.webp (sha256 4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/ouroboros-website-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/ouroboros-website-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9642 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-16",
   "encoder": "Pillow WebP quality 90 method 6",
-  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1582390,
-  "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+  "bytes": 1079316,
+  "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
  },
  {
   "file": "scenes/ouroboros-website-dark-640.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -19465,14 +19758,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 48780,
-  "sha256": "ab83ab0d96762859de1801ef3209002e63e333518194ae7cd217e838afa0f111"
+  "bytes": 27912,
+  "sha256": "e6a44182f0a2d88882008f19ec23068a3d946d2cff470f37a62b2dc56d323c26"
  },
  {
   "file": "scenes/ouroboros-website-dark-640.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -19480,14 +19773,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 55320,
-  "sha256": "db04ad9f5647d31f4119719b9ddfd5189d0830d48b5aa90e08f5fb9b389cb908"
+  "bytes": 34084,
+  "sha256": "963d024c69c9a39cdaba716ececf32ad40332b717b6efd951a36f7258231bc6d"
  },
  {
   "file": "scenes/ouroboros-website-dark-960.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -19495,14 +19788,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 90561,
-  "sha256": "98b2d4c825fdb945642b4431ad934bd8f134a53daedbdf15c485abf68109653f"
+  "bytes": 50273,
+  "sha256": "0e57ad002507ba63d4a4ae7ca9dc336132296161d2ed9da9086a29e2794158a7"
  },
  {
   "file": "scenes/ouroboros-website-dark-960.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -19510,14 +19803,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 105962,
-  "sha256": "2b06e22beea8ac15920014bdf307ab13619ab2c130b7d66ffa22c3ba68bd94bc"
+  "bytes": 64902,
+  "sha256": "e67d7537135d91ec883c217d213db5f9fd498320b763bea678ac5fa26c9ac827"
  },
  {
   "file": "scenes/ouroboros-website-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -19525,14 +19818,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 173800,
-  "sha256": "98bd4086a658ccb99cffee1b68f521fe4276680154c8cbf4a7ddecd1b5292525"
+  "bytes": 98279,
+  "sha256": "4b69ef1013cbde67151aaade3f03b225e84d7887f257833565fc4fe4ca2767e4"
  },
  {
   "file": "scenes/ouroboros-website-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -19540,14 +19833,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 274409,
-  "sha256": "96da9e7248c86c6fa31cfc90e7a7dcadcec212afd32ec3be64414cb8891cc938"
+  "bytes": 157689,
+  "sha256": "e03fc8c0d511d04cfc11f301138f376df8af066c4f79fe097a373d240c4d0525"
  },
  {
   "file": "scenes/ouroboros-website-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -19555,14 +19848,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 358727,
-  "sha256": "79622f1876a07d9c79514fc001d2c4a76a2390e577e778d5a342782d026b64db"
+  "bytes": 207617,
+  "sha256": "c19ebe62d6217f3c5a75a064b33b74ae090b5b822475722f9d4ef0b10cc83f8f"
  },
  {
   "file": "scenes/ouroboros-website-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -19570,14 +19863,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 492432,
-  "sha256": "b21212a84d76821c63318d99173271d33c3ba9e537729eacdd835e53e751e9f9"
+  "bytes": 303584,
+  "sha256": "df7f24505c15f122ef28e58ebc20141bc22ddcbdf3c5d8e3b2cabc587306560e"
  },
  {
   "file": "scenes/ouroboros-website-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -19585,14 +19878,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 440434,
-  "sha256": "7122b928392f5840ed06b0af59c833d56dee30c58f81116a161af8c38269d221"
+  "bytes": 255593,
+  "sha256": "9e7de576028fd3352379093593ed6c7db7bc14c4f6d5b4d8503260d6abfd5d48"
  },
  {
   "file": "scenes/ouroboros-website-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -19600,14 +19893,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 563342,
-  "sha256": "1f28f15191cf7bb4f08da8bf8cd0cebf9b81837499deee9e8f3c649431dc74d8"
+  "bytes": 327867,
+  "sha256": "8506b3a9f4e918f1a2124747f017831b764d2c4ba86b6e2148a52567b0e56263"
  },
  {
   "file": "scenes/ouroboros-website-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -19615,14 +19908,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 789706,
-  "sha256": "21ee42ad64199b25244309300c49265598f39d48594ae6772a68a472f22b5d5e"
+  "bytes": 469137,
+  "sha256": "c6415602daf5562628b00ebcee993c55b36cbe669ebe0ccc9e47bf815b4e770a"
  },
  {
   "file": "phone/ouroboros-website-dark-384.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 384x288 (Lanczos)",
@@ -19630,14 +19923,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 31716,
-  "sha256": "a400aa6e15dd1d8948494e455cedc63be50f4eb7fa393b3e72457bde9b9a0f6e"
+  "bytes": 17936,
+  "sha256": "f5168c44c0ae304f5d6b7cf68f3b4a8babdbc6611ea58e8cf9e2a4567be4eb9b"
  },
  {
   "file": "phone/ouroboros-website-dark-384.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 384x288 (Lanczos)",
@@ -19645,14 +19938,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 35750,
-  "sha256": "b8759f162b2e81880befe66ba0035404ddece8b51c246c1a02c8ecc34b16dca4"
+  "bytes": 22048,
+  "sha256": "e916c6591fdfe0a6b325a3fc6c874bfe78bd206ee12b2d25ab3e59704cdbea94"
  },
  {
   "file": "phone/ouroboros-website-dark-768.avif",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 768x576 (Lanczos)",
@@ -19660,14 +19953,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 83937,
-  "sha256": "7d1460aa11987ba13f908d59a694177564a27dafc71de96f48a27c231ed3a640"
+  "bytes": 47759,
+  "sha256": "b00472b7199de448eed03e802092f9a0bf9f70dec383d3e446b51816092136fd"
  },
  {
   "file": "phone/ouroboros-website-dark-768.webp",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [488, 0, 1256, 576] then resize to 768x576 (Lanczos)",
@@ -19675,14 +19968,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 102202,
-  "sha256": "b05b509395177e9ee576b69d4dac57db48403115ee82f561ef4a8a590f834a5e"
+  "bytes": 61966,
+  "sha256": "dd4c49149f0b3930c4d436cef155d8aabbdcda6e386bce430e4c5d8e100fd881"
  },
  {
   "file": "og/ouroboros-website-dark.jpg",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [152, 0, 1249, 576] then resize to 1200x630 (Lanczos)",
@@ -19690,8 +19983,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 312679,
-  "sha256": "91006ee3ef82d7dc1cb59a205079da4d47f64666024ee350f6ec2753ae103e11"
+  "bytes": 225101,
+  "sha256": "ef3b8a590786bfe37162bd18df9f7f994f69caeec6ac08b8f80523d17dd2220b"
  },
  {
   "file": "headers/ouroboros-dark.webp",
@@ -22189,7 +22482,7 @@
   "file": "phone/ouroboros-website-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22197,14 +22490,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 168880,
-  "sha256": "6ff6f4e413856c275b8907fe88da522b8114e6568041f285e418f24522f94f90"
+  "bytes": 104658,
+  "sha256": "d8569e2d337b9a5e60b7b4631afdcfbf6b65c50690874f07478b43fc2983a68b"
  },
  {
   "file": "phone/ouroboros-website-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -22212,14 +22505,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 132791,
-  "sha256": "96df1810cad98bce450c5c8c5b896f479e34286238d490ae8e62f0ab9f1ba4bb"
+  "bytes": 76353,
+  "sha256": "bde7df7bbdf72bb01e595ea229bd104c07da2260b3620e7c4c537e143f111ba2"
  },
  {
   "file": "phone/ouroboros-website-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22227,14 +22520,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 233498,
-  "sha256": "7b652d59ea6a9e6029d7be95f41a267a64cfd631a4758775875499a19da4c83e"
+  "bytes": 143736,
+  "sha256": "36b814991e0038d0b91a92cd81d2640459316e1a3129ebd4c4ca22cf8880afa4"
  },
  {
   "file": "phone/ouroboros-website-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1952, 0, 5024, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -22242,8 +22535,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 173958,
-  "sha256": "e9a5b60e555ecd54c35f63405b1d4a29eaae57d3d2c0421821ccfe4f659de216"
+  "bytes": 100260,
+  "sha256": "8f3df4283eb84be47f97a14865ecb5bc0dabeec66d85d69599620ce4a444117f"
  },
  {
   "file": "phone/shepherd-dark-1152.webp",
@@ -28158,7 +28451,7 @@
   "file": "scenes/ouroboros-website-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ouroboros-website-dark.webp",
-   "sha256": "dc69d76a3beef93e878e00f539874c0653a48517a220ec5e039a01cb1cafd6c7"
+   "sha256": "b9e1ea1d637c641fab1103eb89f4f7ed647a9a2b327bee1258bbd873a18252ab"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -28166,14 +28459,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1301968,
-  "sha256": "a4da4dc8bbae66f3935a52b04a4854e737a1f025f8c639a26888b5ccaba6ecac"
+  "bytes": 843098,
+  "sha256": "ed0b45f4f0a4db325217bfe05772b0dfb3c0bb76854ae32e79785bb66d1bf525"
  },
  {
   "file": "social/ouroboros-website-dark.jpg",
   "derivedFrom": {
    "file": "headers/ouroboros-website-dark.webp",
-   "sha256": "4b3906272384303d745dbbfcb14d628d4500da92ab35a89e246817d2f59ad499"
+   "sha256": "4a861a92d13bd8e204e9566b787cb09ce0e4a908ea5989b622cf877fb04d0213"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [124, 0, 1276, 576] then resize to 1280x640 (Lanczos)",
@@ -28181,8 +28474,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 333143,
-  "sha256": "0c31bd1370f76726246fa053c2afe2c87799a7038485caac28bdd713c55a1ae8"
+  "bytes": 240181,
+  "sha256": "82269b3a91197e0c16ac18408e8e8e3c53921079c82e01b971f2580ef033ff7c"
  },
  {
   "file": "scenes/ouroboros-dark-7680.webp",
@@ -36775,5 +37068,18 @@
   "height": 576,
   "bytes": 73700,
   "sha256": "321c943309311c85737cf798964d3fd1f4f1a0d31cce00a1d98f82e9f6af6799"
+ },
+ {
+  "file": "flat/ouroboros-website-lights.png",
+  "use": "ouroboros-website's night-only light sources (nightLights)",
+  "sha256": "987368b26b4d3e02d8f6c1d9b5fc8de3cba9a864d5c4bb16fdebf9cad57543c6"
+ },
+ {
+  "file": "flat/ouroboros-website.webp",
+  "use": "ouroboros-website's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
+  "width": 1536,
+  "height": 576,
+  "bytes": 310736,
+  "sha256": "fbc7f1ce511e3c39f236dda373f5a5dc0054edf7cbbffeea185517ad8a224713"
  }
 ]
