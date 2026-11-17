@@ -31,3 +31,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRAND_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
         run: node brand/tools/audit.mjs --format text
+
+  upscale-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test how upscale.py builds night masters
+        run: |
+          python3 -m venv /tmp/upscale-venv
+          /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image
+          /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
