@@ -6,7 +6,7 @@
 set -euo pipefail
 dir=$(dirname "${BASH_SOURCE[0]}")
 for repo in $(gh api --paginate orgs/ourostack/repos --jq '.[] | select(.archived == false and .fork == false) | .name'); do
-  id=$(gh api "repos/ourostack/$repo/rulesets" --jq '.[] | select(.name == "no-ai-credit-trailer") | .id' | head -1)
+  id=$(gh api "repos/ourostack/$repo/rulesets" --jq '.[] | select(.name == "no-ai-credit-trailer" and .source_type == "Repository") | .id' | head -1)
   if [ "${1:-}" = --remove ]; then
     [ -z "$id" ] || { gh api -X DELETE "repos/ourostack/$repo/rulesets/$id"; echo "$repo: removed"; }
   elif [ -n "$id" ]; then gh api -X PUT "repos/ourostack/$repo/rulesets/$id" --input "$dir/ruleset-repo.json" --silent; echo "$repo: updated"
