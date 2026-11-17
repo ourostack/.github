@@ -8,7 +8,7 @@ name: Re-arm merges with a clean message
 # the run's log and summary. The rule: agents/prs-merge-within-30-minutes.md.
 #
 # Needs the REARM_MERGES_TOKEN secret: a token that can enable auto-merge and merge pull requests in every ourostack
-# repository (the workflow's own token reaches this repository only). Without it the job fails loudly.
+# repository (the workflow's own token reaches this repository only). Without it the job says so in a notice and does nothing.
 on:
   schedule:
     - cron: "9-59/10 * * * *"
@@ -40,5 +40,5 @@ jobs:
           GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
         shell: bash
         run: |
-          [ -n "$GH_TOKEN" ] || { echo "::error::The REARM_MERGES_TOKEN secret is not set."; exit 1; }
+          [ -n "$GH_TOKEN" ] || { echo "::notice::The REARM_MERGES_TOKEN secret is not set; nothing was re-armed."; exit 0; }
           node tools/rearm-merges/rearm-merges.mjs 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
