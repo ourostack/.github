@@ -1,0 +1,16 @@
+name: No AI trailer tests
+
+on:
+  pull_request:
+    paths: ["tools/no-ai-trailer/**", ".github/workflows/no-ai-trailer*.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tools/no-ai-trailer/test/run.sh
