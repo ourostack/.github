@@ -83,24 +83,20 @@ Cloud sessions' commit signer forces a `Co-authored-by: copilot-swe-agent[bot]` 
 Since 2026-11-17 an organization ruleset ("No AI co-author credit", `commit_message_pattern`, negated `(?i)co-authored-by:[^\n]*(\[bot\]|copilot)`) rejects any commit on a default branch whose message has such a line. GitHub's default squash message, and the default message of auto-merge, append the branch commits' co-author lines, so a PR from a cloud lane shows BLOCKED with every check green and nothing failing. The fix is always the same: pass the message yourself.
 
 ```
-gh ouro-pr merge <pr>
-# or, without the alias, and with the same effect:
 gh pr merge <pr> --auto --squash --subject "<PR title> (#<pr>)" --body "<PR body without Co-authored-by / Assisted-by lines>"
 ```
 
-Never run `gh pr merge --auto` or `gh pr merge --squash` without `--subject` and `--body`, never use the web button, and never set `--admin`. The ruleset stays as it is. [`rearm-merges`](../.github/workflows/rearm-merges.yml) runs every 10 minutes, finds open PRs whose auto-merge uses the default message and turns it on again with a clean one (`node tools/rearm-merges/rearm-merges.mjs --dry-run` shows what it would do; `--merge-ready` also merges green PRs with no auto-merge). Tests: `node --test tools/rearm-merges/rearm-merges.test.mjs`. It needs the `REARM_MERGES_TOKEN` secret, a token with pull-request write access to every ourostack repository.
+Never run `gh pr merge --auto` or `gh pr merge --squash` without `--subject` and `--body`, never use the web button, never set `--admin`, and never merge with a direct API call (`gh api -X PUT repos/<repo>/pulls/<pr>/merge`): an admin account passes the required checks that way, which is how a red change reached `desk` main on 2026-11-17. Repository admins no longer bypass any default-branch ruleset; the one bypass left is the `desk` and `flow-review` release deploy key, which pushes the release commit. The ruleset stays as it is. [`rearm-merges`](../.github/workflows/rearm-merges.yml) runs every 10 minutes, finds open PRs whose auto-merge uses the default message and turns it on again with a clean one (`node tools/rearm-merges/rearm-merges.mjs --dry-run` shows what it would do; `--merge-ready` also merges green PRs with no auto-merge). Tests: `node --test tools/rearm-merges/rearm-merges.test.mjs`. It needs the `REARM_MERGES_TOKEN` secret, a token with pull-request write access to every ourostack repository.
 
 ### Cloud lanes: the clean merge command
 
 A Copilot cloud lane (and anything else that merges without `gh ouro-pr`) must not use the default message, the web button or a bare `gh pr merge`. Merge with:
 
 ```
-gh ouro-pr merge <pr>
-# or, without the alias:
-gh pr merge <pr> --squash --subject "<PR title> (#<pr>)" --body "<PR body without Co-authored-by / Assisted-by lines>"
+gh pr merge <pr> --auto --squash --subject "<PR title> (#<pr>)" --body "<PR body without Co-authored-by / Assisted-by lines>"
 ```
 
-Auto-merge takes the same flags (`gh pr merge <pr> --auto --squash --subject ... --body ...`). The branch commits keep the trailer the signer forces; only the squash message must be clean.
+Never a direct PUT to the merge endpoint. The branch commits keep the trailer the signer forces; only the squash message must be clean.
 
 ### Layers that keep the trailer off `main`
 
