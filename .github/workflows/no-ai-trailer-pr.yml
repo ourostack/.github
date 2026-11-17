@@ -1,0 +1,43 @@
+name: No AI trailer on the pull request
+
+# Prevention before main: fails a pull request whose title or body credits an AI tool or a bot (a default merge copies
+# them), and warns when its commits do (a cloud lane's signer forces that trailer onto them; they land on main
+# unless the merge passes an explicit message). Every ourostack repository calls it from its CI:
+#   jobs:
+#     no-ai-trailer-pr:
+#       if: github.event_name == 'pull_request'
+#       uses: ourostack/.github/.github/workflows/no-ai-trailer-pr.yml@main
+# Require it with an organization ruleset (an owner action) so it blocks the merge.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ourostack/.github
+          path: guard-tools
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+          fetch-depth: 0
+      - name: Title and body
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s\n\n%s\n' "$TITLE" "$BODY" | bash guard-tools/tools/no-ai-trailer/check.sh --text
+      - name: Commits
+        working-directory: repo
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if ! bash ../guard-tools/tools/no-ai-trailer/check.sh "$BASE..$HEAD" >/tmp/commits.txt 2>&1; then
+            echo "::warning::this branch's commits credit an AI tool or a bot. Merge it with: gh ouro-pr merge ${{ github.event.pull_request.number }} (an explicit message keeps the credit off main); a default merge or the web button would copy it."
+          fi

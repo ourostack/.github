@@ -77,3 +77,22 @@ None of them reads a PR's checks and merge state to say *why* it is stuck at a 3
 ## Merge with an explicit message
 
 Cloud sessions' commit signer forces a `Co-authored-by: copilot-swe-agent[bot]` trailer onto branch commits, and GitHub's squash merge copies it onto `main` (the repository's squash-message setting does not stop that). Our rule is no AI attribution on `main`, so every merge passes its own message: `gh ouro-pr` and `gh ouro-pr merge <pr>` use `--subject "<title> (#n)"` and `--body` with AI and bot credit lines removed, as does Desk's merge-when-green relay. The [no-ai-trailer guard](../.github/workflows/no-ai-trailer.yml) fails `main`, and its sweep every ten minutes covers every repository.
+
+### Cloud lanes: the clean merge command
+
+A Copilot cloud lane (and anything else that merges without `gh ouro-pr`) must not use the default message, the web button or a bare `gh pr merge`. Merge with:
+
+```
+gh ouro-pr merge <pr>
+# or, without the alias:
+gh pr merge <pr> --squash --subject "<PR title> (#<pr>)" --body "<PR body without Co-authored-by / Assisted-by lines>"
+```
+
+Auto-merge takes the same flags (`gh pr merge <pr> --auto --squash --subject ... --body ...`). The branch commits keep the trailer the signer forces; only the squash message must be clean.
+
+### Layers that keep the trailer off `main`
+
+1. **Organization ruleset** (owner action, needs the plan to support metadata restrictions): a commit-message pattern on default branches that rejects `Co-authored-by: .*\[bot\]` and Copilot trailers. A GitHub App or personal token without organization administration cannot create it, so check `gh api orgs/ourostack/rulesets` first.
+2. **PR check**: the [no-ai-trailer-pr](../.github/workflows/no-ai-trailer-pr.yml) reusable workflow fails a PR whose title or body carries a credit and warns when its commits do. Require it by ruleset.
+3. **Push guard and sweep**: [no-ai-trailer](../.github/workflows/no-ai-trailer.yml) fails `main` on any new offender.
+4. **Acknowledged history**: `main` is never rewritten, so offenders that landed before a layer existed are listed in [`tools/no-ai-trailer/acknowledged.txt`](../tools/no-ai-trailer/acknowledged.txt) (full SHA, repository, credit, reason, fix PR). The sweep skips exactly those SHAs; anything else is red. Never ack a new offender to get green: merge clean instead. Tests: `bash tools/no-ai-trailer/test/run.sh`.
