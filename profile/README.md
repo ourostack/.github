@@ -1,6 +1,6 @@
 <!-- ourostack:brand:start -->
 <p align="center">
-  <a href="https://ouroboros.bot"><img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ourostack.webp" alt="Two people in clear glass share a dawn picnic on a meadow hillside while two small robots serve tea and bread, and Ouro, the green snake, dozes on a quilt beside the hamper" width="100%"></a>
+  <a href="https://ouroboros.bot"><img src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ourostack.webp" alt="Two faceless glass friends wrapped in plaid throws share a dawn picnic on a meadow hillside while a small jade robot pours tea and an amber robot lifts a loaf from the hamper, and Ouro, the green snake, dozes on a quilt" width="100%"></a>
 </p>
 <!-- ourostack:brand:end -->
 
