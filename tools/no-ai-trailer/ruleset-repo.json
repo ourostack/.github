@@ -1,0 +1,25 @@
+{
+  "name": "no-ai-credit-trailer",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": [
+        "~DEFAULT_BRANCH"
+      ],
+      "exclude": []
+    }
+  },
+  "rules": [
+    {
+      "type": "commit_message_pattern",
+      "parameters": {
+        "name": "No AI co-author credit",
+        "negate": true,
+        "operator": "regex",
+        "pattern": "(?i)co-authored-by:[^\\n]*(\\[bot\\]|copilot)"
+      }
+    }
+  ],
+  "bypass_actors": []
+}

@@ -1,0 +1,34 @@
+{
+  "name": "no-ai-credit-trailer",
+  "target": "branch",
+  "source_type": "Organization",
+  "source": "ourostack",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "~DEFAULT_BRANCH"
+      ]
+    },
+    "repository_name": {
+      "exclude": [],
+      "include": [
+        "~ALL"
+      ],
+      "protected": false
+    }
+  },
+  "rules": [
+    {
+      "type": "commit_message_pattern",
+      "parameters": {
+        "name": "No AI co-author credit",
+        "negate": true,
+        "operator": "regex",
+        "pattern": "(?i)co-authored-by:[^\\n]*(\\[bot\\]|copilot)"
+      }
+    }
+  ],
+  "bypass_actors": []
+}
