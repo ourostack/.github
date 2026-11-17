@@ -50,7 +50,10 @@ git config --global user.name >/dev/null 2>&1 || git config --global user.name "
 desk="$HOME/personal-desk"
 if [ ! -d "$desk/.git" ]; then
   say "Cloning the personal desk"
-  git clone https://arimendelow@github.com/arimendelow/desk.git "$desk" || die "could not clone the personal desk"
+  # Same thinning as the lean-worktree hook: images, video, audio and bundles stay in Git but are not downloaded.
+  git clone --filter=blob:none --no-checkout https://arimendelow@github.com/arimendelow/desk.git "$desk" || die "could not clone the personal desk"
+  git -C "$desk" sparse-checkout set --no-cone '/*' '!*.png' '!*.jpg' '!*.jpeg' '!*.mp4' '!*.mov' '!*.mp3' '!*.bundle' '!*.gz'
+  git -C "$desk" checkout -q main || die "could not check out the personal desk"
 else
   git -C "$desk" pull --rebase --autostash -q 2>/dev/null || true
 fi
