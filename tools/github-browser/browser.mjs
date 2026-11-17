@@ -23,13 +23,31 @@ export async function restoreAccount(page, original) {
   if ((await loginOf(page).catch(() => original)) !== original) await switchTo(page, original).catch(() => {});
 }
 
-/** How long to wait for Edge's debugging port: EDGE_START_SECONDS (default 10). A heavily loaded machine needs longer. */
+/** How long to wait for Edge's debugging port: EDGE_START_SECONDS (default 60). Edge's start waits on a loaded machine; a ready one answers in about a second, so a long budget costs nothing. */
 export function startBudgetMs(env = process.env) {
   const s = Number(env.EDGE_START_SECONDS);
-  return (Number.isFinite(s) && s > 0 ? s : 10) * 1000;
+  return (Number.isFinite(s) && s > 0 ? s : 60) * 1000;
 }
 
-export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
+// One attempt, polled every 100 ms: starting over (a fresh Edge) throws away the startup already paid for.
+async function launch({ chromium, edge, dir, headful }) {
+  const port = 9300 + Math.floor(Math.random() * 500);
+  const args = [`--user-data-dir=${dir}`, `--remote-debugging-port=${port}`, "--no-first-run", "--no-default-browser-check", ...(headful ? [] : ["--headless=new"])];
+  const proc = spawn(edge, args, { stdio: "ignore" });
+  let exited = false;
+  proc.on("exit", () => { exited = true; });
+  const end = Date.now() + startBudgetMs();
+  while (Date.now() < end && !exited) {
+    const up = await fetch(`http://127.0.0.1:${port}/json/version`).then((r) => r.ok, () => false);
+    if (up) { const browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`).catch(() => undefined); if (browser) return { browser, proc }; }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  proc.kill();
+  return { proc };
+}
+
+/** Opens Edge on a scratch copy of the profile as `user`. {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same scratch copy in a visible window (GitHub's passkey prompt needs one). */
+export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { headful = false } = {}) {
   const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
   const { chromium } = require("playwright");
   const profile = process.env.EDGE_PROFILE ?? join(homedir(), "Library/Application Support/Microsoft Edge/Default");
@@ -39,31 +57,35 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow") {
   copyFileSync(join(profile, "..", "Local State"), join(dir, "Local State"));
   for (const f of ["Preferences", "Secure Preferences", "Cookies", "Login Data", "Web Data"])
     if (existsSync(join(profile, f))) copyFileSync(join(profile, f), join(dir, "Default", f));
-  const port = 9300 + Math.floor(Math.random() * 500);
-  const proc = spawn(edge, [`--user-data-dir=${dir}`, `--remote-debugging-port=${port}`, "--no-first-run", "--no-default-browser-check", "--headless=new"], { stdio: "ignore" });
-  let browser;
-  for (let i = 0; i < startBudgetMs() / 250 && !browser; i++) {
-    await new Promise((r) => setTimeout(r, 250));
-    browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`).catch(() => undefined);
-  }
-  let page;
+  let { browser, proc } = await launch({ chromium, edge, dir, headful });
+  const session = { page: undefined, close: undefined, relaunchHeadful: undefined };
   let original = "";
-  const close = async () => {
-    await restoreAccount(page, original);
-    await browser?.close().catch(() => {});
-    proc.kill();
-    await new Promise((r) => setTimeout(r, 1000));
+  const stop = async () => { await browser?.close().catch(() => {}); proc.kill(); await new Promise((r) => setTimeout(r, 1000)); };
+  session.close = async () => {
+    await restoreAccount(session.page, original).catch(() => {});
+    await stop();
     try { renameSync(dir, join(homedir(), ".Trash", `github-browser-${Date.now()}`)); } catch {}
   };
-  if (!browser) { await close(); throw Object.assign(new Error(`Edge did not start within ${startBudgetMs() / 1000} s; on a loaded machine set EDGE_START_SECONDS higher and rerun`), { exit: 3 }); }
-  page = await (browser.contexts()[0] ?? (await browser.newContext())).newPage();
-  let who = await loginOf(page);
+  const newPage = async () => (browser.contexts()[0] ?? (await browser.newContext())).newPage();
+  session.relaunchHeadful = async () => {
+    await stop();
+    ({ browser, proc } = await launch({ chromium, edge, dir, headful: true }));
+    if (!browser) throw Object.assign(new Error("Edge did not reopen in a visible window"), { exit: 3 });
+    session.page = await newPage();
+    await session.page.bringToFront().catch(() => {});
+    // A window opened from a script stays behind the others on macOS until asked to come forward.
+    try { execFileSync("osascript", ["-e", 'tell application "Microsoft Edge" to activate']); } catch {}
+    return session.page;
+  };
+  if (!browser) { await session.close(); throw Object.assign(new Error(`Edge did not start within ${startBudgetMs() / 1000} s; on a loaded machine set EDGE_START_SECONDS higher and rerun`), { exit: 3 }); }
+  session.page = await newPage();
+  let who = await loginOf(session.page);
   original = who;
   // Another account may already be signed in alongside: GitHub's switcher lists it with a Select button.
-  if (who !== user) who = await switchTo(page, user);
+  if (who !== user) who = await switchTo(session.page, user);
   if (who !== user) {
-    await close();
+    await session.close();
     throw Object.assign(new Error(`github.com is ${who ? `signed in as ${who}` : "not signed in"} in ${profile}, and ${user} is not in its account switcher; add ${user} there once (Add account), then rerun.`), { exit: 3 });
   }
-  return { page, close };
+  return session;
 }

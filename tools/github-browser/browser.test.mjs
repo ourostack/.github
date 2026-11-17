@@ -27,9 +27,9 @@ test("does nothing when that account is already active, or none was signed in", 
   assert.deepEqual(page.switched, []);
 });
 
-test("waits 10 s for Edge by default, and EDGE_START_SECONDS sets a longer wait", () => {
-  assert.equal(startBudgetMs({}), 10_000);
+test("waits 60 s for Edge by default, and EDGE_START_SECONDS sets a longer wait", () => {
+  assert.equal(startBudgetMs({}), 60_000);
   assert.equal(startBudgetMs({ EDGE_START_SECONDS: "60" }), 60_000);
-  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "nonsense" }), 10_000);
-  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "0" }), 10_000);
+  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "nonsense" }), 60_000);
+  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "0" }), 60_000);
 });
