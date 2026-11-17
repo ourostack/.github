@@ -105,10 +105,72 @@ class NightFromFlatDay(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         entry = next(e for e in json.loads((self.root / "brand/provenance.json").read_text()) if e["file"] == "upscaled/x-dark.webp")
         self.assertEqual(entry["lightsFrom"]["file"], "flat/x-lights.webp")
+        self.assertNotIn("mode", entry["lightsFrom"])
         night = np.asarray(scene_images()[2].resize((W * 4, H * 4), Image.LANCZOS), float)
         master = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("RGB"), float)
         inside = master[100:140, 540:580] - night[100:140, 540:580]
         self.assertLess(np.abs(inside).mean(), 2.0)
+
+    def add_lights(self, mode=None):
+        mask = np.zeros((H, W), np.uint8)
+        mask[10:62, 40:150] = 255  # a lit figure, larger than a lamp
+        data = webp(Image.fromarray(mask))
+        (self.root / "brand/flat/x-lights.webp").write_bytes(data)
+        self.prov.append({"file": "flat/x-lights.webp", "sha256": sha(data)})
+        self.crops["x"]["nightLights"] = "flat/x-lights.webp"
+        if mode:
+            self.crops["x"]["nightLightsMode"] = mode
+        self.write()
+
+    def edge_scene(self):
+        """Day and flat day: a hard vertical edge at x = 96, bright left (200), darker right (100). Night: the same 1x
+        edge, the left dimmed to 40 and the right to 90 (very different gains on the two sides)."""
+        d = np.zeros((H, W, 3), np.uint8); n = np.zeros((H, W, 3), np.uint8)
+        d[:, :96], d[:, 96:], n[:, :96], n[:, 96:] = 200, 100, 40, 90
+        files = {"headers/x.webp": webp(Image.fromarray(d)), "headers/x-dark.webp": webp(Image.fromarray(n)),
+                 "flat/x.webp": webp(Image.fromarray(d))}
+        for rel, data in files.items():
+            (self.root / "brand" / rel).write_bytes(data)
+        self.prov = [e for e in self.prov if e["file"] not in files] + [{"file": r, "sha256": sha(b)} for r, b in files.items()]
+        for name in ("x.png", "x-dark-flat.png"):
+            Image.fromarray(d).resize((W * 4, H * 4), Image.NEAREST).save(self.reuse / name)
+
+    def test_ratio_lights_keep_the_day_masters_sharp_edge(self):
+        self.edge_scene()
+        self.add_lights("ratio")
+        r = self.run_upscale("x", "x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        entry = next(e for e in json.loads((self.root / "brand/provenance.json").read_text()) if e["file"] == "upscaled/x-dark.webp")
+        self.assertIn("nightLightsMode ratio", entry["operation"])
+        self.assertEqual(entry["lightsFrom"]["mode"], "ratio")
+        row = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("L"), float)[144]
+        # the day master's edge at x = 384 stays a hard step (the night header's Lanczos 4x spreads it over 4 px and
+        # rings)...
+        self.assertGreater(np.abs(np.diff(row[370:400])).max(), 0.4 * (90 - 40))
+        # ...and neither side's gain spills onto the other (no halo band beside the edge, as a Gaussian-smoothed gain has)
+        self.assertLess(np.abs(row[384 - 40:384 - 8] - 40).max(), 4)
+        self.assertLess(np.abs(row[384 + 8:384 + 40] - 90).max(), 4)
+
+    def test_default_lights_mode_is_unchanged(self):
+        self.add_lights()
+        r = self.run_upscale("x", "x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        default = (self.root / "brand/upscaled/x-dark.webp").read_bytes()
+        self.crops["x"]["nightLightsMode"] = "header"
+        (self.root / "brand/tools/crops.json").write_text(json.dumps(self.crops))
+        r = self.run_upscale("x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual((self.root / "brand/upscaled/x-dark.webp").read_bytes(), default)
+        # and inside the mask it is the night header's Lanczos 4x, as before
+        night = np.asarray(scene_images()[2].resize((W * 4, H * 4), Image.LANCZOS), float)
+        master = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("RGB"), float)
+        self.assertLess(np.abs(master[80:200, 200:560] - night[80:200, 200:560]).mean(), 2.0)
+
+    def test_unknown_lights_mode_is_refused(self):
+        self.add_lights("blend")
+        r = self.run_upscale("x-dark")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("nightLightsMode", r.stdout + r.stderr)
 
     def test_flat_day_without_matching_provenance_is_refused(self):
         self.prov = [e for e in self.prov if e["file"] != "flat/x.webp"] + [{"file": "flat/x.webp", "sha256": "0" * 64}]

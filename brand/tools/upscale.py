@@ -50,7 +50,14 @@ other. A day with nightFromFlatDay may also set "nightLights": "flat/<scene>-lig
 a greyscale mask at header size over the night's small light sources (lit lamp
 shades, glowing eyes): they are smaller than the transfer's window, so inside
 the mask the night master takes the night header itself (Lanczos 4x, feathered).
-Keep it tight around those sources and use it for nothing else.
+Keep it tight around those sources and use it for nothing else. With
+"nightLightsMode": "ratio" the mask instead keeps the day's 4x master given the
+night header's colour per pixel: the day master times the night header's
+per-channel gain over the day header, upsampled and smoothed without
+crossing the day master's edges (a guided filter, 9 px windows at 4x). A lit
+shape keeps the day master's sharp outline instead of the night header's soft
+Lanczos 4x, for a mask that covers a lit figure or a lit edge rather than a
+point of light.
 
 Real-ESRGAN on a GPU does not give the same bytes twice, so the committed WebP is
 the record; rerunning makes a new one with a new sha256.
@@ -118,6 +125,33 @@ def esrgan(src: Image.Image, scratch: Path) -> Image.Image:
     return Image.open(out).convert("RGB")
 
 
+LIGHTS_MODES = ("header", "ratio")
+RATIO_RADIUS, RATIO_EPS = 4, 1e-4  # nightLightsMode "ratio": the gain's guided filter, 9 px windows at 4x
+
+
+def guided(guide, src, r, eps):
+    """He et al.'s guided filter: src smoothed in (2r+1)-px windows, but kept from crossing guide's edges."""
+    from scipy.ndimage import uniform_filter
+    box = lambda a: uniform_filter(a, 2 * r + 1, mode="reflect")
+    mi, ms = box(guide), box(src)
+    a = (box(guide * src) - mi * ms) / (box(guide * guide) - mi * mi + eps)
+    return box(a) * guide + box(ms - a * mi)
+
+
+def ratio_lit(day_up, day, night, r=RATIO_RADIUS, eps=RATIO_EPS):
+    """The day's 4x master given the night header's colour: day_up times the night/day header gain per channel,
+    upsampled to day_up's size and smoothed edge-aware (a guided filter on the day master's log luminance), so the
+    outlines are the day master's and a lit shape's gain does not spill onto its darker surroundings (a Gaussian
+    does: a halo band inside and outside the outline)."""
+    e = 4.0
+    gain = np.log((np.asarray(night, np.float32) + e) / (np.asarray(day, np.float32) + e))
+    h, w = day_up.shape[:2]
+    gain = np.stack([np.asarray(Image.fromarray(gain[..., c]).resize((w, h), Image.BILINEAR)) for c in range(3)], -1)
+    guide = np.log(day_up.mean(2) + e)
+    gain = np.stack([guided(guide, gain[..., c], r, eps) for c in range(3)], -1)
+    return (day_up + e) * np.exp(gain) - e
+
+
 def night_from_day(scene):
     """The day twin of a night scene built from its day's master, or None."""
     day = scene.removesuffix("-dark")
@@ -157,6 +191,11 @@ def main():
             scenes.append(night)
     for day in [s for s in scenes if CROPS.get(s, {}).get("nightFromDay") and CROPS[s].get("nightFromFlatDay")]:
         sys.exit(f"{day}: crops.json sets both nightFromDay and nightFromFlatDay; a night is built one way")
+    for day in sorted({s.removesuffix("-dark") for s in scenes if "nightLightsMode" in CROPS.get(s.removesuffix("-dark"), {})}):
+        if CROPS[day]["nightLightsMode"] not in LIGHTS_MODES:
+            sys.exit(f"{day}: crops.json nightLightsMode is {CROPS[day]['nightLightsMode']!r}; use one of {', '.join(LIGHTS_MODES)}")
+        if not CROPS[day].get("nightLights"):
+            sys.exit(f"{day}: crops.json sets nightLightsMode without nightLights")
     scenes.sort(key=is_built_night)
     prov = json.loads(PROVENANCE.read_text())
     by_file = {e["file"]: e for e in prov}
@@ -220,7 +259,13 @@ def main():
                     sys.exit(f"{scene}: {lights_rel} is {mask.size}, not the header's {header.size}")
                 from scipy.ndimage import gaussian_filter
                 m = gaussian_filter(np.asarray(mask.resize(up.size, Image.LANCZOS), np.float32) / 255, 4)[..., None]
-                lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
+                lights_mode = CROPS[day].get("nightLightsMode", "header")
+                if lights_mode == "ratio":
+                    if day_im.size != header.size:
+                        sys.exit(f"{scene}: {day_rel} is {day_im.size}, not the night header's {header.size}")
+                    lit = ratio_lit(day_up, day_im, header)
+                else:
+                    lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
                 up = Image.fromarray((np.asarray(up, np.float32) * (1 - m) + lit * m).round().clip(0, 255).astype(np.uint8))
             origin = None
             also = {"file": flat_rel, "sha256": sha(flat_bytes)}
@@ -233,8 +278,13 @@ def main():
                   f"contrast of log colour in {2 * r + 1} px windows, radius {RADIUS} at 1536 px wide); every shape "
                   f"is the day master's or the flat day's, so each night size has the day's structure without its sun pattern "
                   f"(nightFromFlatDay in crops.json)"
-                  + (f"; inside the night-light mask {lights_rel} (lit lamps, glowing eyes) it is the night header itself, "
-                     f"Lanczos 4x" if lights_rel else ""))
+                  + ((f"; inside the night-light mask {lights_rel} (lit shapes) it is the day's 4x master {day_up_rel} "
+                      f"times the night header's per-channel gain over {day_rel}, upsampled and smoothed by a guided filter "
+                      f"on the day master's log luminance ({2 * RATIO_RADIUS + 1} px windows at 4x), so lit outlines are "
+                      f"the day master's (nightLightsMode ratio)"
+                      if lights_mode == "ratio" else
+                      f"; inside the night-light mask {lights_rel} (lit lamps, glowing eyes) it is the night header itself, "
+                      f"Lanczos 4x") if lights_rel else ""))
         elif day:
             if scene in masters:
                 sys.exit(f"{scene}: built from the day's master (nightFromDay in crops.json); --master does not apply")
@@ -293,6 +343,8 @@ def main():
             entry["alsoFrom"] = also
         if flat and CROPS[flat[0]].get("nightLights"):
             entry["lightsFrom"] = {"file": lights_rel, "sha256": sha(lights_bytes)}
+            if CROPS[flat[0]].get("nightLightsMode", "header") != "header":
+                entry["lightsFrom"]["mode"] = CROPS[flat[0]]["nightLightsMode"]
         entry.update({
             "use": "4x master for site heroes wider than the 1536 px header",
             "operation": op,
