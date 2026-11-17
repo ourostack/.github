@@ -30,7 +30,8 @@ try {
   auditOut = err.stdout; // exit 1 just means something is stale
 }
 const audit = JSON.parse(auditOut || "{}");
-const stale = new Set((audit.items ?? []).filter((i) => i.status !== "current").map((i) => i.id));
+// A held preview (an archived repository) cannot be uploaded: GitHub refuses settings changes there.
+const stale = new Set((audit.items ?? []).filter((i) => i.status !== "current" && i.status !== "held").map((i) => i.id));
 const jobs = registry.surfaces.filter(
   (s) => s.kind === "github-social-preview" && (wanted.length ? wanted.includes(s.repo.split("/")[1]) : stale.has(s.id)),
 );
