@@ -1,0 +1,50 @@
+name: Re-arm merges with a clean message
+
+# The org ruleset "No AI co-author credit" rejects a squash message that carries a Copilot or bot Co-authored-by line,
+# and GitHub's default message copies those lines from the branch commits. A PR whose auto-merge uses the default
+# message shows BLOCKED with every check green and never merges. Every 10 minutes this finds each open ourostack PR
+# whose auto-merge has no explicit message and turns it on again with one (the title plus its number, and the body
+# without AI or bot credit lines). Idempotent: a PR already armed with a message is left alone, and what it did is in
+# the run's log and summary. The rule: agents/prs-merge-within-30-minutes.md.
+#
+# Needs the REARM_MERGES_TOKEN secret: a token that can enable auto-merge and merge pull requests in every ourostack
+# repository (the workflow's own token reaches this repository only). Without it the job fails loudly.
+on:
+  schedule:
+    - cron: "9-59/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["tools/rearm-merges/**", ".github/workflows/rearm-merges.yml"]
+  pull_request:
+    paths: ["tools/rearm-merges/**", ".github/workflows/rearm-merges.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rearm-merges-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  rearm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test the message cleaner and the detection
+        run: node --test tools/rearm-merges/rearm-merges.test.mjs
+      - name: Say what would be re-armed (pull requests)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: node tools/rearm-merges/rearm-merges.mjs --dry-run 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Re-arm
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
+        shell: bash
+        run: |
+          [ -n "$GH_TOKEN" ] || { echo "::error::The REARM_MERGES_TOKEN secret is not set."; exit 1; }
+          node tools/rearm-merges/rearm-merges.mjs 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,45 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { RULESET, cleanBody, messageFor, needsRearm, readyWithoutAutoMerge } from "./rearm-merges.mjs";
+
+const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
+
+test("cleanBody drops AI and bot credit lines and keeps the rest", () => {
+  const body = [
+    "Fixes the thing.",
+    "",
+    "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+    "Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>",
+    "Assisted-by: Claude",
+    "Co-authored-by: Ari Mendelow <16390116+arimendelow@users.noreply.github.com>",
+    "Desk-Task: a/b",
+  ].join("\r\n");
+  const out = cleanBody(body);
+  assert.equal(out, "Fixes the thing.\n\nCo-authored-by: Ari Mendelow <16390116+arimendelow@users.noreply.github.com>\nDesk-Task: a/b");
+  assert.ok(!RULESET.test(out));
+});
+
+test("cleanBody tolerates an empty body and collapses the gap a removed line leaves", () => {
+  assert.equal(cleanBody(null), "");
+  assert.equal(cleanBody("a\n\nCo-authored-by: Copilot <x>\n\nb"), "a\n\nb");
+});
+
+test("messageFor names the PR number in the headline", () => {
+  assert.deepEqual(messageFor({ title: "Do it", number: 21, body: "x" }), { headline: "Do it (#21)", body: "x" });
+});
+
+test("needsRearm is true only for auto-merge on the default message", () => {
+  assert.equal(needsRearm({ autoMergeRequest: null }), false);
+  assert.equal(needsRearm({ autoMergeRequest: { commitHeadline: null } }), true);
+  assert.equal(needsRearm({ autoMergeRequest: { commitHeadline: "Do it (#1)" } }), false);
+});
+
+test("readyWithoutAutoMerge needs green checks, no auto-merge, no review hold", () => {
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED" }), true);
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "CLEAN" }), true);
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "DIRTY" }), false);
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED", reviewDecision: "REVIEW_REQUIRED" }), false);
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED", autoMergeRequest: {} }), false);
+  assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED", isDraft: true }), false);
+  assert.equal(readyWithoutAutoMerge({ commits: { nodes: [{ commit: { statusCheckRollup: { state: "FAILURE" } } }] }, mergeStateStatus: "BLOCKED" }), false);
+});
