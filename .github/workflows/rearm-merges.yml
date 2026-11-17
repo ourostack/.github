@@ -34,12 +34,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test the message cleaner and the detection
         run: node --test tools/rearm-merges/rearm-merges.test.mjs
-      - name: Say what would be re-armed (pull requests)
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: node tools/rearm-merges/rearm-merges.mjs --dry-run 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Re-arm
         if: github.event_name != 'pull_request'
         env:
