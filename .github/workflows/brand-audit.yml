@@ -29,6 +29,7 @@ jobs:
       - name: Audit every brand surface
         env:
           GH_TOKEN: ${{ github.token }}
+          BRAND_COMMIT: ${{ github.event_name != 'pull_request' && github.sha || '' }}
           BRAND_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
         run: node brand/tools/audit.mjs --format text
 
@@ -49,4 +50,4 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test how the audit tells a sync in flight from stale
-        run: node --test brand/tools/pending.test.mjs
+        run: node --test brand/tools/pending.test.mjs brand/tools/canonical.test.mjs

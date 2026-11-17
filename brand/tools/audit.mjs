@@ -17,6 +17,7 @@
 // A website or social preview that is stale only on bytes within a window after the newest brand art commit on main is "pending"
 // (listed, not failed): its sync is in flight (brand/tools/pending.mjs). After the window it is stale. Pull requests (BRAND_REF)
 // and --origin audits never wait.
+// BRAND_COMMIT=<commit> reads canonical bytes at that commit but still audits production (CI sets it on every run but a pull request's).
 // BRAND_REF=<commit> checks that commit's canonical bytes instead of main's (CI sets it on pull requests).
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
 
@@ -26,6 +27,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pendingFor } from "./pending.mjs";
+import { canonicalUrl } from "./canonical.mjs";
 
 const BRAND = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -439,9 +441,10 @@ async function canonical() {
     [...used].map(async (p) => {
       const local = sha(readFileSync(join(BRAND, p)));
       if (local !== asset(p).sha256) problems.push(`brand/${p} on disk does not match provenance.json`);
-      // BRAND_REF lets a pull request check its own commit instead of main.
-      const ref = process.env.BRAND_REF;
-      const live = await sameBytes(ref ? raw(p).replace("/main/brand/", `/${ref}/brand/`) : raw(p), p);
+      // BRAND_REF lets a pull request check its own commit instead of main; BRAND_COMMIT pins a push's audit to its
+      // commit, because main's raw URL is CDN-cached for minutes after the merge (brand/tools/canonical.mjs).
+      const ref = process.env.BRAND_REF || process.env.BRAND_COMMIT;
+      const live = await sameBytes(canonicalUrl(registry.canonicalRaw, p, ref), p);
       if (live) problems.push(live);
     }),
   );
