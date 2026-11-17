@@ -42,3 +42,11 @@ jobs:
           python3 -m venv /tmp/upscale-venv
           /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image
           /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
+
+  pending-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test how the audit tells a sync in flight from stale
+        run: node --test brand/tools/pending.test.mjs
