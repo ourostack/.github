@@ -506,6 +506,10 @@ function masters() {
       problems.push(`brand/${night} was not built with brand/${c.nightLights} (nightLights for ${day})`);
       fixes.add(`master:${day}-dark`);
     }
+    if (c.nightLights && provenance.get(night)?.lightsFrom && (provenance.get(night).lightsFrom.mode ?? "header") !== (c.nightLightsMode ?? "header")) {
+      problems.push(`brand/${night} was not built with nightLightsMode ${c.nightLightsMode ?? "header"} (crops.json for ${day})`);
+      fixes.add(`master:${day}-dark`);
+    }
     const m = provenance.get(night);
     if (m && m.alsoFrom?.file !== flat) {
       problems.push(`brand/${night} was not built from brand/${flat} (nightFromFlatDay for ${day}); it names ${m.alsoFrom?.file ? `brand/${m.alsoFrom.file}` : "no second source"}`);
