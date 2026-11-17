@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { restoreAccount } from "./browser.mjs";
+import { restoreAccount, startBudgetMs } from "./browser.mjs";
 
 // A page whose GitHub is signed in as `active`, with a switcher that lists `saved`.
 const fakePage = (active, saved) => ({
@@ -25,4 +25,11 @@ test("does nothing when that account is already active, or none was signed in", 
   await restoreAccount(page, "arimendelow_microsoft");
   await restoreAccount(page, "");
   assert.deepEqual(page.switched, []);
+});
+
+test("waits 10 s for Edge by default, and EDGE_START_SECONDS sets a longer wait", () => {
+  assert.equal(startBudgetMs({}), 10_000);
+  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "60" }), 60_000);
+  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "nonsense" }), 10_000);
+  assert.equal(startBudgetMs({ EDGE_START_SECONDS: "0" }), 10_000);
 });
