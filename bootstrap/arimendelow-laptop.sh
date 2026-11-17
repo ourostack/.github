@@ -11,7 +11,7 @@ die() { printf '\nSTOP: %s\n' "$*" >&2; exit 1; }
 [ "$(id -u)" != 0 ] || die "run it as yourself, not root"
 
 say "Your Mac password, once (it installs the developer tools and Homebrew)"
-sudo -v || die "no admin password"
+sudo -n true 2>/dev/null || sudo -v || die "no admin password"
 ( while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done ) 2>/dev/null &
 
 if ! xcode-select -p >/dev/null 2>&1; then
@@ -37,7 +37,11 @@ for f in git gh; do brew list --formula "$f" >/dev/null 2>&1 || brew install "$f
 
 say "GitHub sign-in: arimendelow (a code appears; open the page, enter it, approve)"
 if ! gh auth status -h github.com 2>/dev/null | grep -q 'account arimendelow '; then
-  gh auth login -h github.com -p https -s repo,read:org,workflow,gist,admin:public_key -w || die "GitHub sign-in did not finish"
+  if [ -n "${LAPTOP_GH_TOKEN:-}" ]; then  # test runs only: a token in place of the device code
+    printf '%s' "$LAPTOP_GH_TOKEN" | gh auth login -h github.com -p https --with-token || die "token sign-in failed"
+  else
+    gh auth login -h github.com -p https -s repo,read:org,workflow,gist,admin:public_key -w || die "GitHub sign-in did not finish"
+  fi
 fi
 gh auth setup-git >/dev/null 2>&1
 
