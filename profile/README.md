@@ -65,7 +65,7 @@ The agent harness where it all started: agents with memory and real tools.
 
 ## Labs 🧪
 
-<a href="https://github.com/search?q=org%3Aourostack+topic%3Alabs+fork%3Atrue&type=repositories"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/labs.webp" alt="In a sunlit glass lab, a faceless clear-glass person in a blue shirt stands at a worktable with both hands in their pockets beside a white mug and a sheet of paper, while a small orange-and-brass robot stands beside a paper plane resting on the table and Ouro, a small green snake, rests coiled on a cushion."></a>
+<a href="https://github.com/search?q=org%3Aourostack+topic%3Alabs+fork%3Atrue&type=repositories"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/labs.webp" alt="In a bright modern lab, a small apricot robot peers over a long birch worktable at the paper plane it folded, while a faceless frosted-glass person with hands in pockets looks on beside a pegboard of model planes and Ouro, a small green snake, curls on a folded cloth at the table's end."></a>
 
 Forks and experiments, tried in the open. Useful to us, honest about what they are, and **not supported**. Each one's README says why it exists.
 
