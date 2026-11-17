@@ -32120,7 +32120,7 @@
   "generated": "2026-11-15, by the ouroboros.bot home lane: Slugger lifts off. A small glass raccoon in a moss-green scarf stands in the basket of a little patchwork hot-air balloon rising from a dawn meadow, his long to-do list streaming over the rim in the breeze, with Ouro riding on the basket's rim beside him. Slugger and Ouro are \"he\"",
   "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is \"It started with Slugger\": Slugger, a small raccoon, lifts off in a little patchwork balloon with his to-do list. Made with the one-shot loop in agents/art-prompting.md: candidate C of three came back with zero blockers from a fresh blind hunt (the one-shot rate for this prompt: 1 of 3); it was framed by outpaints only, and the shipped day and night frames each passed a fresh blind hunt with no blockers.",
   "crop": "1536x576 from the 1536x1024 master (rows 124-700), WebP q86 (Pillow 11.3)",
-  "checked": "blind defect hunts 2026-11-15, day and night separately, by fresh reviewers given only the frames and 5x crops: no blockers. Slugger: one head, two ears, two arms to round paws (one on the rim, one on the list), one tail; Ouro: one continuous animal with an open curl on the rim; four ropes attached at both ends; the burner mounted with its flame inside the mouth; no text or dated devices.",
+  "checked": "blind 33 and 34 (hunt/slugger-balloon-blind33, -blind34, Opus 5.5 with 4-10x crops, plus the structure hunter, the shipped 3072 scenes): BLIND and STRUCT no blocking defects, day and night, in both; the night reads as night (a full moon and the burner flame); every hand 0.95 or less; a parity hunter on the night found no prop changed.",
   "generation": [
    {
     "master": "slugger-balloon-master",
@@ -32212,8 +32212,50 @@
   ],
   "width": 1536,
   "height": 576,
-  "bytes": 163314,
-  "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+  "bytes": 151490,
+  "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333",
+  "master_sha256": "3e7f65a78aabd4c080fe897074946915ea021a4b8bb38e33fedb9313e59e0659",
+  "edits": [
+   {
+    "date": "2026-11-17",
+    "what": "family-lane fixes: the sun disc painted out of the day (the light still from the left); knitted moss-green mittens with one thumb each and the forearms drawn from under the scarf; the burner seen from below; a stray second snout removed; the sky pocket between the rope and the raccoon closed with fur (stop rule).",
+    "steps": [
+     {
+      "step": "sun1 (sun disc, bloom and beams painted out of the DAY; the light still comes from the left): crop 293,192,677,576, prompt sun1-prompt.txt, out , --ell 415,345,565,480 feather 8.",
+      "sha256": "02dfb7075d4d6bd5cc0e0bf13f84d3e7d905c9d55e7e0f26a928f66272fc3ef5"
+     },
+     {
+      "step": "fix8b: crop 700,320,956,576 of header-r1, prompt fix8-prompt.txt, out , --ell 782,402,824,438 --ell 832,414,876,450 -> c8b.",
+      "sha256": "13711a8c8c1c459fee71162fe90f18619a82bdd7b1f14140e90545be53a1dcda"
+     },
+     {
+      "step": "p3a (paper mitten slimmer): crop 739,356,867,484 of c8b, prompt p3-prompt.txt, out , --ell 782,402,824,438 -> c9a.",
+      "sha256": "dba6d30a651cb6458f945f6f4d235e4f6393e0a725688ed02aad14214e2caa38"
+     },
+     {
+      "step": "rail mitten from fix8a () --ell 832,414,876,450 -> c10; then p5b (slimmer rail mitten, forearm visible): crop 790,380,918,508, prompt p5-prompt.txt, out , --ell 830,404,880,454.",
+      "sha256": "b85768136367aec5a7ea6aed5073e5f522f78ad695ca787370d7f091cdf98b62"
+     },
+     {
+      "step": "arms-a (blind6: mittens stuck on the torso; both forearms drawn from under the scarf to the cuffs): crop 700,320,956,576, prompt arms-prompt.txt, out , --ell 778,390,886,458, then the paper mitten restored from the previous day through --ell 790,408,818,434 -> carm-a2.",
+      "sha256": "1ee3519bd092106e25b99a5a89ca4b260dd8b3fb253d4d4f69e5c8b78fff3f88"
+     },
+     {
+      "step": "burner2-a (STRUCT8: the burner plate showed its top face above eye level; redrawn as a cylinder seen from below; round 1 \"burner\" failed): crop 762,224,954,416, prompt burner2-prompt.txt, out , --box 830,296,888,336 feather 3.",
+      "sha256": "910a6e88499fcecc7c24433d24c973a7a7a8c172013fe42b53fc663f93313841"
+     },
+     {
+      "step": "snout-b (blind9: a pointed wedge past the nose read as a second snout): crop 752,321,848,417, prompt snout-prompt.txt, out , --ell 784,356,816,382 feather 2.",
+      "sha256": "4bc6b852fbb11da208ba5d82fc8835bd0c977076cd575e5fe44920ee62ed20f3"
+     },
+     {
+      "step": "ring-b (STRUCT12: the outer basket ropes frayed against the load ring; now eye-spliced around it): crop 776,236,936,396 (ring-in.png), prompt ring-prompt.txt, out , --ell 784,286,810,316 --ell 898,285,924,315 feather 2 -> header.png.",
+      "sha256": "5ac8a2e4ca25a9f5dc890a63a80927bf4f38199dc1da4e99ba921a7ede02091d"
+     }
+    ],
+    "previous_sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   }
+  ]
  },
  {
   "file": "headers/slugger-balloon-dark.webp",
@@ -32222,7 +32264,7 @@
   "generated": "2026-11-15, by the ouroboros.bot home lane: night twin: the same balloon rising from a moonlit meadow under the stars, its burner flame lighting the envelope from inside. Slugger and Ouro are \"he\"",
   "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is \"It started with Slugger\": Slugger, a small raccoon, lifts off in a little patchwork balloon with his to-do list. Made with the one-shot loop in agents/art-prompting.md: candidate C of three came back with zero blockers from a fresh blind hunt (the one-shot rate for this prompt: 1 of 3); it was framed by outpaints only, and the shipped day and night frames each passed a fresh blind hunt with no blockers.",
   "crop": "1536x576 from the 1536x1024 master (rows 124-700), WebP q86 (Pillow 11.3)",
-  "checked": "blind defect hunts 2026-11-15, day and night separately, by fresh reviewers given only the frames and 5x crops: no blockers. Slugger: one head, two ears, two arms to round paws (one on the rim, one on the list), one tail; Ouro: one continuous animal with an open curl on the rim; four ropes attached at both ends; the burner mounted with its flame inside the mouth; no text or dated devices.",
+  "checked": "blind 33 and 34 (hunt/slugger-balloon-blind33, -blind34, Opus 5.5 with 4-10x crops, plus the structure hunter, the shipped 3072 scenes): BLIND and STRUCT no blocking defects, day and night, in both; the night reads as night (a full moon and the burner flame); every hand 0.95 or less; a parity hunter on the night found no prop changed.",
   "generation": [
    {
     "master": "slugger-balloon-dark-master",
@@ -32364,64 +32406,64 @@
   ],
   "width": 1536,
   "height": 576,
-  "bytes": 108266,
-  "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+  "bytes": 34080,
+  "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc",
+  "master_sha256": "2a497e791c4d730cbf6a4b0cd3a219e87671989be62181d9ffc744960cb08b7e",
+  "edits": [
+   {
+    "date": "2026-11-17",
+    "what": "night rebuilt as light only: nightFromFlatDay (flat ff5ea783e86e93b1da146bd9fe53a34ab0d9d65d4da3bd04ecaa65330007ba05, sky-only flattening) and nightLights (facfc4de5121ae250ab48f851f10cf0bfdbf985d9e94dc77dbee6512f8705d9c: the burner flame and the moon); build_flat_night5.sh.",
+    "previous_sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   }
+  ]
  },
  {
   "file": "upscaled/slugger-balloon.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55",
-   "master": "slugger-balloon-master",
-   "master_sha256": "36a4285fd6574b2ac339a5d1afed747097e4910fc93b977e08714846c9d6a6c5",
-   "crop": [
-    0,
-    124,
-    1536,
-    700
-   ]
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master slugger-balloon-master (sha256 36a4285fd6574b2ac339a5d1afed747097e4910fc93b977e08714846c9d6a6c5), then cut to the header's box [0, 124, 1536, 700] at 4x [0, 496, 6144, 2800]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/slugger-balloon.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9647 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-15",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/slugger-balloon.webp (sha256 9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/slugger-balloon.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9758 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-17",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1310184,
-  "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+  "bytes": 1282174,
+  "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
  },
  {
   "file": "upscaled/slugger-balloon-dark.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea",
-   "master": "slugger-balloon-dark-master",
-   "master_sha256": "4844f8755005971f85f964b98196a41ef4e3b5cb99bc8a78473a56c9d8954c3d",
-   "crop": [
-    0,
-    124,
-    1536,
-    700
-   ]
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
+  },
+  "alsoFrom": {
+   "file": "flat/slugger-balloon.webp",
+   "sha256": "408a9d699d471baf02017cd777efaebf549aec92221f93787f43e812bdcbb6e2"
+  },
+  "lightsFrom": {
+   "file": "flat/slugger-balloon-lights.png",
+   "sha256": "46467f739e457881667659a2e132415c80128a7e6af067a4a98dac589e7fb4c3"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from the lossless 1536x1024 master slugger-balloon-dark-master (sha256 4844f8755005971f85f964b98196a41ef4e3b5cb99bc8a78473a56c9d8954c3d), then cut to the header's box [0, 124, 1536, 700] at 4x [0, 496, 6144, 2800]",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/slugger-balloon-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9629 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-15",
+  "operation": "the day's 4x master upscaled/slugger-balloon.webp (sha256 29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891) wherever the flattened copy flat/slugger-balloon.webp (sha256 408a9d699d471baf02017cd777efaebf549aec92221f93787f43e812bdcbb6e2) equals the day (12.8% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/slugger-balloon.webp (SSIM 0.9828 against it) where its sun pattern was removed, given the light and colour of headers/slugger-balloon-dark.webp (sha256 e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/slugger-balloon-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/slugger-balloon-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9820 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-17",
   "encoder": "Pillow WebP quality 90 method 6",
-  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 776248,
-  "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+  "bytes": 316980,
+  "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
  },
  {
   "file": "scenes/slugger-balloon-640.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -32429,14 +32471,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 29682,
-  "sha256": "6145e7241b7d13b75f7322076caac6610510eb6c56c62997b69c38936c12bd76"
+  "bytes": 29070,
+  "sha256": "5e9563e72fbf930a200c3d7bdbc848414072c3e74ae7adb068f14a04a6c5d719"
  },
  {
   "file": "scenes/slugger-balloon-640.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -32444,14 +32486,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 22062,
-  "sha256": "18148d01afcf192f3ba464310fd54d16e5e13cfaa1d96213424ef6b9cfcc4f78"
+  "bytes": 21809,
+  "sha256": "54fce8f98acff1c2df8f7f9f113fc716b416a4f93ba33655ac05629ae281bf2c"
  },
  {
   "file": "scenes/slugger-balloon-960.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -32459,14 +32501,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 59410,
-  "sha256": "a520b7175b1b73be6f9fc2f9bdc4642412f2006869ab48c62a67724e48dd33f2"
+  "bytes": 58282,
+  "sha256": "4bc444d9b785c37ca4866ea13f44f7c95346cb9f267c2368915f2b7e3b1cecee"
  },
  {
   "file": "scenes/slugger-balloon-960.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -32474,14 +32516,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 43554,
-  "sha256": "61f28bb2b24b90a2934bbd2f71114f335cfb8d89d2b38a399fe95115e915f7a2"
+  "bytes": 43255,
+  "sha256": "b4324a0dc4596c1dc2b9e224195d01ae931e8d789b9c868001c2a88d4b3bb2aa"
  },
  {
   "file": "scenes/slugger-balloon-1536.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -32489,14 +32531,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 92793,
-  "sha256": "84ecf95ad17d4811781e30350a7448fc480a0edd7c8fa7e44bf100f140da99ad"
+  "bytes": 94107,
+  "sha256": "5417bf713ce9be32f41c61fbf8507c0eb40103fe7be2ed93a6c877199d3b0b01"
  },
  {
   "file": "scenes/slugger-balloon-2304.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -32504,14 +32546,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 162879,
-  "sha256": "de354a248367b29b05642ae7d9794458ce573b5ae697b61b2125c9dc1bef1fe1"
+  "bytes": 152979,
+  "sha256": "ad84cefcd2e6f49ec97d17ea37ffb3c32b0198e4408c9b17f67f74492d3d1c4d"
  },
  {
   "file": "scenes/slugger-balloon-3072.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -32519,14 +32561,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 231579,
-  "sha256": "0adaf2ab636212b9485e01d60c4837c5914bd712c2e9c87f0940aa521dd6f3af"
+  "bytes": 220601,
+  "sha256": "447f2ee171b4496d8294743866947ea9f05aed094d843d04176524c477ba700f"
  },
  {
   "file": "scenes/slugger-balloon-3072.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -32534,14 +32576,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 339848,
-  "sha256": "3ff44d75b35cf0057230a455283093a0b14457c2f582fb30fd6ae7042f28fb42"
+  "bytes": 310612,
+  "sha256": "a6a7a7aa39fd344376a4a3733410f18e04e6dad0337c025f54fae026036039e5"
  },
  {
   "file": "scenes/slugger-balloon-3840.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -32549,14 +32591,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 298493,
-  "sha256": "c8469ea024a60ddc7bd464ca6c4993d4599828ff33b4c8a0e248ec469ce43d04"
+  "bytes": 289620,
+  "sha256": "a63953d1ba51f75e45d7645eb232182d9f26752e3f7cde8404b872078266d537"
  },
  {
   "file": "scenes/slugger-balloon-5120.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -32564,14 +32606,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 404899,
-  "sha256": "ca6da3375638fa0bfc3f98920ab00986cc65d260ca6cb1308ae31fc974f8ce44"
+  "bytes": 403471,
+  "sha256": "524241013e62ccfc09da4aa1ed09014c9fe06ddb316e705e0942834428bbcfd7"
  },
  {
   "file": "scenes/slugger-balloon-7680.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -32579,14 +32621,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 602794,
-  "sha256": "1d9e94a1d0b020ef25920a16eb602feb11f1c2e1b5ad39ead208d0feada0527e"
+  "bytes": 603534,
+  "sha256": "09055ed5091269a6e13eee5c00b4ade1fc06e74d717d80a7812e9222d3a5633c"
  },
  {
   "file": "scenes/slugger-balloon-7680.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -32594,14 +32636,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1020934,
-  "sha256": "7718a34b950a5f66f74cd35900bf081d59abdeb1f545544b78ffc3fef08a8d73"
+  "bytes": 993736,
+  "sha256": "1d72e02dac7ff59e634037d9182465979c48afd41cca1876a24b57ba8856404e"
  },
  {
   "file": "phone/slugger-balloon-384.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 384x288 (Lanczos)",
@@ -32609,14 +32651,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 19328,
-  "sha256": "364d4240e1c8f84b05bb3c5d4e8705ba104d34bb4a9d1a84390e9300fad5d130"
+  "bytes": 19252,
+  "sha256": "17d4f58004b997dab510d6f1219849ef22dbfd197dd1c30d1e2c8f204aa0f72d"
  },
  {
   "file": "phone/slugger-balloon-384.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 384x288 (Lanczos)",
@@ -32624,14 +32666,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 15069,
-  "sha256": "6e9a17a09104ef8f77d0aa0bdd2936b1083dc4e3fae4c4b94b5dbb729db4edb8"
+  "bytes": 15076,
+  "sha256": "1c20a1f641468dde7d0307df50a78ce4dd41745c94b8b2308a6ec5460543e964"
  },
  {
   "file": "phone/slugger-balloon-768.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 768x576 (Lanczos)",
@@ -32639,14 +32681,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 64058,
-  "sha256": "d25c6a5907afdeb38891d12b2a4764876e70459286fed7792fe601a5433cc153"
+  "bytes": 64534,
+  "sha256": "adcf18cf9990873734d04f06db53112d24c982df20bb917035b217581e5f2d5f"
  },
  {
   "file": "phone/slugger-balloon-768.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 768x576 (Lanczos)",
@@ -32654,14 +32696,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 46794,
-  "sha256": "5f175b8ef13f65d834be89dbacf57d9da5d3dc21b71d3d74a1867d5be0811580"
+  "bytes": 47287,
+  "sha256": "1cd6111df313d6650ed1d8e99c65f9620d0ae695ed7e22f7b76963f897e439b6"
  },
  {
   "file": "phone/slugger-balloon-1152.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -32669,14 +32711,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 109480,
-  "sha256": "359b1d55e1f14817b8830711538139530dce4533a84b2532a4e887e111222fb1"
+  "bytes": 100010,
+  "sha256": "a424f375f5d30b8806d028f3a2bbe7360fee7555d35dc9f7709e1142fa31c9f3"
  },
  {
   "file": "phone/slugger-balloon-1152.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -32684,14 +32726,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 77811,
-  "sha256": "a4678e601f72ed5c797428d7b2acd8e1a84d420245bf66d1a4504daa4c26272f"
+  "bytes": 73820,
+  "sha256": "84b87240653e69cb4eda5b47bda2435a20452a479e88409cca096c22ddabf513"
  },
  {
   "file": "phone/slugger-balloon-1536.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -32699,14 +32741,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 160290,
-  "sha256": "d92e4fff91e48cab1552b302cd3be1aa97af2d9fc63d1a7103dfb16d5f6d4aef"
+  "bytes": 150286,
+  "sha256": "709b3b694c14289564a0240e00d85ab030f7b7b2b1c927c3707ae14e171580f7"
  },
  {
   "file": "phone/slugger-balloon-1536.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon.webp",
-   "sha256": "397eccd84aa0904bfe45972b0e7f6f65c62fe140f0e4a6e8a8ff5132ac9abb96"
+   "sha256": "29baf33ae16d2a95025114f6be4997d671b15adda19066a7b9285bf85c831891"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -32714,14 +32756,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 108333,
-  "sha256": "5e34006ae656631aa0948a0e1ab271b8cf2292b9d6351c591fa583f6119dd7f9"
+  "bytes": 104243,
+  "sha256": "66f7a0350e49e88fb56cb275b4e57fb1c7132c8fe05b12428d1f672f83892f88"
  },
  {
   "file": "social/slugger-balloon.jpg",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [264, 0, 1416, 576] then resize to 1280x640 (Lanczos)",
@@ -32729,14 +32771,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 221075,
-  "sha256": "83d6d176c391d2dc7187e479bdecfdf58be3f39ca9526b57f3d3501fcac5968f"
+  "bytes": 218166,
+  "sha256": "8d64825cdeb7255c8a287bd9ce8161018fc7fa7e9a4b98223d0f27e3d9673f3f"
  },
  {
   "file": "og/slugger-balloon.jpg",
   "derivedFrom": {
    "file": "headers/slugger-balloon.webp",
-   "sha256": "7eaa5ee244a31b4a201fe0cd3c1971f6ff02b9e5ec16623c7e884ca002ae4f55"
+   "sha256": "9fea926d9b941124a1e2413a9c23c3f00856ae7d26c69625fb7fbcdd49187333"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [292, 0, 1389, 576] then resize to 1200x630 (Lanczos)",
@@ -32744,14 +32786,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 206604,
-  "sha256": "47d2fe26188887fe76e80a6a6a1e1123146138eec724bff67c6518b9d8a1d3b4"
+  "bytes": 204072,
+  "sha256": "bfc118e59cb208fda6f05eb9255e31e94d96ad1b69fcfce50a16003e38959855"
  },
  {
   "file": "scenes/slugger-balloon-dark-640.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -32759,14 +32801,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 19436,
-  "sha256": "664a92803eeb7602b0f8b741a7629538addf8c26cc793a9714483a88632776ee"
+  "bytes": 4874,
+  "sha256": "06675d2161c51a756a9fab35f2704fb030b032b7f5cbc1c5c8d2a49b7c64121a"
  },
  {
   "file": "scenes/slugger-balloon-dark-640.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -32774,14 +32816,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 15280,
-  "sha256": "ce8646e7014a2dd9cd108e34547150745c9a7c29d055b1f352e024d60649b392"
+  "bytes": 3027,
+  "sha256": "4cdf481e28616b7076091585a710df325a9f4682e4b98be5c58b6832a051b989"
  },
  {
   "file": "scenes/slugger-balloon-dark-960.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -32789,14 +32831,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 40692,
-  "sha256": "4a1aa56e9e04e3c4716154ded6cb5a422feadb7e92983e3b5488d412913f0ce8"
+  "bytes": 10478,
+  "sha256": "24c3aeefcd42db8cf6f4becae3e383b80b055d91cbeba7f19b62f42cf987dd16"
  },
  {
   "file": "scenes/slugger-balloon-dark-960.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -32804,14 +32846,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 31615,
-  "sha256": "c23a97b279f95e54cec841e99f474a0992ed0935aafdab178446bf236db09d8b"
+  "bytes": 5912,
+  "sha256": "cb4cb716fc6c0bdcd1e8788ca5f442e81c1d5eac7daee9bd88772eb57f6aa58e"
  },
  {
   "file": "scenes/slugger-balloon-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -32819,14 +32861,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 66927,
-  "sha256": "0ba358624fc188c4c7b68da23ddc49d9ea6973396a54b48abe9574751feca93e"
+  "bytes": 15050,
+  "sha256": "61e3661b0d7d55b073860a70bec8f2000c7b15f7236cf7b04310a82623ffd26c"
  },
  {
   "file": "scenes/slugger-balloon-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -32834,14 +32876,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 108915,
-  "sha256": "27334e467c535b143167bc1be6ce949b70c4065d430516cf223fbeb689b587db"
+  "bytes": 23880,
+  "sha256": "ca2f5ddadadb958c65b00a238b8e13c00ca0fbcabfde63e3ec0a13c18d6e216d"
  },
  {
   "file": "scenes/slugger-balloon-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -32849,14 +32891,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 150017,
-  "sha256": "1353b09d97addce45666a0ae843c83dd407ae5f9f9f422fef11ef29998e1cf17"
+  "bytes": 35920,
+  "sha256": "bf3cbd89e91c53fe8a3c71fb80a5fb846e5ef65fbe5b1749aa090c921e85b0d1"
  },
  {
   "file": "scenes/slugger-balloon-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -32864,14 +32906,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 206662,
-  "sha256": "f635b8a01f078330176c0b37ed3578cdf2262cc343e1337dabc81bac7cfd2232"
+  "bytes": 60524,
+  "sha256": "f0b694aff8b997dfe78e9812aab712efdb299bf3c9517467609fa8c09e7bf222"
  },
  {
   "file": "scenes/slugger-balloon-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -32879,14 +32921,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 188872,
-  "sha256": "699b9299c7eb3e597995a22b613356a840baae53065584d1425b38e79220da53"
+  "bytes": 47628,
+  "sha256": "e525b269cf92425569bf8d93975850d7fd6939b8e42022160511fd2dc8e58bd0"
  },
  {
   "file": "scenes/slugger-balloon-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -32894,14 +32936,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 245423,
-  "sha256": "e31372f29f0b3bc5959dadcd814c8d1d70694bc58e0ba56334f519de49bea682"
+  "bytes": 66541,
+  "sha256": "f7f9a54a81e1fd98281003d22b271a27384a731b71a0f0a4219bbde600811916"
  },
  {
   "file": "scenes/slugger-balloon-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -32909,14 +32951,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 356480,
-  "sha256": "60b570fc4627f83574bbd51cfe6469ffad97e654177bed54a8656af9b1427e6b"
+  "bytes": 104915,
+  "sha256": "912c931ac0e180c3ae780e38725f49262c2adf2aaa47642fbf2ad0ae84e0b28b"
  },
  {
   "file": "scenes/slugger-balloon-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -32924,14 +32966,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 591988,
-  "sha256": "5eafb333bbd722ed124ac8023dd151a8889020e81ce4674214865e86271aec70"
+  "bytes": 225794,
+  "sha256": "fc295683db3d1f445e9f8fd6249c227fb43d61dd4dd9fe13ec3da7c24b5bfa15"
  },
  {
   "file": "phone/slugger-balloon-dark-384.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 384x288 (Lanczos)",
@@ -32939,14 +32981,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 16338,
-  "sha256": "b759aa106fc94a93113ffffdfde608e4466a5441e14cc42c632c5d38c964ee3f"
+  "bytes": 4514,
+  "sha256": "f8d9c4d1036f3c4d037ab37d6bd73cf2d548553ddf626ef49d726f591544a078"
  },
  {
   "file": "phone/slugger-balloon-dark-384.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 384x288 (Lanczos)",
@@ -32954,14 +32996,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 288,
-  "bytes": 13081,
-  "sha256": "75747d517110abb30efcd93d665b3cc4bbf71299c8a52e08cff9bd5a27c9e200"
+  "bytes": 2960,
+  "sha256": "619b9afac39abb6a1da01db79c48822d766bd67145448ac3345dba59f805e0c4"
  },
  {
   "file": "phone/slugger-balloon-dark-768.webp",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 768x576 (Lanczos)",
@@ -32969,14 +33011,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 51638,
-  "sha256": "3c8306c8cf89f395c0cc46abb9953dccfd86510b18194ad670d9664c63f93b02"
+  "bytes": 15492,
+  "sha256": "6e36c82fab87d90d6248a836e20d9cf101ab23679a8c28867a2a15a73b477895"
  },
  {
   "file": "phone/slugger-balloon-dark-768.avif",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [456, 0, 1224, 576] then resize to 768x576 (Lanczos)",
@@ -32984,14 +33026,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 576,
-  "bytes": 39763,
-  "sha256": "92ab224cb13b63518a65b99d894184ebbafb3ca71da52552732c9634282bb321"
+  "bytes": 10089,
+  "sha256": "dca70d95252ed5a8af54c5e1e67cdc243e6dcb3cf12a22c32dd9154f7e7d8418"
  },
  {
   "file": "phone/slugger-balloon-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -32999,14 +33041,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 83286,
-  "sha256": "ec62c5cf91aab7c420a907061ab671aa00ca7a23d2e9a5e25b5d73519ab91349"
+  "bytes": 24118,
+  "sha256": "5e5bf1da6a6ca54374a4fdf979d42362c4151f247d95dc8786e49af9c3e7b1a8"
  },
  {
   "file": "phone/slugger-balloon-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1152x864 (Lanczos)",
@@ -33014,14 +33056,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 864,
-  "bytes": 62010,
-  "sha256": "6974a9f2ed31e6f079d709db9352d00b09f48a5e4c25d11e5b2240c487aa703a"
+  "bytes": 15802,
+  "sha256": "dd097c2ee9e3808376d2e5799539716c6c3f6e532a36f421981744dea1ac0fc5"
  },
  {
   "file": "phone/slugger-balloon-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -33029,14 +33071,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 118806,
-  "sha256": "ab41b15b346db4524e0217ee8690c6bf467955ea7b4df848c768d367c122c6b7"
+  "bytes": 36526,
+  "sha256": "5a692b8a6eff1fb92ece02a5c07ebe4807ab5e58254c35b97ffd2e8fc473e656"
  },
  {
   "file": "phone/slugger-balloon-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/slugger-balloon-dark.webp",
-   "sha256": "97ee1a9ae98039b94ca192addfc66fd69d5ba2fe6a5c124a005bef5d5b2d95ca"
+   "sha256": "c0e3a44c4c139a281c8f7b1987065d8e58137a4a0b68e2644d8126e848c5432c"
   },
   "use": "phone hero (4:3)",
   "operation": "crop box [1824, 0, 4896, 2304] of the 4x master then resize to 1536x1152 (Lanczos)",
@@ -33044,14 +33086,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 1152,
-  "bytes": 84802,
-  "sha256": "3efd21aea1d7c3ea0be2544615c6647e0cf0500281bd40e743d743258a4b933b"
+  "bytes": 22967,
+  "sha256": "a02f0b547f2b97e9f30ecbe16b44da7d996e9d0744df0ec161d3127e3ebd1170"
  },
  {
   "file": "social/slugger-balloon-dark.jpg",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [264, 0, 1416, 576] then resize to 1280x640 (Lanczos)",
@@ -33059,14 +33101,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 172851,
-  "sha256": "afcf7e997c4d0e6f656c8f22a52cc074329e35c8f2e19396445bc434b433012b"
+  "bytes": 73674,
+  "sha256": "2f41b99480e0c9a107371970575a08f4672c5792edae3182cbccfed5f1a76c96"
  },
  {
   "file": "og/slugger-balloon-dark.jpg",
   "derivedFrom": {
    "file": "headers/slugger-balloon-dark.webp",
-   "sha256": "e183c560bebaf0a861e3d42d2ebf265c54e7b1637ab4af00d837141b662b0aea"
+   "sha256": "e0cf96c50b6ce7d89a1a1260825366535139307f11586fea0e211c370a790ebc"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [292, 0, 1389, 576] then resize to 1200x630 (Lanczos)",
@@ -33074,8 +33116,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 163570,
-  "sha256": "499572674c3b49a703ac42a9e4770ee3bd1c2e0a4b1b4b19c6cbeb36fafa9323"
+  "bytes": 69569,
+  "sha256": "decba59f86eebf8c943cf69830b9456ab0665018b2f151f1632ca2956f7f9461"
  },
  {
   "file": "headers/airship-moored.webp",
@@ -36802,5 +36844,18 @@
   "height": 576,
   "bytes": 265172,
   "sha256": "734d29c87ae8fcb128f334545e1ade46b7f10a7063ecba6493362fc0b66240e9"
+ },
+ {
+  "file": "flat/slugger-balloon-lights.png",
+  "use": "slugger-balloon's night-only light sources (nightLights)",
+  "sha256": "46467f739e457881667659a2e132415c80128a7e6af067a4a98dac589e7fb4c3"
+ },
+ {
+  "file": "flat/slugger-balloon.webp",
+  "use": "slugger-balloon's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
+  "width": 1536,
+  "height": 576,
+  "bytes": 154904,
+  "sha256": "408a9d699d471baf02017cd777efaebf549aec92221f93787f43e812bdcbb6e2"
  }
 ]
