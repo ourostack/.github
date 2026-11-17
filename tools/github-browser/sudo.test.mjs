@@ -8,10 +8,10 @@ const fakePage = ({ offers, number = "42", shown = true }) => {
     shown, clicked: [], brought: 0,
     grant() { p.shown = false; },
     locator(sel) {
-      const has = sel.includes("Confirm access") ? p.shown : offers.some((o) => sel.includes(o));
+      const has = sel.includes("Confirm access") ? p.shown : sel.includes("github-mobile-available") ? offers.includes("mobile") : false;
       return {
         count: async () => (has ? 1 : 0),
-        first: () => ({ click: async () => { p.clicked.push(sel); setTimeout(p.grant, 5); }, innerText: async () => `Open GitHub Mobile and enter this number: ${number}` }),
+        first: () => ({ click: async () => { p.clicked.push(sel); setTimeout(p.grant, 5); }, textContent: async () => ` ${number} ` }),
       };
     },
   };
@@ -20,12 +20,12 @@ const fakePage = ({ offers, number = "42", shown = true }) => {
 const fast = { pollMs: 2, probeMs: 20, waitMs: 500, log: () => {} };
 
 test("offers GitHub Mobile first when GitHub lists it, even beside a passkey", async () => {
-  assert.equal(await pickSudoPath(fakePage({ offers: ["GitHub Mobile", "passkey"] })), "mobile");
+  assert.equal(await pickSudoPath(fakePage({ offers: ["mobile", "passkey"] })), "mobile");
   assert.equal(await pickSudoPath(fakePage({ offers: ["passkey"] })), "passkey");
 });
 
 test("mobile path: taps Use GitHub Mobile, sends the number to Teams, opens no window", async () => {
-  const page = fakePage({ offers: ["GitHub Mobile", "passkey"] });
+  const page = fakePage({ offers: ["mobile", "passkey"] });
   const said = [];
   let relaunched = 0;
   const session = { page, relaunchHeadful: async () => { relaunched++; return page; } };

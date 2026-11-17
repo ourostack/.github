@@ -7,17 +7,19 @@ import { execFileSync } from "node:child_process";
 const CHAT = process.env.SUDO_TEAMS_CHAT ?? "19:e1ac21e4-c653-4dab-848f-2d8edb449c6b_7f3cdd24-4dd3-4278-81f4-cad2711c4b31@unq.gbl.spaces";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export const onSudoPage = async (page) => (await page.locator("text=Confirm access").count()) > 0;
+export const onSudoPage = async (page) => (await page.locator("text=Confirm access >> visible=true").count()) > 0;
 
 /** "mobile" when GitHub offers GitHub Mobile, else "passkey". */
 export async function pickSudoPath(page) {
-  return (await page.locator("text=/Use GitHub Mobile/i").count()) ? "mobile" : "passkey";
+  return (await page.locator("sudo-credential-options[github-mobile-available=true]").count()) ? "mobile" : "passkey";
 }
 
-/** The number GitHub Mobile shows, or "" while the page has none. */
+const MOBILE_BUTTON = "button[data-action*=showGitHubMobile] >> visible=true";
+
+/** The number GitHub Mobile shows, or "" while the page has none (GitHub sometimes asks for a plain Approve). */
 export async function mobileNumber(page) {
-  const text = await page.locator("main").first().innerText().catch(() => "");
-  return text.match(/(?:GitHub Mobile|number|enter)[^\d]{0,200}\b(\d{1,3})\b/i)?.[1] ?? "";
+  const text = await page.locator('[data-target$="githubMobileChallengeValue"]').first().textContent({ timeout: 1000 }).catch(() => "");
+  return (text ?? "").trim();
 }
 
 /** One line to Ari's Teams chat with Ouroboros through WorkIQ; a failure is reported, never thrown. */
@@ -41,9 +43,9 @@ export async function awaitSudo(session, { what, redo, notify = teamsLine, waitM
   const path = await pickSudoPath(page);
   let line;
   if (path === "mobile") {
-    await page.locator("text=/Use GitHub Mobile/i").first().click();
+    await page.locator(MOBILE_BUTTON).first().click();
     let n = "";
-    for (let i = 0; i < 20 && !n; i++) { n = await mobileNumber(page); if (!n) await sleep(pollMs); }
+    for (let i = 0; i < 8 && !n; i++) { n = await mobileNumber(page); if (!n) await sleep(pollMs); }
     line = `GitHub is waiting for your approval to ${what}: tap Approve on your phone (GitHub Mobile)${n ? ` and pick ${n}` : ""}.`;
   } else {
     page = await session.relaunchHeadful();
