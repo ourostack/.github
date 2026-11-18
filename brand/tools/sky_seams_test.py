@@ -81,5 +81,31 @@ class SkySeams(unittest.TestCase):
         self.assertFalse(sky[160:].any())
 
 
+class Rings(unittest.TestCase):
+    def moon(self, ring):
+        """A night sky with a moon (radius 18 px) and a glow that fades into a sky brightening toward the horizon; with
+        `ring`, the sky dips 9 levels about 20 px out from the moon's edge, as ourostack's did (#294)."""
+        d = np.hypot(x - 240, y - 80)
+        lum = 30 + 25 * np.exp(-np.clip(d - 18, 0, None) / 8) + 0.05 * y
+        if ring:
+            lum -= 9 * np.exp(-((d - 38) / 8) ** 2)
+        lum = np.where(d < 18, 200.0, lum)
+        return lum.astype(np.float32), np.ones((H, W), bool)
+
+    def test_a_moon_with_a_smooth_glow_has_no_ring(self):
+        lum, sky = self.moon(False)
+        (cx, cy, r), = S.discs(lum, sky)
+        self.assertIsNone(S.ring_dip(lum, sky, cx, cy, r))
+
+    def test_a_dark_ring_round_a_moon_fails(self):
+        lum, sky = self.moon(True)
+        (cx, cy, r), = S.discs(lum, sky)
+        self.assertIsNotNone(S.ring_dip(lum, sky, cx, cy, r))
+
+    def test_a_lit_thing_out_of_the_sky_is_not_a_moon(self):
+        lum, _ = self.moon(True)
+        self.assertEqual(S.discs(lum, np.zeros((H, W), bool)), [])
+
+
 if __name__ == "__main__":
     unittest.main()

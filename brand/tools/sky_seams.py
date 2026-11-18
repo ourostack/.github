@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail a light-transfer night whose sky has a hard straight seam the day does not explain.
+"""Fail a light-transfer night whose sky has a hard straight seam the day does not explain, or a ringed moon.
 
     python3 brand/tools/sky_seams.py                 # every nightFromDay or nightFromFlatDay night in crops.json
     python3 brand/tools/sky_seams.py ouro-work ...   # just these scenes (day names)
@@ -42,6 +42,15 @@ below the sky, and it passes; outside the sky, night-lit lamps, windows and rims
 day does not, so a night-only test there flags drawn things. brand/tools/sky_seams_test.py keeps
 a pasted box and a cut-short sun failing and drawn edges passing.
 
+It also fails a dark ring round a moon: a bright disc in open sky (above level 100, round, with sky
+over 60% of the ring 1.2 to 3 radii out) whose radial profile, taken over sky pixels in 4 px rings,
+dips within 160 px of the disc's edge and climbs back by 5 levels (and 12%) within 1.5 radii, below
+the level just outside the disc. ourostack's moon (#294) had one: 26 at 20 px out, back to 36 by
+60 px out, about 9 levels under the glow beside it, because the light transfer undershoots just
+outside a light far brighter than its surroundings and the night-light mask covered only the
+moon itself. upscale.py now gives the transfer the night header's broad light around every night
+light (light_falloff), so a rebuilt night has no ring.
+
 Fix a finding with a soft-edged mask: feather every box pasted into a flat day, a night header or
 a night-light mask, and remove a sun from the flat day and the night header together (its glow
 and its clipped core, down to the sky around it), then rebuild the night with upscale.py and
@@ -56,11 +65,12 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from scipy.ndimage import binary_closing, gaussian_filter, label, maximum_filter, minimum_filter, uniform_filter, uniform_filter1d
+from scipy.ndimage import binary_closing, find_objects, gaussian_filter, label, maximum_filter, minimum_filter, uniform_filter, uniform_filter1d
 
 BRAND = Path(__file__).resolve().parent.parent
 STEP, LEVELS, SHARP, PLATEAU, DAY, GLOW, CUT, LIGHT, RUN = 0.12, 6, 2.0, 0.6, 0.33, 0.5, 0.25, 200, 40
 GAPS, ALONG, OFFSET, SKY, GRAD = (3, 8, 16), 9, 16, 0.6, 6
+DISC_LEVEL, RING_RISE = 100, 5
 CHANNELS = "RGB"
 
 
@@ -189,6 +199,57 @@ def find(night, sky, day=None, step=STEP, levels=LEVELS, sharp=SHARP, dayfrac=DA
     return out
 
 
+def discs(lum, sky, bright=DISC_LEVEL, ratio=2.5):
+    """Bright round discs in open sky (a moon, a sun left in): (x, y, radius) in px.
+
+    A disc is a blob brighter than `bright` and `ratio` times the sky's median, 150 to 60000 px, filling at least half
+    its box and at most 2.2 times as long as wide, with sky over at least 60% of the ring 1.2 to 3 radii out."""
+    lab, _ = label(lum > max(bright, ratio * float(np.median(lum[sky])) if sky.any() else bright))
+    out = []
+    for i, sl in enumerate(find_objects(lab), 1):
+        comp = lab[sl] == i
+        area, (h, w) = int(comp.sum()), comp.shape
+        if not 150 <= area <= 60000 or comp.mean() < 0.5 or max(h, w) > 2.2 * min(h, w):
+            continue
+        yy, xx = np.nonzero(comp)
+        cy, cx, r = yy.mean() + sl[0].start, xx.mean() + sl[1].start, float(np.sqrt(area / np.pi))
+        y0, x0 = max(0, int(cy - 3 * r)), max(0, int(cx - 3 * r))
+        y1, x1 = min(lum.shape[0], int(cy + 3 * r) + 1), min(lum.shape[1], int(cx + 3 * r) + 1)
+        gy, gx = np.mgrid[y0:y1, x0:x1]
+        d = np.hypot(gx - cx, gy - cy)
+        # sky share of the whole ring; any part of it off the picture counts as not sky
+        if sky[y0:y1, x0:x1][(d > 1.2 * r) & (d < 3 * r)].sum() >= 0.6 * np.pi * (9 - 1.44) * r * r:
+            out.append((cx, cy, r))
+    return out
+
+
+def ring_dip(lum, sky, cx, cy, r, rise=RING_RISE, step=4):
+    """A dark ring round a disc: moving outward over sky pixels (4 px rings, out to 4 radii plus 1.5), the mean level
+    dips within 160 px of the disc's edge and then climbs back by at least `rise` levels (and 12%) within 1.5 radii
+    (48 to 96 px), staying below the level just outside the disc. Returns (radius of the dip, its level, the climb) or
+    None. A sky that brightens slowly toward the horizon, or another lit thing further out, is not a ring."""
+    span = min(max(1.5 * r, 48), 96)
+    y0, x0 = max(0, int(cy - 6 * r - span)), max(0, int(cx - 6 * r - span))
+    y1, x1 = min(lum.shape[0], int(cy + 6 * r + span) + 1), min(lum.shape[1], int(cx + 6 * r + span) + 1)
+    gy, gx = np.mgrid[y0:y1, x0:x1]
+    d, sk, lv = np.hypot(gx - cx, gy - cy), sky[y0:y1, x0:x1] & (lum[y0:y1, x0:x1] <= DISC_LEVEL), lum[y0:y1, x0:x1]
+    radii = np.arange(r + 4, 4 * r + span, step)
+    prof = np.array([lv[m].mean() if (m := (d >= q) & (d < q + step) & sk).sum() > 20 else np.nan for q in radii])
+    if np.isnan(prof).all():
+        return None
+    glow = prof[~np.isnan(prof)][0]  # the level just outside the disc
+    best = None
+    for i, q in enumerate(radii):
+        if np.isnan(prof[i]) or q > min(4 * r, r + 160):
+            continue
+        later = prof[(radii > q) & (radii <= q + span)]
+        later = later[~np.isnan(later)]
+        if (later.size and (up := later.max() - prof[i]) >= max(rise, 0.12 * prof[i]) and later.max() <= glow
+                and (best is None or up > best[2])):
+            best = (float(q), float(prof[i]), float(up))
+    return best
+
+
 def check_scene(day, crops, opts):
     """Seams in the sky of brand/scenes/<day>-dark-3072.webp (the top `sky` share of its rows)."""
     opts = dict(opts)
@@ -200,6 +261,7 @@ def check_scene(day, crops, opts):
     n = rgb(night_im.crop(band))
     base = Image.open(BRAND / f"headers/{day}.webp")  # the day: a box pasted into the flat would hide its own edge
     sky = sky_mask(base, grad)
+    sky_all = np.asarray(Image.fromarray(sky).resize((w, h), Image.NEAREST).crop(band))  # with the moon: for rings
     lights_rel = crops.get(day, {}).get("nightLights")
     if lights_rel:  # night-only light sources (a moon, lamps) are meant to differ from the day
         m = np.asarray(Image.open(BRAND / lights_rel).convert("L").resize(base.size, Image.BILINEAR)) > 8
@@ -207,9 +269,17 @@ def check_scene(day, crops, opts):
     sky = np.asarray(Image.fromarray(sky).resize((w, h), Image.NEAREST).crop(band))
     d = rgb(Image.open(BRAND / f"scenes/{day}-3072.webp").convert("RGB").resize((w, h), Image.LANCZOS).crop(band))
     found = find(n, sky, d, **opts)
+    lum = np.asarray(night_im.crop(band).convert("L"), np.float32)
+    for cx, cy, r in discs(lum, sky_all):
+        dip = ring_dip(lum, sky_all, cx, cy, r)
+        if dip:
+            found.append({"kind": "ring", "x": round(cx / w, 3), "y": round(cy / band[3], 3), "radius_px": round(r),
+                          "dip_px": round(dip[0] - r), "level": round(dip[1]), "climb": round(dip[2], 1)})
     k = band[3] / h
     for f in found:  # back to whole-picture coordinates
-        if f["orientation"] == "vertical":
+        if f.get("kind") == "ring":
+            f["y"] = round(f["y"] * k, 3)
+        elif f["orientation"] == "vertical":
             f["y"] = [round(v * k, 3) for v in f["y"]]
         else:
             f["y"] = round(f["y"] * k, 3)
@@ -244,14 +314,19 @@ def main():
         if not a.json:
             print(f"{s}-dark: {'clean' if not found else f'{len(found)} seam(s)'}")
             for f in found:
+                if f.get("kind") == "ring":
+                    print(f"  ring: dark ring round the disc at ({f['x']}, {f['y']}), radius {f['radius_px']} px: "
+                          f"{f['dip_px']} px out from its edge the sky falls to {f['level']} and climbs {f['climb']} levels back")
+                    continue
                 where = (f"x {f['x']}, y {f['y'][0]}-{f['y'][1]}" if f["orientation"] == "vertical"
                          else f"y {f['y']}, x {f['x'][0]}-{f['x'][1]}")
                 print(f"  {f['orientation']} seam at {where} ({f['length_px']} px), {f['channel']} {f['levels'][0]} -> {f['levels'][1]}")
     if a.json:
         print(json.dumps(report, indent=1))
     elif bad:
-        print(f"{bad} night(s) with a hard straight seam: fix the flat day, its night-light mask or the night header "
-              f"with soft-edged masks and rebuild the night (brand/tools/sky_seams.py explains the check)")
+        print(f"{bad} night(s) with a hard straight seam or a dark ring round a moon: fix the flat day, its night-light "
+              f"mask or the night header with soft-edged masks and rebuild the night with upscale.py "
+              f"(brand/tools/sky_seams.py explains the check)")
     sys.exit(1 if bad else 0)
 
 
