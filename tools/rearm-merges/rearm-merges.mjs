@@ -35,6 +35,12 @@ export function needsRearm(pr) {
   return Boolean(a) && !a.commitHeadline;
 }
 
+// Auto-merge is on but the branch is behind main. With "require branches to be up to date" (rulesets/) GitHub waits
+// for the branch to be updated and never does it itself, so the job brings the merged tree up to date and CI reruns on it.
+export function needsUpdate(pr) {
+  return Boolean(pr.autoMergeRequest) && pr.mergeStateStatus === "BEHIND";
+}
+
 // Green, nothing but the merge itself holding it, and nobody turned auto-merge on.
 export function readyWithoutAutoMerge(pr) {
   if (pr.isDraft || pr.autoMergeRequest) return false;
@@ -72,6 +78,7 @@ export function openPrs() {
   }
 }
 
+const UPDATE = `mutation($id:ID!){updatePullRequestBranch(input:{pullRequestId:$id}){clientMutationId}}`;
 const DISABLE = `mutation($id:ID!){disablePullRequestAutoMerge(input:{pullRequestId:$id}){clientMutationId}}`;
 const ENABLE = `mutation($id:ID!,$m:PullRequestMergeMethod!,$h:String!,$b:String!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:$m,commitHeadline:$h,commitBody:$b}){clientMutationId}}`;
 const MERGE = `mutation($id:ID!,$m:PullRequestMergeMethod!,$h:String!,$b:String!){mergePullRequest(input:{pullRequestId:$id,mergeMethod:$m,commitHeadline:$h,commitBody:$b}){clientMutationId}}`;
@@ -114,6 +121,14 @@ function main() {
     try {
       if (isUnmergeable(pr)) {
         unmergeable.push(label(pr));
+      } else if (needsUpdate(pr)) {
+        acted++;
+        if (opts.dryRun) console.log(`would update the branch of ${label(pr)}`);
+        else {
+          gql(UPDATE, { id: pr.id });
+          console.log(`updated the branch of ${label(pr)} so its checks run on the current main`);
+        }
+        if (needsRearm(pr)) rearm(pr, opts);
       } else if (needsRearm(pr)) {
         acted++;
         rearm(pr, opts);

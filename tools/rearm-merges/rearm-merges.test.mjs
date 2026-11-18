@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { RULESET, cleanBody, messageFor, needsRearm, readyWithoutAutoMerge, isUnmergeable } from "./rearm-merges.mjs";
+import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable } from "./rearm-merges.mjs";
 
 const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
 
@@ -49,4 +49,10 @@ test("isUnmergeable detects conflicting or unmergeable state", () => {
   assert.equal(isUnmergeable({ mergeable: "MERGEABLE", mergeStateStatus: "CONFLICTING" }), true);
   assert.equal(isUnmergeable({ mergeable: "MERGEABLE", mergeStateStatus: "CLEAN" }), false);
   assert.equal(isUnmergeable({ mergeable: "UNKNOWN", mergeStateStatus: "CLEAN" }), false);
+});
+
+test("needsUpdate is true only for an armed PR that is behind its base", () => {
+  assert.equal(needsUpdate({ autoMergeRequest: { mergeMethod: "SQUASH" }, mergeStateStatus: "BEHIND" }), true);
+  assert.equal(needsUpdate({ autoMergeRequest: null, mergeStateStatus: "BEHIND" }), false);
+  assert.equal(needsUpdate({ autoMergeRequest: { mergeMethod: "SQUASH" }, mergeStateStatus: "BLOCKED" }), false);
 });
