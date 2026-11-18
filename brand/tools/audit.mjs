@@ -12,11 +12,15 @@
 //                                              # also hash every file the build ships under the site's brand
 //                                              # folder, so a copied file no page links to is checked too
 //
-// Exit codes: 0 every surface is current (held, waiting, pending and manual surfaces are listed, not failed),
+// Exit codes: 0 every surface is current (held, waiting, pending, after-merge and manual surfaces are listed, not failed),
 // 1 at least one surface is stale or unregistered, 2 usage, 3 environment not ready (no GitHub token, network).
 // A website or social preview that is stale only on bytes within a window after the newest brand art commit on main is "pending"
 // (listed, not failed): its sync is in flight (brand/tools/pending.mjs). After the window it is stale. Pull requests (BRAND_REF)
-// and --origin audits never wait.
+// and --origin audits never wait: on a pull request (BRAND_REF) the audit checks only what the pull request can make true
+// (canonical bytes, masters, derived files, registration), and a website or social preview that is stale only on bytes
+// is "after-merge" (listed, not failed), since only the merge starts its sync. After the merge, brand/tools/converge.mjs
+// (the brand-audit workflow's converge job) runs this audit on main and files or updates one issue if a surface has not
+// converged within its window, and closes it once the audit is green.
 // BRAND_COMMIT=<commit> reads canonical bytes at that commit but still audits production (CI sets it on every run but a pull request's).
 // BRAND_REF=<commit> checks that commit's canonical bytes instead of main's (CI sets it on pull requests).
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
@@ -26,7 +30,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pendingFor } from "./pending.mjs";
+import { afterMergeFor, pendingFor } from "./pending.mjs";
 import { canonicalUrl } from "./canonical.mjs";
 
 const BRAND = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -573,8 +577,13 @@ async function run(s) {
       pending = pendingFor({ id: s.id, autoSync: registry.autoSync, kind: s.kind, problems: r.problems, mergedAt: await lastBrandMerge(), live: !originOverride && !process.env.BRAND_REF });
       if (pending) status = "pending";
     }
+    let afterMerge;
+    if (status === "stale") {
+      afterMerge = afterMergeFor({ id: s.id, autoSync: registry.autoSync, kind: s.kind, problems: r.problems, pr: !originOverride && !!process.env.BRAND_REF });
+      if (afterMerge) status = "after-merge";
+    }
     if (status === "current" && r.manual) status = "manual";
-    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(r.shipped !== undefined ? { shipped: r.shipped } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "pending" ? { reason: `brand art merged ${pending.ageMinutes} min ago; stale after ${pending.minutes} min if its sync has not landed` } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
+    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(r.shipped !== undefined ? { shipped: r.shipped } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "pending" ? { reason: `brand art merged ${pending.ageMinutes} min ago; stale after ${pending.minutes} min if its sync has not landed` } : {}), ...(status === "after-merge" ? { reason: `only the merge can update it: its sync starts after this lands; the post-merge audit files an issue if it has not converged ${afterMerge.minutes} min later` } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
   } catch (err) {
     if (!(err instanceof EnvError)) throw err;
     envError ??= err.message;
@@ -588,7 +597,7 @@ if (only === "" || "unregistered:".startsWith(only)) results.push(...(await cove
 results.sort((a, b) => a.id.localeCompare(b.id));
 
 const count = (st) => results.filter((r) => r.status === st).length;
-const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), held: count("held"), waiting: count("waiting"), pending: count("pending"), manual: count("manual"), unchecked: count("unchecked") };
+const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), held: count("held"), waiting: count("waiting"), pending: count("pending"), "after-merge": count("after-merge"), manual: count("manual"), unchecked: count("unchecked") };
 const failed = summary.stale + summary.unregistered > 0;
 const exit = failed ? 1 : summary.unchecked ? 3 : 0;
 
@@ -597,7 +606,7 @@ if (format === "json") {
 } else {
   const color = process.stdout.isTTY && !process.env.NO_COLOR;
   const c = (code, t) => (color ? `\x1b[${code}m${t}\x1b[0m` : t);
-  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
+  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), "after-merge": c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
   process.stdout.write(`BRAND AUDIT  ${registry.surfaces.length} surfaces in brand/surfaces.json\n\n`);
   for (const r of results) {
     const extra = r.pages ? c(2, ` (${r.pages} pages)`) : "";
