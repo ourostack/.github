@@ -207,3 +207,25 @@ test("overlapping pushes: a green commit pushed before the failure lands closes 
   const m = measure(runs, { since: at(0), now: at(200) });
   assert.deepEqual([m.redMinutes, m.waitMinutes, m.episodes], [10, 20 + 5, 2]);
 });
+
+test("fetchMainRuns with a cache reads finished days once and only today again", async () => {
+  const NOW2 = Date.UTC(2026, 10, 17, 12, 0);
+  const calls = [];
+  const get = async (p) => {
+    calls.push(decodeURIComponent(/created=([^&]+)/.exec(p)[1]).slice(0, 10));
+    const day = calls.at(-1);
+    return { total_count: 1, workflow_runs: [{ id: Number(day.replaceAll("-", "")), name: "CI", event: "push", head_sha: day, status: "completed", conclusion: "success", created_at: `${day}T01:00:00Z`, updated_at: `${day}T01:05:00Z` }] };
+  };
+  const cache = {};
+  const first = await fetchMainRuns("o/r", NOW2 - 3 * 86400000, get, NOW2, cache);
+  assert.equal(first.length, 4);
+  assert.deepEqual(calls, ["2026-11-14", "2026-11-15", "2026-11-16", "2026-11-17"]);
+  calls.length = 0;
+  const later = await fetchMainRuns("o/r", NOW2 - 3 * 86400000, get, NOW2 + 3600000, cache);
+  assert.equal(later.length, 4);
+  assert.deepEqual(calls, ["2026-11-17"]);
+  calls.length = 0;
+  await fetchMainRuns("o/r", NOW2 - 86400000, get, NOW2 + 86400000, cache);
+  assert.deepEqual(calls, ["2026-11-17", "2026-11-18"]);
+  assert.deepEqual(Object.keys(cache.days["o/r"]), ["2026-11-16", "2026-11-17"]);
+});

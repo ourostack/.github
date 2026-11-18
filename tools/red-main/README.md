@@ -5,6 +5,13 @@
 
 The measure reads the whole window, not just the API's newest 1,000 runs: it queries `created` ranges and halves any range that reports more than 1,000.
 
+## API budget
+
+Every GitHub API call counts against the repository's hourly allowance, so both tools print what they spent.
+
+- **auto-revert** reads only the open red stretch: main's push runs newest first, 25 per page, stopping at the first commit whose runs all passed (a commit split across pages is judged once the next page shows it whole). Main green costs 1 call; a red stretch of N commits costs about N/25 + 1 pages, plus the guard reads (compare, pulls, jobs, annotations, logs) once it is red. A stretch longer than 8 pages (200 runs) is reported, not reverted. It never reads a time window. The run ends with `auto-revert: N API calls (R read, W write)`; `auto-revert.test.mjs` pins 1 call on a green main and the page count for red stretches of 1, 3, 12 and 40 commits.
+- **red-main** reads a UTC day at a time and keeps finished days (all runs completed) in a cache file (`--cache <file>`, default `~/.cache/red-main.json` or `$RED_MAIN_CACHE`, `--no-cache` to read everything). A repeat run fetches only days not yet cached plus today, today's run-list pages with `If-None-Match` (a 304 is free), and remembers each failed run's infra verdict. It prints `red-main: N API calls (M answered 304, free)` to stderr. Persist the file between runs (an Actions cache keyed on the file, or the host's disk).
+
 ## Red, waiting for runners, and where a red stretch ends
 
 A red stretch opens at the first failing commit's failure and ends at the **push time** (its first run's start) of the first later commit whose push runs all finished with none failed. The time from that push to its last run finishing is not red: the code was fixed when it landed and the runners were queued. It is reported in its own column, `waiting for runners` (with `% wait`), beside `% red`, so neither hides the other. A wait never overlaps the next red stretch. A fix commit that fails, or is still running, does not end the stretch. Auto-revert's "red for 60 minutes" uses the same red definition (the wait column never counts toward it).
