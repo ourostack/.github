@@ -177,15 +177,30 @@ function token() {
 
 // A GET that counts what it spends (`calls.total` against the hourly allowance; a 304 answer is free, `calls.notModified`) and,
 // for run-list pages, sends If-None-Match from `cache.etags` (url -> { etag, body }) so an unchanged page costs nothing.
+// The shared floor: below this many REST calls left on the account, red-main stops and leaves the rest for other sessions.
+export const QUOTA_FLOOR = Number(process.env.RED_MAIN_FLOOR) || 500;
+export class QuotaFloor extends Error {
+  constructor(remaining, reset) {
+    super(`stopped: ${remaining} REST calls left, under the shared floor of ${QUOTA_FLOOR}; the budget resets at ${new Date(reset * 1000).toISOString().slice(11, 16)}Z (rerun then; the cache keeps what was read)`);
+    this.reset = reset;
+  }
+}
+
 export function makeGet(cache = null) {
-  const calls = { total: 0, notModified: 0 };
+  const calls = { total: 0, notModified: 0, remaining: null, reset: null };
   const seen = new Set();
   async function get(path) {
     const tagged = cache && /\/actions\/runs\?/.test(path) ? ((cache.etags ??= {}), cache.etags[path]) : null;
     const headers = { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" };
     if (tagged) headers["if-none-match"] = tagged.etag;
+    if (calls.remaining !== null && calls.remaining < QUOTA_FLOOR) throw new QuotaFloor(calls.remaining, calls.reset);
     calls.total++;
     const res = await fetch(`https://api.github.com${path}`, { headers });
+    const left = res.headers?.get?.("x-ratelimit-remaining");
+    if (left !== null && left !== undefined) {
+      calls.remaining = Number(left);
+      calls.reset = Number(res.headers.get("x-ratelimit-reset"));
+    }
     if (res.status === 304 && tagged) {
       calls.notModified++;
       seen.add(path);
@@ -256,7 +271,8 @@ export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now(), 
       runs.push(...days[key]);
       continue;
     }
-    const got = await fetchRange(repo, start, Math.min(start + DAY - 1000, now), get);
+    // The range ends at the day's end even for today, so its URL (and ETag) is the same on every run.
+    const got = await fetchRange(repo, start, start + DAY - 1000, get);
     runs.push(...got);
     if (start + DAY <= now && got.every((r) => r.status === "completed")) days[key] = got.map(slimRun);
   }
@@ -274,10 +290,27 @@ const infraText = (t) => String(t).slice(-200000).match(INFRA_LOG) ?? String(t).
 export const neverStarted = (j) => (Array.isArray(j.steps) && j.steps.length === 0) || j.runner_id === 0 || j.runner_id === null;
 
 // Marks each failed run `infra` (the reason) when every failed job is an annotated or GitHub 5xx/ETIMEDOUT failure.
+// A failure on a commit that comes while a red stretch is already open cannot change the measure (it neither opens nor
+// closes one), so it is left unread: a long red costs the reads of its first commit, not of every commit in it.
 export async function markInfra(repo, runs, get = ghGet, memo = null) {
-  await Promise.all(
-    runs
-      .filter((r) => r.event === "push" && FAILED.has(r.conclusion))
+  const bySha = new Map();
+  for (const r of runs.filter((r) => r.event === "push")) bySha.set(r.head_sha, [...(bySha.get(r.head_sha) ?? []), r]);
+  const commits = [...bySha.values()].sort((a, b) => Math.min(...a.map((r) => ms(r.run_started_at ?? r.created_at))) - Math.min(...b.map((r) => ms(r.run_started_at ?? r.created_at))));
+  let open = false;
+  for (const rs of commits) {
+    const live = rs.filter((r) => (r.conclusion !== "cancelled" || !superseded(r, runs)) && r.conclusion !== "stale");
+    const failed = live.filter((r) => FAILED.has(r.conclusion));
+    if (failed.length) {
+      if (open) continue;
+      await classify(failed);
+      open = failed.some((r) => !r.infra);
+    } else if (live.length && live.every((r) => r.status === "completed" && PASSED.has(r.conclusion))) open = false;
+  }
+  return runs;
+
+  async function classify(list) {
+    await Promise.all(
+    list
       .map(async (r) => {
         const known = memo?.[r.id];
         if (known !== undefined) {
@@ -322,8 +355,8 @@ export async function markInfra(repo, runs, get = ghGet, memo = null) {
           // Unreadable annotations or logs leave the run counted as red.
         }
       }),
-  );
-  return runs;
+    );
+  }
 }
 
 export const defaultCache = () => process.env.RED_MAIN_CACHE ?? join(homedir(), ".cache", "red-main.json");
@@ -356,6 +389,8 @@ export async function main(argv = process.argv.slice(2), now = Date.now()) {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, JSON.stringify(cache));
   }
+  const skipped = rows.filter((r) => r.error?.startsWith("stopped:"));
+  if (skipped.length) console.error(`red-main: PARTIAL. Not covered: ${skipped.map((r) => r.repo).join(", ")}. ${skipped[0].error}`);
   console.error(`red-main: ${get.calls.total} API calls (${get.calls.notModified} answered 304, free)${file ? `, cache ${file}` : ", no cache"}`);
   if (argv.includes("--route")) {
     const reds = Object.fromEntries(rows.filter((r) => r.m?.open).map((r) => [r.repo, r.m.open]));
