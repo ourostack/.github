@@ -26,7 +26,7 @@ Where coding agents keep their work, so it survives the session.
 
 ### [Ouro UI](https://github.com/ourostack/ouro-ui)
 
-<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="On a mountain cabin's deck at dawn, a person tries a big glass switch on a test board while a small robot checks the gauge through a loupe, and Ouro suns himself on the table"></a>
+<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="On a mountain cabin's deck, a faceless glass person stands at the table beside a glowing glass push button he has just pressed, while a small robot on a crate reads the gauge, and Ouro smiles from a folded towel on the table"></a>
 
 Interfaces in two halves: Ouro HX, components that feel right to people, and Ouro AX, tools that read clearly to agents.
 
