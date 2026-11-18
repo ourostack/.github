@@ -8,8 +8,9 @@
 // Measure: per repo, over a window, the minutes main spent red and the median time from a failure to the
 // next all-green head, from the Actions run history of push runs on main. A commit is red when any of its
 // runs failed (cancelled and skipped runs are not failures), green when all of its runs finished and none failed,
-// and pending while any run is still going. An episode runs from the first red commit's failure to the finish of
-// the next green commit; it is open until then and counts up to now.
+// and pending while any run is still going. An episode runs from the first red commit's failure to the push of
+// the next green commit (all its runs passed); it is open until then and counts up to now. The time from that
+// push to its last run finishing is reported apart as waiting for runners (unverified), never as red.
 //
 // Route: owners.json maps each repo to the coordinator session that owns its flow, CI and gates. A red main wakes
 // that owner with the failing run link; the tooling coordinator hears about it only for repos it owns, or as an
@@ -74,15 +75,18 @@ export function infraFailures(runs, { since, now }) {
   return commitVerdicts(runs).filter((c) => c.state === "infra" && c.at >= since && c.at <= now).map(({ sha, at, url, name, reason }) => ({ sha, at, url, name, reason }));
 }
 
-// Episodes of red: { from, to (null while open), url, name }. A red commit later fixed by a head that is green
-// closes it; pending and no-run commits neither open nor close one.
+// Episodes of red: { from, to (null while open), verifiedAt, url, name }. A red commit later fixed by a head whose
+// runs all finished green closes it at that head's push time (its first run's start, never before the red began);
+// verifiedAt is when its last run finished. A fix commit that then fails does not close it; pending and no-run commits neither open nor close one.
 export function episodes(commits) {
   const eps = [];
   let open = null;
   for (const c of commits) {
     if (c.state === "red" && !open) open = { from: c.at, to: null, url: c.url, name: c.name, sha: c.sha, runId: c.runId, attempt: c.attempt, conclusion: c.conclusion };
     else if (c.state === "green" && open) {
-      eps.push({ ...open, to: Math.max(c.at, open.from) });
+      // Fixed when pushed; the time until its runs finished is waiting/unverified, not red.
+      const to = Math.max(c.start, open.from);
+      eps.push({ ...open, to, verifiedAt: Math.max(c.at, to) });
       open = null;
     }
   }
@@ -101,9 +105,15 @@ export function median(xs) {
 export function measure(runs, { since, now }) {
   const eps = episodes(commitVerdicts(runs));
   let redMinutes = 0;
+  let waitMinutes = 0;
   const closed = [];
   let open = null;
-  for (const e of eps) {
+  for (const [i, e] of eps.entries()) {
+    if (e.to !== null) {
+      // A wait never overlaps the next red stretch, so the two columns never count a minute twice.
+      const end = Math.min(e.verifiedAt, eps[i + 1]?.from ?? Infinity, now);
+      if (end > Math.max(e.to, since)) waitMinutes += mins(Math.max(e.to, since), end);
+    }
     const to = e.to ?? now;
     if (to < since || e.from > now) continue;
     redMinutes += mins(Math.max(e.from, since), Math.min(to, now));
@@ -116,6 +126,7 @@ export function measure(runs, { since, now }) {
     infra: infra.length,
     infraRuns: infra,
     redMinutes: Math.round(redMinutes),
+    waitMinutes: Math.round(waitMinutes),
     windowMinutes: Math.round(mins(since, now)),
     episodes: closed.length + (open ? 1 : 0),
     medianToGreen: mid === null ? null : Math.round(mid),
@@ -147,12 +158,13 @@ export function fmtMin(m) {
 }
 
 export function table(rows) {
-  const head = "| repo | red minutes | % red | episodes | median to green | red now | infra |\n|---|---|---|---|---|---|---|";
+  const head = "| repo | red minutes | % red | waiting for runners | % wait | episodes | median to green | red now | infra |\n|---|---|---|---|---|---|---|---|---|";
   const lines = rows.map(({ repo, m, error }) => {
-    if (error) return `| ${repo} | unreadable | | | | ${error} | |`;
+    if (error) return `| ${repo} | unreadable | | | | | | ${error} | |`;
     const pct = m.windowMinutes ? ((100 * m.redMinutes) / m.windowMinutes).toFixed(1) : "0.0";
+    const wpct = m.windowMinutes ? ((100 * (m.waitMinutes ?? 0)) / m.windowMinutes).toFixed(1) : "0.0";
     const now = m.open ? `${fmtMin(m.open.minutes)} (${m.open.name ?? "check"}) ${m.open.url ?? ""}`.trim() : "-";
-    return `| ${repo} | ${fmtMin(m.redMinutes)} | ${pct}% | ${m.episodes} | ${fmtMin(m.medianToGreen)} | ${now} | ${m.infra ?? 0} |`;
+    return `| ${repo} | ${fmtMin(m.redMinutes)} | ${pct}% | ${fmtMin(m.waitMinutes ?? 0)} | ${wpct}% | ${m.episodes} | ${fmtMin(m.medianToGreen)} | ${now} | ${m.infra ?? 0} |`;
   });
   return [head, ...lines].join("\n");
 }
