@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable } from "./rearm-merges.mjs";
+import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable, withRetry } from "./rearm-merges.mjs";
 
 const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
 
@@ -55,4 +55,21 @@ test("needsUpdate is true only for an armed PR that is behind its base", () => {
   assert.equal(needsUpdate({ autoMergeRequest: { mergeMethod: "SQUASH" }, mergeStateStatus: "BEHIND" }), true);
   assert.equal(needsUpdate({ autoMergeRequest: null, mergeStateStatus: "BEHIND" }), false);
   assert.equal(needsUpdate({ autoMergeRequest: { mergeMethod: "SQUASH" }, mergeStateStatus: "BLOCKED" }), false);
+});
+
+test("withRetry retries a GitHub 5xx with backoff and then succeeds", () => {
+  const waits = [];
+  let calls = 0;
+  const out = withRetry(() => { if (++calls < 3) throw Object.assign(new Error("failed"), { stderr: "gh: HTTP 502" }); return "ok"; }, { delays: [1, 2, 3], sleep: (ms) => waits.push(ms), log: () => {} });
+  assert.equal(out, "ok");
+  assert.deepEqual(waits, [1, 2]);
+});
+
+test("withRetry gives up after the last delay and never retries a non-5xx error", () => {
+  let calls = 0;
+  assert.throws(() => withRetry(() => { calls++; throw Object.assign(new Error("x"), { stderr: "gh: HTTP 503" }); }, { delays: [1, 1], sleep: () => {}, log: () => {} }), /x/);
+  assert.equal(calls, 3);
+  calls = 0;
+  assert.throws(() => withRetry(() => { calls++; throw Object.assign(new Error("x"), { stderr: "gh: HTTP 403" }); }, { delays: [1, 1], sleep: () => {}, log: () => {} }));
+  assert.equal(calls, 1);
 });

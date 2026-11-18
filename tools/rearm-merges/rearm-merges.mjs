@@ -61,10 +61,28 @@ const QUERY = `query($q:String!,$after:String){search(query:$q,type:ISSUE,first:
     autoMergeRequest{mergeMethod commitHeadline commitBody}
     commits(last:1){nodes{commit{statusCheckRollup{state}}}}}}}}`;
 
+// A GitHub 5xx or a dropped connection is retried with backoff; anything else (a rejected mutation, a 4xx) fails at once.
+export const TRANSIENT = /\bHTTP 50[0234]\b|\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|ETIMEDOUT|ECONNRESET|EAI_AGAIN/i;
+export const RETRY_DELAYS_MS = [2000, 5000, 15000, 30000];
+const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+export function withRetry(call, { delays = RETRY_DELAYS_MS, sleep = sleepSync, log = console.error } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return call();
+    } catch (err) {
+      const text = `${err.stderr ?? ""}\n${err.message ?? ""}`;
+      if (attempt >= delays.length || !TRANSIENT.test(text)) throw err;
+      log(`GitHub answered with a server error (${text.trim().split("\n")[0]}); retrying in ${delays[attempt] / 1000}s`);
+      sleep(delays[attempt]);
+    }
+  }
+}
+
 function gql(query, vars) {
   const args = ["api", "graphql", "-f", `query=${query}`];
   for (const [k, v] of Object.entries(vars)) args.push("-f", `${k}=${v}`);
-  return JSON.parse(execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })).data;
+  return JSON.parse(withRetry(() => execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }))).data;
 }
 
 export function openPrs() {
