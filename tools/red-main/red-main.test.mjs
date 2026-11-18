@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, makeGet, markInfra, measure, median, route, table } from "./red-main.mjs";
+import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, makeGet, markInfra, QuotaFloor, measure, median, route, table } from "./red-main.mjs";
 
 const T = (min) => new Date(Date.UTC(2026, 10, 17, 0, 0) + min * 60000).toISOString();
 const at = (min) => Date.UTC(2026, 10, 17, 0, 0) + min * 60000;
@@ -245,16 +245,19 @@ test("markInfra reads only the first failing commit of a red stretch, and again 
   assert.equal(measure(runs, { since: at(0), now: at(100) }).episodes, 2);
 });
 
-test("a run stops with a clear message at its call cap", async () => {
+test("a run stops at the shared floor, read from X-RateLimit-Remaining, and says when the budget resets", async () => {
   const real = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, headers: new Headers(), text: async () => "{}" });
+  const reset = Math.floor(Date.UTC(2026, 10, 18, 20, 5) / 1000);
+  let left = 501;
+  globalThis.fetch = async () => ({ status: 200, ok: true, headers: new Headers({ "x-ratelimit-remaining": String(left--), "x-ratelimit-reset": String(reset) }), text: async () => "{}" });
   process.env.GH_TOKEN = "x";
   try {
-    const get = makeGet(null, 2);
+    const get = makeGet(null);
     await get("/a");
     await get("/b");
-    await assert.rejects(get("/c"), /stopped at 2 API calls \(RED_MAIN_MAX_CALLS\)/);
-    assert.equal(get.calls.total, 2);
+    await get("/c");
+    await assert.rejects(get("/d"), (e) => e instanceof QuotaFloor && /499 REST calls left, under the shared floor of 500.*20:05Z/.test(e.message));
+    assert.equal(get.calls.total, 3);
   } finally {
     globalThis.fetch = real;
   }

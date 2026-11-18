@@ -177,16 +177,30 @@ function token() {
 
 // A GET that counts what it spends (`calls.total` against the hourly allowance; a 304 answer is free, `calls.notModified`) and,
 // for run-list pages, sends If-None-Match from `cache.etags` (url -> { etag, body }) so an unchanged page costs nothing.
-export function makeGet(cache = null, cap = Number(process.env.RED_MAIN_MAX_CALLS) || 1000) {
-  const calls = { total: 0, notModified: 0 };
+// The shared floor: below this many REST calls left on the account, red-main stops and leaves the rest for other sessions.
+export const QUOTA_FLOOR = Number(process.env.RED_MAIN_FLOOR) || 500;
+export class QuotaFloor extends Error {
+  constructor(remaining, reset) {
+    super(`stopped: ${remaining} REST calls left, under the shared floor of ${QUOTA_FLOOR}; the budget resets at ${new Date(reset * 1000).toISOString().slice(11, 16)}Z (rerun then; the cache keeps what was read)`);
+    this.reset = reset;
+  }
+}
+
+export function makeGet(cache = null) {
+  const calls = { total: 0, notModified: 0, remaining: null, reset: null };
   const seen = new Set();
   async function get(path) {
     const tagged = cache && /\/actions\/runs\?/.test(path) ? ((cache.etags ??= {}), cache.etags[path]) : null;
     const headers = { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" };
     if (tagged) headers["if-none-match"] = tagged.etag;
-    if (calls.total >= cap) throw new Error(`stopped at ${cap} API calls (RED_MAIN_MAX_CALLS) to protect the shared hourly allowance; run again later (the cache keeps what was read) or raise the cap`);
+    if (calls.remaining !== null && calls.remaining < QUOTA_FLOOR) throw new QuotaFloor(calls.remaining, calls.reset);
     calls.total++;
     const res = await fetch(`https://api.github.com${path}`, { headers });
+    const left = res.headers?.get?.("x-ratelimit-remaining");
+    if (left !== null && left !== undefined) {
+      calls.remaining = Number(left);
+      calls.reset = Number(res.headers.get("x-ratelimit-reset"));
+    }
     if (res.status === 304 && tagged) {
       calls.notModified++;
       seen.add(path);
@@ -375,6 +389,8 @@ export async function main(argv = process.argv.slice(2), now = Date.now()) {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, JSON.stringify(cache));
   }
+  const skipped = rows.filter((r) => r.error?.startsWith("stopped:"));
+  if (skipped.length) console.error(`red-main: PARTIAL. Not covered: ${skipped.map((r) => r.repo).join(", ")}. ${skipped[0].error}`);
   console.error(`red-main: ${get.calls.total} API calls (${get.calls.notModified} answered 304, free)${file ? `, cache ${file}` : ", no cache"}`);
   if (argv.includes("--route")) {
     const reds = Object.fromEntries(rows.filter((r) => r.m?.open).map((r) => [r.repo, r.m.open]));
