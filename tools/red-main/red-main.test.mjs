@@ -66,12 +66,8 @@ const red = (minutes, name = "check") => ({ since: at(0), url: "https://x/run/1"
 
 test("a product red wakes its owner with the run link and not the tooling coordinator", () => {
   const w = route({ "ourostack/ouro-ui": red(), "teams-microsoft/tandem": red(), "gim-home/CIT-pages": red(), "ourostack/ouroboros": red() }, { now: at(10) });
-  assert.deepEqual(w.map((x) => [x.repo, x.session, x.reason]), [
-    ["ourostack/ouro-ui", "34c6f98e", "owner"],
-    ["teams-microsoft/tandem", "86423aa7", "owner"],
-    ["gim-home/CIT-pages", "16caf80c", "owner"],
-    ["ourostack/ouroboros", "9603c7f8", "owner"],
-  ]);
+  const repos = ["ourostack/ouro-ui", "teams-microsoft/tandem", "gim-home/CIT-pages", "ourostack/ouroboros"];
+  assert.deepEqual(w.map((x) => [x.repo, x.session, x.reason]), repos.map((repo) => [repo, OWNERS.repos[repo].session, "owner"]));
   assert.match(w[0].message, /https:\/\/x\/run\/1/);
 });
 
