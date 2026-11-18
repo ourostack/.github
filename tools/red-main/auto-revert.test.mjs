@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIG, act, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
+import { CONFIG, act, ignored, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 17, 12, 0);
 const SHA = "a".repeat(40);
@@ -265,6 +265,32 @@ test("main prints the API calls a run spent", async () => {
     console.log = orig;
   }
   assert.equal(lines.at(-1), "auto-revert: 1 API calls (1 read, 0 write)");
+});
+
+test("config: tandem ignores first-run-gate, which gates only the newest commit", () => {
+  assert.deepEqual(CONFIG.repos["teams-microsoft/tandem"].ignoreWorkflows, ["first-run-gate"]);
+});
+
+// Two commits: the newest has a red gate beside a green CI; the one before is all green.
+const gateRun = (sha, name, path, conclusion, i) => ({ id: i, name, path, event: "push", head_sha: sha, status: "completed", conclusion, run_attempt: 1, run_started_at: new Date(NOW - i * 60000).toISOString(), created_at: new Date(NOW - i * 60000).toISOString(), html_url: "https://x" });
+const gateMain = (gatePath = ".github/workflows/first-run-gate.yml") => ({
+  get: async () => ({ total_count: 3, workflow_runs: [gateRun("a".repeat(40), "First run gate", gatePath, "failure", 1), gateRun("a".repeat(40), "CI", ".github/workflows/ci.yml", "success", 2), gateRun("b".repeat(40), "CI", ".github/workflows/ci.yml", "success", 3)] }),
+});
+
+test("an ignored workflow's red does not open a red stretch, so nothing is reverted", async () => {
+  assert.equal(await gather("o/r", NOW, gateMain(), { ignore: ["first-run-gate"] }), null);
+  const byName = await gather("o/r", NOW, gateMain(".github/workflows/x.yml"), { ignore: ["First run gate"] });
+  assert.equal(byName, null);
+});
+
+test("without the exclusion, the same red gate is a red stretch; another workflow's red still counts", async () => {
+  const r = await readRedStretch("o/r", gateMain().get);
+  assert.equal(r.runs.length, 3);
+  const other = await readRedStretch("o/r", gateMain(".github/workflows/other.yml").get, { ignore: ["first-run-gate"] });
+  assert.equal(other.runs.length, 3);
+  assert.ok(other.runs.some((r) => r.conclusion === "failure"));
+  assert.ok(!(await readRedStretch("o/r", gateMain().get, { ignore: ["first-run-gate"] })).runs.some((r) => r.conclusion === "failure"));
+  assert.equal(ignored({ path: ".github/workflows/first-run-gate.yml@refs/heads/main" }, ["first-run-gate"]), true);
 });
 
 function commitsOf(runs) {
