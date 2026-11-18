@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, markInfra, measure, median, route, table } from "./red-main.mjs";
+import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, makeGet, markInfra, measure, median, route, table } from "./red-main.mjs";
 
 const T = (min) => new Date(Date.UTC(2026, 10, 17, 0, 0) + min * 60000).toISOString();
 const at = (min) => Date.UTC(2026, 10, 17, 0, 0) + min * 60000;
@@ -228,4 +228,56 @@ test("fetchMainRuns with a cache reads finished days once and only today again",
   await fetchMainRuns("o/r", NOW2 - 86400000, get, NOW2 + 86400000, cache);
   assert.deepEqual(calls, ["2026-11-17", "2026-11-18"]);
   assert.deepEqual(Object.keys(cache.days["o/r"]), ["2026-11-16", "2026-11-17"]);
+});
+
+test("markInfra reads only the first failing commit of a red stretch, and again after a green head", async () => {
+  const runs = [
+    run("a", "ci", "failure", 0, 5, { id: 1 }),
+    run("b", "ci", "failure", 10, 15, { id: 2 }),
+    run("c", "ci", "failure", 20, 25, { id: 3 }),
+    run("d", "ci", "success", 30, 35, { id: 4 }),
+    run("e", "ci", "failure", 40, 45, { id: 5 }),
+  ];
+  const paths = [];
+  const get = infraGet([{ title: "Test failed" }], "expected 504 items");
+  await markInfra("o/r", runs, async (p) => (paths.push(p), get(p)));
+  assert.deepEqual(paths.filter((p) => p.includes("/jobs?")).map((p) => /runs\/(\d+)\//.exec(p)[1]), ["1", "5"]);
+  assert.equal(measure(runs, { since: at(0), now: at(100) }).episodes, 2);
+});
+
+test("a run stops with a clear message at its call cap", async () => {
+  const real = globalThis.fetch;
+  globalThis.fetch = async () => ({ status: 200, ok: true, headers: new Headers(), text: async () => "{}" });
+  process.env.GH_TOKEN = "x";
+  try {
+    const get = makeGet(null, 2);
+    await get("/a");
+    await get("/b");
+    await assert.rejects(get("/c"), /stopped at 2 API calls \(RED_MAIN_MAX_CALLS\)/);
+    assert.equal(get.calls.total, 2);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
+
+test("today's run-list URL is the same on every run, so its ETag answers 304 and costs nothing", async () => {
+  const NOW3 = Date.UTC(2026, 10, 17, 12, 0);
+  const real = globalThis.fetch;
+  const seen = [];
+  globalThis.fetch = async (url, { headers }) => {
+    seen.push(url);
+    if (headers["if-none-match"] === '"t"') return { status: 304, ok: false, headers: new Headers() };
+    return { status: 200, ok: true, headers: new Headers({ etag: '"t"' }), text: async () => JSON.stringify({ total_count: 0, workflow_runs: [] }) };
+  };
+  process.env.GH_TOKEN = "x";
+  try {
+    const cache = {};
+    await fetchMainRuns("o/r", NOW3 - 86400000, makeGet(cache), NOW3, cache);
+    const later = makeGet(cache);
+    await fetchMainRuns("o/r", NOW3 - 86400000, later, NOW3 + 600000, cache);
+    assert.equal(later.calls.notModified, 1);
+    assert.equal(seen.at(-1), seen.at(-2));
+  } finally {
+    globalThis.fetch = real;
+  }
 });
