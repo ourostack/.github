@@ -43,9 +43,14 @@ export function readyWithoutAutoMerge(pr) {
   return pr.commits?.nodes?.[0]?.commit?.statusCheckRollup?.state === "SUCCESS";
 }
 
+// PR cannot be merged due to conflicts or unmergeable state.
+export function isUnmergeable(pr) {
+  return pr.mergeable === "CONFLICTING" || pr.mergeStateStatus === "CONFLICTING";
+}
+
 const QUERY = `query($q:String!,$after:String){search(query:$q,type:ISSUE,first:50,after:$after){
   pageInfo{hasNextPage endCursor}
-  nodes{... on PullRequest{id number title body url isDraft mergeStateStatus reviewDecision
+  nodes{... on PullRequest{id number title body url isDraft mergeable mergeStateStatus reviewDecision
     repository{nameWithOwner}
     autoMergeRequest{mergeMethod commitHeadline commitBody}
     commits(last:1){nodes{commit{statusCheckRollup{state}}}}}}}}`;
@@ -104,16 +109,36 @@ function main() {
   const opts = { dryRun: args.has("--dry-run") };
   const prs = openPrs();
   let acted = 0;
+  const unmergeable = [];
   for (const pr of prs) {
     try {
-      if (needsRearm(pr)) { acted++; rearm(pr, opts); }
-      else if (args.has("--merge-ready") && readyWithoutAutoMerge(pr)) { acted++; mergeNow(pr, opts); }
+      if (isUnmergeable(pr)) {
+        unmergeable.push(label(pr));
+      } else if (needsRearm(pr)) {
+        acted++;
+        rearm(pr, opts);
+      } else if (args.has("--merge-ready") && readyWithoutAutoMerge(pr)) {
+        acted++;
+        mergeNow(pr, opts);
+      }
     } catch (err) {
-      console.log(`failed on ${label(pr)}: ${String(err.stderr ?? err.message).trim().split("\n")[0]}`);
-      process.exitCode = 1;
+      const msg = String(err.stderr ?? err.message).trim().split("\n")[0];
+      // Only fail on actual errors, not on unmergeable PRs
+      if (/not mergeable|CONFLICTING/i.test(msg)) {
+        unmergeable.push(`${label(pr)} (${msg})`);
+      } else {
+        console.log(`failed on ${label(pr)}: ${msg}`);
+        process.exitCode = 1;
+      }
     }
   }
   console.log(`${prs.length} open PRs checked, ${acted} needed action.`);
+  if (unmergeable.length > 0) {
+    console.log(`\nSkipped ${unmergeable.length} unmergeable PR(s):`);
+    for (const pr of unmergeable) {
+      console.log(`  - ${pr}`);
+    }
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) main();
