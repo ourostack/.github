@@ -23,7 +23,9 @@
 // Needs GH_TOKEN (or `gh auth login`). Repos the token cannot read are reported as unreadable, never as green.
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const ESCALATE_MIN = 60;
@@ -173,22 +175,51 @@ function token() {
   return process.env.GH_TOKEN ?? execFileSync("gh", ["auth", "token"], { encoding: "utf8" }).trim();
 }
 
-async function ghGet(path) {
-  const res = await fetch(`https://api.github.com${path}`, { headers: { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" } });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
+// A GET that counts what it spends (`calls.total` against the hourly allowance; a 304 answer is free, `calls.notModified`) and,
+// for run-list pages, sends If-None-Match from `cache.etags` (url -> { etag, body }) so an unchanged page costs nothing.
+export function makeGet(cache = null) {
+  const calls = { total: 0, notModified: 0 };
+  const seen = new Set();
+  async function get(path) {
+    const tagged = cache && /\/actions\/runs\?/.test(path) ? ((cache.etags ??= {}), cache.etags[path]) : null;
+    const headers = { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" };
+    if (tagged) headers["if-none-match"] = tagged.etag;
+    calls.total++;
+    const res = await fetch(`https://api.github.com${path}`, { headers });
+    if (res.status === 304 && tagged) {
+      calls.notModified++;
+      seen.add(path);
+      return tagged.body;
+    }
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const text = await res.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = text;
+    }
+    if (cache && /\/actions\/runs\?/.test(path) && res.headers.get("etag")) {
+      // Only today's pages are worth keeping; completed days come from the day cache.
+      cache.etags[path] = { etag: res.headers.get("etag"), body: { total_count: body.total_count, workflow_runs: body.workflow_runs.map(slimRun) } };
+      seen.add(path);
+    }
+    return body;
   }
+  get.calls = calls;
+  get.prune = () => cache?.etags && Object.keys(cache.etags).forEach((k) => seen.has(k) || delete cache.etags[k]);
+  return get;
 }
+const ghGet = makeGet();
+
+// The fields measure, commitVerdicts and markInfra read.
+const slimRun = (r) => ({ id: r.id, name: r.name, event: r.event, head_sha: r.head_sha, status: r.status, conclusion: r.conclusion, created_at: r.created_at, run_started_at: r.run_started_at, updated_at: r.updated_at, html_url: r.html_url, run_attempt: r.run_attempt });
 
 const iso = (t) => new Date(t).toISOString().replace(/\.\d+Z$/, "Z");
 
 // The API returns at most 1000 runs per query, so read the window in `created` ranges and halve any range that
 // reports more than 1000 until each fits.
-export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now()) {
+export async function fetchRange(repo, from, to, get = ghGet) {
   const runs = new Map();
   const range = async (from, to) => {
     const q = `/repos/${repo}/actions/runs?branch=main&event=push&created=${encodeURIComponent(`${iso(from)}..${iso(to)}`)}&per_page=100`;
@@ -206,8 +237,31 @@ export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now()) 
       if (body.workflow_runs.length < 100) break;
     }
   };
-  await range(since, now);
+  await range(from, to);
   return [...runs.values()];
+}
+
+const DAY = 86400000;
+const dayKey = (t) => new Date(t).toISOString().slice(0, 10);
+
+// The window's runs, read a UTC day at a time. A day that ended before `now` and whose runs had all finished is kept in
+// `cache.days[repo]` and never read again; only uncached days and today are fetched (today through ETag'd pages).
+export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now(), cache = null) {
+  if (!cache) return fetchRange(repo, since, now, get);
+  const days = ((cache.days ??= {})[repo] ??= {});
+  const runs = [];
+  for (let start = Math.floor(since / DAY) * DAY; start <= now; start += DAY) {
+    const key = dayKey(start);
+    if (days[key]) {
+      runs.push(...days[key]);
+      continue;
+    }
+    const got = await fetchRange(repo, start, Math.min(start + DAY - 1000, now), get);
+    runs.push(...got);
+    if (start + DAY <= now && got.every((r) => r.status === "completed")) days[key] = got.map(slimRun);
+  }
+  for (const key of Object.keys(days)) if (key < dayKey(since)) delete days[key];
+  return runs;
 }
 
 // A failed job's annotation titled "infra" says the job failed for infrastructure, not code.
@@ -220,12 +274,18 @@ const infraText = (t) => String(t).slice(-200000).match(INFRA_LOG) ?? String(t).
 export const neverStarted = (j) => (Array.isArray(j.steps) && j.steps.length === 0) || j.runner_id === 0 || j.runner_id === null;
 
 // Marks each failed run `infra` (the reason) when every failed job is an annotated or GitHub 5xx/ETIMEDOUT failure.
-export async function markInfra(repo, runs, get = ghGet) {
+export async function markInfra(repo, runs, get = ghGet, memo = null) {
   await Promise.all(
     runs
       .filter((r) => r.event === "push" && FAILED.has(r.conclusion))
       .map(async (r) => {
+        const known = memo?.[r.id];
+        if (known !== undefined) {
+          if (known) r.infra = known;
+          return;
+        }
         try {
+          await (async () => {
           if (r.conclusion === "startup_failure") {
             r.infra = "startup_failure";
             return;
@@ -256,6 +316,8 @@ export async function markInfra(repo, runs, get = ghGet) {
             reasons.push(hit[0]);
           }
           r.infra = reasons[0];
+          })();
+          if (memo && r.status === "completed") memo[r.id] = r.infra ?? "";
         } catch {
           // Unreadable annotations or logs leave the run counted as red.
         }
@@ -264,18 +326,37 @@ export async function markInfra(repo, runs, get = ghGet) {
   return runs;
 }
 
+export const defaultCache = () => process.env.RED_MAIN_CACHE ?? join(homedir(), ".cache", "red-main.json");
+
 export async function main(argv = process.argv.slice(2), now = Date.now()) {
   const days = Number(argv[argv.indexOf("--days") + 1]) || 7;
   const since = now - days * 86400000;
+  const file = argv.includes("--no-cache") ? null : argv.includes("--cache") ? argv[argv.indexOf("--cache") + 1] : defaultCache();
+  let cache = null;
+  if (file) {
+    try {
+      cache = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      cache = {};
+    }
+  }
+  const get = makeGet(cache);
   const rows = await Promise.all(
     Object.keys(OWNERS.repos).map(async (repo) => {
       try {
-        return { repo, m: measure(await markInfra(repo, await fetchMainRuns(repo, since, ghGet, now)), { since, now }) };
+        const memo = cache ? ((cache.infra ??= {})[repo] ??= {}) : null;
+        return { repo, m: measure(await markInfra(repo, await fetchMainRuns(repo, since, get, now, cache), get, memo), { since, now }) };
       } catch (err) {
         return { repo, error: err.message };
       }
     }),
   );
+  if (cache) {
+    get.prune();
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, JSON.stringify(cache));
+  }
+  console.error(`red-main: ${get.calls.total} API calls (${get.calls.notModified} answered 304, free)${file ? `, cache ${file}` : ", no cache"}`);
   if (argv.includes("--route")) {
     const reds = Object.fromEntries(rows.filter((r) => r.m?.open).map((r) => [r.repo, r.m.open]));
     const wakes = route(reds, { now });

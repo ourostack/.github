@@ -17,6 +17,8 @@
 //      (rerun-failed-jobs) and a later tick (every 10 minutes) reads its result, so no job waits on a runner.
 // Then it opens the revert PR with GitHub's revertPullRequest, turns on auto-merge with a clean message and comments
 // the owner from owners.json on it (red-main's gate already wakes the owner on a red main).
+// It reads only the open red stretch: main's newest push runs, newest first, 25 at a time, back to the last green commit (1 call when main is green),
+// never a time window. It prints the API calls the run spent.
 // `--self <owner/repo>` is the caller-workflow mode: that one repo, opted in by the caller, with the caller's own token. Needs GH_TOKEN with contents and
 // pull-request write on the opted-in repos (the REARM_MERGES_TOKEN secret); it talks to GitHub through `gh api`.
 
@@ -24,7 +26,7 @@ import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { OWNERS, RUNNER_LOST, commitVerdicts, episodes, fetchMainRuns, markInfra, neverStarted } from "./red-main.mjs";
+import { OWNERS, RUNNER_LOST, commitVerdicts, episodes, markInfra, neverStarted } from "./red-main.mjs";
 import { cleanBody } from "../rearm-merges/rearm-merges.mjs";
 
 export const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
@@ -146,12 +148,39 @@ async function readNotes(a, repo, id) {
   }
 }
 
+export const PAGE = 25;
+export const MAX_PAGES = 8;
+
+// main's push runs newest first, one small page at a time, until the first commit whose runs all passed (the red stretch
+// ends there) or main's newest commits are all that is needed. Returns { runs: the stretch's runs plus that green commit's,
+// complete: false when MAX_PAGES pages never reached a green commit (the stretch's start is unknown) }.
+// A commit's runs may continue on the next page, so the page's last commit is judged only once another page shows it whole.
+export async function readRedStretch(repo, get, { perPage = PAGE, maxPages = MAX_PAGES } = {}) {
+  const all = new Map();
+  for (let page = 1; page <= maxPages; page++) {
+    const body = await get(`/repos/${repo}/actions/runs?branch=main&event=push&per_page=${perPage}&page=${page}`);
+    const got = body.workflow_runs ?? [];
+    for (const r of got) all.set(r.id, r);
+    const last = page * perPage >= (body.total_count ?? 0) || got.length < perPage;
+    const runs = [...all.values()];
+    const edge = last ? null : got[got.length - 1]?.head_sha;
+    const settled = commitVerdicts(runs.filter((r) => r.head_sha !== edge));
+    const green = settled.filter((c) => c.state === "green").at(-1);
+    if (green) return { runs: runs.filter((r) => r.head_sha === green.sha || ms(r.run_started_at ?? r.created_at) >= green.start), complete: true };
+    if (last) return { runs, complete: true };
+  }
+  return { runs: [...all.values()], complete: false };
+}
+const ms = (t) => new Date(t).getTime();
+
 // Reads the repo's open red and everything the guards need. Returns null when main is not red.
 export async function gather(repo, now, a = api) {
-  const since = now - 7 * 86400000;
   const get = (p) => a.get(p);
-  const eps = episodes(commitVerdicts(await markInfra(repo, await fetchMainRuns(repo, since, get, now), get)));
+  const stretch = await readRedStretch(repo, get);
+  const eps = episodes(commitVerdicts(await markInfra(repo, stretch.runs, get)));
   const open = eps.find((e) => e.to === null);
+  if (!open) return null;
+  if (!stretch.complete) return { repo, tooLong: true, minutes: Math.round((now - open.from) / 60000) };
   if (!open) return null;
   const [after, pulls, commit, openPrs, jobsBody] = await Promise.all([
     a.get(`/repos/${repo}/compare/${open.sha}...main`),
@@ -201,7 +230,19 @@ export async function act(repo, f, verdict, { apply, now, log = console.log, a =
   log(`opened ${made.url} with auto-merge on`);
 }
 
-export async function main(argv = process.argv.slice(2), now = Date.now(), a = api) {
+// Counts every API call a run makes, by method.
+export function counted(a = api) {
+  const calls = { GET: 0, POST: 0, graphql: 0 };
+  return {
+    calls,
+    get: (p) => (calls.GET++, a.get(p)),
+    post: (p, b) => (calls.POST++, a.post(p, b)),
+    graphql: (q, v) => (calls.graphql++, a.graphql(q, v)),
+  };
+}
+
+export async function main(argv = process.argv.slice(2), now = Date.now(), base = api) {
+  const a = counted(base);
   const apply = argv.includes("--apply");
   const self = argv.includes("--self") ? argv[argv.indexOf("--self") + 1] : null;
   const only = self ?? argv[argv.indexOf("--repo") + 1];
@@ -219,6 +260,10 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), a = a
         console.log(`${repo}: main is not red`);
         continue;
       }
+      if (f.tooLong) {
+        console.log(`${repo}: red ${f.minutes}m+ across more than ${MAX_PAGES * PAGE} runs, start of the stretch unknown, not reverting`);
+        continue;
+      }
       const v = evaluate(f);
       if (v.action === "skip") console.log(`${repo}: red ${f.minutes}m, not reverting: ${v.reason}`);
       else await act(repo, f, v, { apply: apply && cfg.enabled, now, a });
@@ -227,6 +272,8 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), a = a
       process.exitCode = 1;
     }
   }
+  const { GET, POST, graphql } = a.calls;
+  console.log(`auto-revert: ${GET + POST + graphql} API calls (${GET} read, ${POST + graphql} write)`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) await main();

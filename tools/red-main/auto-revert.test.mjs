@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIG, act, main, classifyFailure, evaluate, fixPrOpen, gather, revertBody } from "./auto-revert.mjs";
+import { CONFIG, act, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 17, 12, 0);
 const SHA = "a".repeat(40);
@@ -149,7 +149,7 @@ test("main --self checks only that repo, opted in by the caller", async () => {
   } finally {
     console.log = orig;
   }
-  assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red"]);
+  assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red", "auto-revert: 1 API calls (1 read, 0 write)"]);
 });
 
 test("a job annotated title=infra is never reverted, and gather reads the annotation", async () => {
@@ -204,3 +204,69 @@ test("annotations that cannot be read mean can't tell: gather flags it and evalu
   assert.match(v.reason, /annotations unreadable, can't tell/);
   assert.equal(evaluate(await gather("o/r", NOW, { get: get(async () => []) })).action, "revert");
 });
+
+// A fake main: `shas` newest first, each with one run (a state of "red" or "green"), served by the real list endpoint's paging.
+function fakeMain(states, { perRun = 1 } = {}) {
+  const runs = [];
+  states.forEach((st, i) => {
+    for (let k = 0; k < perRun; k++) {
+      const t = new Date(NOW - (i * 10 + k) * 60000).toISOString();
+      runs.push({ id: 1000 + i * 10 + k, name: `W${k}`, event: "push", head_sha: String(i).padStart(40, "0"), status: "completed", conclusion: st === "red" ? "failure" : "success", run_attempt: 1, run_started_at: t, created_at: t, updated_at: t, html_url: "https://x" });
+    }
+  });
+  const paths = [];
+  const get = async (p) => {
+    paths.push(p);
+    const per = Number(/per_page=(\d+)/.exec(p)[1]);
+    const page = Number(/[?&]page=(\d+)/.exec(p)[1]);
+    return { total_count: runs.length, workflow_runs: runs.slice((page - 1) * per, page * per) };
+  };
+  return { get, paths };
+}
+
+test("reading a green main costs one call, never a time window", async () => {
+  const m = fakeMain(["green", ...Array(60).fill("green")]);
+  const r = await readRedStretch("o/r", m.get);
+  assert.equal(m.paths.length, 1);
+  assert.match(m.paths[0], /per_page=25/);
+  assert.ok(!m.paths[0].includes("created="));
+  assert.equal(commitsOf(r.runs), 1);
+  assert.equal(await gather("o/r", NOW, { get: m.get }), null);
+});
+
+for (const n of [1, 3, 12, 40]) {
+  test(`a red stretch of ${n} commits reads ceil((${n}+1)/page) pages and stops at the last green commit`, async () => {
+    const m = fakeMain([...Array(n).fill("red"), "green", ...Array(80).fill("green")]);
+    const r = await readRedStretch("o/r", m.get);
+    assert.equal(r.complete, true);
+    assert.equal(commitsOf(r.runs), n + 1);
+    assert.equal(m.paths.length, Math.floor(n / 25) + 1 + (n % 25 === 24 ? 1 : 0));
+  });
+}
+
+test("a commit split across two pages is judged whole, and a stretch longer than the cap is reported incomplete", async () => {
+  const split = fakeMain(["red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "green", "green"], { perRun: 5 });
+  const r = await readRedStretch("o/r", split.get, { perPage: 8 });
+  assert.equal(commitsOf(r.runs), 13);
+  const endless = fakeMain(Array(100).fill("red"));
+  const capped = await readRedStretch("o/r", endless.get, { perPage: 10, maxPages: 3 });
+  assert.equal(capped.complete, false);
+  assert.equal(endless.paths.length, 3);
+});
+
+test("main prints the API calls a run spent", async () => {
+  const m = fakeMain(["green", "green"]);
+  const lines = [];
+  const orig = console.log;
+  console.log = (l) => lines.push(l);
+  try {
+    await main(["--self", "o/r"], NOW, { get: m.get });
+  } finally {
+    console.log = orig;
+  }
+  assert.equal(lines.at(-1), "auto-revert: 1 API calls (1 read, 0 write)");
+});
+
+function commitsOf(runs) {
+  return new Set(runs.map((r) => r.head_sha)).size;
+}
