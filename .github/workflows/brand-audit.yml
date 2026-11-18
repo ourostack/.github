@@ -51,3 +51,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test how the audit tells a sync in flight from stale
         run: node --test brand/tools/pending.test.mjs brand/tools/canonical.test.mjs
+
+  # Always runs on every pull request (no path filter), so it can be a required check.
+  red-main-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test red-main, its owner routing and the auto-revert guards
+        run: node --test tools/red-main/red-main.test.mjs tools/red-main/auto-revert.test.mjs
