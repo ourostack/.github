@@ -215,8 +215,24 @@ reviewRequests(first:10){nodes{requestedReviewer{... on User{login}}}}
 commits(last:1){nodes{commit{message statusCheckRollup{contexts(first:100){nodes{__typename
 ... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}`;
 
+// GitHub 5xx and network errors are transient: retry them with backoff (1s, 2s, 4s, 8s) before failing.
+export async function fetchRetry(url, init, { tries = 5, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), doFetch = fetch } = {}) {
+  for (let i = 1; ; i++) {
+    let res;
+    try {
+      res = await doFetch(url, init);
+    } catch (err) {
+      if (i >= tries) throw err;
+      await sleep(1000 * 2 ** (i - 1));
+      continue;
+    }
+    if (res.status < 500 || i >= tries) return res;
+    await sleep(1000 * 2 ** (i - 1));
+  }
+}
+
 async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } = {}) {
-  const res = await fetch(`https://api.github.com${path}`, {
+  const res = await fetchRetry(`https://api.github.com${path}`, {
     method,
     headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" },
     body: body && JSON.stringify(body),

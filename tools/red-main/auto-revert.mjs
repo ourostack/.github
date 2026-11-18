@@ -11,7 +11,7 @@
 //   2. the first red commit is the last commit on main and a squash-merged PR (one parent, one merged PR) -
 //      nothing has merged on top, so the revert is clean and the blame is not shared;
 //   3. no open PR already reverts or fixes it (this tool's own revert PR counts, so it never opens two);
-//   4. the failure is not infrastructure (runner lost, checkout or credential errors, ENOTFOUND, disk full, cancelled,
+//   4. the failure is not infrastructure (a job annotated `title=infra`, runner lost, checkout or credential errors, ENOTFOUND, disk full, cancelled,
 //      timed out, startup failure);
 //   5. the failure reproduces: the failed run's jobs were rerun and failed again. The first tick requests the rerun
 //      (rerun-failed-jobs) and a later tick (every 10 minutes) reads its result, so no job waits on a runner.
@@ -24,7 +24,7 @@ import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns } from "./red-main.mjs";
+import { OWNERS, commitVerdicts, episodes, fetchMainRuns, markInfra } from "./red-main.mjs";
 import { cleanBody } from "../rearm-merges/rearm-merges.mjs";
 
 export const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
@@ -54,6 +54,7 @@ export function classifyFailure(run, jobs) {
   if (!jobs.length) return { infra: true, reason: "no failed job to inspect" };
   for (const j of jobs) {
     if (j.conclusion === "cancelled" || j.conclusion === "timed_out") return { infra: true, reason: `job "${j.name}" ${j.conclusion}` };
+    if (j.infra) return { infra: true, reason: `job "${j.name}" is annotated title=infra: ${j.infra}` };
     const failedSteps = (j.steps ?? []).filter((s) => s.conclusion === "failure");
     if (!failedSteps.length) return { infra: true, reason: `job "${j.name}" failed with no failed step (runner lost)` };
     const bad = failedSteps.find((s) => INFRA_STEP.test(s.name));
@@ -130,10 +131,17 @@ export const api = {
   },
 };
 
+async function infraNote(a, repo, id) {
+  const notes = await a.get(`/repos/${repo}/check-runs/${id}/annotations?per_page=100`).catch(() => []);
+  const n = (Array.isArray(notes) ? notes : []).find((x) => String(x.title ?? "").trim().toLowerCase() === "infra");
+  return n ? n.message || "infra" : undefined;
+}
+
 // Reads the repo's open red and everything the guards need. Returns null when main is not red.
 export async function gather(repo, now, a = api) {
   const since = now - 7 * 86400000;
-  const eps = episodes(commitVerdicts(await fetchMainRuns(repo, since, (p) => a.get(p))));
+  const get = (p) => a.get(p);
+  const eps = episodes(commitVerdicts(await markInfra(repo, await fetchMainRuns(repo, since, get, now), get)));
   const open = eps.find((e) => e.to === null);
   if (!open) return null;
   const [after, pulls, commit, openPrs, jobsBody] = await Promise.all([
@@ -146,7 +154,7 @@ export async function gather(repo, now, a = api) {
   const run = await a.get(`/repos/${repo}/actions/runs/${open.runId}`);
   const failed = jobsBody.jobs.filter((j) => ["failure", "cancelled", "timed_out"].includes(j.conclusion));
   const failedJobs = await Promise.all(
-    failed.map(async (j) => ({ name: j.name, conclusion: j.conclusion, steps: j.steps ?? [], log: await a.get(`/repos/${repo}/actions/jobs/${j.id}/logs`).then((t) => String(t).slice(-200000), () => "") })),
+    failed.map(async (j) => ({ infra: await infraNote(a, repo, j.id), name: j.name, conclusion: j.conclusion, steps: j.steps ?? [], log: await a.get(`/repos/${repo}/actions/jobs/${j.id}/logs`).then((t) => String(t).slice(-200000), () => "") })),
   );
   return {
     repo,

@@ -15,6 +15,10 @@
 // that owner with the failing run link; the tooling coordinator hears about it only for repos it owns, or as an
 // escalation once a red main has lasted past ESCALATE_MIN.
 //
+// Infrastructure: a failed job that emits `::error title=infra::<reason>` (README.md), or a run whose only failures
+// are GitHub 5xx or ETIMEDOUT errors in the job log, is infrastructure. It is counted apart from code red, opens no
+// episode, wakes nobody and is never auto-reverted.
+//
 // Needs GH_TOKEN (or `gh auth login`). Repos the token cannot read are reported as unreadable, never as green.
 
 import { execFileSync } from "node:child_process";
@@ -42,18 +46,27 @@ export function commitVerdicts(runs) {
   const out = [];
   for (const [sha, rs] of bySha) {
     const live = rs.filter((r) => r.conclusion !== "cancelled" && r.conclusion !== "stale");
-    const failed = live.filter((r) => FAILED.has(r.conclusion));
+    const failedAll = live.filter((r) => FAILED.has(r.conclusion));
+    const failed = failedAll.filter((r) => !r.infra);
     const start = Math.min(...rs.map((r) => ms(r.run_started_at ?? r.created_at)));
     if (failed.length) {
       const first = failed.reduce((a, b) => (ms(a.updated_at) <= ms(b.updated_at) ? a : b));
       out.push({ sha, start, state: "red", at: ms(first.updated_at), url: first.html_url, name: first.name, runId: first.id, attempt: first.run_attempt ?? 1, conclusion: first.conclusion });
     } else if (live.some((r) => r.status !== "completed")) {
       out.push({ sha, start, state: "pending", at: start });
+    } else if (failedAll.length) {
+      const first = failedAll[0];
+      out.push({ sha, start, state: "infra", at: ms(first.updated_at), url: first.html_url, name: first.name, reason: first.infra });
     } else if (live.length && live.every((r) => PASSED.has(r.conclusion))) {
       out.push({ sha, start, state: "green", at: Math.max(...live.map((r) => ms(r.updated_at))) });
     }
   }
   return out.sort((a, b) => a.start - b.start);
+}
+
+// Infrastructure-only failures in the window: { sha, at, url, name, reason }. They never count as red.
+export function infraFailures(runs, { since, now }) {
+  return commitVerdicts(runs).filter((c) => c.state === "infra" && c.at >= since && c.at <= now).map(({ sha, at, url, name, reason }) => ({ sha, at, url, name, reason }));
 }
 
 // Episodes of red: { from, to (null while open), url, name }. A red commit later fixed by a head that is green
@@ -93,7 +106,10 @@ export function measure(runs, { since, now }) {
     else closed.push(mins(e.from, e.to));
   }
   const mid = median(closed);
+  const infra = infraFailures(runs, { since, now });
   return {
+    infra: infra.length,
+    infraRuns: infra,
     redMinutes: Math.round(redMinutes),
     windowMinutes: Math.round(mins(since, now)),
     episodes: closed.length + (open ? 1 : 0),
@@ -126,12 +142,12 @@ export function fmtMin(m) {
 }
 
 export function table(rows) {
-  const head = "| repo | red minutes | % red | episodes | median to green | red now |\n|---|---|---|---|---|---|";
+  const head = "| repo | red minutes | % red | episodes | median to green | red now | infra |\n|---|---|---|---|---|---|---|";
   const lines = rows.map(({ repo, m, error }) => {
-    if (error) return `| ${repo} | unreadable | | | | ${error} |`;
+    if (error) return `| ${repo} | unreadable | | | | ${error} | |`;
     const pct = m.windowMinutes ? ((100 * m.redMinutes) / m.windowMinutes).toFixed(1) : "0.0";
     const now = m.open ? `${fmtMin(m.open.minutes)} (${m.open.name ?? "check"}) ${m.open.url ?? ""}`.trim() : "-";
-    return `| ${repo} | ${fmtMin(m.redMinutes)} | ${pct}% | ${m.episodes} | ${fmtMin(m.medianToGreen)} | ${now} |`;
+    return `| ${repo} | ${fmtMin(m.redMinutes)} | ${pct}% | ${m.episodes} | ${fmtMin(m.medianToGreen)} | ${now} | ${m.infra ?? 0} |`;
   });
   return [head, ...lines].join("\n");
 }
@@ -143,17 +159,72 @@ function token() {
 async function ghGet(path) {
   const res = await fetch(`https://api.github.com${path}`, { headers: { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" } });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-  return res.json();
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
-export async function fetchMainRuns(repo, since, get = ghGet) {
-  const runs = [];
-  const day = new Date(since).toISOString().slice(0, 10);
-  for (let page = 1; page <= 30; page++) {
-    const body = await get(`/repos/${repo}/actions/runs?branch=main&event=push&created=%3E%3D${day}&per_page=100&page=${page}`);
-    runs.push(...body.workflow_runs);
-    if (body.workflow_runs.length < 100) break;
-  }
+const iso = (t) => new Date(t).toISOString().replace(/\.\d+Z$/, "Z");
+
+// The API returns at most 1000 runs per query, so read the window in `created` ranges and halve any range that
+// reports more than 1000 until each fits.
+export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now()) {
+  const runs = new Map();
+  const range = async (from, to) => {
+    const q = `/repos/${repo}/actions/runs?branch=main&event=push&created=${encodeURIComponent(`${iso(from)}..${iso(to)}`)}&per_page=100`;
+    const first = await get(`${q}&page=1`);
+    if (first.total_count > 1000 && to - from >= 2000) {
+      const mid = Math.floor((from + to) / 2000) * 1000;
+      await range(from, mid);
+      await range(mid + 1000, to);
+      return;
+    }
+    let body = first;
+    for (let page = 1; page <= 10; page++) {
+      if (page > 1) body = await get(`${q}&page=${page}`);
+      for (const r of body.workflow_runs) runs.set(r.id ?? `${r.head_sha}/${r.name}/${r.run_attempt}`, r);
+      if (body.workflow_runs.length < 100) break;
+    }
+  };
+  await range(since, now);
+  return [...runs.values()];
+}
+
+// A failed job's annotation titled "infra" says the job failed for infrastructure, not code.
+const INFRA_LOG = /\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|(GET|POST|PUT|PATCH|DELETE) \S+: 50[0234]\b|HTTP 50[0234]\b|ETIMEDOUT/i;
+
+// Marks each failed run `infra` (the reason) when every failed job is an annotated or GitHub 5xx/ETIMEDOUT failure.
+export async function markInfra(repo, runs, get = ghGet) {
+  await Promise.all(
+    runs
+      .filter((r) => r.event === "push" && FAILED.has(r.conclusion))
+      .map(async (r) => {
+        try {
+          const { jobs } = await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`);
+          const failed = jobs.filter((j) => j.conclusion === "failure");
+          if (!failed.length) return;
+          const reasons = [];
+          for (const j of failed) {
+            const notes = await get(`/repos/${repo}/check-runs/${j.id}/annotations?per_page=100`);
+            const tagged = (Array.isArray(notes) ? notes : []).find((n) => String(n.title ?? "").trim().toLowerCase() === "infra");
+            if (tagged) {
+              reasons.push(tagged.message || "infra");
+              continue;
+            }
+            const log = String(await get(`/repos/${repo}/actions/jobs/${j.id}/logs`).catch(() => ""));
+            const hit = log.slice(-200000).match(INFRA_LOG);
+            if (!hit) return;
+            reasons.push(hit[0]);
+          }
+          r.infra = reasons[0];
+        } catch {
+          // Unreadable annotations or logs leave the run counted as red.
+        }
+      }),
+  );
   return runs;
 }
 
@@ -163,7 +234,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now()) {
   const rows = await Promise.all(
     Object.keys(OWNERS.repos).map(async (repo) => {
       try {
-        return { repo, m: measure(await fetchMainRuns(repo, since), { since, now }) };
+        return { repo, m: measure(await markInfra(repo, await fetchMainRuns(repo, since, ghGet, now)), { since, now }) };
       } catch (err) {
         return { repo, error: err.message };
       }
