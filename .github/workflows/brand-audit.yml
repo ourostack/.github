@@ -1,14 +1,21 @@
 name: brand audit
 
-# Checks every surface in brand/surfaces.json against brand/provenance.json.
-# Red means a surface is stale: see brand/AGENTS.md. Not a required check, because a
-# brand pull request has to merge before other repositories can point at its files.
+# Checks every surface in brand/surfaces.json against brand/provenance.json, in two parts.
+# On a pull request the audit checks only what the pull request can make true (canonical bytes
+# and provenance, masters, derived files, registration, the gates below). A website or social
+# preview that lags only on bytes shows as after-merge, not red, because its sync starts after
+# the merge. After the merge, the converge job runs the live audit on main every 30 minutes and
+# files or updates one issue ("Brand surfaces have not converged") when a surface is still stale
+# past its window, and closes it when the audit is green. Red on a pull request means something
+# in the pull request is wrong: see AGENTS.md ("A branding update reaches every surface").
 on:
   push:
     branches: [main]
   pull_request:
   schedule:
     - cron: "23 7 * * *"
+    # Post-merge convergence; off the hour, where GitHub drops scheduled runs.
+    - cron: "7,37 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -33,6 +40,25 @@ jobs:
           BRAND_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
         run: node brand/tools/audit.mjs --format text
 
+  # The only job that writes: it files, updates and closes the convergence issue. Never on a pull request.
+  converge:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    concurrency:
+      group: brand-converge
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Open, update or close the convergence issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRAND_COMMIT: ${{ github.sha }}
+        run: node brand/tools/converge.mjs
+
   upscale-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -55,7 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test how the audit tells a sync in flight from stale
-        run: node --test brand/tools/pending.test.mjs brand/tools/canonical.test.mjs
+        run: node --test brand/tools/pending.test.mjs brand/tools/canonical.test.mjs brand/tools/converge.test.mjs
 
   # Always runs on every pull request (no path filter), so it can be a required check.
   red-main-tests:

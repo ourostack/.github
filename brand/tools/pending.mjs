@@ -2,6 +2,7 @@
 // sync themselves (ouroboros-website's sync-brand.yml opens, checks and merges a pull request) and the Mac's
 // scheduled browser job uploads social previews (GitHub has no API for them). Pending turns stale, so red,
 // once the window since the brand merge has passed. A surface that is stale for any other reason is never pending.
+// On a pull request the same lag is "after-merge" (afterMergeFor below), because only the merge can start the sync.
 
 // Minutes after a brand merge that a surface may still be catching up. Sized from measurements (2026-11-18):
 // ouroboros-website's sync pull requests took 3 to 17 minutes from opened to merged in 8 of 9 cases (median 4), and one
@@ -24,4 +25,14 @@ export function pendingFor({ id, autoSync, kind, problems, mergedAt, now = new D
   if (ageMinutes < 0 || ageMinutes >= minutes) return null;
   if (!problems.every(isByteLag)) return null;
   return { ageMinutes: Math.floor(ageMinutes), minutes };
+}
+
+// A pull request's audit checks what the pull request can make true: its bytes, masters, derived files and gates. A surface
+// that has an automatic sync and whose every problem is byte lag against the PR's own bytes can only catch up after the merge,
+// so it is "after-merge" (listed, not failed); the post-merge audit (brand/tools/converge.mjs) files an issue if it never does.
+// pr: true only for a pull request's audit (BRAND_REF set, no --origin).
+export function afterMergeFor({ id, autoSync, kind, problems, pr }) {
+  if (!pr || WINDOWS[kind] === undefined || !problems.length) return null;
+  if (!autoSync?.some((prefix) => id?.startsWith(prefix))) return null;
+  return problems.every(isByteLag) ? { minutes: WINDOWS[kind] } : null;
 }

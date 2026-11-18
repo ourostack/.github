@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { pendingFor, WINDOWS } from "./pending.mjs";
+import { afterMergeFor, pendingFor, WINDOWS } from "./pending.mjs";
 
 const now = new Date("2026-11-16T23:00:00Z");
 const ago = (min) => new Date(now - min * 60000);
@@ -43,4 +43,24 @@ test("the windows stay several times the measured sync times", () => {
   const socialRunnerEveryMinutes = 30;
   assert.ok(WINDOWS.website >= 5 * slowNormalSyncMinutes);
   assert.ok(WINDOWS["github-social-preview"] >= 8 * socialRunnerEveryMinutes);
+});
+
+const pr = (o) => afterMergeFor({ id: ID, autoSync: AUTO, kind: "website", problems: lag, pr: true, ...o });
+
+test("on a pull request, byte lag on a surface with an automatic sync is after-merge, for both kinds", () => {
+  assert.deepEqual(pr({}), { minutes: 90 });
+  assert.deepEqual(pr({ id: "social:housesitter", kind: "github-social-preview" }), { minutes: 240 });
+});
+
+test("on a pull request, anything the PR can make true stays stale", () => {
+  assert.equal(pr({ problems: [...lag, "/desk/: answered 404"] }), null);
+  assert.equal(pr({ kind: "github-social-preview", problems: ["no custom social preview"] }), null);
+  assert.equal(pr({ id: "site:other.example" }), null);
+  assert.equal(pr({ kind: "github-readme" }), null);
+  assert.equal(pr({ problems: [] }), null);
+});
+
+test("outside a pull request nothing is after-merge, and the live main audit is unchanged", () => {
+  assert.equal(pr({ pr: false }), null);
+  assert.deepEqual(pendingFor({ id: ID, autoSync: AUTO, kind: "website", problems: lag, mergedAt: ago(10), now, live: true }), { ageMinutes: 10, minutes: 90 });
 });
