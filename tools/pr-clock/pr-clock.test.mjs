@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { autoMergeOff, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
+import { autoMergeOff, fetchRetry, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
 
 const NOW = "2026-11-07T20:00:00Z";
 const run = (name, status, conclusion = null, startedAt = "2026-11-07T19:40:00Z") => ({ __typename: "CheckRun", name, status, conclusion, startedAt });
@@ -147,4 +147,14 @@ test("a private repository's red main is counted but never named", () => {
   const view = render([], NOW, undefined, [main("FAILURE", { repository: { nameWithOwner: "arimendelow/desk", isPrivate: true } })]);
   assert.doesNotMatch(view.body, /arimendelow\/desk/);
   assert.match(view.body, /🔒 1 red main branch in private repositories/);
+});
+
+test("fetchRetry retries a 504 with backoff, then returns the good response", async () => {
+  const seq = [{ status: 504 }, new Error("ETIMEDOUT"), { status: 200 }];
+  const waits = [];
+  const res = await fetchRetry("u", {}, { sleep: async (ms) => waits.push(ms), doFetch: async () => { const x = seq.shift(); if (x instanceof Error) throw x; return x; } });
+  assert.equal(res.status, 200);
+  assert.deepEqual(waits, [1000, 2000]);
+  const last = await fetchRetry("u", {}, { tries: 2, sleep: async () => {}, doFetch: async () => ({ status: 503 }) });
+  assert.equal(last.status, 503);
 });

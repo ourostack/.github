@@ -215,8 +215,24 @@ reviewRequests(first:10){nodes{requestedReviewer{... on User{login}}}}
 commits(last:1){nodes{commit{message statusCheckRollup{contexts(first:100){nodes{__typename
 ... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}`;
 
+// GitHub 5xx and network errors are transient: retry them with backoff (1s, 2s, 4s, 8s) before failing.
+export async function fetchRetry(url, init, { tries = 5, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), doFetch = fetch } = {}) {
+  for (let i = 1; ; i++) {
+    let res;
+    try {
+      res = await doFetch(url, init);
+    } catch (err) {
+      if (i >= tries) throw err;
+      await sleep(1000 * 2 ** (i - 1));
+      continue;
+    }
+    if (res.status < 500 || i >= tries) return res;
+    await sleep(1000 * 2 ** (i - 1));
+  }
+}
+
 async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } = {}) {
-  const res = await fetch(`https://api.github.com${path}`, {
+  const res = await fetchRetry(`https://api.github.com${path}`, {
     method,
     headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" },
     body: body && JSON.stringify(body),
@@ -266,7 +282,13 @@ export async function fetchState() {
         return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${MAIN_FIELDS} pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
       })
       .join(" ")}}`;
-    const { data } = await gh("/graphql", { method: "POST", body: { query } });
+    // GitHub sometimes answers a busy query with null repositories and no error: ask again before giving up on them.
+    let data;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      ({ data } = await gh("/graphql", { method: "POST", body: { query } }));
+      if (chunk.every((_, j) => data?.[`r${j}`]?.pullRequests)) break;
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
     chunk.forEach((full, j) => {
       const repo = data?.[`r${j}`];
       const conn = repo?.pullRequests;

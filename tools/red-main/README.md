@@ -3,6 +3,35 @@
 - `red-main.mjs`: red-minutes measure and owner routing.
 - `auto-revert.mjs`: reverts the one squash-merged PR behind a main that has stayed red for 60 minutes (guards and opt-in list in the file header and `auto-revert.json`; tests in `auto-revert.test.mjs`).
 
+The measure reads the whole window, not just the API's newest 1,000 runs: it queries `created` ranges and halves any range that reports more than 1,000.
+
+## Infrastructure failures: `title=infra`
+
+A failed job that is not the code's fault says so with one line. red-main then counts it in the `infra` column, apart from code red: it opens no red episode, wakes no owner, and `auto-revert.mjs` never reverts it. Emit it from the failing step (GitHub turns the workflow command into a check-run annotation titled `infra`):
+
+```
+::error title=infra::<reason>
+```
+
+Shell step:
+
+```yaml
+- run: |
+    if ! ./provision-runner.sh; then
+      echo "::error title=infra::runner pool exhausted"
+      exit 1
+    fi
+```
+
+Node script (stdout of a step):
+
+```js
+console.log("::error title=infra::device farm unreachable");
+process.exit(1);
+```
+
+Only a job that fails counts; emit it only for causes outside the code under test. A commit that has any non-infra failure is still red. A run whose only failures show GitHub 5xx (`POST /graphql: 504`, `502 Bad Gateway`) or `ETIMEDOUT` in the job log is classed infra without any annotation.
+
 ## Opting a repository in with its own token (no cross-repo secret)
 
 Add `.github/workflows/auto-revert.yml` to the repository:

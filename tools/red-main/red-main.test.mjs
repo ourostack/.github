@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, measure, median, route, table } from "./red-main.mjs";
+import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, markInfra, measure, median, route, table } from "./red-main.mjs";
 
 const T = (min) => new Date(Date.UTC(2026, 10, 17, 0, 0) + min * 60000).toISOString();
 const at = (min) => Date.UTC(2026, 10, 17, 0, 0) + min * 60000;
@@ -55,23 +55,70 @@ test("an episode is clipped to the window and median spans closed episodes", () 
 });
 
 test("fetchMainRuns pages until a short page", async () => {
-  const pages = [Array(100).fill(run("a", "ci", "success", 0, 1)), [run("b", "ci", "success", 0, 1)]];
+  const pages = [Array.from({ length: 100 }, (_, i) => run("a", "ci", "success", 0, 1, { id: i })), [run("b", "ci", "success", 0, 1, { id: 100 })]];
   const seen = [];
-  const runs = await fetchMainRuns("o/r", at(0), async (p) => (seen.push(p), { workflow_runs: pages.shift() }));
+  const runs = await fetchMainRuns("o/r", at(0), async (p) => (seen.push(p), { workflow_runs: pages.shift() }), at(60));
   assert.equal(runs.length, 101);
-  assert.match(seen[0], /branch=main&event=push&created=%3E%3D2026-11-17/);
+  assert.match(decodeURIComponent(seen[0]), /branch=main&event=push&created=2026-11-17T00:00:00Z\.\.2026-11-17T01:00:00Z/);
+});
+
+test("fetchMainRuns splits a window that reports more than 1000 runs, so the whole window is read", async () => {
+  const day = (h) => Date.UTC(2026, 10, 17, h);
+  const ranges = [];
+  const get = async (p) => {
+    const [from, to] = decodeURIComponent(p.match(/created=([^&]+)/)[1]).split("..").map((t) => Date.parse(t));
+    ranges.push([from, to]);
+    const hours = (to - from) / 3600000;
+    const mine = [0, 1, 2, 3].filter((h) => day(h) >= from && day(h) <= to);
+    const page = Number(p.match(/&page=(\d+)/)[1]);
+    return { total_count: hours > 2 ? 1200 : mine.length, workflow_runs: page === 1 ? mine.map((h) => ({ id: h, head_sha: String(h) })) : [] };
+  };
+  const runs = await fetchMainRuns("o/r", day(0), get, day(3) + 1000);
+  assert.deepEqual(runs.map((r) => r.id).sort(), [0, 1, 2, 3]);
+  assert.ok(ranges.length > 1);
+});
+
+const failedJob = (n = 1) => ({ jobs: [{ id: n, conclusion: "failure" }] });
+const infraGet = (notes, log = "exit 1") => async (p) => {
+  if (p.includes("/jobs?")) return failedJob();
+  if (p.includes("/annotations")) return notes;
+  if (p.endsWith("/logs")) return log;
+  throw new Error(p);
+};
+
+test("a failed job annotated title=infra is infra: counted apart, not red", async () => {
+  const runs = [run("a", "ci", "success", 0, 5), run("b", "ci", "failure", 10, 15, { id: 7 }), run("c", "ci", "success", 20, 25)];
+  await markInfra("o/r", runs, infraGet([{ title: "infra", message: "runner pool exhausted" }]));
+  assert.equal(runs[1].infra, "runner pool exhausted");
+  const m = measure(runs, { since: at(0), now: at(100) });
+  assert.deepEqual([m.redMinutes, m.episodes, m.infra], [0, 0, 1]);
+  assert.equal(m.infraRuns[0].reason, "runner pool exhausted");
+  assert.equal(route(m.open ? { "o/r": m.open } : {}, { now: at(100) }).length, 0);
+});
+
+test("an infra annotation does not hide a code failure in the same commit", async () => {
+  const runs = [run("b", "ci", "failure", 10, 15, { id: 7, infra: "x" }), run("b", "win", "failure", 10, 16, { id: 8 })];
+  assert.equal(measure(runs, { since: at(0), now: at(100) }).redMinutes, 84);
+  assert.equal(infraFailures(runs, { since: at(0), now: at(100) }).length, 0);
+});
+
+test("a run whose only failure is a GitHub 5xx or ETIMEDOUT is infra; a plain test failure is red", async () => {
+  for (const log of ["gh: POST /graphql: 504", "HTTP 502 Bad Gateway", "connect ETIMEDOUT 140.82.1.1:443"]) {
+    const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
+    await markInfra("o/r", runs, infraGet([], log));
+    assert.ok(runs[0].infra, log);
+  }
+  const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
+  await markInfra("o/r", runs, infraGet([{ title: "Test failed" }], "expected 504 items"));
+  assert.equal(runs[0].infra, undefined);
 });
 
 const red = (minutes, name = "check") => ({ since: at(0), url: "https://x/run/1", name, minutes });
 
 test("a product red wakes its owner with the run link and not the tooling coordinator", () => {
   const w = route({ "ourostack/ouro-ui": red(), "teams-microsoft/tandem": red(), "gim-home/CIT-pages": red(), "ourostack/ouroboros": red() }, { now: at(10) });
-  assert.deepEqual(w.map((x) => [x.repo, x.session, x.reason]), [
-    ["ourostack/ouro-ui", "34c6f98e", "owner"],
-    ["teams-microsoft/tandem", "86423aa7", "owner"],
-    ["gim-home/CIT-pages", "16caf80c", "owner"],
-    ["ourostack/ouroboros", "9603c7f8", "owner"],
-  ]);
+  const repos = ["ourostack/ouro-ui", "teams-microsoft/tandem", "gim-home/CIT-pages", "ourostack/ouroboros"];
+  assert.deepEqual(w.map((x) => [x.repo, x.session, x.reason]), repos.map((repo) => [repo, OWNERS.repos[repo].session, "owner"]));
   assert.match(w[0].message, /https:\/\/x\/run\/1/);
 });
 
