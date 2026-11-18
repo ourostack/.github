@@ -1,0 +1,40 @@
+name: Auto-revert red main
+
+# When main has stayed red for an hour because of one squash-merged PR, and the failure reproduces on a rerun and is not
+# infrastructure, this opens a revert PR with auto-merge and wakes the repo's owner. Every guard and the opt-in list
+# (tools/red-main/auto-revert.json) are in tools/red-main/auto-revert.mjs. The tests run with red-main's.
+#
+# Needs the REARM_MERGES_TOKEN secret with contents and pull-request write on the opted-in repositories. Without it the
+# job says so in a notice and does nothing.
+on:
+  schedule:
+    - cron: "4-59/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Act (rerun and revert). Off is a dry run."
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-revert
+  cancel-in-progress: false
+
+jobs:
+  auto-revert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Revert what keeps main red
+        env:
+          GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
+          APPLY: ${{ github.event_name != 'workflow_dispatch' || inputs.apply }}
+        shell: bash
+        run: |
+          [ -n "$GH_TOKEN" ] || { echo "::notice::The REARM_MERGES_TOKEN secret is not set; nothing was checked."; exit 0; }
+          flag=""; [ "$APPLY" = "true" ] && flag="--apply"
+          node tools/red-main/auto-revert.mjs $flag 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"

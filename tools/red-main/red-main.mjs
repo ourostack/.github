@@ -46,7 +46,7 @@ export function commitVerdicts(runs) {
     const start = Math.min(...rs.map((r) => ms(r.run_started_at ?? r.created_at)));
     if (failed.length) {
       const first = failed.reduce((a, b) => (ms(a.updated_at) <= ms(b.updated_at) ? a : b));
-      out.push({ sha, start, state: "red", at: ms(first.updated_at), url: first.html_url, name: first.name });
+      out.push({ sha, start, state: "red", at: ms(first.updated_at), url: first.html_url, name: first.name, runId: first.id, attempt: first.run_attempt ?? 1, conclusion: first.conclusion });
     } else if (live.some((r) => r.status !== "completed")) {
       out.push({ sha, start, state: "pending", at: start });
     } else if (live.length && live.every((r) => PASSED.has(r.conclusion))) {
@@ -62,7 +62,7 @@ export function episodes(commits) {
   const eps = [];
   let open = null;
   for (const c of commits) {
-    if (c.state === "red" && !open) open = { from: c.at, to: null, url: c.url, name: c.name, sha: c.sha };
+    if (c.state === "red" && !open) open = { from: c.at, to: null, url: c.url, name: c.name, sha: c.sha, runId: c.runId, attempt: c.attempt, conclusion: c.conclusion };
     else if (c.state === "green" && open) {
       eps.push({ ...open, to: Math.max(c.at, open.from) });
       open = null;
