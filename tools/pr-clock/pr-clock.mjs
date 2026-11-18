@@ -282,7 +282,13 @@ export async function fetchState() {
         return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${MAIN_FIELDS} pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
       })
       .join(" ")}}`;
-    const { data } = await gh("/graphql", { method: "POST", body: { query } });
+    // GitHub sometimes answers a busy query with null repositories and no error: ask again before giving up on them.
+    let data;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      ({ data } = await gh("/graphql", { method: "POST", body: { query } }));
+      if (chunk.every((_, j) => data?.[`r${j}`]?.pullRequests)) break;
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
     chunk.forEach((full, j) => {
       const repo = data?.[`r${j}`];
       const conn = repo?.pullRequests;
