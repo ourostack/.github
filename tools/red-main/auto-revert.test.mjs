@@ -150,3 +150,18 @@ test("main --self checks only that repo, opted in by the caller", async () => {
   }
   assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red"]);
 });
+
+test("a job annotated title=infra is never reverted, and gather reads the annotation", async () => {
+  assert.equal(classifyFailure({ conclusion: "failure" }, [{ name: "t", conclusion: "failure", infra: "pool down", steps: [{ name: "Run tests", conclusion: "failure" }] }]).infra, true);
+  const day = (m) => new Date(NOW - m * 60000).toISOString();
+  const runs = [{ id: 5, name: "CI", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 1, run_started_at: day(100), created_at: day(100), updated_at: day(90), html_url: "https://x/run/5" }];
+  const a = {
+    get: async (p) => {
+      if (p.includes("/actions/runs?")) return { workflow_runs: runs };
+      if (p.includes("/jobs?")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", steps: [{ name: "Run tests", conclusion: "failure" }] }] };
+      if (p.includes("/annotations")) return [{ title: "infra", message: "pool down" }];
+      throw new Error(p);
+    },
+  };
+  assert.equal(await gather("o/r", NOW, a), null);
+});
