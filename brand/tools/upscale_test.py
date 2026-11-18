@@ -166,6 +166,36 @@ class NightFromFlatDay(unittest.TestCase):
         master = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("RGB"), float)
         self.assertLess(np.abs(master[80:200, 200:560] - night[80:200, 200:560]).mean(), 2.0)
 
+    def test_no_dark_ring_round_a_moon(self):
+        # the flat day holds a moon with a dark rim round it (ourostack's did, #294) and the night-light mask covers only
+        # the disc: where the master switches from the night header to the transfer of the flat day at the mask's edge,
+        # the rim showed as a dark ring; light_falloff gives the transfer the night header's broad light there
+        yy, xx = np.mgrid[0:H, 0:W]
+        d = np.hypot(xx - 120, yy - 30)
+        sky = np.full((H, W, 3), (150, 175, 215), float)
+        flat = np.where((d < 4)[..., None], 255, sky - 90 * np.exp(-((d - 6) / 2) ** 2)[..., None]).clip(0, 255).astype(np.uint8)
+        night = np.stack([10 + 0 * d, 25 + 0 * d, 60 + 0 * d], -1) + 25 * np.exp(-np.clip(d - 4, 0, None) / 2)[..., None]
+        night = np.where((d < 4)[..., None], 235, night).clip(0, 255).astype(np.uint8)
+        mask = ((d < 4.5) * 255).astype(np.uint8)
+        files = {"headers/x.webp": webp(Image.fromarray(sky.astype(np.uint8))), "headers/x-dark.webp": webp(Image.fromarray(night)),
+                 "flat/x.webp": webp(Image.fromarray(flat)), "flat/x-lights.webp": webp(Image.fromarray(mask))}
+        for rel, data in files.items():
+            (self.root / "brand" / rel).write_bytes(data)
+        self.prov = [e for e in self.prov if e["file"] not in files] + [{"file": r, "sha256": sha(b)} for r, b in files.items()]
+        self.crops["x"]["nightLights"] = "flat/x-lights.webp"
+        self.write()
+        Image.fromarray(sky.astype(np.uint8)).resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x.png")
+        Image.fromarray(flat).resize((W * 4, H * 4), Image.LANCZOS).save(self.reuse / "x-dark-flat.png")
+        r = self.run_upscale("x", "x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        master = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("L"), float)
+        head = np.asarray(Image.open(self.root / "brand/headers/x-dark.webp").convert("L").resize((W * 4, H * 4), Image.LANCZOS), float)
+        gy, gx = np.mgrid[0:H * 4, 0:W * 4]
+        d4 = np.hypot(gx - 480, gy - 120)
+        for q in range(20, 60, 4):
+            ring = (d4 >= q) & (d4 < q + 4)
+            self.assertGreater(master[ring].mean(), head[ring].mean() - 3, f"dark ring {q} px out")
+
     def test_unknown_lights_mode_is_refused(self):
         self.add_lights("blend")
         r = self.run_upscale("x-dark")
