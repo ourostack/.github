@@ -49,7 +49,9 @@ derive.py. Needs Pillow, numpy and scipy. Exit 0 when clean, 1 when any night ha
 """
 import argparse
 import json
+import os
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -218,6 +220,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("scenes", nargs="*", help="day scene names; default every nightFromDay or nightFromFlatDay scene")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--jobs", type=int, default=os.cpu_count(), help="scenes checked at once (default: one per core)")
     ap.add_argument("--step", type=float, default=STEP)
     ap.add_argument("--levels", type=float, default=LEVELS)
     ap.add_argument("--sky", type=float, default=SKY)
@@ -229,11 +232,13 @@ def main():
     crops = json.loads((BRAND / "tools/crops.json").read_text())
     scenes = a.scenes or sorted(k for k, v in crops.items() if isinstance(v, dict) and (v.get("nightFromDay") or v.get("nightFromFlatDay")))
     opts = dict(step=a.step, levels=a.levels, sharp=a.sharp, dayfrac=a.day, run=a.run, sky=a.sky, grad=a.grad)
-    report, bad = {}, 0
     for s in scenes:
         if not (BRAND / f"scenes/{s}-dark-3072.webp").exists():
             sys.exit(f"{s}: brand/scenes/{s}-dark-3072.webp is missing")
-        found = check_scene(s, crops, opts)
+    with ProcessPoolExecutor(a.jobs) as pool:  # one scene per core: CI runs all of them on every pull request
+        results = list(pool.map(check_scene, scenes, [crops] * len(scenes), [opts] * len(scenes)))
+    report, bad = {}, 0
+    for s, found in zip(scenes, results):
         report[s] = found
         bad += bool(found)
         if not a.json:
