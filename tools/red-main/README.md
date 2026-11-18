@@ -5,6 +5,10 @@
 
 The measure reads the whole window, not just the API's newest 1,000 runs: it queries `created` ranges and halves any range that reports more than 1,000.
 
+## Red, waiting for runners, and where a red stretch ends
+
+A red stretch opens at the first failing commit's failure and ends at the **push time** (its first run's start) of the first later commit whose push runs all finished with none failed. The time from that push to its last run finishing is not red: the code was fixed when it landed and the runners were queued. It is reported in its own column, `waiting for runners` (with `% wait`), beside `% red`, so neither hides the other. A wait never overlaps the next red stretch. A fix commit that fails, or is still running, does not end the stretch. Auto-revert's "red for 60 minutes" uses the same red definition (the wait column never counts toward it).
+
 ## Infrastructure failures: `title=infra`
 
 A failed job that is not the code's fault says so with one line. red-main then counts it in the `infra` column, apart from code red: it opens no red episode, wakes no owner, and `auto-revert.mjs` never reverts it. Emit it from the failing step (GitHub turns the workflow command into a check-run annotation titled `infra`):
