@@ -12,6 +12,18 @@
 # first and runs the local copy only when GitHub cannot be reached, with a warning that says how old that copy is.
 # Merge a PR opened some other way, with the same message rules:   gh ouro-pr merge <number-or-url>
 #
+# Claim an issue before you build it, so two sessions never build the same fix:
+#   gh ouro-pr claim <issue> [--as name]                  # assigns you to it and says so on the issue
+#   gh ouro-pr claim <issue> --take-over "<reason>"       # takes a live claim over, with the reason on the issue
+#   gh ouro-pr release <issue> [--as name]                # says you have stopped; the assignee stays
+# Your session's name is $OURO_SESSION, or --as. A claim stands until its session releases it, or until it lapses: no sign
+# of life for claim_lapse_seconds (two hours). A sign of life is a comment by the claimant's account after the claim, or a
+# push since then to an open PR that references the issue. Opening a PR for an open issue with a live claim by another
+# session is refused before anything is pushed; --take-over "<reason>" takes that claim over and proceeds. A lapsed claim
+# is said, and passed. OURO_PR_NOW (epoch seconds) replaces the clock; the tests use it.
+# A probe, opened only to read a CI result, is a branch named probe/... or --probe: it gets the probe label and no
+# auto-merge, and is never merged.
+#
 # One writer per issue: when another open PR already closes an issue this one closes (Fixes #n), it still opens this PR,
 # turns the keyword into "Relates to #n" in its body, and prints the other PR's link to coordinate or close one.
 #
@@ -63,14 +75,204 @@ run_main_copy() {
   } >&2
 }
 
-run_main_copy "$@"
+# Print and run: say writes to stderr, and run only prints its command under --dry-run.
+say() { printf 'ouro-pr: %s\n' "$*" >&2; }
+run() { if [ "$dry" = 1 ]; then printf '[dry-run]' >&2; printf ' %q' "$@" >&2; echo >&2; else "$@"; fi; }
+probe_description="Opened to read a CI result; never meant to merge"
+
+# The issues a pull request is for: those its body closes, fixes or resolves, and those it refs or relates to. Reads the
+# body on stdin; $1 is owner/name. Another repository's #N never counts, so "fixes other/repo#4" is left out.
+closing_issues() {
+  local esc=${1//./\\.}
+  grep -Eio "(^|[^[:alnum:]_])((close[sd]?|fix(e[sd])?|resolve[sd]?|refs|relates[[:space:]]+to)[[:space:]]+(${esc})?#[0-9]+)" \
+    | grep -Eo '[0-9]+$' | sort -un || true
+}
+
+# The clock the claim rules read: OURO_PR_NOW (epoch seconds, set by the tests) or the time now.
+now_epoch() { printf '%s' "${OURO_PR_NOW:-$(date +%s)}"; }
+
+# A claim with no sign of life for this long lapses and no longer refuses. A sign of life is a comment by the claimant's
+# account after the claim, or a push since then to an open PR that references the issue (its head commit's date).
+claim_lapse_seconds=7200
+
+# The comments on an issue as "kind|session|login|epoch|created_at|url" lines, oldest first. A marker (<!-- ouro-claim:
+# name --> to claim, <!-- ouro-claim-release: name --> to release, each a line of its own) makes a claim or release line;
+# any other comment makes a note. gh's own jq reads the JSON and turns the dates into epoch seconds, so the script needs
+# nothing else installed.
+claim_events() {
+  # shellcheck disable=SC2016 # jq variables, not shell ones
+  gh api --paginate "repos/$1/issues/$2/comments" --jq '
+    .[] | . as $c | ($c.user.login // "") as $who | ($c.created_at | fromdateiso8601) as $t
+    | [($c.body // "") | split("\n")[] | capture("^\\s*<!-- ouro-claim(?<r>-release)?: (?<s>[A-Za-z0-9._-]+) -->\\s*$")?] as $ms
+    | if ($ms | length) == 0 then ["note", "", $who, $t, $c.created_at, $c.html_url] | join("|")
+      else $ms[] | [(if .r then "release" else "claim" end), .s, $who, $t, $c.created_at, $c.html_url] | join("|") end'
+}
+
+# The open PRs that reference issue $2 (they close, fix or resolve it, or refs or relate to it), as "push|||epoch|date|url"
+# lines, dated by each PR's head commit (its committer date, the time of its last push). A push since a claim is a sign of
+# life. The PR list carries no commits: GitHub's GraphQL refuses that for a repository with many pull requests.
+open_pr_pushes() {
+  local name=$1 n=$2 refs url oid dated
+  # shellcheck disable=SC2016 # jq variables, not shell ones
+  refs=$(gh pr list --repo "$name" --state open --limit 100 --json url,body,headRefOid --jq '
+    .[] | select((.body // "") | test("(?i)(close[sd]?|fix(e[sd])?|resolve[sd]?|refs|relates +to) +#'"$n"'([^0-9]|$)")) | [.url, .headRefOid] | @tsv') || return 1
+  while IFS=$'\t' read -r url oid; do
+    [ -n "$url" ] || continue
+    # shellcheck disable=SC2016 # jq variables, not shell ones
+    dated=$(gh api "repos/$name/commits/$oid" --jq '.commit.committer.date | [(fromdateiso8601), .] | join("|")') || return 1
+    printf 'push|||%s|%s\n' "$dated" "$url"
+  done <<<"$refs"
+}
+
+# What bears on an issue's claim, oldest first: its comments, then the pushes to open PRs that reference it. A failed
+# read of the comments fails the call; a failed read of the PRs is said, and the comments alone are judged.
+issue_events() {
+  local name=$1 n=$2 pushes
+  claim_events "$name" "$n" || return 1
+  if ! pushes=$(open_pr_pushes "$name" "$n" 2>/dev/null); then
+    say "could not read the open PRs that reference #$n, so pushes since its claim are not seen."
+  elif [ -n "$pushes" ]; then
+    printf '%s\n' "$pushes"
+  fi
+}
+
+# The claim that stands on an issue, from issue_events on stdin, given "now" and the lapse in epoch seconds. A claim
+# stands until a release from its own session follows it; a later claim replaces it. Its last sign of life is the latest
+# of: the claim, a comment by the claimant's account after it, and a push after it. Prints nothing when no claim stands,
+# else "live|session|claimed_at|claim_url|last_activity", or the same with "lapsed" when the last sign is over the lapse.
+claim_status() {
+  local now=$1 lapse=$2 kind sess login epoch iso url events
+  local hs="" hlogin="" hep="" hiso="" hurl="" last_ep last_iso claim_state
+  events=$(cat)
+  while IFS='|' read -r kind sess login epoch iso url; do
+    case $kind in
+      claim) hs=$sess; hlogin=$login; hep=$epoch; hiso=$iso; hurl=$url ;;
+      release) if [ -n "$hs" ] && [ "$sess" = "$hs" ]; then hs=""; fi ;;
+    esac
+  done <<<"$events"
+  [ -n "$hs" ] || return 0
+  last_ep=$hep; last_iso=$hiso
+  while IFS='|' read -r kind sess login epoch iso url; do
+    case $epoch in ''|*[!0-9]*) continue ;; esac
+    [ "$epoch" -gt "$hep" ] || continue
+    if { [ -n "$hlogin" ] && [ "$login" = "$hlogin" ]; } || [ "$kind" = push ]; then
+      if [ "$epoch" -gt "$last_ep" ]; then last_ep=$epoch; last_iso=$iso; fi
+    fi
+  done <<<"$events"
+  if [ $((now - last_ep)) -le "$lapse" ]; then claim_state=live; else claim_state=lapsed; fi
+  printf '%s|%s|%s|%s|%s\n' "$claim_state" "$hs" "$hiso" "$hurl" "$last_iso"
+}
+
+# Takes an issue over from its live claimant. The comment carries the new session's marker, so the issue is claimed by it.
+take_over_issue() {
+  local name=$1 n=$2 session=$3 from=$4 reason=$5
+  run gh issue comment "$n" --repo "$name" --body "$(printf 'Taken over by %s from %s: %s\n\n<!-- ouro-claim: %s -->' "$session" "$from" "$reason" "$session")"
+  if [ "$dry" = 1 ]; then say "dry run: #$n would be taken over from $from."; else say "took #$n over from $from."; fi
+}
+
+# Refuses (exit 1) when an open issue the pull request is for has a live claim by another session, unless --take-over takes
+# it over. A lapsed claim is said and passed. Runs before anything is pushed. A read that fails is said and skipped: it
+# never blocks a publish.
+check_claims() {
+  local name=$1 session=$2 body=$3 now n issue_state events status claim_state who since url last
+  now=$(now_epoch)
+  for n in $(closing_issues "$name" <"$body"); do
+    if ! issue_state=$(gh api "repos/$name/issues/$n" --jq .state 2>/dev/null); then
+      say "could not read #$n, so its claim is not checked."
+      continue
+    fi
+    [ "$issue_state" = open ] || continue
+    if ! events=$(issue_events "$name" "$n"); then
+      say "could not read #$n's comments, so its claim is not checked."
+      continue
+    fi
+    status=$(printf '%s\n' "$events" | claim_status "$now" "$claim_lapse_seconds")
+    [ -n "$status" ] || continue
+    IFS='|' read -r claim_state who since url last <<<"$status"
+    if [ "$who" = "$session" ]; then continue; fi
+    if [ "$claim_state" = lapsed ]; then
+      say "the claim on #$n by $who lapsed (no activity since $last)."
+      continue
+    fi
+    if [ "$take_over_set" = 1 ]; then
+      take_over_issue "$name" "$n" "$session" "$who" "$take_over"
+      continue
+    fi
+    if [ -z "$session" ]; then
+      say "#$n is claimed by $who since $since ($url), and this run has no session name. Set OURO_SESSION or pass --as <name>."
+    else
+      say "#$n is claimed by $who since $since ($url). Coordinate with that session, have it run gh ouro-pr release $n, or take the issue over with --take-over \"<reason>\"."
+    fi
+    say "nothing was pushed or opened."
+    exit 1
+  done
+}
+
+# gh ouro-pr claim <issue>: assigns this session's gh user and says so on the issue. A live claim by another session
+# refuses, unless --take-over takes it over; a lapsed one is said and replaced.
+do_claim() {
+  local name=$1 n=$2 session=$3 now issue_state events status claim_state who since url last
+  [ -n "$session" ] || { say "claim needs a session name: set OURO_SESSION or pass --as <name>."; exit 2; }
+  now=$(now_epoch)
+  issue_state=$(gh api "repos/$name/issues/$n" --jq .state) || { say "could not read #$n, so nothing was claimed."; exit 1; }
+  [ "$issue_state" = open ] || { say "#$n is $issue_state: nothing to claim."; exit 2; }
+  events=$(issue_events "$name" "$n") || { say "could not read #$n's comments, so nothing was claimed."; exit 1; }
+  status=$(printf '%s\n' "$events" | claim_status "$now" "$claim_lapse_seconds")
+  if [ -n "$status" ]; then
+    IFS='|' read -r claim_state who since url last <<<"$status"
+    if [ "$who" = "$session" ]; then say "#$n is already claimed by $session: nothing to do."; return 0; fi
+    if [ "$claim_state" = lapsed ]; then
+      say "the claim on #$n by $who lapsed (no activity since $last)."
+    elif [ "$take_over_set" = 1 ]; then
+      take_over_issue "$name" "$n" "$session" "$who" "$take_over"
+      run gh issue edit "$n" --repo "$name" --add-assignee @me
+      return 0
+    else
+      say "#$n is claimed by $who since $since ($url). Coordinate with that session, have it run gh ouro-pr release $n, or take the issue over with --take-over \"<reason>\"."
+      exit 1
+    fi
+  fi
+  run gh issue edit "$n" --repo "$name" --add-assignee @me
+  run gh issue comment "$n" --repo "$name" --body "$(printf 'Claimed by %s: building this now.\n\n<!-- ouro-claim: %s -->' "$session" "$session")"
+  if [ "$dry" = 1 ]; then say "dry run: #$n is not claimed."; else say "claimed #$n as $session."; fi
+}
+
+# gh ouro-pr release <issue>: says this session has stopped. Only the session that holds the claim can release it, lapsed or not.
+do_release() {
+  local name=$1 n=$2 session=$3 now events status who
+  [ -n "$session" ] || { say "release needs a session name: set OURO_SESSION or pass --as <name>."; exit 2; }
+  now=$(now_epoch)
+  events=$(issue_events "$name" "$n") || { say "could not read #$n's comments, so nothing was released."; exit 1; }
+  status=$(printf '%s\n' "$events" | claim_status "$now" "$claim_lapse_seconds")
+  who=""
+  [ -z "$status" ] || IFS='|' read -r _ who _ _ _ <<<"$status"
+  if [ "$who" != "$session" ]; then say "#$n is not claimed by $session: nothing to release."; return 0; fi
+  run gh issue comment "$n" --repo "$name" --body "$(printf 'Released by %s.\n\n<!-- ouro-claim-release: %s -->' "$session" "$session")"
+  say "released #$n. The assignee is unchanged."
+}
+
+# A probe PR carries the probe label, and gh pr create fails on a label the repository lacks, so make it first. --force
+# only updates the label's colour and description; a failure here is said, and gh pr create reports it if it matters.
+ensure_probe_label() {
+  if [ "$dry" = 1 ]; then
+    run gh label create probe --color BFD4F2 --description "$probe_description" --force
+  elif ! gh label create probe --color BFD4F2 --description "$probe_description" --force >/dev/null 2>&1; then
+    say "could not create the probe label; gh pr create may fail without it."
+  fi
+}
 
 main() {
-title="" body_file="" base="" dry=0 merge_pr=""
+title="" body_file="" base="" dry=0 merge_pr="" as="" probe=0 claim_cmd="" claim_issue="" take_over="" take_over_set=0
 extra=()
 if [ "${1:-}" = merge ]; then
   [ $# -ge 2 ] || { echo "ouro-pr: merge needs a pull request number or URL" >&2; exit 2; }
   merge_pr=$2; shift 2
+fi
+if [ "${1:-}" = claim ] || [ "${1:-}" = release ]; then
+  claim_cmd=$1
+  [ $# -ge 2 ] || { echo "ouro-pr: $claim_cmd needs an issue number" >&2; exit 2; }
+  claim_issue=${2#\#}; shift 2
+  case $claim_issue in ''|*[!0-9]*) echo "ouro-pr: $claim_cmd needs an issue number, such as 12" >&2; exit 2 ;; esac
 fi
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -79,14 +281,26 @@ while [ $# -gt 0 ]; do
       case "$1" in --title|-t) title="$2" ;; --body-file|-F) body_file="$2" ;; *) base="$2" ;; esac
       shift 2 ;;
     --dry-run) dry=1; shift ;;
+    --as) [ $# -ge 2 ] || { echo "ouro-pr: --as needs a session name" >&2; exit 2; }; as=$2; shift 2 ;;
+    --take-over) [ $# -ge 2 ] || { echo "ouro-pr: --take-over needs a reason" >&2; exit 2; }; take_over=$2; take_over_set=1; shift 2 ;;
+    --probe) probe=1; shift ;;
     --draft|-d) echo "ouro-pr: no drafts. Publish when the work is done and has passed every review and local check." >&2; exit 2 ;;
-    -h|--help) sed -n '2,14p' "${BASH_SOURCE[0]:-/dev/null}" 2>/dev/null || true; echo "Usage: gh ouro-pr [--title T] [--body-file F] [--base B] [--dry-run] [gh pr create flags]"; exit 0 ;;
+    -h|--help) sed -n '2,/^set -euo/{/^set -euo/!p;}' "${BASH_SOURCE[0]:-/dev/null}" 2>/dev/null || true
+      echo "Usage: gh ouro-pr [--title T] [--body-file F] [--base B] [--as name] [--take-over \"<reason>\"] [--probe] [--dry-run] [gh pr create flags]"
+      echo "       gh ouro-pr claim <issue> [--as name] [--take-over \"<reason>\"] | release <issue> [--as name] | merge <pr-or-url>"; exit 0 ;;
     *) extra+=("$1"); shift ;;
   esac
 done
 
-say() { printf 'ouro-pr: %s\n' "$*" >&2; }
-run() { if [ "$dry" = 1 ]; then printf '[dry-run]' >&2; printf ' %q' "$@" >&2; echo >&2; else "$@"; fi; }
+# Your session's name: --as, else OURO_SESSION. It goes into comments and markers, so it is kept plain.
+session=${as:-${OURO_SESSION:-}}
+if [ -n "$session" ] && ! [[ $session =~ ^[A-Za-z0-9._-]+$ ]]; then
+  say "a session name uses letters, digits, dots, underscores and dashes: '$session' does not."; exit 2
+fi
+if [ "$take_over_set" = 1 ]; then
+  [ -n "${take_over//[[:space:]]/}" ] || { say "--take-over needs a reason, such as --take-over \"the claimant stopped; this is its plan\"."; exit 2; }
+  [ -n "$session" ] || { say "--take-over needs a session name: set OURO_SESSION or pass --as <name>."; exit 2; }
+fi
 
 # The message a merge lands with: "<title> (#n)" and the body without AI or bot credit lines.
 AI_CREDIT='^[[:space:]]*[A-Za-z-]+-by[[:space:]]*:.*(\[bot\]|(^|[^A-Za-z0-9])(copilot|claude|anthropic|openai|chatgpt|gpt|codex|gemini|cursor|devin|aider)([^A-Za-z]|$))'
@@ -122,7 +336,16 @@ if [ "${merge_pr:-}" ]; then
   exit 0
 fi
 
+if [ -n "$claim_cmd" ]; then
+  git remote get-url origin >/dev/null 2>&1 || { say "run $claim_cmd from a clone of the repository."; exit 2; }
+  name=$(gh repo view "$(git remote get-url origin)" --json nameWithOwner --jq .nameWithOwner)
+  if [ "$claim_cmd" = claim ]; then do_claim "$name" "$claim_issue" "$session"; else do_release "$name" "$claim_issue" "$session"; fi
+  exit 0
+fi
+
 branch=$(git symbolic-ref --short HEAD 2>/dev/null) || { say "not on a branch"; exit 2; }
+# A branch named probe/... is a probe, the same as --probe.
+case $branch in probe/*) probe=1 ;; esac
 repo=$(gh repo view "$(git remote get-url origin)" --json nameWithOwner,defaultBranchRef --jq '.nameWithOwner + " " + .defaultBranchRef.name')
 name=${repo%% *}
 [ -n "$base" ] || base=${repo##* }
@@ -154,6 +377,13 @@ if [ -z "$body_file" ]; then
 fi
 
 url=$(gh pr view "$branch" --json url,state --jq 'select(.state == "OPEN") | .url' 2>/dev/null || true)
+
+# A live claim by another session on an issue this PR is for refuses, or is taken over with --take-over, before anything is
+# pushed. It reads the body as the author wrote it, so it runs before the one-writer check below rewrites closing keywords.
+# A probe builds nothing and skips it; a pull request already open has been published, so there is nothing new to refuse.
+if [ -z "$url" ] && [ "$probe" != 1 ]; then
+  check_claims "$name" "$session" "$body_file"
+fi
 
 # One writer per issue: a second session opening a PR that closes an issue another open PR already closes makes a
 # duplicate that is later closed by hand. Nothing is blocked: this PR still opens, but says "Relates to #n" instead of
@@ -193,16 +423,27 @@ if ! git rev-parse --verify --quiet "refs/remotes/origin/$branch" >/dev/null || 
   run git push --quiet -u origin "HEAD:refs/heads/$branch"
 fi
 
+probe_labels=()
+if [ "$probe" = 1 ]; then probe_labels=(--label probe); fi
 if [ -z "$url" ]; then
+  if [ "$probe" = 1 ]; then ensure_probe_label; fi
   if [ "$dry" = 1 ]; then
-    run gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body_file" "${extra[@]+"${extra[@]}"}"
+    run gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body_file" "${extra[@]+"${extra[@]}"}" "${probe_labels[@]+"${probe_labels[@]}"}"
     say "body would be:"; cat "$body_file" >&2
     url="(new PR)"
   else
-    url=$(gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body_file" "${extra[@]+"${extra[@]}"}")
+    url=$(gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body_file" "${extra[@]+"${extra[@]}"}" "${probe_labels[@]+"${probe_labels[@]}"}")
   fi
 else
   say "PR already open: $url"
+  if [ "$probe" = 1 ]; then run gh pr edit "$url" --add-label probe || say "could not add the probe label."; fi
+fi
+
+# A probe reads one CI result and is never merged, so it gets no auto-merge. Its author closes it once it is read.
+if [ "$probe" = 1 ]; then
+  say "probe: auto-merge stays off, because a probe is never merged. Read its CI result, then close it."
+  echo "$url"
+  exit 0
 fi
 
 # How this repository merges: a merge queue decides its own method; otherwise prefer squash.
@@ -269,5 +510,8 @@ fi
 echo "$url"
 }
 
-# Read the whole script before running any of it.
-main "$@"
+# Read the whole script before running any of it. A test that needs only the functions loads it with OURO_PR_LIB=1.
+if [ -z "${OURO_PR_LIB:-}" ]; then
+  run_main_copy "$@"
+  main "$@"
+fi
