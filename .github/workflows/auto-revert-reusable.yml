@@ -11,7 +11,7 @@ on:
         default: true
     secrets:
       token:
-        description: "Optional PAT or App token. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
+        description: "Optional PAT or App token, used only for writes (revert branch, PR, auto-merge, rerun); reads, check runs and annotations included, use the caller's GITHUB_TOKEN. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
         required: false
 
 jobs:
@@ -22,6 +22,7 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
+      checks: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,6 +32,7 @@ jobs:
       - name: Revert what keeps main red
         env:
           GH_TOKEN: ${{ secrets.token || github.token }}
+          READ_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           APPLY: ${{ inputs.apply }}
         shell: bash
