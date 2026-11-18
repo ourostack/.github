@@ -12,6 +12,8 @@ SINCE=${SINCE:-2026-11-16T19:10:00Z}
 ACK_FILE=${ACK_FILE:-$(dirname "${BASH_SOURCE[0]}")/acknowledged.txt}
 acked() { [ -f "$ACK_FILE" ] && grep -q "^$1[[:space:]]*|" "$ACK_FILE"; }
 AI_CREDIT='^[[:space:]]*[A-Za-z-]+-by[[:space:]]*:.*(\[bot\]|(^|[^A-Za-z0-9])(copilot|claude|anthropic|openai|chatgpt|gpt|codex|gemini|cursor|devin|aider)([^A-Za-z]|$))'
+# A dependency bot signing off its own bump is not AI credit; any co-author line still is.
+DEP_BOT='^[[:space:]]*signed-off-by[[:space:]]*:[[:space:]]*(dependabot|renovate)\[bot\]'
 FIX='merge with an explicit message that has no such line: gh ouro-pr merge <pr>, or gh pr merge <pr> --squash --subject "<title> (#<pr>)" --body "<body without the line>". Do not rewrite main; the next merge must be clean.'
 
 bad=0
@@ -21,7 +23,7 @@ if [ "${1:-}" = --sweep ]; then
     while read -r sha; do
       acked "$sha" && continue
       echo "::error::ourostack/$repo $branch ${sha:0:12} credits an AI tool or a bot. Fix: $FIX"; bad=1
-    done < <(gh api "repos/ourostack/$repo/commits?sha=$branch&since=$SINCE&per_page=100" | jq -r --arg re "(^|\n)${AI_CREDIT#^}" '.[] | select(.commit.message | test($re; "i")) | .sha')
+    done < <(gh api "repos/ourostack/$repo/commits?sha=$branch&since=$SINCE&per_page=100" | jq -r --arg re "(^|\n)${AI_CREDIT#^}" --arg dep "(^|\n)${DEP_BOT#^}[^\n]*" '.[] | select(((.author.login // .commit.author.name // "") | ascii_downcase | . == "dependabot[bot]" or . == "renovate[bot]") as $isdep | (if $isdep then (.commit.message | gsub($dep; "";"i")) else .commit.message end) | test($re; "i")) | .sha')
   done
 elif [ "${1:-}" = --text ]; then
   if grep -qiE "$AI_CREDIT"; then echo "::error::the pull request title or body credits an AI tool or a bot, and a merge would copy it to main. Fix: $FIX"; bad=1; fi
@@ -29,7 +31,9 @@ else
   range=${1:?usage: check.sh <range> | --sweep}
   for sha in $(git rev-list "$range"); do
     acked "$(git rev-parse "$sha")" && continue
-    if git log -1 --format=%B "$sha" | grep -qiE "$AI_CREDIT"; then
+    msg=$(git log -1 --format=%B "$sha")
+    case "$(git log -1 --format=%an "$sha" | tr A-Z a-z)" in dependabot\[bot\]|renovate\[bot\]) msg=$(printf '%s\n' "$msg" | grep -viE "$DEP_BOT" || true) ;; esac
+    if printf '%s\n' "$msg" | grep -qiE "$AI_CREDIT"; then
       echo "::error::commit ${sha:0:12} credits an AI tool or a bot: $(git log -1 --format=%s "$sha"). Fix: $FIX"; bad=1
     fi
   done
