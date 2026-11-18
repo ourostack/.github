@@ -1,0 +1,50 @@
+name: Actions cache prune (reusable)
+
+# Keeps a repository's Actions caches well under GitHub's 10 GB limit, and stops entries evicting each other. The caller is
+# the whole opt-in: tools/cache-prune/README.md has the caller file. Rule and BuildKit skip: tools/cache-prune/prune.mjs.
+on:
+  workflow_call:
+    inputs:
+      skip-prefixes:
+        description: "Space-separated cache key prefixes never to delete, besides Docker BuildKit's, e.g. \"stryker-\"."
+        type: string
+        default: ""
+      dry-run:
+        description: "List what would be deleted and delete nothing."
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: write
+      contents: read
+    concurrency:
+      group: cache-prune-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ourostack/.github
+          ref: main
+          path: .ouro-tools
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: ""
+      - name: Delete the caches no run will restore
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SKIP_PREFIXES: ${{ inputs.skip-prefixes }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          flag=""; [ "$DRY_RUN" = "true" ] && flag="--dry-run"
+          node .ouro-tools/tools/cache-prune/prune.mjs $flag 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
