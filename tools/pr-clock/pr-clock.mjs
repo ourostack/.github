@@ -266,38 +266,75 @@ export async function fetchOpenPrs() {
   return (await fetchState()).prs;
 }
 
+const PAGE = 15; // PRs per repository per query: a 50-PR page of nested check contexts timed out server-side (POST /graphql: 504)
+const CHUNK = 3; // repositories per query
+const isServerError = (err) => /: 50\d /.test(err.message);
+
+const repoQuery = (full, alias, size, after) => {
+  const [owner, name] = full.split("/");
+  const cursor = after ? `,after:${JSON.stringify(after)}` : "";
+  return `${alias}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${MAIN_FIELDS} pullRequests(states:OPEN,first:${size}${cursor},orderBy:{field:CREATED_AT,direction:ASC}){totalCount pageInfo{hasNextPage endCursor} nodes{${PR_FIELDS}}}}`;
+};
+
+// Reads one group of repositories. A query GitHub cannot answer in time (5xx after the retries) is split in half,
+// and a single repository's page is halved, so a heavy query shrinks until it fits instead of failing the run.
+export async function readGroup(group, run, size = PAGE, wait = (ms) => new Promise((r) => setTimeout(r, ms))) {
+  const query = `query{${group.map((full, j) => repoQuery(full, `r${j}`, size)).join(" ")}}`;
+  let data;
+  try {
+    // GitHub sometimes answers a busy query with null repositories and no error: ask again before giving up on them.
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      data = await run(query);
+      if (group.every((_, j) => data?.[`r${j}`]?.pullRequests)) break;
+      if (attempt < 3) await wait(2000 * attempt);
+    }
+  } catch (err) {
+    if (!isServerError(err)) throw err;
+    if (group.length > 1) {
+      const mid = Math.ceil(group.length / 2);
+      const [x, y] = await Promise.all([readGroup(group.slice(0, mid), run, size, wait), readGroup(group.slice(mid), run, size, wait)]);
+      return { found: [...x.found, ...y.found], unread: [...x.unread, ...y.unread] };
+    }
+    if (size > 3) return readGroup(group, run, Math.ceil(size / 2), wait);
+    throw err;
+  }
+  const found = [];
+  const unread = [];
+  for (const [j, full] of group.entries()) {
+    const repo = data?.[`r${j}`];
+    if (!repo?.pullRequests) {
+      unread.push(full);
+      continue;
+    }
+    const nodes = [...repo.pullRequests.nodes];
+    let page = repo.pullRequests.pageInfo;
+    while (page?.hasNextPage) {
+      const more = (await run(`query{${repoQuery(full, "p", size, page.endCursor)}}`))?.p?.pullRequests;
+      if (!more) break;
+      nodes.push(...more.nodes);
+      page = more.pageInfo;
+    }
+    found.push({ repo, nodes });
+  }
+  return { found, unread };
+}
+
 // The open PRs and each repository's default branch, read in the same queries.
-export async function fetchState() {
-  const repos = await listRepos();
+export async function fetchState(repoList, run = async (query) => (await gh("/graphql", { method: "POST", body: { query } })).data) {
+  const repos = repoList ?? (await listRepos());
   // An empty list means the token could not read the owners, never that all is clear.
   if (!repos.length) throw new Error(`no repositories readable under ${OWNERS.join(", ")}`);
   const prs = [];
   const mains = [];
   const unread = [];
-  for (let i = 0; i < repos.length; i += 8) {
-    const chunk = repos.slice(i, i + 8);
-    const query = `query{${chunk
-      .map((full, j) => {
-        const [owner, name] = full.split("/");
-        return `r${j}:repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${MAIN_FIELDS} pullRequests(states:OPEN,first:50,orderBy:{field:CREATED_AT,direction:ASC}){totalCount nodes{${PR_FIELDS}}}}`;
-      })
-      .join(" ")}}`;
-    // GitHub sometimes answers a busy query with null repositories and no error: ask again before giving up on them.
-    let data;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      ({ data } = await gh("/graphql", { method: "POST", body: { query } }));
-      if (chunk.every((_, j) => data?.[`r${j}`]?.pullRequests)) break;
-      if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
-    }
-    chunk.forEach((full, j) => {
-      const repo = data?.[`r${j}`];
-      const conn = repo?.pullRequests;
-      if (!conn) return unread.push(full);
+  for (let i = 0; i < repos.length; i += CHUNK) {
+    const got = await readGroup(repos.slice(i, i + CHUNK), run);
+    unread.push(...got.unread);
+    for (const { repo, nodes } of got.found) {
       const head = repo.defaultBranchRef;
       if (head?.target?.oid) mains.push({ repository: { nameWithOwner: repo.nameWithOwner, isPrivate: repo.isPrivate }, name: head.name, commit: head.target });
-      if (conn.totalCount > conn.nodes.length) console.error(`${full}: showing the oldest ${conn.nodes.length} of ${conn.totalCount} open PRs`);
-      prs.push(...conn.nodes.filter((n) => n?.number));
-    });
+      prs.push(...nodes.filter((n) => n?.number));
+    }
   }
   // A repository it cannot read could hold a late PR: fail loudly rather than say all clear.
   if (unread.length) throw new Error(`could not read ${unread.length} of ${repos.length} repositories: ${unread.join(", ")}`);

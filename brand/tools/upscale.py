@@ -51,7 +51,12 @@ other. A day with nightFromFlatDay may also set "nightLights": "flat/<scene>-lig
 a greyscale mask at header size over the night's small light sources (lit lamp
 shades, glowing eyes): they are smaller than the transfer's window, so inside
 the mask the night master takes the night header itself (Lanczos 4x, feathered).
-Keep it tight around those sources and use it for nothing else. With
+Keep it tight around those sources and use it for nothing else. Around the mask,
+within one transfer window and fading out by three, the master's broad light
+(log, coarser than 4 px at 1536 wide) is the night header's too wherever the day
+is featureless (light_falloff; a lit figure or prop keeps the day's shading):
+the switch from the night header to the transfer at the mask's edge left a dark
+ring round ourostack's moon (#294), whose flat day held a moon with a dark rim. With
 "nightLightsMode": "ratio" the mask instead keeps the day's 4x master given the
 night header's colour per pixel: the day master times the night header's
 per-channel gain over the day header, upsampled and smoothed without
@@ -144,6 +149,7 @@ def esrgan(src: Image.Image, scratch: Path) -> Image.Image:
 
 
 LIGHTS_MODES = ("header", "ratio")
+FALLOFF_SIGMA = 4  # light_falloff: the night header gives the light coarser than this, in px at 1536 wide
 RATIO_RADIUS, RATIO_EPS = 4, 1e-4  # nightLightsMode "ratio": the gain's guided filter, 9 px windows at 4x
 
 
@@ -168,6 +174,34 @@ def ratio_lit(day_up, day, night, r=RATIO_RADIUS, eps=RATIO_EPS):
     guide = np.log(day_up.mean(2) + e)
     gain = np.stack([guided(guide, gain[..., c], r, eps) for c in range(3)], -1)
     return (day_up + e) * np.exp(gain) - e
+
+
+def smooth_sky(day, size, grad=6):
+    """Where the day (header size) is featureless, at `size`, soft: no channel changing faster than `grad` levels a pixel
+    after a 1 px blur. A ring round a light shows in open sky; on a lit figure or a prop the day's own shading stays."""
+    from scipy.ndimage import gaussian_filter
+    a = gaussian_filter(np.asarray(day.convert("RGB"), np.float32), (1, 1, 0))
+    g = np.maximum(np.abs(np.diff(a, axis=0, append=a[-1:])), np.abs(np.diff(a, axis=1, append=a[:, -1:]))).max(2)
+    s = gaussian_filter((g < grad).astype(np.float32), 2)
+    return np.asarray(Image.fromarray((s * 255).astype(np.uint8)).resize(size, Image.BILINEAR), np.float32) / 255
+
+
+def light_falloff(up, header_up, mask, radius, sigma, where=1.0):
+    """The transfer around night lights, given the night header's own broad light so it cannot undershoot.
+
+    A light far brighter than its surroundings defeats the transfer's windowed contrast match: just outside it the
+    output dips below the night header's glow and further out it bumps above it, so a feathered mask alone leaves a
+    dark ring (2026-11-18: ourostack's moon, 9 levels below the glow 48-72 px out at 3072). Within `radius` px of the
+    mask (one transfer window) the log light coarser than `sigma` px is the night header's, fading to the transfer's own
+    by 3 `radius`, and only `where` (the day's featureless sky); finer detail stays the transfer's, so the day's shapes
+    are kept."""
+    from scipy.ndimage import distance_transform_edt, gaussian_filter
+    d = distance_transform_edt(mask < 0.5)
+    t = np.clip((d - radius) / (2 * radius), 0, 1)
+    w = ((1 - t * t * (3 - 2 * t)) * where)[..., None]
+    lu, lh = np.log(up + 1), np.log(header_up + 1)
+    corr = np.stack([gaussian_filter(lh[..., c], sigma) - gaussian_filter(lu[..., c], sigma) for c in range(3)], -1)
+    return np.exp(lu + w * corr) - 1
 
 
 def night_from_day(scene):
@@ -283,8 +317,12 @@ def main():
                         sys.exit(f"{scene}: {day_rel} is {day_im.size}, not the night header's {header.size}")
                     lit = ratio_lit(day_up, day_im, header)
                 else:
-                    lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
-                up = Image.fromarray((np.asarray(up, np.float32) * (1 - m) + lit * m).round().clip(0, 255).astype(np.uint8))
+                    lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)  # header_up, below
+                header_up = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
+                k = up.width / 1536
+                around = light_falloff(np.asarray(up, np.float32), header_up, m[..., 0], RADIUS * k, FALLOFF_SIGMA * k,
+                                       smooth_sky(day_im, up.size))
+                up = Image.fromarray((around * (1 - m) + lit * m).round().clip(0, 255).astype(np.uint8))
             origin = None
             also = {"file": flat_rel, "sha256": sha(flat_bytes)}
             r = max(1, round(RADIUS * flat_up.width / 1536))
@@ -302,7 +340,10 @@ def main():
                       f"the day master's (nightLightsMode ratio)"
                       if lights_mode == "ratio" else
                       f"; inside the night-light mask {lights_rel} (lit lamps, glowing eyes) it is the night header itself, "
-                      f"Lanczos 4x") if lights_rel else ""))
+                      f"Lanczos 4x")
+                    + (f"; within {RADIUS} px (at 1536 wide) of that mask, fading out by {3 * RADIUS} px, its log light "
+                       f"coarser than {FALLOFF_SIGMA} px is the night header's wherever the day is featureless (light_falloff), "
+                       f"so the switch at the mask's edge leaves no ring in the sky" if lights_rel else "") if lights_rel else ""))
         elif day:
             if scene in masters:
                 sys.exit(f"{scene}: built from the day's master (nightFromDay in crops.json); --master does not apply")

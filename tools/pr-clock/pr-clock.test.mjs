@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { autoMergeOff, fetchRetry, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
+import { autoMergeOff, fetchRetry, fetchState, readGroup, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
 
 const NOW = "2026-11-07T20:00:00Z";
 const run = (name, status, conclusion = null, startedAt = "2026-11-07T19:40:00Z") => ({ __typename: "CheckRun", name, status, conclusion, startedAt });
@@ -157,4 +157,39 @@ test("fetchRetry retries a 504 with backoff, then returns the good response", as
   assert.deepEqual(waits, [1000, 2000]);
   const last = await fetchRetry("u", {}, { tries: 2, sleep: async () => {}, doFetch: async () => ({ status: 503 }) });
   assert.equal(last.status, 503);
+});
+
+// A fake GraphQL that 504s on any query asking for a big page or several repositories at once.
+const fakeRun = (log) => async (query) => {
+  const sizes = [...query.matchAll(/pullRequests\(states:OPEN,first:(\d+)/g)].map((m) => +m[1]);
+  const names = [...query.matchAll(/name:"([^"]+)"/g)].map((m) => m[1]);
+  log.push({ names: names.length, size: Math.max(...sizes) });
+  if (Math.max(...sizes) > 5 || names.length > 1) throw new Error("POST /graphql: 504 timeout");
+  const data = {};
+  for (const m of query.matchAll(/(\w+):repository\(owner:"o",name:"([^"]+)"\)\{[^]*?pullRequests\(states:OPEN,first:(\d+)(?:,after:"(\d+)")?/g)) {
+    const [, alias, name, size, after] = m;
+    const total = name === "big" ? 7 : 1;
+    const start = +(after ?? 0), end = Math.min(total, start + +size);
+    data[alias] = { nameWithOwner: `o/${name}`, isPrivate: false, defaultBranchRef: null, pullRequests: { totalCount: total, pageInfo: { hasNextPage: end < total, endCursor: String(end) }, nodes: Array.from({ length: end - start }, (_, k) => ({ number: start + k + 1, url: `${name}${start + k + 1}` })) } };
+  }
+  return data;
+};
+
+test("a query that 504s is split and shrunk until it fits, and every PR is still read", async () => {
+  const log = [];
+  const { prs } = await fetchState(["o/a", "o/big", "o/c"], fakeRun(log));
+  assert.equal(prs.length, 9);
+  assert.ok(log.some((l) => l.size <= 5 && l.names === 1));
+});
+
+test("a persistent 5xx on one repository still fails loudly", async () => {
+  await assert.rejects(readGroup(["o/a"], async () => { throw new Error("POST /graphql: 504 x"); }), /504/);
+});
+
+test("pages are small and followed by cursor", async () => {
+  const log = [];
+  const run = async (q) => { log.push(q); return fakeRun([])(q); };
+  const { prs } = await fetchState(["o/big"], run);
+  assert.equal(prs.length, 7);
+  assert.ok(log.length > 1 && log.every((q) => !q.includes("OPEN,first:50")));
 });
