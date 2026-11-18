@@ -43,6 +43,11 @@ jobs:
           python3 -m venv /tmp/upscale-venv
           /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image
           /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
+      # Required with the upscale tests: a night whose sky has a hard straight seam can't merge.
+      - name: Test how sky_seams.py tells a build seam from a drawn edge
+        run: /tmp/upscale-venv/bin/python brand/tools/sky_seams_test.py -v
+      - name: Check every light-transfer night's sky for straight seams
+        run: /tmp/upscale-venv/bin/python brand/tools/sky_seams.py
 
   pending-tests:
     runs-on: ubuntu-latest
