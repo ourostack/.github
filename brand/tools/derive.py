@@ -94,6 +94,17 @@ def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
     return (left, 0, left + width, im.height)
 
 
+def card_box(im: Image.Image, cw: int, ch: int, centre: int, centre_y=None) -> tuple:
+    """A cw:ch window: full height around the x centre, or, for a header taller than the card's shape
+    (a 3:2 chapter picture), full width around the y centre (cardY in crops.json, default the middle)."""
+    width = round(im.height * cw / ch)
+    if width <= im.width:
+        return crop_centre(im, width, centre)
+    height = round(im.width * ch / cw)
+    top = max(0, min(im.height - height, round((im.height / 2 if centre_y is None else centre_y) - height / 2)))
+    return (0, top, im.width, top + height)
+
+
 SKY_OVERLAP = 32  # rows each brand/skies file shares with the top of its header
 
 
@@ -209,7 +220,7 @@ def build(scenes=()):
                 im, op, sky_rel = whole_with_sky(scene, src, cw, ch, centre)
                 extra = {"alsoFrom": {"file": sky_rel, "sha256": sha((BRAND / sky_rel).read_bytes())}}
             else:
-                box = crop_centre(src, round(src.height * cw / ch), centre)
+                box = card_box(src, cw, ch, centre, c.get("cardY"))
                 im = src.crop(box).resize((cw, ch), Image.LANCZOS)
                 op = f"crop box {list(box)} then resize to {cw}x{ch} (Lanczos)"
             yield f"{kind}/{scene}.jpg", encode(im, "jpg"), {
