@@ -48430,5 +48430,776 @@
   "height": 512,
   "bytes": 193796,
   "sha256": "834402671e6f21b40d0437e0ef2a79bd35ce9cff9fcf6b60f59bc3565b7a3ad2"
+ },
+ {
+  "file": "headers/nautilus-organ-asleep.webp",
+  "for": "https://ui.ouroboros.bot/nautilus/#chapter-three",
+  "model": "GitHub Copilot app image_generation; a masked edit of the approved organ-playing picture",
+  "generated": "2026-11-18",
+  "approval": "Ari, 2026-11-18, via the Nautilus coordinator: \"your primary goal is to surprise and delight\"; the round-three critics' delight J6: play the organ three times and the squid falls asleep at the glass. Made with the masked-edit loop in agents/art-prompting.md, as the chapter pictures' second states were.",
+  "crop": "the whole 1536x1024 picture, WebP q86 (Pillow 11.3); a state the page cross-fades to",
+  "checked": "blind defect hunt (fresh reviewer, the picture, a 400 px copy and 2x crops): no physical blocker",
+  "generation": [
+   {
+    "step": "edit",
+    "what": "the squid's eye closed, asleep, on headers/nautilus-organ-playing.webp",
+    "input_images": [
+     "headers/nautilus-organ-playing.webp"
+    ],
+    "crop_box": [
+     60,
+     200,
+     460,
+     600
+    ],
+    "mask": "ellipse 180,300,320,440, feather 6",
+    "tool": "GitHub Copilot app image_generation edit, 1024x1024, quality high, on the crop upscaled to 1024 (Lanczos); pasted back by hdr/tools/patch.py (ECC affine alignment) inside the mask only",
+    "prompt": "Change only the squid's eye: the giant squid has fallen gently asleep at the glass, lulled by the music. Its big eye is now closed: a soft, relaxed lid of the same rose-and-coral skin, with the same small darker spots, lowered all the way over the eye, making one calm, gently curved closed line where the lid meets the lower rim, peaceful and content, the shape and size of the eye's socket unchanged. Keep the squid's head, its skin and spots, the curled tentacle tip below, the dark blue-green sea, the window's brass frame and rivets, the light and everything else exactly as they are. No text, letters or symbols. No tears, no eyelashes, no cartoon lines.",
+    "sha256": "a89597a36b0ab08f546f4f570092f0dde2c182b34c11d9497b5509b65edf7289"
+   },
+   {
+    "step": "hunt",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "the organ pipes repeat a similar shape at 4x (unchanged from the approved picture)"
+     ],
+     "adjudication": "the hunter listed figure counts that all came out right and the captain's far arm hidden by the torso, as in the approved organ-playing picture this edits; no physical blocker"
+    }
+   }
+  ],
+  "master_sha256": "b1db9814b7b42171d7ded7e26ae4889462c71ad51effef1ff0f565dbe7596ee9",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 263590,
+  "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+ },
+ {
+  "file": "headers/nautilus-organ-asleep-dark.webp",
+  "for": "https://ui.ouroboros.bot/nautilus/#chapter-three",
+  "model": "GitHub Copilot app image_generation; a masked edit of the approved organ-playing picture",
+  "generated": "2026-11-18",
+  "approval": "Ari, 2026-11-18, via the Nautilus coordinator: \"your primary goal is to surprise and delight\"; the round-three critics' delight J6: play the organ three times and the squid falls asleep at the glass. Made with the masked-edit loop in agents/art-prompting.md, as the chapter pictures' second states were.",
+  "crop": "the whole 1536x1024 picture, WebP q86 (Pillow 11.3); a state the page cross-fades to",
+  "checked": "pair hunt with the day (fresh reviewer, both halves at 768 px, night brightened 2.5x): no blocker, every prop the same",
+  "generation": [
+   {
+    "step": "edit",
+    "what": "the squid's eye closed, asleep, on headers/nautilus-organ-playing-dark.webp",
+    "input_images": [
+     "headers/nautilus-organ-playing-dark.webp"
+    ],
+    "crop_box": [
+     60,
+     200,
+     460,
+     600
+    ],
+    "mask": "ellipse 180,300,320,440, feather 6",
+    "tool": "GitHub Copilot app image_generation edit, 1024x1024, quality high, on the crop upscaled to 1024 (Lanczos); pasted back by hdr/tools/patch.py (ECC affine alignment) inside the mask only",
+    "prompt": "Change only the squid's eye: the giant squid has fallen gently asleep at the glass, lulled by the music. Its big eye is now closed: a soft, relaxed lid of the same rose-and-coral skin, with the same small darker spots, lowered all the way over the eye, making one calm, gently curved closed line where the lid meets the lower rim, peaceful and content, the shape and size of the eye's socket unchanged. Keep the night light exactly as it is, the squid's head, its skin and spots, the curled tentacle tip below, the dark night sea, the window's brass frame and rivets and everything else exactly as they are. No text, letters or symbols. No tears, no eyelashes, no cartoon lines.",
+    "sha256": "d4687b112ea827069196b6e9aaf41635ee06650c0161239180f2f266d06527a5"
+   }
+  ],
+  "master_sha256": "b74a12ab7a5da701d6c09b76db040807d2d6ab60e884dd4ecbecdc6c40d94103",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 212332,
+  "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+ },
+ {
+  "file": "upscaled/nautilus-organ-asleep.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/nautilus-organ-asleep.webp (sha256 85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x1024, it matches headers/nautilus-organ-asleep.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9727 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 4096,
+  "bytes": 1859314,
+  "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+ },
+ {
+  "file": "upscaled/nautilus-organ-asleep-dark.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/nautilus-organ-asleep-dark.webp (sha256 fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x1024, it matches headers/nautilus-organ-asleep-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9695 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
+  "encoder": "Pillow WebP quality 100 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 4096,
+  "bytes": 3972934,
+  "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-640.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x427 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 427,
+  "bytes": 55672,
+  "sha256": "ba9fd6e7f41bb8abd8422c11b8723ea7f507bd5cd55477ab532b4c4d65b519ed"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-640.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x427 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 427,
+  "bytes": 40906,
+  "sha256": "e312c80fae89401059c7a8083cdf3edde44a72a80515e3ec5a3b96c232130d6b"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-960.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x640 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 640,
+  "bytes": 104866,
+  "sha256": "50853d342737f6ce52e174b34d7634d8e0a6fe0e33d12830dbd134bce18f9de8"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-960.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x640 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 640,
+  "bytes": 76606,
+  "sha256": "de930d18715e91e433e5d82fddac4d6d962a9d2339658bf87d401383033e5ae7"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-1536.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 148625,
+  "sha256": "18a3d76b37d6784cdc8c899f34dced3740d8447c106b9151e70dd87dc020d332"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x1536 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 1536,
+  "bytes": 232885,
+  "sha256": "15809ddfa17c96f6c4207cf7aee4109f0a519273d07dc4eb6221b58653bfc707"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x2048 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 2048,
+  "bytes": 312636,
+  "sha256": "f8cac4e5b08fb12df01f2d357e21a76150d8a55e2487d1288d083603651cee39"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x2048 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 2048,
+  "bytes": 521784,
+  "sha256": "e355daede7aaeb401231bb701388e99727c0de25162bdd8714bdd25fcb4f4079"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x2560 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 2560,
+  "bytes": 391425,
+  "sha256": "553f5d2e6e80cfb257b29ceafb31df5923b9d9104dc921dc39f2280bfb79ae54"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x3413 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 3413,
+  "bytes": 509846,
+  "sha256": "0d827fdcdaa0c935307ac5e9bfc4959650d1d097586e6da078990bf91ffb2091"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x5120 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 5120,
+  "bytes": 735656,
+  "sha256": "140f2b3595a0d17a22fdf27039c1951117fa1c8749b2d7124c64bdeda82528d1"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x5120 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 5120,
+  "bytes": 1475218,
+  "sha256": "e1de13afb64b52fe584146cf3c5d9038004fc2abeb8a665578430d352474a5f8"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-384.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 384x256 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 256,
+  "bytes": 22812,
+  "sha256": "0bfac8be11640bce1ca7c578d2cc03f0e271d84a35b15f7fe8ec2010a5b09d02"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-384.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 384x256 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 256,
+  "bytes": 17488,
+  "sha256": "05e3bbb6c3eac4d5f156572f6cac7150e5d4e110e56295b258d0bd93dbdbb92a"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-768.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 768x512 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 512,
+  "bytes": 74162,
+  "sha256": "a5f663e7112da1a594097af058f8bfda2b21820bdce86d1f22a423e3cf1c1be7"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-768.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 768x512 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 512,
+  "bytes": 54853,
+  "sha256": "71af6238f961877c31641a03a791abbf1b0886f8d61b636bf448db89f6c00c31"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1152x768 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 768,
+  "bytes": 135792,
+  "sha256": "cf44f90e1e704d0c2d99ff6199886b56816967c412de6a25b2720bb926df0d86"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1152x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 768,
+  "bytes": 97664,
+  "sha256": "b096b9779a0c0985e9cbe00472aec60639a84a3b3562372926ffd0227db8fe9b"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1536x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 212536,
+  "sha256": "fc7f261a77af9c8d70a4336c95ea7591f65a80e8aad43f527d69a63ab0ff6d88"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep.webp",
+   "sha256": "8f38171b710b8215c3e837d0345113bc6269b7c20c8bffe23a5c534e9f6207d8"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1536x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 144698,
+  "sha256": "d56df0910ac583d0792d479867dc59020f0bdc9ee8cb66e857dada767dfc62cb"
+ },
+ {
+  "file": "social/nautilus-organ-asleep.jpg",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [0, 128, 1536, 896] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 267496,
+  "sha256": "21122d7f01c033f63f9653d18f2ceabb0097fe984e0fda36c0c211ae3a82b12b"
+ },
+ {
+  "file": "og/nautilus-organ-asleep.jpg",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep.webp",
+   "sha256": "85ccd5da5af1d6dfbc7f4850b3abbf057ba1cb97b4bd60297205edf6c6bb0652"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [0, 109, 1536, 915] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 255326,
+  "sha256": "ac75c007d177175b7b261101206d2b48907bd4faefb1e9ec0e04e50a652a7dcb"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-640.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x427 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 427,
+  "bytes": 43758,
+  "sha256": "ae69e6ca24c6106fd1f00cc2e2cc5784b5a81f6eb1a0354db39dfbf2cf6eb148"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-640.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x427 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 427,
+  "bytes": 31748,
+  "sha256": "8d5280cec946051f1bd02f57486eade87f3467ce178fd7cadfb2002dac9fb2ed"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-960.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x640 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 640,
+  "bytes": 82446,
+  "sha256": "116a5c70ca784e6985bd7c58299a3b447c5e65106d959a89c8ea7aa5cac17d2f"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-960.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x640 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 640,
+  "bytes": 59162,
+  "sha256": "4de03514643b94e89459d77b2d7624a230b86243e2c71b446d4f38d96026bd85"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-1536.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 116953,
+  "sha256": "f01f2adfaa294b203d701f11ba4f8daecefcb3ca0e0ef0147b5b668f12329736"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x1536 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 1536,
+  "bytes": 285292,
+  "sha256": "acb365a778d3ab0f957d1f1c2fa5666f171c8188a6196ae04d1659c37826e16a"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x2048 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 2048,
+  "bytes": 401828,
+  "sha256": "7ab209d6d266fc5e4a8ae0ac3198f4df7ee7c5d53af87abd994e08999ed73765"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x2048 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 2048,
+  "bytes": 646858,
+  "sha256": "e88a6ebec3bfafd8f79a52cacaab6ec004d4e04e99f412dffddbede1b028534e"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x2560 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 2560,
+  "bytes": 542081,
+  "sha256": "89db5437514a9eb61702f2c34e2dfaa2bc86ca6b673e2604c5f58fbd5b35089a"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x3413 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 3413,
+  "bytes": 780914,
+  "sha256": "a63b4fde034f27bd46dc3a2a1b03fe719be2a44e36261a9676d2ba0ca6b7e86b"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x5120 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 5120,
+  "bytes": 1319682,
+  "sha256": "c05d9a699825cd11f2ad9275416e57387186a9056bb8e35323de4dd28570280c"
+ },
+ {
+  "file": "scenes/nautilus-organ-asleep-dark-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x5120 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 5120,
+  "bytes": 1944424,
+  "sha256": "2797a342556a01750a9e2aa1221257ffe26d5cca49db7c2619d3741500276084"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-384.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 384x256 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 256,
+  "bytes": 18416,
+  "sha256": "e8240ec300be27ce1a6247d8e84eb3d0dbdebc794dc26b57f722c643594adf6b"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-384.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 384x256 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 256,
+  "bytes": 13677,
+  "sha256": "3452f3d91a576a616d3c6212d1f7cfb85011fa5963e6a66cb2981377a32da737"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-768.webp",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 768x512 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 512,
+  "bytes": 58140,
+  "sha256": "fc16215b4bd240e12409fca9ccee5f22a4961b2b7b2dcbd9cdca8409e2b9cfdb"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-768.avif",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 1536, 1024] then resize to 768x512 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 512,
+  "bytes": 42705,
+  "sha256": "9a24b0613b520292c6f35081e3b297894a4c4cd9da10455b30307d431a012eda"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1152x768 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 768,
+  "bytes": 167770,
+  "sha256": "df143e880b206c6acc6593eacc46e54bf05527a5db1ea6596da7c2c8197d78b6"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1152x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 768,
+  "bytes": 110287,
+  "sha256": "73275bae25a1307104fdc9270356a4391d18ba66747201d4915e08edc4a199da"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1536x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 247800,
+  "sha256": "9c3721ac65c06d697535fa0b10ed0938e7da0d9d7c72b330bb453933aa5e4572"
+ },
+ {
+  "file": "phone/nautilus-organ-asleep-dark-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/nautilus-organ-asleep-dark.webp",
+   "sha256": "a7a35e8a1dda092b87bd39c755366ee8e227f9ebbe0b4bddb73f9933232cce45"
+  },
+  "use": "phone hero (3:2)",
+  "operation": "crop box [0, 0, 6144, 4096] of the 4x master then resize to 1536x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 1024,
+  "bytes": 167798,
+  "sha256": "975cd02403a09c93c3e61288288f458fa1eacd412e8ae9d453ebdd17188107a8"
+ },
+ {
+  "file": "social/nautilus-organ-asleep-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [0, 128, 1536, 896] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 235491,
+  "sha256": "e57955578ad57ea0d74831df303f6495024c40e16e90a1f587eba0863c7ef7e9"
+ },
+ {
+  "file": "og/nautilus-organ-asleep-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/nautilus-organ-asleep-dark.webp",
+   "sha256": "fab519dd3eb7be0414dfb80d1a75f83a441ebff9fbc7c046c78f6c1c0e0d829b"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [0, 109, 1536, 915] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 224457,
+  "sha256": "2312344d481596ae72f251049cb40aedd8b5e33a74967d4e73ea04456a3e23b4"
  }
 ]
