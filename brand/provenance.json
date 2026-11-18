@@ -32571,318 +32571,124 @@
   "file": "headers/airship-line.webp",
   "for": "https://ouroboros.bot/#factory",
   "model": "GitHub Copilot app built-in image_generation tool; core at 1536x1024, widened to 2560x1024 by two side outpaints, then 1536x614 by Lanczos, WebP q86 (Pillow 11.3)",
-  "generated": "2026-11-15, by the ouroboros.bot home lane: the line in the airship workshop. Three small glass agents (an amber one in a red knit cap fitting a propeller, a sea-blue one in a leather apron tying ropes, and Loop in goggles steadying a finished ship) build little airships in oak cradles along one long bench, while a faceless glass person in a moss-green scarf and canvas apron stands in front and times the line with a brass pocket watch; Ouro sits curled on the bench's far end. Loop and Ouro are \"he\"",
-  "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is the factory section, \"Software factories can learn from real ones\": agents build on a line in the airship's own workshop while the person times it with a brass stopwatch. Made with the one-shot loop in agents/art-prompting.md: 12 candidates over four prompt revisions (one-shot rate 0 of 12); candidate J picked; fixes and every hunt are logged in generation; the last fresh blind hunts of the day and night frames found no blockers.",
+  "generated": "2026-11-18",
+  "approval": "Ari, 2026-11-16: premium film, not storybook; the re-hunt and an independent reviewer blocked the old airship-line, so it was re-set as an airship's sunlit workshop. Under the stop rule: the pocket watch removed, the plants removed, the bench run off both edges, Loop's antenna hidden, the doorway closed below a sill above the agents' heads, the person's hands in the apron pockets.",
   "crop": "1536x576 of the 1536x614 frame (rows 19-595), which is the 2560x1024 master's rows 32-992 resized by 0.6 (Lanczos)",
-  "checked": "blind defect hunts 2026-11-15, day and night separately, by fresh reviewers given only the frames and 4x crops of every figure: no blockers. One head, two arms, two legs on the person; one head, two arms on each agent with legs hidden behind the bench; every airship in its cradle; Ouro one continuous animal with an open tail gap; no text, emblems or dated devices.",
+  "checked": "blind r35 and r36 (Opus 5.5 with 4-10x crops, plus the structure hunter, the shipped 3072 scenes on main's tools): BLIND and STRUCT no blocking defects, day and night, in both; sky_seams clean. Earlier: the day final since r23 (BLIND clean r23-r26, r28-r36 bar one single-run item), the night's window arch fixed light-only after r22 and r34 flagged it.",
   "generation": [
    {
-    "master": "airship-line-master",
-    "master_sha256": "d02226bc0ee8cda22689007c20d7603ccf906f22fc7ee7b479d8eacf88946222"
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v1",
-    "candidate": "A",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024 and shipped as an 8:3 strip cut from the middle band, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The person stands at the left, in front of the bench's left end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: holding a round brass pocket stopwatch at chest height, its face toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing; its top is a row of brass rollers, like a gentle conveyor.\n- The little airships: three, each about as long as an agent is tall, resting on the rollers in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship on the rollers.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No snake or animal, and no fourth agent or second person.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above.\n",
-    "input_images": [],
-    "master_sha256": "3cbde145468254bb4b5a515177a8459afcc016336611cb9c951f4965d408546a",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the pocket watch face has hour marks",
-      "wall blueprints carry scribbled pseudo-text",
-      "Loop's ear cups read as headphones",
-      "a hanging fixture reads as a bulb",
-      "the rigger's far mitten shows finger grooves",
-      "the fitter's far hand merges with the wire frame"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v1",
-    "candidate": "B",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024 and shipped as an 8:3 strip cut from the middle band, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The person stands at the left, in front of the bench's left end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: holding a round brass pocket stopwatch at chest height, its face toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing; its top is a row of brass rollers, like a gentle conveyor.\n- The little airships: three, each about as long as an agent is tall, resting on the rollers in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship on the rollers.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No snake or animal, and no fourth agent or second person.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above.\n",
-    "input_images": [],
-    "master_sha256": "4a3a47914482dcae877078ec501fdc63929e5e7b182582d555734669cc7cd32d",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the fitter's forearms pass through the wire frame (after one fix and an outpaint, a second hunt found: Ouro's tail tip almost touches his snout; rollers run the wrong way)"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v1",
-    "candidate": "C",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024 and shipped as an 8:3 strip cut from the middle band, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The person stands at the left, in front of the bench's left end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: holding a round brass pocket stopwatch at chest height, its face toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing; its top is a row of brass rollers, like a gentle conveyor.\n- The little airships: three, each about as long as an agent is tall, resting on the rollers in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship on the rollers.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No snake or animal, and no fourth agent or second person.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above.\n",
-    "input_images": [],
-    "master_sha256": "61f0a772baf90c28063c61a1b08bd8a7e6243caa3a35a2cb4570b9e3c7138c48",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the watch chain hangs from the bottom of the watch",
-      "the watch is not gripped",
-      "the fitter's hand is inside the wire frame",
-      "a bulb-like lamp at the left edge",
-      "the person's arms do not match"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v2",
-    "candidate": "D",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the stopwatch's brass crown and short chain at chest height, the watch hanging just below the mitten with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his curl is about as tall as the person's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the bare oak at the bench's far left end, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "b36eaa05274e90feb4ae3078191c9c0eb245a7af8ef651f209f072d60a4838e9",
-    "picked": false,
-    "hunt": {
-     "blind": false,
-     "blockers": [
-      "Ouro oversized (judged by the author)"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v2",
-    "candidate": "E",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the stopwatch's brass crown and short chain at chest height, the watch hanging just below the mitten with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his curl is about as tall as the person's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the bare oak at the bench's far left end, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "0391100f663f0957d8f327398b3c07a64f3d320349b34eacd70855d6f9c6eb12",
-    "picked": false,
-    "hunt": {
-     "blind": false,
-     "blockers": [
-      "Ouro oversized (judged by the author)"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v2",
-    "candidate": "F",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the stopwatch's brass crown and short chain at chest height, the watch hanging just below the mitten with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small oak gondola up under the first airship's envelope.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his curl is about as tall as the person's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the bare oak at the bench's far left end, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a bare brass rib frame with its gondola being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "1e13facaed8e842c208d26be4c3d210a8dc46f87d276b739369fa32ca3cdfca6",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "Ouro oversized, fixed by one edit; widened; hunt: Ouro's tail tip near his snout, a stray fin above the green airship; second fix; hunt: the fitter's hand inside the wire frame"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v3",
-    "candidate": "G",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small open oak gondola from underneath, lifting it up to meet the underside of the first airship's envelope; both mittens are below the envelope, outside it.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his whole curl is about half as tall as the person's head, smaller than any agent's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the front half of the bare oak at the bench's far left end, near the front edge, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a smooth cream envelope with brass bands and no gondola yet (the fitter is lifting its gondola into place), the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "45c8207730defde52cf69b29e4fd5bdfec856302af3dfefe5307550087c2c0a1",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the fitter's airship does not sit in its cradle and a stray strut shows (after one fix and widening, a second hunt found: the fitter seems to sit on the bench, the blue airship off-centre, a loose scarf end, Ouro's tail gap)"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v3",
-    "candidate": "H",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small open oak gondola from underneath, lifting it up to meet the underside of the first airship's envelope; both mittens are below the envelope, outside it.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his whole curl is about half as tall as the person's head, smaller than any agent's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the front half of the bare oak at the bench's far left end, near the front edge, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a smooth cream envelope with brass bands and no gondola yet (the fitter is lifting its gondola into place), the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "e04bc89d7a9da1d1ec29f9e4f98e4f3d38fe7ed5befd276425f72e0f4d49eeb6",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "Ouro's tail gap",
-      "the green airship crushed into its gondola",
-      "the fitter shows one arm",
-      "the person's raised arm has no shoulder"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v3",
-    "candidate": "I",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. Ouro sits on the bench's far left end; the person stands in front of the bench, a little right of Ouro; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf hanging still down their chest and a short brown canvas work apron.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a gondola under the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small open oak gondola from underneath, lifting it up to meet the underside of the first airship's envelope; both mittens are below the envelope, outside it.\n- Facing: three-quarters toward the camera, looking down at the gondola.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n### Ouro\n- What: Ouro, the person's pet snake, from the reference image, keeping them company.\n- Material: smooth, seamless translucent emerald glass with an inner glow and a pale jade belly; the face of brand/ouro.png, eyes of glass and gems.\n- Height: the smallest figure; his whole curl is about half as tall as the person's head, smaller than any agent's head.\n- Outfit: none.\n- Expression: interested, eyes bright, a small smile.\n- Pose: sitting on the front half of the bare oak at the bench's far left end, near the front edge, left of the person, exactly as in the reference: one upright open \"O\" curl resting on its lowest curve, his head at the top, his body tapering to a short tapered tail tip that rises beside his head with a clear gap, as wide as his eye, between tail tip and cheek. A soft contact shadow on the oak.\n- Limbs: none: one head, one continuous tapering body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera, looking right along the line.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting in its own low oak cradle on the bench top, in a row from left to right: the first a smooth cream envelope with brass bands and no gondola yet (the fitter is lifting its gondola into place), the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf, emerald for Ouro; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, no second snake.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\n1. `brand/ouro.png`, for Ouro's exact face, his upright open \"O\" curl and his short tail tip; not his size.\n",
-    "input_images": [
-     "brand/ouro.png"
-    ],
-    "master_sha256": "1035b01747a55d0507ec25de50f563258e12f972294b565fa98aa9d5b5d346b0",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the blue robot's second hand is disconnected",
-      "the person's raised hand is lumpy"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v4",
-    "candidate": "J",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The bench's far left end is bare oak; the person stands in front of the bench, a little right of that bare end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf wrapped once round the neck, both ends hanging down the front of the chest, and a short brown canvas work apron tied at the back.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a brass propeller to the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing upright on the floor behind the bench, his legs hidden by the bench's solid front; no part of him rests on the bench top except his mittens.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small brass propeller by its hub against the tail cone at the first airship's right end, outside the envelope; the airship itself rests in its cradle untouched.\n- Facing: three-quarters toward the camera, looking down at the propeller.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting centred in its own low oak cradle on the bench top, both cradle uprights touching the envelope's underside, in a row from left to right: the first a cream envelope with brass bands and a small oak gondola, its propeller being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, and no snake or animal.\n- No agent sitting on or kneeling on the bench.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above. Ouro is added afterwards on the bare bench end by one region edit with brand/ouro.png.\n",
-    "input_images": [],
-    "master_sha256": "5512fffe8234f959601cdfced16458436e5260c8ff8d420c924ee303d160ec6f",
-    "picked": true,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "a round brass ouroboros-like emblem on the bench front"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v4",
-    "candidate": "K",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The bench's far left end is bare oak; the person stands in front of the bench, a little right of that bare end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf wrapped once round the neck, both ends hanging down the front of the chest, and a short brown canvas work apron tied at the back.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a brass propeller to the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing upright on the floor behind the bench, his legs hidden by the bench's solid front; no part of him rests on the bench top except his mittens.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small brass propeller by its hub against the tail cone at the first airship's right end, outside the envelope; the airship itself rests in its cradle untouched.\n- Facing: three-quarters toward the camera, looking down at the propeller.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting centred in its own low oak cradle on the bench top, both cradle uprights touching the envelope's underside, in a row from left to right: the first a cream envelope with brass bands and a small oak gondola, its propeller being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, and no snake or animal.\n- No agent sitting on or kneeling on the bench.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above. Ouro is added afterwards on the bare bench end by one region edit with brand/ouro.png.\n",
-    "input_images": [],
-    "master_sha256": "5755fe146ea75dc8641587d81d3f3f67feea62ff6166f270cac56742af1dcf0f",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the fitter looks perched on the bench",
-      "a stray green column beside Loop's hand",
-      "Loop's hand holds nothing"
-     ]
-    }
-   },
-   {
-    "step": "candidate",
-    "batch": "airship-line-2026-11-15-v4",
-    "candidate": "L",
-    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn a sunlit airship workshop, three small glass agents build little airships along one long workbench while a faceless person standing in front times the line with a brass stopwatch.\n\n## Camera\n35 mm lens. Eye level: at the person's chest, a little above the workbench top. We stand in front of the workbench, which runs straight across the frame from left to right, parallel to the bottom edge. One vanishing point, at the centre of the big arched doorway in the back wall, where the floorboards and the roof trusses converge.\n\n## Composition\nGenerated at 1536x1024, widened afterwards to 2560x1024 by extending the side walls, and shipped as an 8:3 strip, so the crop band is rows 180 to 720: every head, mitten and the whole workbench top sit inside it. No words go over the picture, so the safe area is that middle band; the top fifth stays calm roof trusses and the bottom fifth calm floorboards. The bench's far left end is bare oak; the person stands in front of the bench, a little right of that bare end; the three agents stand behind the bench, spaced evenly to the right; the doorway is behind the middle agent.\n\n## Cast\n\n### The person\n- What: a faceless person from the shared universe, the one who measures the work.\n- Material: smooth, seamless frosted glass with a warm brass core and a soft warm inner light; no face at all.\n- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs, natural adult proportions, never tall and thin.\n- Height: the tallest figure; the workbench top reaches their hip.\n- Outfit: a moss-green knitted scarf wrapped once round the neck, both ends hanging down the front of the chest, and a short brown canvas work apron tied at the back.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line, weight on both feet, shoulders easy.\n- Pose: standing on clear floorboards in front of the bench's left end, a step away from it, nothing in front of them; feet a small step apart.\n- Limbs: exactly two arms, each from its own shoulder, and two legs, both fully visible from hip to foot, both feet flat on the floor.\n- Hands: round mittens in the same smooth frosted glass as the arms, each with one small thumb, no grooves or knuckles. Near mitten: closed around the top of the stopwatch's short chain at chest height; the chain runs down from the mitten to the ring on top of the watch, which hangs just below with its plain face turned toward them. Far mitten: resting closed at their side.\n- Facing: body side-on to the camera, facing right along the line; head turned three-quarters toward the camera.\n\n### The fitter\n- What: a small agent fitting a brass propeller to the first little airship.\n- Material: smooth, seamless amber-orange glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder; the workbench top reaches his waist.\n- Outfit: a red knit cap.\n- Expression: focused: eye arcs held level, head tilted down to his work.\n- Pose: standing upright on the floor behind the bench, his legs hidden by the bench's solid front; no part of him rests on the bench top except his mittens.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens hold a small brass propeller by its hub against the tail cone at the first airship's right end, outside the envelope; the airship itself rests in its cradle untouched.\n- Facing: three-quarters toward the camera, looking down at the propeller.\n\n### The rigger\n- What: a small agent tying the second little airship's ropes.\n- Material: smooth, seamless sea-blue glass lit from within, brass joints, a dark rounded visor with two glowing eye arcs.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: a brown leather work apron.\n- Expression: absorbed, eye arcs slightly squinted in concentration.\n- Pose: standing on the floor behind the bench, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens pull a short rope taut where it ties to the second airship's gondola.\n- Facing: three-quarters toward the camera, looking down at the knot.\n\n### Loop\n- What: Loop, a small agent finishing the third little airship.\n- Material: smooth, seamless pale-jade glass lit from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with an emerald bead.\n- Height: his head reaches the person's shoulder, like the fitter's.\n- Outfit: brass aviator goggles, both lenses side by side, pushed up on his forehead.\n- Expression: pleased: eye arcs curved up into happy crescents.\n- Pose: standing on the floor behind the bench at its right end, his legs hidden by the bench's solid front.\n- Limbs: exactly two arms, both visible.\n- Hands: round mittens with one thumb, no knuckles. Both mittens rest on the third airship's gondola rail, steadying the finished ship.\n- Facing: three-quarters toward the camera, turned toward the person.\n\n## Props\n- Workbench: one long, heavy oak workbench with a solid panelled front down to the floor, no legs showing, and a plain flat oak top with a thin brass edge strip.\n- The little airships: three, each about as long as an agent is tall, each resting centred in its own low oak cradle on the bench top, both cradle uprights touching the envelope's underside, in a row from left to right: the first a cream envelope with brass bands and a small oak gondola, its propeller being fitted, the second with a cream envelope and its ropes being tied, the third finished, with a cream glass envelope and a small oak gondola.\n- Stopwatch: a round brass pocket stopwatch on a short chain, plain face, no numbers.\n- Doorway: a tall arched doorway in the back wall, its two big glass-and-oak doors swung open.\n\n## Setting\nA tall timber-and-glass airship workshop: oak floorboards, curved oak roof trusses, tool racks of brass instruments on the walls. Through the open doorway, dawn sky and a sea of clouds. Indoors, still air with no wind: the scarf and apron hang straight down.\n\n## Light\nLow golden dawn light through the doorway is the key light, rimming every figure and warming the bench top; a soft fill from high windows. A soft contact shadow under the person's feet and under each little airship's cradle.\n\n## Palette\nWarm oak and brass gold, cream envelopes, dawn peach and blue through the doorway; moss green for the person's scarf; amber, sea-blue and pale jade for the three agents; one red cap.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No fingers, knuckles, pointing or thumbs-up: mittens only.\n- No text, letters, numbers, logos or symbols anywhere, including on the stopwatch.\n- No glowing trails or lines of light.\n- No electronics of any age and no light bulbs.\n- No tiles, cells or facets on the glass bodies.\n- No figure facing the camera full on.\n- No image fades or vignettes.\n- No two agents alike in colour, outfit or expression.\n- No fourth agent, no second person, and no snake or animal.\n- No agent sitting on or kneeling on the bench.\n- No rollers, conveyor belt or track on the bench.\n- No wire frames or cages: every little airship has a solid envelope.\n- No stool, steps or ladder; nobody stands on the bench.\n\n## Output\nThree candidates, each generated whole at 1536x1024, quality high. The chosen one ships as a 1536x576 crop of its middle band and a wide phone crop that keeps every figure whole. The night twin is a time-of-day edit of the chosen candidate.\n\n## References\nNone: the cast is described in full above. Ouro is added afterwards on the bare bench end by one region edit with brand/ouro.png.\n",
-    "input_images": [],
-    "master_sha256": "64518cfa42f36b2992aa8074a270f3766eac6d1d616bc2d369acebe1935af794",
-    "picked": false,
-    "hunt": {
-     "blind": true,
-     "blockers": [
-      "the bench emblem",
-      "the person's hand touches the fitter's airship",
-      "watch-face marks"
-     ]
-    }
-   },
-   {
-    "step": "fix",
-    "file": "J-fix-gen.png",
-    "sha256": "afe35859bd75a4986398c39061dc972e011e3cefb26489e4743f18021fa69ee0",
-    "input_images": [
-     "a 512 px window (x 0-512, y 400-912) of candidate J",
-     "brand/ouro.png"
-    ],
-    "what": "the emblem on the bench front removed, and Ouro added on the bare bench end (the v4 prompt left him out because generations kept drawing him as a closed ring); only those two areas composited back"
-   },
-   {
-    "step": "widen",
-    "what": "outpainted left and right by two image_generation edits continuing the side walls, aligned and feathered into the core: 2560x1024",
-    "outpaints": [
-     "20600a9f37fb4ab10e87435424361096188168b3f8f3ddaa324110196c5865cf",
-     "5ccd00b8098fd60aa53fb4fd74786949ea15b0d89f4b2c4fdca09d1651dff666"
-    ]
-   },
-   {
-    "step": "hunt",
-    "blind": true,
-    "blockers": [
-     "Ouro's tail tip too close to his snout at the shipped size",
-     "the apron bow touches Ouro"
-    ]
-   },
-   {
-    "step": "fix",
-    "file": "J-fix2-gen.png",
-    "sha256": "ff98f62e5c61148f5c944ec9cb629a3d77b1b811733ce75e5ed08665533f75b3",
-    "what": "Ouro moved left, clear of the apron strings; the spot he left filled with bench and wall"
-   },
-   {
-    "step": "hunt",
-    "blind": true,
-    "blockers": [
-     "Ouro's tail gap still tight",
-     "a one-step break in the brass edge strip at the left outpaint seam"
-    ]
-   },
-   {
-    "step": "fix",
-    "file": "J-fix3-gen.png",
-    "sha256": "416bfd466069888a927fc13114013004e5bb14b65e800e7f4ad5904c30d4773d",
-    "what": "the Ouro edit re-run with a tighter prompt (tail tip leaning outward, an eye-wide gap), replacing the earlier Ouro patch; the brass edge strip levelled across the seam by a 2 px ramped shift; nothing drawn"
-   },
-   {
-    "step": "hunt",
-    "blind": true,
-    "blockers": [
-     "green from Loop's body showing between his gondola and envelope, read as a smear"
-    ]
-   },
-   {
-    "step": "polish",
-    "what": "those 298 px shaded as the envelope's shadow (a tone change only)"
-   },
-   {
-    "step": "hunt",
-    "blind": true,
-    "blockers": [],
-    "polish": [
-     "the blue robot's eyes read stern",
-     "the orange and green airships are near twins",
-     "tiny glowing dots on the orange gondola",
-     "wall sconces might read as bulbs",
-     "a crease in the person's raised mitten"
-    ]
+    "step": "core",
+    "tool": "GitHub Copilot app image_generation (headless), 1536x1024, quality high, with hdr/ref-airship-core.png and hdr/ouro.png",
+    "prompt": "# The line: ouroboros.bot home, \"Software factories can learn from real ones\"\n\n## Story\nIn the airship's own warm, sunlit workshop, three small glass agents build little airships along one long oak bench, each steadying its own ship with both mittens, while a faceless glass person stands at the bench's left end with both hands in the apron pockets, timing the line by the brass pocket watch hanging on its chain at the hip, and Ouro, their pet snake, watches from the bench's right end.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Eye level: just a little above the bench's top, as if we sit on a low stool a few steps in front of the bench, so the bench top shows only as a thin, shallow sliver of its top surface above its front edge. There is exactly one eye level for the whole room: the bench top, the floorboards and the cloud horizon seen through the doorway all share it. The bench is seen square-on: its long front edge runs straight across the frame, parallel to the bottom of the picture. One vanishing point, at the centre of the picture on that eye level, where the floorboards converge. The back wall is flat and parallel to the picture and fills the whole width behind the cast; no side walls show. Above the eye level we see only the undersides of things, never their tops.\n\n## Composition\nGenerated at 1536x1024; the chosen picture is widened on both sides to an 8:3 strip, so the crop band is the whole height, and the cast sits close together along the bench across the middle half of the width and fills most of its height. Left to right: the person standing just in front of and left of the bench's left end; the amber agent behind the bench's left part; the sea-blue agent behind the bench's middle, in front of the open doorway; Loop behind the bench's right part; Ouro on the bench's right end. Each agent stands behind its own little airship, which rests in an oak cradle on the bench in front of it. Safe area: the left quarter and the right quarter are calm back wall, each with one brass wall lamp. Nothing important in the top or bottom fifth of the frame.\n\n## Cast\n\n### The person\n- What: a faceless adult person from the shared universe, the one who measures the work.\n- Material: a matte frosted glass head and neck, like softly sandblasted glass, with a soft, even warm inner light, warm white turning soft gold at the core and no glossy highlights and no bright rim or edge glow; the head reads as one soft, opaque-looking frosted form with nothing visible inside it; a real adult head: a slightly elongated oval skull with a rounded back, a clear jaw line and a natural neck about four tenths of the head's width joining the shoulders; no ears; no face at all: no eyes, nose, brow, mouth or smile; never a clear bubble or bulb, never milky white or saturated green.\n- Build: natural adult proportions and an ordinary build: real shoulders, a head about one-seventh of the standing height, never larger, a normal torso, arms and legs of natural length and thickness; never stretched tall and thin, never toy-like.\n- Height: the tallest figure; the bench top is at the person's hip.\n- Outfit: a soft cream shirt with a low open collar so the whole neck shows, a moss-green knitted scarf looped once loosely around the neck with both ends hanging still down the chest, a sand-coloured canvas work apron from chest to knee with two large, clearly drawn front pockets, charcoal trousers and brown leather boots.\n- Expression: faceless; attentive and calm, shown by the body: head turned toward the line of agents, shoulders easy.\n- Pose: standing on the floorboards just in front of and left of the bench's left end, a step clear of it, both boots flat on the floor and fully visible, weight on one leg.\n- Limbs: exactly two arms, each from its own shoulder, and two legs.\n- Hands: smooth glass mitten hands, each with exactly one small thumb, never separate fingers; both hands are pushed deep into the apron's two front pockets, so no hand shows: each shirt cuff goes straight into a clearly drawn pocket opening.\n- Facing: body three-quarters toward the camera, turned to the right of frame toward the agents; head turned toward the agents.\n\n### The amber agent\n- What: a small agent building the first little airship.\n- Material: smooth, seamless amber-orange glass lit softly from within, satin brass joints, a dark rounded visor.\n- Height: standing behind the bench, the top of its head reaches the person's shoulder; the bench top is at its waist.\n- Outfit: a plain red knit cap with a small pom-pom.\n- Expression: content: on its visor, two soft glowing oval eyes lowered toward its airship; no mouth and no line, curve, reflection or highlight under the eyes; the visor below the eyes is a plain dark gradient.\n- Pose: standing behind the bench's left part, chest a little forward over its airship.\n- Limbs: exactly two arms and two legs; its legs are hidden behind the bench.\n- Hands: small round mittens, each no wider than its forearm, each with exactly one small thumb, never separate fingers; both mittens rest flat and still on the near side of its airship's big round envelope, one toward each end, steadying it.\n- Facing: body square to the camera, head tilted down toward its airship so both eyes read.\n\n### The sea-blue agent\n- What: a small agent building the second little airship.\n- Material: smooth, seamless sea-blue glass lit softly from within, satin brass joints, a dark rounded visor and a plain smooth round top to its head.\n- Height: the same as the amber agent; the bench top is at its waist.\n- Outfit: a plain brown leather work apron.\n- Expression: intent: two soft glowing oval eyes lowered toward its airship; the visor below the eyes is a plain dark gradient.\n- Pose: standing behind the middle of the bench, in front of the open doorway.\n- Limbs: exactly two arms and two legs; its legs are hidden behind the bench.\n- Hands: small round mittens, each no wider than its forearm, each with exactly one small thumb, never separate fingers; both mittens rest flat and still on the near side of its airship's big round envelope, one toward each end.\n- Facing: body square to the camera, head tilted down toward its airship so both eyes read.\n\n### Loop\n- What: Loop, the pale-jade helm agent from the airship, building the third little airship.\n- Material: smooth, seamless pale-jade glass lit softly from within, satin brass joints, a dark rounded visor and a tiny brass antenna with an emerald bead.\n- Height: the same as the other agents; the bench top is at his waist.\n- Outfit: plain round brass aviator goggles pushed up on his forehead on a plain smooth brown strap with no buckle, rivets or marks.\n- Expression: pleased: two soft glowing oval eyes, gently arched, lowered toward his airship; the visor below the eyes is a plain dark gradient.\n- Pose: standing behind the bench's right part.\n- Limbs: exactly two arms and two legs; his legs are hidden behind the bench.\n- Hands: small round mittens, each no wider than his forearm, each with exactly one small thumb, never separate fingers; both mittens rest flat and still on the near side of his airship's big round envelope, one toward each end.\n- Facing: body square to the camera, head tilted down toward his airship so both eyes read.\n\n### Ouro\n- What: Ouro, the pet snake, exactly as in the second reference image.\n- Material: smooth, seamless glossy emerald body with a gentle inner glow and a pale jade belly; the face, eyes and smile of the second reference image.\n- Height: about the size of a curled-up house cat; his whole coil is about as tall as an agent's head, much smaller than any agent.\n- Outfit: none; he is the pet, not a mascot.\n- Expression: curious and pleased: eyes wide open, round and soft as in the second reference image, looking along the line, a small smile.\n- Pose: one continuous tube coiled into a single round \"O\" resting on a folded canvas cloth on the bench top's right end, clear of Loop's airship, the ring open at the top right: his head rests over the top of the ring and his one short tail tip rises just to the right of his head. Belly on the inner curve, a soft shadow under the coil on the cloth.\n- Limbs: none: one head, one continuous body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the camera.\n\n## Props\n- Bench: one long oak workbench seen square-on: a thin oak top on a closed oak base, a plain front panel running the bench's full length down to a slim plinth on the floor, so no legs show; its top is shallow from front to back, and its two short ends are plain oak panels, clear of the figures.\n- Little airships: three identical little airships, each about as long as an agent is wide at the shoulders and a half again, with a plain cream canvas envelope shaped like a smooth rounded cigar, a small brass gondola fixed snug under its belly and a small brass two-blade propeller on a short shaft at its tail; no marks, numbers or stripes. Each lies level in its own low oak cradle, two simple curved oak supports joined by a base board, standing on the bench top; the gondola sits between the two supports, clear of the bench.\n- On the bench: a coil of cream rope and a small open oak box of brass parts lying on the bench top, all below the eye level.\n- Pocket watch: a round brass pocket watch with a plain blank face hanging at the person's hip on a short brass chain clipped to a button at the top of the apron's right pocket, its face toward the camera.\n- Wall lamps: two brass wall lamps on the back wall, one in the left quarter and one in the right quarter, each fixed to the wall by a round brass backplate with a short brass arm carrying a frosted glass globe with a visible pale bulb inside; unlit by day.\n- Cloth: a folded sand-coloured canvas cloth under Ouro.\n\n## Setting\nThe airship's own workshop, warm and clean: a flat back wall of pale limewashed plaster above a low honey-oak wainscot, parallel to the picture; wide honey-oak floorboards receding to the vanishing point; in the middle of the back wall one tall, open arched doorway with no door and no glass, framed in plain oak, through which we see open sky and a soft, calm sea of white clouds far below whose flat horizon line lies exactly at the eye level, just above the bench top. Nothing hangs on the walls except the two wall lamps. The air is still.\n\n## Light\nSoft, warm golden afternoon daylight from the left, with the sun itself out of frame: a gentle warm key light on every figure's left side and soft, even light everywhere else, plus soft sky light from the doorway. Shadows are few and soft-edged: a soft contact shadow under each airship's cradle, under the person's boots and under Ouro; no sunbeams, no light shafts, no window stripes and no patches or bands of sunlight on the floor or walls; the floor and walls are evenly lit. The person's warm inner light glows softly through the glass head.\n\n## Palette\nWarm limewash white, honey oak and cream canvas, soft sky blue and cloud white; moss green and sand for the person; amber and red, sea-blue and brown, pale jade and brass for the agents; emerald for Ouro; small touches of brass.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No separate fingers on any hand: mitten hands, exactly one thumb, never separate fingers; no pointing, no waving, no thumbs-up.\n- No hand of the person showing: both stay in the apron pockets.\n- No big mittens: every agent's mitten is no wider than its forearm.\n- No deep bench top: the bench top is a thin sliver seen from just above.\n- No bench legs and no agent legs showing.\n- No shelves, racks, hooks, hung tools, wheels, pictures or anything else on the walls except the two wall lamps.\n- No cloud horizon above or below the eye level; no second vanishing point; no side walls.\n- No stretched, tall-and-thin or stick-figure person; no green, mint, milky or coloured-balloon person; no face, no ears and no bright rim glow on the person.\n- No text, letters, numbers, logos or symbols: every envelope, box and watch face is blank.\n- No emoji faces on visors: no \">\" or \"<\" eyes, no tongues, no winks, no mouths, no grins, no curved line under the eyes.\n- No comic or cartoon styling: no outlines, no exaggerated squash and stretch.\n- No glowing trails, motion lines or lines of light.\n- No phones, laptops, monitors or screens.\n- No tiles, cells or facets on the glass bodies.\n- No rustic, cottage or storybook workshop: no dark wood, no clutter on the walls.\n- No sun in the frame, no sunbeams, no lens flare.\n- No giant Ouro: he is never taller than an agent's head.\n- No image fades or vignettes.\n\n## Output\nGenerated whole at 1536x1024, quality high. The chosen picture is widened on both sides to a 2731x1024 master and shipped as a 1536x576 header and as phone and social crops centred on the cast. The night twin is a relight of the chosen picture: the same frame, figures and poses at night by the two wall lamps, with a night sky in the doorway.\n\n## References\n1. The first image: the current ouroboros.bot airship master's centre, for the render quality, light, materials and the look of the people and agents only. Its airship deck, setting and composition are not to be copied.\n2. The second image: `brand/ouro.png`, for Ouro's exact face and coil.\n"
    }
   ],
   "width": 1536,
   "height": 576,
-  "bytes": 186768,
-  "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
- },
- {
-  "file": "skies/airship-line.webp",
-  "use": "the real sky above the header, so the whole-scene og and social cards are all picture (derive.py, wideFit \"whole\")",
-  "operation": "rows 0-51 of the 1536x614 frame the header is cut from (sha256 of its source d02226bc0ee8cda22689007c20d7603ccf906f22fc7ee7b479d8eacf88946222): the rows directly above the header plus its top 32 rows, which derive.py cross-fades into the header; nothing outpainted or drawn",
-  "encoder": "Pillow 11.3 WebP quality 90 method 6",
-  "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is the factory section, \"Software factories can learn from real ones\": agents build on a line in the airship's own workshop while the person times it with a brass stopwatch. Made with the one-shot loop in agents/art-prompting.md: 12 candidates over four prompt revisions (one-shot rate 0 of 12); candidate J picked; fixes and every hunt are logged in generation; the last fresh blind hunts of the day and night frames found no blockers.",
-  "width": 1536,
-  "height": 51,
-  "bytes": 20584,
-  "sha256": "c287c375f3d05767d37cab7969f9005931f45b1fe4fb3ab08815ecabb86b92e6"
+  "bytes": 88144,
+  "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015",
+  "master_sha256": "a8fa896f9f1a440b2734cfd8414557ac053a5076a6a33bce76804d48a5d62c9d",
+  "edits": [
+   {
+    "date": "2026-11-18",
+    "what": "re-set: in an airship's sunlit workshop, three small glass robots each steady a little cream airship in its cradle along one long oak bench, while a faceless frosted-glass person in a moss-green scarf and canvas apron watches with hands in the apron pockets, and Ouro watches from a folded cloth; one eye level at about 0.40.",
+    "steps": [
+     {
+      "step": "Round 2 (after look/c3.md: head a bulb on a 0.35 stalk neck, rim_soften left aliased cut-out edges, : 6. fix8-outa (fix8-prompt.txt: the left forearm bends into a large apron patch pocket, hem over the cuff; 2nd round on that item), crop 40,330,296,586, box 64,330,175,475 f5 (look/pick3.md; fix8-outb shifted the upper ar",
+      "sha256": "af8026fc825b61ab0c96ce777ef972e496c7fce101d5e17920669fb704c97ccc"
+     },
+     {
+      "step": "Round 2 (after look/c3.md: head a bulb on a 0.35 stalk neck, rim_soften left aliased cut-out edges, : 7. fix7-outa (fix7-prompt.txt + reference ref-head.png = fix/airship-line/r25/ref-head.png, the approved airship person's head: real oval skull, jaw, neck, matte frosted, no ears, no rim), crop 136,56,360,280, box 190,10",
+      "sha256": "e7bfd880312927f7bf5895c1fd83fd53c4847cc9dded20f91fc39d099a90042a"
+     },
+     {
+      "step": "Widen: tools/outpaint_in.py (on D3; the core pixels are re-taken from CORE.png) . 598; L-prompt.txt / R-prompt.txt (bench ends square with no end face, wainscot at the same height, a brass wall lamp on its backplate at the left",
+      "sha256": "e8757a338768c1bb5e293ae29da8d96cad9b0decdefec8775c36d88a8959be39"
+     },
+     {
+      "step": "Widen: 10. fix9-outa (fix9-prompt.txt: the right plant a young olive tree so the two plants are not mirror copies), crop 2171,150,2731,710 (master), pasted by paste_diff.py where it changed (ECC 0.855). fix9-outb ce0a0480... no",
+      "sha256": "7331fb711c25d15709a27210380a28a21dd4481a58d7ccfc5e983b2fb959aadd"
+     },
+     {
+      "step": "Blind r1 (hunt/airship-line-blindr1): BLIND BLOCKING: melted floorboard at the far left (the rebuilt: 11. fix10-outb (fix10-prompt.txt: chain clipped to a brass button on the pocket hem, blank face), crop 64,380,256,572, box 130,441,162,520 f3 (look/pick4.md).",
+      "sha256": "e5e9506455b97079665e05372ce09455538df9ac7fe8df7ac0a275d336704f70"
+     },
+     {
+      "step": "Blind r1 (hunt/airship-line-blindr1): BLIND BLOCKING: melted floorboard at the far left (the rebuilt: 12. fix11-outa (fix11-prompt.txt: two solid brass blades on a hub and shaft), crop 1124,348,1316,540, box 1207,415,1228,481 f3.",
+      "sha256": "05b78ef75309621bbe1e6c01eb93a3d3d4df96410d00b6d8635323a8bcf2e921"
+     },
+     {
+      "step": "Blind r1 (hunt/airship-line-blindr1): BLIND BLOCKING: melted floorboard at the far left (the rebuilt: 13. rebuild_bands2.py with the left wrap at the u=-0.862 seam (never the boots), source rows >= 856, the band's own light kept up to the left join; fix9-outa re-pasted. master.png ; header.png .",
+      "sha256": "debd7fbcd6ecdb69e09f6b1dff84d80bd333b40074a3e98ec79c53e5d426d00f"
+     },
+     {
+      "step": "Blind r2 (hunt/airship-line-blindr2): BLIND BLOCKING: a dark crease under Loop's visor reads as a mo: 14. fix12-outa (crease under Loop's visor removed), crop 1000,250,1192,442, box 1053,353,1125,383 f3.",
+      "sha256": "7d9744236b8727647e1e79a04798188cff921dace618bf1623c273cd51c07cdd"
+     },
+     {
+      "step": "Blind r2 (hunt/airship-line-blindr2): BLIND BLOCKING: a dark crease under Loop's visor reads as a mo: 15. fix13-outa (blue agent's outline against the sky cleaned), crop 640,220,912,492, boxes 796,334,850,387 / 686,321,745,371 / 687,371,727,415 / 741,240,812,263 / 826,272,843,328 / 727,248,754,308 f3 (look/pick5.md).",
+      "sha256": "4a9dd1dd21172ae97ae55da738fe552382f919d0d041c6809cddde59d10c553f"
+     },
+     {
+      "step": "Blind r2 (hunt/airship-line-blindr2): BLIND BLOCKING: a dark crease under Loop's visor reads as a mo: 16. Re-pose (STOP RULE): fix14-outb (old watch and chain removed; the watch now hangs above the left pocket on a short chain clipped to a brass button on the apron's waistband, clear of the sleeve), crop 64,350,320,606, ",
+      "sha256": "4a1561b514b6ac100ea52a1cb16cfaae87e3c0310e8635ee625bd0b008a53a6a"
+     },
+     {
+      "step": "Blind r2 (hunt/airship-line-blindr2): BLIND BLOCKING: a dark crease under Loop's visor reads as a mo: CORE.png . rebuild_bands2.py (lamp-removal fills now feathered 6 px) + fix9-outa: master.png , header.png .",
+      "sha256": "96cbaaee8c08d3189d1bed3a24b3a0676f6f34ad2f83370d0a9337ef12545969"
+     },
+     {
+      "step": "Blind r3 (hunt/airship-line-blindr3; its STRUCT queued behind the machine-wide hunt load): BLIND BLO: 18. fix15-outa (amber mittens with one clearly visible thumb each; 2nd round on these hands after fix1), crop 256,200,640,584, boxes 334,381,388,437 + 490,377,539,435 f3 (look/pick6.md: ratios 1.08, 1.09; fix15-outb 385b",
+      "sha256": "ed8839a7e3044d566a98abd6d76a520398c3f0d5de71b1480ec8b1f5824ef33c"
+     },
+     {
+      "step": "Blind r4 (hunt/airship-line-blindr4): day BLIND \"No blocking defects\", STRUCT day and night \"No bloc: 20. STOP RULE on the watch (fix5, fix10 and the fix14 re-pose all flagged \"hangs from nothing\" in some run): hidden. fix16-outb (fix16-prompt.txt: watch, chain, button and clip removed, plain apron), crop 64,350,320,606,",
+      "sha256": "95d059521626253256785e2b24da573bf8f0c721041f734c0513b6a5721b8196"
+     },
+     {
+      "step": "Blind r5: day BLIND and STRUCT day/night \"No blocking defects\" (day = round-5 files). Blind r6 (hunt: 21. fix17-outb (fix17-prompt.txt: both blades solid opaque brass; 2nd round on that propeller), crop 1124,348,1316,540, box 1213,412,1231,485 f2. Picked numerically over fix17-outa 250246b7... (the pick look queued 40+ m",
+      "sha256": "3ea590c7f39766f649c900ce40555e0a318ccebdd2340560d4572f124c8d0f3b"
+     },
+     {
+      "step": "Round 11 (coordinator: tags r11-r18; keep every figure and prop out of the doorway's sky; sleeve int: 25. fix18-outa (fix18-prompt.txt: the doorway closed below a new oak sill just above the agents' heads; plaster wall and wainscot continue across behind the agents; the arch above the sill a tall window of plain sky with",
+      "sha256": "556e6055055d1091e46d0d8bef2da9dff0d551d57961c7f1305af4397f1f8742"
+     },
+     {
+      "step": "Round 11 (coordinator: tags r11-r18; keep every figure and prop out of the doorway's sky; sleeve int: 26. fix19-outa (fix19-prompt.txt: the right-of-picture sleeve ends in a cuff going into a drawn pocket opening with a dark gap, full width), crop 200,340,392,532, box 256,417,289,452 f2 (look/pick8.md: weak pick; dark ga",
+      "sha256": "52ca51933d36b4eb300377854c5c53b3b1fdffec1551a9be3ee2d2d414ff8808"
+     },
+     {
+      "step": "Blind pair r11 + r12 (same files; hunt/airship-line-blindr11, r12). Parity hunter (../airship-line-d: 30. fix20-outb (tray removed; plain bench top), crop 832,400,1024,592, box 858,495,1001,535 f3; fix21-outa (Loop's antenna from a brass socket on his head behind the strap), crop 1040,150,1232,342, box 1103,208,1132,250 ",
+      "sha256": "cd37f02ef1cea904e7784db90a36d38c704031eac3509f114d9c755edf2d22cd"
+     },
+     {
+      "step": "Blind pair r13 + r14 (hunt/airship-line-blindr13, r14). r13: BLIND day \"None. No blocking defects\", : 32. fix22-outa (the shell round the blue agent's mittens and forearms removed; one crisp outline against the wainscot and the envelope), crop 600,300,920,620, boxes 648,355,703,436 + 823,355,877,439 f3 (look/pick10.md: p",
+      "sha256": "c300b4219b4b8f488cee882406334f24975b89c212e2331af84f9c4068170703"
+     },
+     {
+      "step": "Round 19 (coordinator: r19-r22, one fix round on the r17/r18 items; cropping the wide framing in was: 35. fix23-outb (the stray grey hook at the blue agent's hip removed), crop 646,346,774,474, box 704,402,719,414 f2. fix23-outa dc4a95e4... not used (more stray changes).",
+      "sha256": "e5ff3c451fddc46d6cc01c09811f5a549446cbaa1fd9d279538c2e50da5b28bb"
+     },
+     {
+      "step": "Blind pair r19 + r20 (hunt/airship-line-blindr19, r20). r20 BLIND: day and night \"No blocking defect: 36. STOP RULE on the antenna (fix21 + r19): hidden. fix24-outb (antenna, bead and socket removed; plain head behind the strap), crop 1040,150,1232,342, box 1100,208,1128,253 f2 (one changed component only; fix24-outa had",
+      "sha256": "b4375de9222586a9fc07547bcc4d40e4acc851ba5715b08278bf84c7fa57e740"
+     },
+     {
+      "step": "airship-line re-set: night (nightFromFlatDay + nightLights; never NFD=0): 2. Relight (headless image_generation, prompt.txt: late night, the two brass wall lamps on, navy sky over moonlit clouds in the doorway, moon out of frame to the left, no sunlight; input in.png 1536x1024 high): rawa 0d58",
+      "sha256": "27bd0d8857e58a742618137d4c951a865842b2fbbd568d81d874ca6a1dcb27cd"
+     }
+    ],
+    "previous_sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   }
+  ]
  },
  {
   "file": "headers/airship-line-dark.webp",
   "for": "https://ouroboros.bot/#factory",
   "model": "GitHub Copilot app built-in image_generation tool; core at 1536x1024, widened to 2560x1024 by two side outpaints, then 1536x614 by Lanczos, WebP q86 (Pillow 11.3)",
-  "generated": "2026-11-15, by the ouroboros.bot home lane: night twin of the line: the same workshop by oil-lantern light, with stars and a crescent moon over the clouds in the doorway. Loop and Ouro are \"he\"",
-  "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is the factory section, \"Software factories can learn from real ones\": agents build on a line in the airship's own workshop while the person times it with a brass stopwatch. Made with the one-shot loop in agents/art-prompting.md: 12 candidates over four prompt revisions (one-shot rate 0 of 12); candidate J picked; fixes and every hunt are logged in generation; the last fresh blind hunts of the day and night frames found no blockers.",
+  "generated": "2026-11-18",
+  "approval": "Ari, 2026-11-16: premium film, not storybook; the re-hunt and an independent reviewer blocked the old airship-line, so it was re-set as an airship's sunlit workshop. Under the stop rule: the pocket watch removed, the plants removed, the bench run off both edges, Loop's antenna hidden, the doorway closed below a sill above the agents' heads, the person's hands in the apron pockets.",
   "crop": "1536x576 of the 1536x614 frame (rows 19-595), which is the 2560x1024 master's rows 32-992 resized by 0.6 (Lanczos)",
-  "checked": "blind defect hunts 2026-11-15, day and night separately, by fresh reviewers given only the frames and 4x crops of every figure: no blockers. One head, two arms, two legs on the person; one head, two arms on each agent with legs hidden behind the bench; every airship in its cradle; Ouro one continuous animal with an open tail gap; no text, emblems or dated devices.",
+  "checked": "blind r35 and r36 (Opus 5.5 with 4-10x crops, plus the structure hunter, the shipped 3072 scenes on main's tools): BLIND and STRUCT no blocking defects, day and night, in both; sky_seams clean. Earlier: the day final since r23 (BLIND clean r23-r26, r28-r36 bar one single-run item), the night's window arch fixed light-only after r22 and r34 flagged it.",
   "generation": [
    {
     "master": "airship-line-dark-master",
@@ -33178,59 +32984,64 @@
   ],
   "width": 1536,
   "height": 576,
-  "bytes": 178802,
-  "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
- },
- {
-  "file": "skies/airship-line-dark.webp",
-  "use": "the real sky above the header, so the whole-scene og and social cards are all picture (derive.py, wideFit \"whole\")",
-  "operation": "rows 0-51 of the 1536x614 frame the header is cut from (sha256 of its source fe9a56f566b5dc560001e3e62e709f32f7a825572817ae12e0064eebad10d535): the rows directly above the header plus its top 32 rows, which derive.py cross-fades into the header; nothing outpainted or drawn",
-  "encoder": "Pillow 11.3 WebP quality 90 method 6",
-  "approval": "Ari asked for the rest of the ouroboros.bot home page to catch up with the airship hero, 2026-11-15: \"yay good airship!!! but what about literally everything else? :) the rest of the ouroboros.bot homepage needs to catch up. you may change literally everything!\" The plan (ourostack/ouroboros-website docs/home-catch-up.md) gives each home section its own picture; this is the factory section, \"Software factories can learn from real ones\": agents build on a line in the airship's own workshop while the person times it with a brass stopwatch. Made with the one-shot loop in agents/art-prompting.md: 12 candidates over four prompt revisions (one-shot rate 0 of 12); candidate J picked; fixes and every hunt are logged in generation; the last fresh blind hunts of the day and night frames found no blockers.",
-  "width": 1536,
-  "height": 51,
-  "bytes": 18392,
-  "sha256": "6b831cbd807b88d09b173e74f1e5a7c39ca1d80d6bc66aec563e1b33331fea91"
+  "bytes": 62648,
+  "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d",
+  "master_sha256": "29d19529ea046851c27ce71e7c147e18f84202805cf4cf10ede6822613cba8f5",
+  "edits": [
+   {
+    "date": "2026-11-18",
+    "what": "night as light only: nightFromFlatDay (flat a5cf014df90a5ad9846a1c95ddc77c0a8e94413d420b822f8cae93920e36c0a3) and nightLights (9c03c44788e89ec4cfffb935f4c9c5e4336e3c705bb7bb4be04d85701235de1b: the wall lamps, the window's sky and its arch edge unmixed from the day's own bevel, arch_edge.py).",
+    "previous_sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   }
+  ]
  },
  {
   "file": "upscaled/airship-line.webp",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/airship-line.webp (sha256 15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/airship-line.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9660 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-15",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/airship-line.webp (sha256 6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/airship-line.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9727 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1278714,
-  "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+  "bytes": 634268,
+  "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
  },
  {
   "file": "upscaled/airship-line-dark.webp",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
+  },
+  "alsoFrom": {
+   "file": "flat/airship-line.webp",
+   "sha256": "d62a47a7d96a484b4fa87eafe8a09cc14ac740eeb8fd5b090a6b4f1ee2a67a35"
+  },
+  "lightsFrom": {
+   "file": "flat/airship-line-lights.png",
+   "sha256": "02d4a2303c9e2859ced64bd059121837e18ed111cba808b913d17dbf2c8d7737"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/airship-line-dark.webp (sha256 74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/airship-line-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9689 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-17",
+  "operation": "the day's 4x master upscaled/airship-line.webp (sha256 9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded) wherever the flattened copy flat/airship-line.webp (sha256 d62a47a7d96a484b4fa87eafe8a09cc14ac740eeb8fd5b090a6b4f1ee2a67a35) equals the day (64.8% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/airship-line.webp (SSIM 0.9697 against it) where its sun pattern was removed, given the light and colour of headers/airship-line-dark.webp (sha256 732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/airship-line-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x; within 24 px (at 1536 wide) of that mask, fading out by 72 px, its log light coarser than 4 px is the night header's wherever the day is featureless (light_falloff), so the switch at the mask's edge leaves no ring in the sky",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/airship-line-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9721 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 100 method 6",
-  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 3053222,
-  "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+  "bytes": 1206278,
+  "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
  },
  {
   "file": "scenes/airship-line-640.webp",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -33238,14 +33049,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 33374,
-  "sha256": "9aaa74c685f336a03927a02596eb68e8a089de73ebb2b127f1c21c7f2d29be91"
+  "bytes": 14078,
+  "sha256": "da938142562b35cb4afd72068873a2ebb0664d43e4b4d5353a4068841e1b3388"
  },
  {
   "file": "scenes/airship-line-640.avif",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -33253,14 +33064,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 25059,
-  "sha256": "4d8fd1ba142c059e2c8b37622f8b75840632cf6f5fcd491075d4ed3df49f9772"
+  "bytes": 10154,
+  "sha256": "b10b089ba6a593a1905cdd078ae60419e92b0d9f7f8fb6e6162464a83ffcb9b5"
  },
  {
   "file": "scenes/airship-line-960.webp",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -33268,14 +33079,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 65908,
-  "sha256": "e0e7d92bbf359ff7eac29c7bb98487b83932f2f98d7dda89a1ed42f006794bc7"
+  "bytes": 28158,
+  "sha256": "ef3342bc6155b11db1284e133fa2b58e28bfa1ed3894fa7998180a77d5e1a4aa"
  },
  {
   "file": "scenes/airship-line-960.avif",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -33283,14 +33094,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 47508,
-  "sha256": "ab547d316b777a40c27d01f368ae72f6799f51e9e3fc7eccae404496f11471bc"
+  "bytes": 19473,
+  "sha256": "413096e5f02bf4f753bcde96ef7659c7b2f2b8268f6c19ddd0459bdceedc2e9e"
  },
  {
   "file": "scenes/airship-line-1536.avif",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -33298,14 +33109,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 107732,
-  "sha256": "08a086344f987a7d4f7f241d6ced6bd98cd503aa21c8541544a1d43c61f737ca"
+  "bytes": 44167,
+  "sha256": "4f93107933c1a0821b28065e997c7bf8d89098347a2b8ebdee60e6222098cda1"
  },
  {
   "file": "scenes/airship-line-2304.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -33313,14 +33124,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 152133,
-  "sha256": "09c41f79ff7ba2325d7fc48b5a362bfa804d19bf26043e55ec75fb9d166b1962"
+  "bytes": 63748,
+  "sha256": "0d33598d46d71f4770fd512a9e70291262c2e83ce8ea2561ccbc8d8d6ffd2787"
  },
  {
   "file": "scenes/airship-line-3072.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -33328,14 +33139,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 208838,
-  "sha256": "7b69b231611af19784c1ae09c9c59816f5b00a0b3e59affc4ae1f179205ecd96"
+  "bytes": 88212,
+  "sha256": "d6bd19f236e3a5d49b114bff4c4f1b8bf27174048c252f7d88e162766d943e9e"
  },
  {
   "file": "scenes/airship-line-3072.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -33343,14 +33154,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 319440,
-  "sha256": "2b0d7b65cc11bfabdb54b27140847ccdb5b6f49a937f251ba3e6d99fbb872013"
+  "bytes": 141874,
+  "sha256": "46030ecee24af6d761e81c4347980d885a10c973d4be78963b70a9dafc330d50"
  },
  {
   "file": "scenes/airship-line-3840.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -33358,14 +33169,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 264822,
-  "sha256": "36fd98a59ed8e7f86cc016da7b055a35a6819015eec98255c9be146066f8c611"
+  "bytes": 112985,
+  "sha256": "b7ad30355acb7efbb9e8e163197b5ac690b6d9a0402a7873fa98e462450d5f75"
  },
  {
   "file": "scenes/airship-line-5120.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -33373,14 +33184,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 354515,
-  "sha256": "7b3616ba3cafe24c8f39707495e44318104bf11453385c8ce3e3397d692cfae1"
+  "bytes": 151668,
+  "sha256": "f5bf1c6b7b5cd47dc5a7bf0727ae9d719cb9ee3326ee9bfa405dc0a7e050d3c3"
  },
  {
   "file": "scenes/airship-line-7680.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -33388,14 +33199,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 521860,
-  "sha256": "fbf174e7b51c1ebcf4b6faabe8c62fa2a9b3c63e4596c4190f4b26f567601bc3"
+  "bytes": 230499,
+  "sha256": "aeefdfb84c67086b44a0983bd038480f655a33d59c7949ebd47b788004fd95ab"
  },
  {
   "file": "scenes/airship-line-7680.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -33403,14 +33214,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 946292,
-  "sha256": "23b95c9678e41602195bb4dd400013172709aebb15350c3733310b6ed5ba4350"
+  "bytes": 459994,
+  "sha256": "ce3827b2278314025f6a8a3d288949ad92e7956969f6606426cac3ef38cbd796"
  },
  {
   "file": "phone/airship-line-384.webp",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 384x160 (Lanczos)",
@@ -33418,14 +33229,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 160,
-  "bytes": 15132,
-  "sha256": "909de471f376c3c403fac21c0638095e3ce17be78debc7a451cd24305da12828"
+  "bytes": 7124,
+  "sha256": "9d8b5e9a42e7f5ebb44d533ed0e8ea366a3db05c95a28be38f1b5a8aa938897b"
  },
  {
   "file": "phone/airship-line-384.avif",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 384x160 (Lanczos)",
@@ -33433,14 +33244,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 160,
-  "bytes": 11731,
-  "sha256": "b83038793cc88d7a3b46f20f43e119fc2722253acede4efae47b273be2a94a3d"
+  "bytes": 5405,
+  "sha256": "323761360eed91922e90d3eb381b4613cf3aae2d077b2f7b4fd0fb0fc6e5c5e2"
  },
  {
   "file": "phone/airship-line-768.webp",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 768x320 (Lanczos)",
@@ -33448,14 +33259,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 320,
-  "bytes": 46340,
-  "sha256": "7f6e8381ad3d15e1966e6497e3d19cd455eb68754ff1b3faaba68efe9c728211"
+  "bytes": 21734,
+  "sha256": "c4d873817edefc07b479925239433a818aecba9495bc82e65cf05e47f1d45e5a"
  },
  {
   "file": "phone/airship-line-768.avif",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 768x320 (Lanczos)",
@@ -33463,14 +33274,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 320,
-  "bytes": 34797,
-  "sha256": "6923b9d7bcd02fd9206b3c7fb9c44e3c481fe9ddbaa3483634b7ca5708871c6d"
+  "bytes": 15510,
+  "sha256": "c02553b039dd0785aa25547aec81776b90d9774b27d421d1259b5f66ed63c38b"
  },
  {
   "file": "phone/airship-line-1152.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1152x480 (Lanczos)",
@@ -33478,14 +33289,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 480,
-  "bytes": 84888,
-  "sha256": "bb60383feb92ee1c278181cb19b7c8ed72fa8ca9cb3a474bea24b256c27adb07"
+  "bytes": 39448,
+  "sha256": "b5932e57c0a66355cbfae83ae8844e558de0ac10ea7a8340391b0e3b496d089f"
  },
  {
   "file": "phone/airship-line-1152.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1152x480 (Lanczos)",
@@ -33493,14 +33304,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 480,
-  "bytes": 61294,
-  "sha256": "5099f0f30091582c3b8adab10ec1bf8d7315713a1dca39ec89003459cb439851"
+  "bytes": 27235,
+  "sha256": "c6161c1415db175f5b4c7e4bc8cf7d2a9ff1f603b7cfc741e672f1ac0f5e6217"
  },
  {
   "file": "phone/airship-line-1536.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1536x640 (Lanczos)",
@@ -33508,14 +33319,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 640,
-  "bytes": 129376,
-  "sha256": "24705056766956451d53586b1c4ce44e9c8eb6b8f4f6c350be3de5236de56512"
+  "bytes": 61356,
+  "sha256": "4fbb6412dcf38ed795423bf9b2d5b57a88e8d19b14da0bfcb2d0cec439afc63b"
  },
  {
   "file": "phone/airship-line-1536.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line.webp",
-   "sha256": "cce9ce6f8631f716ad53f36d8aab82eec7823797f76df87d9693ad72d46d9a22"
+   "sha256": "9df1feadb20d083d323abfcfb6c7e66cd1d26a6194f2c8386e01a746017dfded"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1536x640 (Lanczos)",
@@ -33523,52 +33334,44 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 640,
-  "bytes": 91544,
-  "sha256": "eafacba5ffcea9edea591ec224694228b3da86a312426036a3b132ac80196893"
+  "bytes": 41984,
+  "sha256": "4603c05dd169faf3fc81eeff6469409b51c9a7b7a8edba22ee57bf117631f0b6"
  },
  {
   "file": "social/airship-line.jpg",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
-  },
-  "alsoFrom": {
-   "file": "skies/airship-line.webp",
-   "sha256": "c287c375f3d05767d37cab7969f9005931f45b1fe4fb3ab08815ecabb86b92e6"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "GitHub social preview (1280x640)",
-  "operation": "the header with skies/airship-line.webp above it, its last 32 rows cross-faded into the header's top (1536x595), crop box [165, 0, 1355, 595] then resize to 1280x640 (Lanczos)",
+  "operation": "crop box [184, 0, 1336, 576] then resize to 1280x640 (Lanczos)",
   "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 256981,
-  "sha256": "8a14979592a03f9c60f285d66f2d0f2aadd8dd4c0ad7f7669da4184d5ad5fbf4"
+  "bytes": 158697,
+  "sha256": "ce16dca6dc15e95aa672771bd6e52cf8d8f50d5e0af6af291b7d2a0e215585df"
  },
  {
   "file": "og/airship-line.jpg",
   "derivedFrom": {
    "file": "headers/airship-line.webp",
-   "sha256": "15fd71cb181b7d747d20c6336a7548dfae0b97ee68b419a7b6928e6e87134244"
-  },
-  "alsoFrom": {
-   "file": "skies/airship-line.webp",
-   "sha256": "c287c375f3d05767d37cab7969f9005931f45b1fe4fb3ab08815ecabb86b92e6"
+   "sha256": "6538ebb6f70fd5763f842584dd64abe1786d5fd99f5525d9b9ae1e61f183a015"
   },
   "use": "Open Graph and Twitter card (1200x630)",
-  "operation": "the header with skies/airship-line.webp above it, its last 32 rows cross-faded into the header's top (1536x595), crop box [194, 0, 1327, 595] then resize to 1200x630 (Lanczos)",
+  "operation": "crop box [212, 0, 1309, 576] then resize to 1200x630 (Lanczos)",
   "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 239551,
-  "sha256": "1cd084938a1b296f677b72fe70dd5c4c2bc927ba0a6e80900314cca91369f45e"
+  "bytes": 150040,
+  "sha256": "e2c2c08d63f038f005db9b5b5b4de00c9c2e8cccb0a47394053c6c26ad2f2723"
  },
  {
   "file": "scenes/airship-line-dark-640.webp",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -33576,14 +33379,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 34434,
-  "sha256": "b09058fc43b0bb8348b2e2d441a151d2b0ba5e39d6604874fb1e723b101569bf"
+  "bytes": 11430,
+  "sha256": "53e6211d26f4df7922a4eaf38600b4239328d46f3d67d79b0e11c6e02f7d6c7d"
  },
  {
   "file": "scenes/airship-line-dark-640.avif",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -33591,14 +33394,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 26043,
-  "sha256": "f5d25a9c3835e77fa69f2c364f6e5e6226871e64b3420f5c2a5168e5a3e5ac8b"
+  "bytes": 7724,
+  "sha256": "f284d854945da79bed3e860151a3e4992b8a32dd590b9ff49290d237436c546d"
  },
  {
   "file": "scenes/airship-line-dark-960.webp",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -33606,14 +33409,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 66054,
-  "sha256": "6663faac5ba858f7a3f1849ececd5c8f24ef2652fb2f6e0d47a26b12a1f5bbc0"
+  "bytes": 21052,
+  "sha256": "b7e258cddbcb82be09e0c8a656347c2d0285b9b87632a29ac04ab0b1b74d5365"
  },
  {
   "file": "scenes/airship-line-dark-960.avif",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -33621,14 +33424,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 48551,
-  "sha256": "ccbb6db460a8a81c9f97816311587b4a44a13b6cb9fd5295b579ed870343f7de"
+  "bytes": 14020,
+  "sha256": "dab3f0dab890b529625f36de6b1b3ab3e9712e3603fe55b55f1e87943975a53b"
  },
  {
   "file": "scenes/airship-line-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -33636,14 +33439,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 101067,
-  "sha256": "7ff5832b34b5e6aa24026dfde698ed45df89b00d98e6cf707d6af19db4f694ca"
+  "bytes": 28711,
+  "sha256": "6507041b33e8e1517a90fbf284b72e200778850ff621f7a1be947477e0e24e45"
  },
  {
   "file": "scenes/airship-line-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -33651,14 +33454,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 220157,
-  "sha256": "fac0273a87c1c0f44d289c5a56347a4b0a966e5cadbb6a6c2c31b93ab45abb44"
+  "bytes": 87441,
+  "sha256": "9cdbee0745f9b344e2dc2ebe6f7049bd83b31de948d1fd0fbe21cf2eb8e376c3"
  },
  {
   "file": "scenes/airship-line-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -33666,14 +33469,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 314084,
-  "sha256": "b12517d40cdf26cc93857cf6a6d7169f41fdf0bf7f470fb9e8594fd34f5d6157"
+  "bytes": 129458,
+  "sha256": "7ee2ec0dc2d7f795275ce96238f9c1e77364ba3c5209ee5d3cd478bdca6920d9"
  },
  {
   "file": "scenes/airship-line-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -33681,14 +33484,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 469970,
-  "sha256": "29d95366e77276d2af6a5f05e3467106767fd57aabb78bded7874c690650c41f"
+  "bytes": 182814,
+  "sha256": "2e6c37a0a74a41de949a56b03bc6c983dc9faeb22909d3ede7c0b9c2336e1473"
  },
  {
   "file": "scenes/airship-line-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -33696,14 +33499,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 420114,
-  "sha256": "4a3aacc6f76be9ab73edb302b26afb0541e2f54ba9936cf97d2b04d509ba6b6c"
+  "bytes": 175030,
+  "sha256": "ef5bb5084d06d50080ad2f2275e9bc9049fe3d7a3169d088628d9b88cb04b283"
  },
  {
   "file": "scenes/airship-line-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -33711,14 +33514,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 611875,
-  "sha256": "273acae1b720de4811ecbb760fc2806029d58161b11c631fc969fc423462f1bd"
+  "bytes": 259087,
+  "sha256": "95e5dae4591ccc662cb23aa733a561425480940c5467b6aa0e01c9d3832cf1fc"
  },
  {
   "file": "scenes/airship-line-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -33726,14 +33529,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1046370,
-  "sha256": "1a027f1a9212dbb9c5f92e8ca52a48fca650259aaa8034921b6c3af8728d0a31"
+  "bytes": 456245,
+  "sha256": "66987ce76a5f976d1147f1d0edc923a70e2c29635093112fd4fa2e33331bf858"
  },
  {
   "file": "scenes/airship-line-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -33741,14 +33544,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 1550782,
-  "sha256": "58f11adf3bff6dd8b19cf65530bdd5f2668735ea2b432b82b5bdb65b3dd668a9"
+  "bytes": 618700,
+  "sha256": "aa86a0919d5cf62af83f3bc18862707c8b4de36655ed487b84c2760f0c0c6894"
  },
  {
   "file": "phone/airship-line-dark-384.webp",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 384x160 (Lanczos)",
@@ -33756,14 +33559,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 160,
-  "bytes": 15154,
-  "sha256": "2baf86f1ca04b2af29a6efca50dd3606cdcaf149c6e01266387806930ee7d7ca"
+  "bytes": 6052,
+  "sha256": "93536bb85dc7801331cdf4f085f45c891da05604d6f1f0e3f76631eb8b54d8e6"
  },
  {
   "file": "phone/airship-line-dark-384.avif",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 384x160 (Lanczos)",
@@ -33771,14 +33574,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 160,
-  "bytes": 12115,
-  "sha256": "7ad31d283117e35bb32b23ccbcca48bc25929fdeebdc8a0d608febe8ec2f1ca4"
+  "bytes": 4342,
+  "sha256": "c091ed4d748537a9f231d1d970dd908ac52ea6abac11ea91cddb39a412000f04"
  },
  {
   "file": "phone/airship-line-dark-768.webp",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 768x320 (Lanczos)",
@@ -33786,14 +33589,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 320,
-  "bytes": 48082,
-  "sha256": "525125e410596066818dadb910ba59dd5403b8ccb141a4e87775833cc56f266a"
+  "bytes": 17242,
+  "sha256": "a24fb71731a7b05d2e7b9fd605d579d4a4bbb2c48c5ee035a36be61b91043d06"
  },
  {
   "file": "phone/airship-line-dark-768.avif",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [69, 0, 1451, 576] then resize to 768x320 (Lanczos)",
@@ -33801,14 +33604,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 320,
-  "bytes": 36082,
-  "sha256": "b59e2844f6ee72576cae5faf4537c703e020c8ad572a8bdc108447640d2cd36e"
+  "bytes": 11577,
+  "sha256": "9693c56d47ba929a19bde28fa0d76d1c6259023cd1307e9961a5c02f8b89a717"
  },
  {
   "file": "phone/airship-line-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1152x480 (Lanczos)",
@@ -33816,14 +33619,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 480,
-  "bytes": 128486,
-  "sha256": "8c2aee55b167de3b2d1007ff3398fb1aa0a3b162634626d1d8421103e17e93c3"
+  "bytes": 48542,
+  "sha256": "7ebc894d97addaf9156e32294043635f5c9457dcd3d17a21f357bcb879731696"
  },
  {
   "file": "phone/airship-line-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1152x480 (Lanczos)",
@@ -33831,14 +33634,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 480,
-  "bytes": 86862,
-  "sha256": "3c5d6ab68e5e9287855b034b3c6d2ab34c27ca6268a9d9cdd6d3927e35747a9b"
+  "bytes": 34793,
+  "sha256": "16daeaa2271fb1a3f3a2906bbc606a2c05c1cbf7311d04f6013e767008169203"
  },
  {
   "file": "phone/airship-line-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1536x640 (Lanczos)",
@@ -33846,14 +33649,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 640,
-  "bytes": 192358,
-  "sha256": "5f2c126b616415ead312e5439c47e0d597939441d3c5d1564f449f5151e07ac1"
+  "bytes": 75700,
+  "sha256": "7569e3069f88bc83e966dbcf0824e8fb287b6e4921854674c417df6cbb1aa4e1"
  },
  {
   "file": "phone/airship-line-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/airship-line-dark.webp",
-   "sha256": "dfe5114e8645636dd1ece2aad832a43a012d336a17780f1bf8b2c0a772f0391e"
+   "sha256": "72d92c7ccccdba4c6c06c2a84b096fc67d7a5cfd81f949bf93e28080f9b0eb7c"
   },
   "use": "phone hero (12:5)",
   "operation": "crop box [276, 0, 5804, 2304] of the 4x master then resize to 1536x640 (Lanczos)",
@@ -33861,46 +33664,38 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 640,
-  "bytes": 130446,
-  "sha256": "4bf62dba13fbcf6388c5fd9d2362361b4d0a960cf5417bcdd60c8c11e61206d3"
+  "bytes": 55069,
+  "sha256": "8455e76698bde29a6059e394aff692e062eb148a2a54dbc6e27e42c03794c253"
  },
  {
   "file": "social/airship-line-dark.jpg",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
-  },
-  "alsoFrom": {
-   "file": "skies/airship-line-dark.webp",
-   "sha256": "6b831cbd807b88d09b173e74f1e5a7c39ca1d80d6bc66aec563e1b33331fea91"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "GitHub social preview (1280x640)",
-  "operation": "the header with skies/airship-line-dark.webp above it, its last 32 rows cross-faded into the header's top (1536x595), crop box [165, 0, 1355, 595] then resize to 1280x640 (Lanczos)",
+  "operation": "crop box [184, 0, 1336, 576] then resize to 1280x640 (Lanczos)",
   "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 258296,
-  "sha256": "ac65abeccd003a9795ff970e26dbbe9e8214467cdb6213f4636952fb461d8517"
+  "bytes": 133598,
+  "sha256": "54660944111695ed76ca02807683d2f8e67577aa731edf2c34a56db82c5b3ff6"
  },
  {
   "file": "og/airship-line-dark.jpg",
   "derivedFrom": {
    "file": "headers/airship-line-dark.webp",
-   "sha256": "74d2047ef433c0c3e6c50aaae79e1cdd3a493aa776d8126301611719a38ebf50"
-  },
-  "alsoFrom": {
-   "file": "skies/airship-line-dark.webp",
-   "sha256": "6b831cbd807b88d09b173e74f1e5a7c39ca1d80d6bc66aec563e1b33331fea91"
+   "sha256": "732a10960cf2de2b761c5511400589115a1f6c652c52055c5e2917ffe933900d"
   },
   "use": "Open Graph and Twitter card (1200x630)",
-  "operation": "the header with skies/airship-line-dark.webp above it, its last 32 rows cross-faded into the header's top (1536x595), crop box [194, 0, 1327, 595] then resize to 1200x630 (Lanczos)",
+  "operation": "crop box [212, 0, 1309, 576] then resize to 1200x630 (Lanczos)",
   "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 241179,
-  "sha256": "4d0f91cd45ed9b1f3e4d319807bc533db66f2d7065bc8fdd354064b711b29dfe"
+  "bytes": 126487,
+  "sha256": "453d95ece6832940c08e93f07eb4d3d351bd1aadbd0864e656689d477bc123bd"
  },
  {
   "file": "headers/slugger-balloon.webp",
@@ -43085,5 +42880,18 @@
   "height": 576,
   "bytes": 242946,
   "sha256": "a72588a97a56d025a6a356daf854f57141ff898c034b1525be91719178833a90"
+ },
+ {
+  "file": "flat/airship-line-lights.png",
+  "use": "airship-line's night-only light sources (nightLights)",
+  "sha256": "02d4a2303c9e2859ced64bd059121837e18ed111cba808b913d17dbf2c8d7737"
+ },
+ {
+  "file": "flat/airship-line.webp",
+  "use": "airship-line's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
+  "width": 1536,
+  "height": 576,
+  "bytes": 144682,
+  "sha256": "d62a47a7d96a484b4fa87eafe8a09cc14ac740eeb8fd5b090a6b4f1ee2a67a35"
  }
 ]
