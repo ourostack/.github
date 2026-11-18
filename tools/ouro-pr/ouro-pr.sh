@@ -12,6 +12,9 @@
 # first and runs the local copy only when GitHub cannot be reached, with a warning that says how old that copy is.
 # Merge a PR opened some other way, with the same message rules:   gh ouro-pr merge <number-or-url>
 #
+# One writer per issue: it refuses to open a PR that closes an issue (Fixes #n) another open PR already closes, and names that
+# PR; OURO_PR_ALLOW_DUPLICATE=1 overrides.
+#
 # Every merge it asks for carries an explicit message: "<PR title> (#n)" and the PR body with any AI or bot
 # credit line (Co-authored-by, Assisted-by, ...) removed. Without one GitHub copies the branch commits' co-author
 # trailers onto main, and a cloud session's commit signer forces the AI trailer onto those commits.
@@ -151,6 +154,23 @@ if [ -z "$body_file" ]; then
 fi
 
 url=$(gh pr view "$branch" --json url,state --jq 'select(.state == "OPEN") | .url' 2>/dev/null || true)
+
+# One writer per issue: a second session that opens a PR closing an issue another open PR already closes
+# makes a duplicate that is later closed by hand. Refuse and name the PR; OURO_PR_ALLOW_DUPLICATE=1 overrides.
+if [ -z "$url" ] && [ "${OURO_PR_ALLOW_DUPLICATE:-}" != 1 ]; then
+  closing='(close[sd]?|fix(e[sd])?|resolve[sd]?) +#[0-9]+'
+  issues=$({ cat "$body_file"; git log --format=%B "$range"; } | grep -o -i -E "$closing" | grep -o -E '[0-9]+' | sort -un || true)
+  if [ -n "$issues" ]; then
+    open_prs=$(gh pr list --state open --limit 100 --json number,url,headRefName,body 2>/dev/null || echo '[]')
+    for n in $issues; do
+      other=$(printf '%s' "$open_prs" | jq -r --arg b "$branch" --arg n "$n" '[.[] | select(.headRefName != $b) | select((.body // "") | test("(?i)(close[sd]?|fix(e[sd])?|resolve[sd]?) +#" + $n + "([^0-9]|$)"))] | first | .url // empty')
+      if [ -n "$other" ]; then
+        say "$other is already open and closes #$n; nothing was pushed or opened. Work on that PR instead, or set OURO_PR_ALLOW_DUPLICATE=1 if this one is meant to replace it."
+        exit 1
+      fi
+    done
+  fi
+fi
 
 # A repository whose package.json has a claims:lint script (ouro-ui) runs that lint on a pull
 # request's title and body in CI. Run it here first, before anything is pushed, so a new PR never
