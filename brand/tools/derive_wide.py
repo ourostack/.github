@@ -7,7 +7,8 @@ For scenes whose wide files (scenes/<scene>-2304 and up) were cut from something
 smaller than the master (the 1536 px header) or from a master that is not in brand/,
 such as night scenes, which are not in crops.json. It cuts again exactly the wide
 widths and formats each scene already has, the same way derive.py cuts a day scene:
-the master resized with Lanczos, encoded with derive.py's encoders. Run upscale.py
+the master resized with Lanczos, encoded with derive.py's encoders (a night's
+with its night encoders). Run upscale.py
 first for a scene with no master.
 """
 import io
@@ -17,7 +18,7 @@ import sys
 
 from PIL import Image, features
 
-from derive import BRAND, PROVENANCE, UPSCALE_APPROVAL, ENCODERS, encode, sha
+from derive import BRAND, PROVENANCE, UPSCALE_APPROVAL, ENCODERS, NIGHT_ENCODERS, encode, is_night, sha
 
 
 def build(scenes):
@@ -41,8 +42,9 @@ def build(scenes):
             op = f"4x master resized to {w}x{h} (Lanczos)"
             if w > up.width:
                 op += f", {w / up.width:g}x up from the {up.width} px master; no new detail is drawn"
-            yield f"scenes/{scene}-{w}.{fmt}", encode(up.resize((w, h), Image.LANCZOS), fmt), {
-                **base, "use": "site hero, responsive width", "operation": op, "encoder": ENCODERS[fmt]}
+            yield f"scenes/{scene}-{w}.{fmt}", encode(up.resize((w, h), Image.LANCZOS), fmt, is_night(scene)), {
+                **base, "use": "site hero, responsive width", "operation": op,
+                "encoder": (NIGHT_ENCODERS if is_night(scene) else ENCODERS)[fmt]}
 
 
 def main():

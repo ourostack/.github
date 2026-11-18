@@ -13,7 +13,7 @@ file, recorded below, at the larger width. The window is cut from the scene's
 4x master in brand/upscaled/ when there is one, otherwise from the header
 itself; the playwright window is 1472 px of header wide, so its 1536 px file
 is a 1.04x Lanczos resize. Nothing new is drawn. Encoders and approvals are
-derive.py's.
+derive.py's (its night encoders for a file cut from the 4x master).
 """
 import io
 import json
@@ -21,7 +21,7 @@ import sys
 
 from PIL import Image, features
 
-from derive import BRAND, DERIVED_APPROVAL, ENCODERS, PROVENANCE, UPSCALE_APPROVAL, encode, sha
+from derive import BRAND, DERIVED_APPROVAL, ENCODERS, NIGHT_ENCODERS, PROVENANCE, UPSCALE_APPROVAL, encode, sha
 
 WIDTHS = (1152, 1536)
 
@@ -58,12 +58,14 @@ def build(scenes=()):
             src = Image.open(io.BytesIO(up_bytes)).convert("RGB")
             k = src.width // header.width
             src, pre = stretched(src, k, "4x master")
+            master = True
             src_box = [v * k for v in box]
             window = src.crop(src_box)
             base = {"derivedFrom": {"file": up_rel, "sha256": sha(up_bytes)}, "approval": UPSCALE_APPROVAL}
             op = f"{pre}crop box {src_box} of the 4x master (the 768 px phone file's window {list(box)} at 4x)"
         else:
             src, pre = stretched(header, 1, "header")
+            master = False
             window = src.crop(box)
             base = {"derivedFrom": {"file": header_rel, "sha256": sha(header_bytes)}, "approval": DERIVED_APPROVAL}
             op = f"{pre}crop box {list(box)} of the header (no 4x master is in brand/)"
@@ -74,10 +76,10 @@ def build(scenes=()):
             if w > window.width:
                 note = f"; {w / window.width:.2f}x up, no new detail is drawn"
             for fmt in ("webp", "avif"):
-                yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt), {
+                yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt, master), {
                     **base, "use": spec["use"],
                     "operation": f"{op} then resize to {w}x{h} (Lanczos){note}",
-                    "encoder": ENCODERS[fmt]}
+                    "encoder": (NIGHT_ENCODERS if master else ENCODERS)[fmt]}
 
 
 def build_small(scenes=()):
