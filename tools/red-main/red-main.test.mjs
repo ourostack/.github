@@ -17,9 +17,9 @@ const run = (sha, name, conclusion, startMin, endMin, over = {}) => ({
   ...over,
 });
 
-test("a commit is red on any failure, ignoring cancelled and skipped runs", () => {
-  const v = commitVerdicts([run("a", "ci", "success", 0, 5), run("a", "win", "failure", 0, 8), run("b", "ci", "cancelled", 10, 11), run("b", "x", "skipped", 10, 11), run("b", "ci2", "success", 10, 14)]);
-  assert.deepEqual(v.map((c) => [c.sha, c.state, c.at]), [["a", "red", at(8)], ["b", "green", at(14)]]);
+test("a commit is red on any failure, ignoring skipped runs and runs cancelled by a newer push", () => {
+  const v = commitVerdicts([run("a", "ci", "success", 0, 5), run("a", "win", "failure", 0, 8), run("b", "ci", "cancelled", 10, 11), run("b", "x", "skipped", 10, 11), run("b", "ci2", "success", 10, 14), run("c", "ci", "success", 20, 22)]);
+  assert.deepEqual(v.map((c) => [c.sha, c.state, c.at]), [["a", "red", at(8)], ["b", "green", at(14)], ["c", "green", at(22)]]);
   assert.equal(v[0].url, "https://github.com/o/r/actions/runs/a-win");
 });
 
@@ -144,4 +144,42 @@ test("the table marks unreadable repos instead of showing green", () => {
   assert.match(out, /gim-home\/CIT \| unreadable/);
   assert.match(out, /o\/r \| 0m \| 0.0% \| 0 \| - \| -/);
   assert.equal(fmtMin(125), "2h 05m");
+});
+
+test("startup_failure and a system cancel are infra; a concurrency cancel by a newer push is not a failure", async () => {
+  const runs = [run("a", "ci", "startup_failure", 0, 1, { id: 1 }), run("b", "ci", "cancelled", 10, 11, { id: 2 }), run("c", "ci", "success", 20, 25, { id: 3 })];
+  await markInfra("o/r", runs, async () => { throw new Error("no reads needed"); });
+  assert.equal(runs[0].infra, "startup_failure");
+  const m = measure(runs, { since: at(0), now: at(100) });
+  assert.deepEqual([m.redMinutes, m.episodes, m.infra], [0, 0, 1]);
+  // the same cancel with no later push of that workflow is infra; with one, concurrency cancelled it
+  assert.equal(commitVerdicts([run("b", "ci", "cancelled", 10, 11), run("c", "ci", "success", 20, 25)]).filter((c) => c.sha === "b").length, 0);
+  assert.equal(commitVerdicts([run("b", "ci", "cancelled", 10, 11)])[0].state, "infra");
+});
+
+test("a failed job that never started, or whose log or annotation shows a lost runner, is infra", async () => {
+  const job = (o) => async (p) => {
+    if (p.includes("/jobs?")) return { jobs: [{ id: 1, conclusion: "failure", ...o.job }] };
+    if (p.includes("/annotations")) return o.notes ?? [];
+    if (p.endsWith("/logs")) return o.log ?? "exit 1";
+    throw new Error(p);
+  };
+  const cases = [
+    { job: { steps: [] } },
+    { job: { runner_id: 0 } },
+    { job: { runner_id: null } },
+    { log: "The runner has received a shutdown signal." },
+    { log: "lost communication with the server" },
+    { log: "The job was not acquired by Runner of type hosted" },
+    { log: "The operation was canceled." },
+    { notes: [{ title: "", message: "The runner has received a shutdown signal. This can happen" }] },
+  ];
+  for (const c of cases) {
+    const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
+    await markInfra("o/r", runs, job(c));
+    assert.ok(runs[0].infra, JSON.stringify(c));
+  }
+  const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
+  await markInfra("o/r", runs, job({ job: { runner_id: 5, steps: [{ name: "t", conclusion: "failure" }] } }));
+  assert.equal(runs[0].infra, undefined);
 });

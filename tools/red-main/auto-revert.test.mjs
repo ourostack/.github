@@ -128,6 +128,7 @@ test("gather: reads the open red, the commits since and the failed job's log", a
       if (p.endsWith(`/commits/${SHA}`)) return { parents: [{}] };
       if (p.includes("/pulls?state=open")) return [];
       if (p.endsWith("/jobs?filter=latest&per_page=100")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", steps: [{ name: "Run tests", conclusion: "failure" }] }] };
+      if (p.includes("/annotations")) return [];
       if (p.endsWith("/logs")) return "boom";
       if (p.endsWith("/runs/5")) return { id: 5, status: "completed", conclusion: "failure", run_attempt: 2, name: "CI", html_url: "https://x/run/5" };
       throw new Error(p);
@@ -164,4 +165,42 @@ test("a job annotated title=infra is never reverted, and gather reads the annota
     },
   };
   assert.equal(await gather("o/r", NOW, a), null);
+});
+
+test("runner lost, never started, system cancel and annotation text are infra, never reverted", () => {
+  const infra = [
+    job({ runner_id: 0, steps: [{ name: "Run tests", conclusion: "failure" }] }),
+    job({ runner_id: null }),
+    job({ log: "The job was not acquired by Runner of type hosted even after multiple attempts" }),
+    job({ log: "The operation was canceled." }),
+    job({ log: "Runner lost communication with the server" }),
+    job({ notes: "The runner has received a shutdown signal. This can happen when the runner service is stopped" }),
+    job({ conclusion: "startup_failure" }),
+  ];
+  for (const j of infra) assert.equal(evaluate(facts({ failedJobs: [j] })).action, "skip", JSON.stringify(j));
+  assert.equal(classifyFailure({ conclusion: "failure" }, [job({ runner_id: 42 })]).infra, false);
+});
+
+test("annotations that cannot be read mean can't tell: gather flags it and evaluate does not revert", async () => {
+  const day = (m) => new Date(NOW - m * 60000).toISOString();
+  const runs = [{ id: 5, name: "CI", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 2, run_started_at: day(100), created_at: day(100), updated_at: day(90), html_url: "https://x/run/5" }];
+  const get = (annotations) => async (p) => {
+    if (p.includes("/actions/runs?")) return { workflow_runs: runs };
+    if (p.includes("/annotations")) return annotations(p);
+    if (p.includes("/compare/")) return { ahead_by: 0 };
+    if (p.endsWith("/pulls")) return [PR];
+    if (p.endsWith(`/commits/${SHA}`)) return { parents: [{}] };
+    if (p.includes("/pulls?state=open")) return [];
+    if (p.endsWith("/jobs?filter=latest&per_page=100")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", runner_id: 3, steps: [{ name: "Run tests", conclusion: "failure" }] }] };
+    if (p.endsWith("/logs")) return "boom";
+    if (p.endsWith("/runs/5")) return { id: 5, status: "completed", conclusion: "failure", run_attempt: 2, name: "CI", html_url: "https://x/run/5" };
+    throw new Error(p);
+  };
+  const forbidden = () => Promise.reject(new Error("GET: 403 Resource not accessible by personal access token"));
+  const blind = await gather("o/r", NOW, { get: get(forbidden) });
+  assert.equal(blind.failedJobs[0].unreadable, true);
+  const v = evaluate(blind);
+  assert.equal(v.action, "skip");
+  assert.match(v.reason, /annotations unreadable, can't tell/);
+  assert.equal(evaluate(await gather("o/r", NOW, { get: get(async () => []) })).action, "revert");
 });

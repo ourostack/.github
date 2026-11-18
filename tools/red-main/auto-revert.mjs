@@ -11,8 +11,8 @@
 //   2. the first red commit is the last commit on main and a squash-merged PR (one parent, one merged PR) -
 //      nothing has merged on top, so the revert is clean and the blame is not shared;
 //   3. no open PR already reverts or fixes it (this tool's own revert PR counts, so it never opens two);
-//   4. the failure is not infrastructure (a job annotated `title=infra`, runner lost, checkout or credential errors, ENOTFOUND, disk full, cancelled,
-//      timed out, startup failure);
+//   4. the failure is not infrastructure (a job annotated `title=infra`, runner lost or never started, checkout or credential errors, ENOTFOUND,
+//      disk full, cancelled, timed out, startup failure) and the annotations could be read (unreadable means can't tell: no revert);
 //   5. the failure reproduces: the failed run's jobs were rerun and failed again. The first tick requests the rerun
 //      (rerun-failed-jobs) and a later tick (every 10 minutes) reads its result, so no job waits on a runner.
 // Then it opens the revert PR with GitHub's revertPullRequest, turns on auto-merge with a clean message and comments
@@ -24,23 +24,20 @@ import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, markInfra } from "./red-main.mjs";
+import { OWNERS, RUNNER_LOST, commitVerdicts, episodes, fetchMainRuns, markInfra, neverStarted } from "./red-main.mjs";
 import { cleanBody } from "../rearm-merges/rearm-merges.mjs";
 
 export const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
 
 // A failure that says nothing about the commit under test.
 const INFRA_LOG = [
-  /runner has received a shutdown signal/i,
-  /lost communication with the server/i,
-  /hosted runner .* lost/i,
+  RUNNER_LOST,
   /ENOTFOUND|EAI_AGAIN|ECONNRESET|ETIMEDOUT|ECONNREFUSED/,
   /could not resolve host/i,
   /no space left on device/i,
   /fatal: could not read (username|password)/i,
   /remote: (invalid username|repository not found|permission to .* denied)/i,
   /bad credentials|resource not accessible by integration|requires authentication/i,
-  /the operation was canceled/i,
   /unable to resolve action/i,
   /rate limit exceeded/i,
   /\b(502|503|504) (bad gateway|service unavailable|gateway time-?out)\b/i,
@@ -53,7 +50,11 @@ export function classifyFailure(run, jobs) {
   if (INFRA_RUN.has(run.conclusion)) return { infra: true, reason: `run ${run.conclusion}` };
   if (!jobs.length) return { infra: true, reason: "no failed job to inspect" };
   for (const j of jobs) {
-    if (j.conclusion === "cancelled" || j.conclusion === "timed_out") return { infra: true, reason: `job "${j.name}" ${j.conclusion}` };
+    if (["cancelled", "timed_out", "startup_failure"].includes(j.conclusion)) return { infra: true, reason: `job "${j.name}" ${j.conclusion}` };
+    if (j.unreadable) return { infra: true, reason: `job "${j.name}": annotations unreadable, can't tell infra from code, not reverting` };
+    if (neverStarted(j)) return { infra: true, reason: `job "${j.name}" never started (no runner assigned)` };
+    const hitNote = INFRA_LOG.find((re) => re.test(j.notes ?? ""));
+    if (hitNote) return { infra: true, reason: `job "${j.name}" annotation matches ${hitNote}` };
     if (j.infra) return { infra: true, reason: `job "${j.name}" is annotated title=infra: ${j.infra}` };
     const failedSteps = (j.steps ?? []).filter((s) => s.conclusion === "failure");
     if (!failedSteps.length) return { infra: true, reason: `job "${j.name}" failed with no failed step (runner lost)` };
@@ -104,9 +105,11 @@ export function revertBody({ repo, pr, sha, run, jobs, minutes }) {
 }
 
 const run = promisify(execFile);
+// Reads use READ_TOKEN (the caller's GITHUB_TOKEN, which can have checks: read); writes use GH_TOKEN (AUTO_REVERT_TOKEN).
 async function http(method, path, body) {
+  const env = method === "GET" && process.env.READ_TOKEN ? { ...process.env, GH_TOKEN: process.env.READ_TOKEN } : process.env;
   const args = ["api", "-X", method, path.replace(/^\/graphql$/, "graphql"), ...(body ? ["--input", "-"] : [])];
-  const child = run("gh", args, { maxBuffer: 64 * 1024 * 1024 });
+  const child = run("gh", args, { maxBuffer: 64 * 1024 * 1024, env });
   if (body) child.child.stdin.end(JSON.stringify(body));
   else child.child.stdin.end();
   let out;
@@ -131,10 +134,16 @@ export const api = {
   },
 };
 
-async function infraNote(a, repo, id) {
-  const notes = await a.get(`/repos/${repo}/check-runs/${id}/annotations?per_page=100`).catch(() => []);
-  const n = (Array.isArray(notes) ? notes : []).find((x) => String(x.title ?? "").trim().toLowerCase() === "infra");
-  return n ? n.message || "infra" : undefined;
+// Annotations need Checks read, which a fine-grained write token lacks: unreadable means "can't tell", never "code".
+async function readNotes(a, repo, id) {
+  try {
+    const notes = await a.get(`/repos/${repo}/check-runs/${id}/annotations?per_page=100`);
+    if (!Array.isArray(notes)) return { unreadable: true };
+    const n = notes.find((x) => String(x.title ?? "").trim().toLowerCase() === "infra");
+    return { infra: n ? n.message || "infra" : undefined, notes: notes.map((x) => x.message ?? "").join("\n") };
+  } catch {
+    return { unreadable: true };
+  }
 }
 
 // Reads the repo's open red and everything the guards need. Returns null when main is not red.
@@ -152,9 +161,9 @@ export async function gather(repo, now, a = api) {
     a.get(`/repos/${repo}/actions/runs/${open.runId}/jobs?filter=latest&per_page=100`),
   ]);
   const run = await a.get(`/repos/${repo}/actions/runs/${open.runId}`);
-  const failed = jobsBody.jobs.filter((j) => ["failure", "cancelled", "timed_out"].includes(j.conclusion));
+  const failed = jobsBody.jobs.filter((j) => ["failure", "cancelled", "timed_out", "startup_failure"].includes(j.conclusion));
   const failedJobs = await Promise.all(
-    failed.map(async (j) => ({ infra: await infraNote(a, repo, j.id), name: j.name, conclusion: j.conclusion, steps: j.steps ?? [], log: await a.get(`/repos/${repo}/actions/jobs/${j.id}/logs`).then((t) => String(t).slice(-200000), () => "") })),
+    failed.map(async (j) => ({ ...(await readNotes(a, repo, j.id)), name: j.name, conclusion: j.conclusion, runner_id: j.runner_id, steps: j.steps ?? [], log: await a.get(`/repos/${repo}/actions/jobs/${j.id}/logs`).then((t) => String(t).slice(-200000), () => "") })),
   );
   return {
     repo,

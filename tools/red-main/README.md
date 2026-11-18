@@ -30,7 +30,7 @@ console.log("::error title=infra::device farm unreachable");
 process.exit(1);
 ```
 
-Only a job that fails counts; emit it only for causes outside the code under test. A commit that has any non-infra failure is still red. A run whose only failures show GitHub 5xx (`POST /graphql: 504`, `502 Bad Gateway`) or `ETIMEDOUT` in the job log is classed infra without any annotation.
+Only a job that fails counts; emit it only for causes outside the code under test. A commit that has any non-infra failure is still red. A runner that is lost cannot annotate its own job, so red-main classes these as infra itself, in both `red-main.mjs` and `auto-revert.mjs`: run conclusion `startup_failure`; a run `cancelled` with no newer push of the same workflow (a concurrency cancel by a newer push is not a failure at all; a user's cancel leaves no trace in the API, so it is treated as infra too); a failed job that ran no steps or was assigned no runner; and log or annotation text such as `The runner has received a shutdown signal`, `lost communication with the server`, `The job was not acquired by Runner`, `The operation was canceled`. A run whose only failures show GitHub 5xx (`POST /graphql: 504`, `502 Bad Gateway`) or `ETIMEDOUT` in the job log is classed infra without any annotation.
 
 ## Opting a repository in with its own token (no cross-repo secret)
 
@@ -46,6 +46,7 @@ permissions:
   contents: write
   pull-requests: write
   actions: write
+  checks: read
 jobs:
   auto-revert:
     uses: ourostack/.github/.github/workflows/auto-revert-reusable.yml@main
@@ -53,7 +54,7 @@ jobs:
       token: ${{ secrets.AUTO_REVERT_TOKEN }}   # optional, see below
 ```
 
-The repository's Actions settings must allow workflows to create pull requests, and the repository must be able to use the public `ourostack/.github` workflow (Settings > Actions > General, for private repositories in other orgs). The workflow uses the caller's `GITHUB_TOKEN` (contents, pull-requests and actions write, the last for the rerun of the failed jobs). GitHub does not start `pull_request` workflows for a PR opened with `GITHUB_TOKEN`, so the revert PR's required checks would never report; pass a PAT or GitHub App token as the optional `AUTO_REVERT_TOKEN` secret to avoid that (or run the repository's required checks on `workflow_dispatch`/`push` too). Add `"enabled": false` rows to `auto-revert.json` only for repositories the central cron should cover.
+The repository's Actions settings must allow workflows to create pull requests, and the repository must be able to use the public `ourostack/.github` workflow (Settings > Actions > General, for private repositories in other orgs). The workflow reads everything, check runs and `title=infra` annotations included, with the caller's `GITHUB_TOKEN` (so the caller must grant `checks: read`; a fine-grained `AUTO_REVERT_TOKEN` cannot read Checks), and uses `AUTO_REVERT_TOKEN` only for the writes: revert branch, PR, auto-merge and the rerun. If annotations cannot be read, auto-revert treats the failure as "can't tell" and does not revert. Without the token, `GITHUB_TOKEN` does the writes too (contents, pull-requests and actions write). GitHub does not start `pull_request` workflows for a PR opened with `GITHUB_TOKEN`, so the revert PR's required checks would never report; pass a PAT or GitHub App token as the optional `AUTO_REVERT_TOKEN` secret to avoid that (or run the repository's required checks on `workflow_dispatch`/`push` too). Add `"enabled": false` rows to `auto-revert.json` only for repositories the central cron should cover.
 
 ### teams-microsoft/tandem
 

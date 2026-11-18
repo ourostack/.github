@@ -34,6 +34,11 @@ const PASSED = new Set(["success", "skipped", "neutral"]);
 const ms = (t) => new Date(t).getTime();
 const mins = (a, b) => Math.max(0, (b - a) / 60000);
 
+// A cancelled run with a newer push of the same workflow was cancelled by concurrency: not a failure at all.
+// Any other cancel is the system's (a user's cancel leaves no trace in the API) and counts as infra.
+const superseded = (r, runs) => runs.some((o) => o.name === r.name && o.event === "push" && o.head_sha !== r.head_sha && ms(o.created_at) > ms(r.created_at));
+const infraOf = (r) => r.infra ?? (r.conclusion === "cancelled" ? "run cancelled by the system" : undefined);
+
 // runs: workflow runs of push events on main. Returns commits oldest first:
 // { sha, state: "red" | "green" | "pending", at (ms when the verdict was known), url (a failing run) }.
 export function commitVerdicts(runs) {
@@ -45,9 +50,9 @@ export function commitVerdicts(runs) {
   }
   const out = [];
   for (const [sha, rs] of bySha) {
-    const live = rs.filter((r) => r.conclusion !== "cancelled" && r.conclusion !== "stale");
-    const failedAll = live.filter((r) => FAILED.has(r.conclusion));
-    const failed = failedAll.filter((r) => !r.infra);
+    const live = rs.filter((r) => (r.conclusion !== "cancelled" || !superseded(r, runs)) && r.conclusion !== "stale");
+    const failedAll = live.filter((r) => FAILED.has(r.conclusion) || r.conclusion === "cancelled");
+    const failed = failedAll.filter((r) => !infraOf(r));
     const start = Math.min(...rs.map((r) => ms(r.run_started_at ?? r.created_at)));
     if (failed.length) {
       const first = failed.reduce((a, b) => (ms(a.updated_at) <= ms(b.updated_at) ? a : b));
@@ -56,7 +61,7 @@ export function commitVerdicts(runs) {
       out.push({ sha, start, state: "pending", at: start });
     } else if (failedAll.length) {
       const first = failedAll[0];
-      out.push({ sha, start, state: "infra", at: ms(first.updated_at), url: first.html_url, name: first.name, reason: first.infra });
+      out.push({ sha, start, state: "infra", at: ms(first.updated_at), url: first.html_url, name: first.name, reason: infraOf(first) });
     } else if (live.length && live.every((r) => PASSED.has(r.conclusion))) {
       out.push({ sha, start, state: "green", at: Math.max(...live.map((r) => ms(r.updated_at))) });
     }
@@ -194,7 +199,13 @@ export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now()) 
 }
 
 // A failed job's annotation titled "infra" says the job failed for infrastructure, not code.
+// Text a lost or killed runner leaves in a job's log or annotations.
+export const RUNNER_LOST = /runner has received a shutdown signal|lost communication with the server|hosted runner .* lost|job was not acquired by runner|the operation was canceled/i;
 const INFRA_LOG = /\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|(GET|POST|PUT|PATCH|DELETE) \S+: 50[0234]\b|HTTP 50[0234]\b|ETIMEDOUT/i;
+const infraText = (t) => String(t).slice(-200000).match(INFRA_LOG) ?? String(t).slice(-200000).match(RUNNER_LOST);
+
+// A job that never got a runner or ran no step.
+export const neverStarted = (j) => (Array.isArray(j.steps) && j.steps.length === 0) || j.runner_id === 0 || j.runner_id === null;
 
 // Marks each failed run `infra` (the reason) when every failed job is an annotated or GitHub 5xx/ETIMEDOUT failure.
 export async function markInfra(repo, runs, get = ghGet) {
@@ -203,19 +214,32 @@ export async function markInfra(repo, runs, get = ghGet) {
       .filter((r) => r.event === "push" && FAILED.has(r.conclusion))
       .map(async (r) => {
         try {
+          if (r.conclusion === "startup_failure") {
+            r.infra = "startup_failure";
+            return;
+          }
           const { jobs } = await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`);
-          const failed = jobs.filter((j) => j.conclusion === "failure");
+          const failed = jobs.filter((j) => j.conclusion === "failure" || j.conclusion === "startup_failure");
           if (!failed.length) return;
           const reasons = [];
           for (const j of failed) {
+            if (neverStarted(j)) {
+              reasons.push("job never started (no runner assigned)");
+              continue;
+            }
             const notes = await get(`/repos/${repo}/check-runs/${j.id}/annotations?per_page=100`);
-            const tagged = (Array.isArray(notes) ? notes : []).find((n) => String(n.title ?? "").trim().toLowerCase() === "infra");
+            const list = Array.isArray(notes) ? notes : [];
+            const tagged = list.find((n) => String(n.title ?? "").trim().toLowerCase() === "infra");
             if (tagged) {
               reasons.push(tagged.message || "infra");
               continue;
             }
-            const log = String(await get(`/repos/${repo}/actions/jobs/${j.id}/logs`).catch(() => ""));
-            const hit = log.slice(-200000).match(INFRA_LOG);
+            const lost = list.map((n) => infraText(n.message ?? "")).find(Boolean);
+            if (lost) {
+              reasons.push(lost[0]);
+              continue;
+            }
+            const hit = infraText(await get(`/repos/${repo}/actions/jobs/${j.id}/logs`).catch(() => ""));
             if (!hit) return;
             reasons.push(hit[0]);
           }
