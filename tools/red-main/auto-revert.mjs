@@ -15,15 +15,16 @@
 //      timed out, startup failure);
 //   5. the failure reproduces: the failed run's jobs were rerun and failed again. The first tick requests the rerun
 //      (rerun-failed-jobs) and a later tick (every 10 minutes) reads its result, so no job waits on a runner.
-// Then it opens the revert PR with GitHub's revertPullRequest, turns on auto-merge with a clean message and wakes the
-// owner from owners.json (the wake line is printed and commented on the revert PR). Needs GH_TOKEN with contents and
+// Then it opens the revert PR with GitHub's revertPullRequest, turns on auto-merge with a clean message and comments
+// the owner from owners.json on it (red-main's gate already wakes the owner on a red main).
+// `--self <owner/repo>` is the caller-workflow mode: that one repo, opted in by the caller, with the caller's own token. Needs GH_TOKEN with contents and
 // pull-request write on the opted-in repos (the REARM_MERGES_TOKEN secret); it talks to GitHub through `gh api`.
 
 import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, route } from "./red-main.mjs";
+import { OWNERS, commitVerdicts, episodes, fetchMainRuns } from "./red-main.mjs";
 import { cleanBody } from "../rearm-merges/rearm-merges.mjs";
 
 export const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
@@ -178,17 +179,18 @@ export async function act(repo, f, verdict, { apply, now, log = console.log, a =
   const { node_id } = await a.get(`/repos/${repo}/pulls/${pr.number}`);
   const made = (await a.graphql(REVERT, { id: node_id, t: title, b: body })).revertPullRequest.revertPullRequest;
   await a.graphql(ENABLE, { id: made.id, h: `${title.replace(/ \(#\d+\)$/, "")} (#${made.number})`, b: cleanBody(body) });
-  const wakes = route({ [repo]: { since: f.since, url: made.url, name: `auto-revert of #${pr.number}` } }, { now, owners });
-  for (const w of wakes) log(`WAKE ${w.session} ${w.who}: ${w.message}`);
-  await a.post(`/repos/${repo}/issues/${made.number}/comments`, { body: `Wake ${wakes.map((w) => `${w.who} (${w.session})`).join(", ")}: ${wakes[0].message}` });
+  const owner = owners.repos[repo] ?? owners.fallback;
+  await a.post(`/repos/${repo}/issues/${made.number}/comments`, { body: `Owner: ${owner.name} (session ${owner.session}). Main is red in ${repo}; merging this reverts #${pr.number}. The red-main gate wakes the owner.` });
   log(`opened ${made.url} with auto-merge on`);
 }
 
 export async function main(argv = process.argv.slice(2), now = Date.now(), a = api) {
   const apply = argv.includes("--apply");
-  const only = argv[argv.indexOf("--repo") + 1];
+  const self = argv.includes("--self") ? argv[argv.indexOf("--self") + 1] : null;
+  const only = self ?? argv[argv.indexOf("--repo") + 1];
   console.log(apply ? "auto-revert: applying" : "auto-revert: dry run (pass --apply to act)");
-  for (const [repo, cfg] of Object.entries(CONFIG.repos)) {
+  const repos = self ? { [self]: { enabled: true } } : CONFIG.repos;
+  for (const [repo, cfg] of Object.entries(repos)) {
     if (only && only !== repo) continue;
     if (!cfg.enabled && !only) {
       console.log(`${repo}: disabled in auto-revert.json`);

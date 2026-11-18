@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIG, act, classifyFailure, evaluate, fixPrOpen, gather, revertBody } from "./auto-revert.mjs";
+import { CONFIG, act, main, classifyFailure, evaluate, fixPrOpen, gather, revertBody } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 17, 12, 0);
 const SHA = "a".repeat(40);
@@ -91,7 +91,7 @@ test("config: disabled by default for tandem, enabled for ourostack repos", () =
   assert.equal(CONFIG.minRedMinutes, 60);
 });
 
-test("act: a dry run changes nothing; apply reverts, arms a clean merge and wakes the owner", async () => {
+test("act: a dry run changes nothing; apply reverts, arms a clean merge and comments the owner", async () => {
   const calls = [];
   const a = {
     get: async (p) => (calls.push(["get", p]), { node_id: "PR_node" }),
@@ -105,8 +105,7 @@ test("act: a dry run changes nothing; apply reverts, arms a clean merge and wake
   assert.match(logs[0], /would open revert PR/);
   await act("ourostack/desk", facts(), v, { apply: true, now: NOW, a, log: (l) => logs.push(l) });
   assert.deepEqual(calls.map((c) => c[0]), ["get", "gql", "gql", "post"]);
-  assert.ok(logs.some((l) => /^WAKE 4deb13bb/.test(l)));
-  assert.match(calls[3][2].body, /Wake/);
+  assert.match(calls[3][2].body, /Owner: tooling coordinator \(session 4deb13bb\)/);
 });
 
 test("act: a rerun posts rerun-failed-jobs only when applying", async () => {
@@ -138,4 +137,16 @@ test("gather: reads the open red, the commits since and the failed job's log", a
   assert.equal(f.minutes, 90);
   assert.equal(evaluate(f).action, "revert");
   assert.equal(await gather("o/r", NOW, { get: async () => ({ workflow_runs: [{ ...runs[0], conclusion: "success" }] }) }), null);
+});
+
+test("main --self checks only that repo, opted in by the caller", async () => {
+  const lines = [];
+  const orig = console.log;
+  console.log = (l) => lines.push(l);
+  try {
+    await main(["--self", "teams-microsoft/tandem"], NOW, { get: async () => ({ workflow_runs: [] }) });
+  } finally {
+    console.log = orig;
+  }
+  assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red"]);
 });

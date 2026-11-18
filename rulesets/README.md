@@ -23,4 +23,4 @@ rulesets/require-up-to-date.sh --apply ourostack/desk ourostack/shepherd ourosta
 
 ## Auto-revert of red main
 
-See [`tools/red-main/auto-revert.mjs`](../tools/red-main/auto-revert.mjs) and `auto-revert.json`. To enable it on Tandem: give `REARM_MERGES_TOKEN` contents and pull-request write on `teams-microsoft/tandem`, then set `"enabled": true` for it in `tools/red-main/auto-revert.json` (dry run first: `node tools/red-main/auto-revert.mjs --repo teams-microsoft/tandem`).
+See [`tools/red-main/README.md`](../tools/red-main/README.md): ourostack repos run from the central cron, any other repository (Tandem) opts in with a short caller workflow that uses its own token, so no cross-repo secret is needed.

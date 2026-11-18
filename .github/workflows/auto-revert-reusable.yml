@@ -1,0 +1,39 @@
+name: Auto-revert red main (reusable)
+
+# Opt a repository into auto-revert with its own token, no cross-repo secret. The caller is the whole opt-in:
+# tools/red-main/README.md has the caller file. Guards and behaviour: tools/red-main/auto-revert.mjs.
+on:
+  workflow_call:
+    inputs:
+      apply:
+        description: "Act (rerun and revert). False is a dry run."
+        type: boolean
+        default: true
+    secrets:
+      token:
+        description: "Optional PAT or App token. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
+        required: false
+
+jobs:
+  auto-revert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ourostack/.github
+          ref: main
+          path: .ouro-tools
+      - name: Revert what keeps main red
+        env:
+          GH_TOKEN: ${{ secrets.token || github.token }}
+          REPO: ${{ github.repository }}
+          APPLY: ${{ inputs.apply }}
+        shell: bash
+        run: |
+          flag=""; [ "$APPLY" = "true" ] && flag="--apply"
+          node .ouro-tools/tools/red-main/auto-revert.mjs --self "$REPO" $flag 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
