@@ -32,9 +32,10 @@ test("a commit still running is pending and closes nothing", () => {
 test("red runs from the first failure to the next all-green head, across several red commits", () => {
   const runs = [run("a", "ci", "success", 0, 5), run("b", "ci", "failure", 10, 15), run("c", "ci", "failure", 20, 25), run("d", "ci", "success", 30, 40)];
   const m = measure(runs, { since: at(0), now: at(100) });
-  assert.equal(m.redMinutes, 25);
+  assert.equal(m.redMinutes, 15);
+  assert.equal(m.waitMinutes, 10);
   assert.equal(m.episodes, 1);
-  assert.equal(m.medianToGreen, 25);
+  assert.equal(m.medianToGreen, 15);
   assert.equal(m.open, null);
 });
 
@@ -49,8 +50,8 @@ test("an open red counts up to now and is reported with its run link", () => {
 test("an episode is clipped to the window and median spans closed episodes", () => {
   const runs = [run("a", "ci", "failure", 0, 10), run("b", "ci", "success", 20, 30), run("c", "ci", "failure", 50, 60), run("d", "ci", "success", 70, 90), run("e", "ci", "failure", 100, 101), run("f", "ci", "success", 102, 104)];
   const m = measure(runs, { since: at(20), now: at(200) });
-  assert.equal(m.redMinutes, 10 + 30 + 3);
-  assert.deepEqual([m.episodes, m.medianToGreen], [3, 20]);
+  assert.equal(m.redMinutes, 0 + 10 + 1);
+  assert.deepEqual([m.episodes, m.medianToGreen], [3, 10]);
   assert.equal(median([1, 3]), 2);
 });
 
@@ -142,7 +143,7 @@ test("every watched repo is mapped", () => {
 test("the table marks unreadable repos instead of showing green", () => {
   const out = table([{ repo: "gim-home/CIT", error: "404 Not Found" }, { repo: "o/r", m: measure([run("a", "ci", "success", 0, 5)], { since: at(0), now: at(100) }) }]);
   assert.match(out, /gim-home\/CIT \| unreadable/);
-  assert.match(out, /o\/r \| 0m \| 0.0% \| 0 \| - \| -/);
+  assert.match(out, /o\/r \| 0m \| 0.0% \| 0m \| 0.0% \| 0 \| - \| -/);
   assert.equal(fmtMin(125), "2h 05m");
 });
 
@@ -182,4 +183,27 @@ test("a failed job that never started, or whose log or annotation shows a lost r
   const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
   await markInfra("o/r", runs, job({ job: { runner_id: 5, steps: [{ name: "t", conclusion: "failure" }] } }));
   assert.equal(runs[0].infra, undefined);
+});
+
+test("a fix commit that waits an hour for runners ends the red at its push; the queue is wait, not red", () => {
+  const runs = [run("a", "ci", "failure", 0, 10), run("b", "ci", "success", 20, 80)];
+  const m = measure(runs, { since: at(0), now: at(200) });
+  assert.deepEqual([m.redMinutes, m.waitMinutes, m.medianToGreen, m.open], [20 - 10, 60, 10, null]);
+});
+
+test("a fix commit whose runs fail keeps the stretch red until a later commit passes", () => {
+  const runs = [run("a", "ci", "failure", 0, 10), run("b", "ci", "failure", 20, 80), run("c", "ci", "success", 100, 110)];
+  const m = measure(runs, { since: at(0), now: at(200) });
+  assert.deepEqual([m.redMinutes, m.waitMinutes, m.episodes], [90, 10, 1]);
+});
+
+test("a fix commit still queued leaves the stretch open", () => {
+  const m = measure([run("a", "ci", "failure", 0, 10), run("b", "ci", null, 20, 30)], { since: at(0), now: at(100) });
+  assert.deepEqual([m.redMinutes, m.waitMinutes, m.open.minutes], [90, 0, 90]);
+});
+
+test("overlapping pushes: a green commit pushed before the failure lands closes at the failure, and waits never overlap red", () => {
+  const runs = [run("a", "ci", "failure", 5, 30), run("b", "ci", "success", 10, 70), run("c", "ci", "failure", 40, 50), run("d", "ci", "success", 60, 65)];
+  const m = measure(runs, { since: at(0), now: at(200) });
+  assert.deepEqual([m.redMinutes, m.waitMinutes, m.episodes], [10, 20 + 5, 2]);
 });
