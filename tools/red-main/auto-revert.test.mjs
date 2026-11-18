@@ -293,6 +293,18 @@ test("without the exclusion, the same red gate is a red stretch; another workflo
   assert.equal(ignored({ path: ".github/workflows/first-run-gate.yml@refs/heads/main" }, ["first-run-gate"]), true);
 });
 
+test("main --self reads the repo's ignoreWorkflows row: a red first-run-gate is not a red main", async () => {
+  const lines = [];
+  const orig = console.log;
+  console.log = (l) => lines.push(l);
+  try {
+    await main(["--self", "teams-microsoft/tandem"], NOW, gateMain());
+  } finally {
+    console.log = orig;
+  }
+  assert.equal(lines[1], "teams-microsoft/tandem: main is not red");
+});
+
 function commitsOf(runs) {
   return new Set(runs.map((r) => r.head_sha)).size;
 }
