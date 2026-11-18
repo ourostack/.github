@@ -16,9 +16,10 @@ a 2x laptop or a 4K screen. Each scene is upscaled 4x with Real-ESRGAN
 lossless master when it is kept, otherwise the header itself. Nothing is
 recomposed: the output must be exactly 4x the header, and, Lanczos-downsized
 back to the header's size, match it with a luma SSIM (Gaussian, sigma 1.5) of at
-least 0.95, or the scene is refused. The result is written as WebP q90 with a
-provenance entry naming its source and that source's sha256, the operation and
-the SSIM it passed. Then run derive.py.
+least 0.95, or the scene is refused. The result is written as WebP q90 (a night
+scene, <scene>-dark, as WebP q100: q90 drops more of the fine low-contrast detail
+of a dark picture) with a provenance entry naming its source and that source's
+sha256, the operation and the SSIM it passed. Then run derive.py.
 
 A night scene (<scene>-dark) whose day twin sets "nightFromDay": true in
 crops.json is not upscaled on its own. Real-ESRGAN invents fine texture and
@@ -108,6 +109,23 @@ NIGHT_APPROVAL = UPSCALE_APPROVAL.replace(
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def master_encoder(scene: str) -> str:
+    return "Pillow WebP quality 100 method 6" if scene.endswith("-dark") else "Pillow WebP quality 90 method 6"
+
+
+def encode_master(scene: str, up: Image.Image) -> bytes:
+    """A night's master is WebP q100: a fixed-quality encoder spends few bits on low-contrast detail in dark areas, and
+    WebP q90 kept 88% of ax-trail-map-dark's belly-line depth, q100 94% (2026-11-17). Lossless keeps all of it but is
+    about 9 MB a night against q100's 2 MB, and after derive.py's night AVIF encode the two land within measurement
+    noise of each other. A day's master stays WebP q90, so day files keep their bytes."""
+    buf = io.BytesIO()
+    if scene.endswith("-dark"):
+        up.save(buf, "WEBP", quality=100, method=6)
+    else:
+        up.save(buf, "WEBP", quality=90, method=6)
+    return buf.getvalue()
 
 
 def luma_ssim(a: Image.Image, b: Image.Image) -> float:
@@ -330,9 +348,7 @@ def main():
         score = luma_ssim(header, up.resize(header.size, Image.LANCZOS))
         if score < FLOOR:
             sys.exit(f"{scene}: SSIM {score:.4f} against {header_rel} is under {FLOOR}; not the same picture")
-        buf = io.BytesIO()
-        up.save(buf, "WEBP", quality=90, method=6)
-        data = buf.getvalue()
+        data = encode_master(scene, up)
         rel = f"upscaled/{scene}.webp"
         (BRAND / rel).parent.mkdir(parents=True, exist_ok=True)
         (BRAND / rel).write_bytes(data)
@@ -351,7 +367,7 @@ def main():
             "checked": (f"Lanczos-downsized to {header.width}x{header.height}, it matches {header_rel} with a luma "
                         f"SSIM (Gaussian, sigma 1.5) of {score:.4f} (floor {FLOOR}); same crop, subject and aspect"),
             "upscaled": date.today().isoformat(),
-            "encoder": "Pillow WebP quality 90 method 6",
+            "encoder": master_encoder(scene),
             "approval": FLAT_NIGHT_APPROVAL if flat else NIGHT_APPROVAL if also else UPSCALE_APPROVAL,
             "width": up.width, "height": up.height, "bytes": len(data), "sha256": sha(data),
         })

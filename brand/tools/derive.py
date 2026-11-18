@@ -66,9 +66,11 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def encode(im: Image.Image, fmt: str) -> bytes:
+def encode(im: Image.Image, fmt: str, night: bool = False) -> bytes:
     buf = io.BytesIO()
-    if fmt == "webp":
+    if night and fmt in NIGHT_ENCODE:
+        im.save(buf, fmt.upper(), **NIGHT_ENCODE[fmt])
+    elif fmt == "webp":
         im.save(buf, "WEBP", quality=82, method=6)
     elif fmt == "avif":
         im.save(buf, "AVIF", quality=60, speed=4)
@@ -87,6 +89,20 @@ ENCODERS = {
     "jpg": "Pillow JPEG quality 88, 4:4:4, optimized",
     "png": "Pillow PNG optimized",
 }
+
+# A night scene's files cut from its 4x master get more bits. Fixed-quality encoders spend few bits on low-contrast
+# detail in dark areas: at 3072 px, ax-trail-map-dark kept 70% of its day's belly-line depth in WebP q82 and 48% in
+# AVIF q60 (2026-11-17). WebP q90 keeps 82%. AVIF tuned for image quality (libaom tune=iq) at q70 keeps 83%, and the
+# 39 nights' 3072 px AVIFs then average 253 KB against their days' 243 KB; AVIF q90 keeps 100% but averages about 450 KB,
+# which would make every night hero nearly twice its day's. Files cut from the night header itself (640 to 1536 px,
+# the 384 and 768 px phone crops) keep the day's encoders: more bits there gained nothing, because the header's own
+# detail is the limit.
+NIGHT_ENCODE = {"webp": {"quality": 90, "method": 6}, "avif": {"quality": 70, "speed": 4, "advanced": {"tune": "iq"}}}
+NIGHT_ENCODERS = {"webp": "Pillow WebP quality 90 method 6", "avif": "Pillow AVIF quality 70 speed 4, libaom tune=iq"}
+
+
+def is_night(scene: str) -> bool:
+    return scene.endswith("-dark")
 
 
 def crop_centre(im: Image.Image, width: int, centre: int) -> tuple:
@@ -177,10 +193,10 @@ def build(scenes=()):
             for fmt in ("avif", "webp"):
                 if fmt == "webp" and w not in LARGE_WEBP:
                     continue
-                yield f"scenes/{scene}-{w}.{fmt}", encode(im, fmt), {
+                yield f"scenes/{scene}-{w}.{fmt}", encode(im, fmt, is_night(scene)), {
                     **up_base, "use": "site hero, responsive width",
                     "operation": op,
-                    "encoder": ENCODERS[fmt]}
+                    "encoder": (NIGHT_ENCODERS if is_night(scene) else ENCODERS)[fmt]}
 
         # Phone hero: a 4:3 window around the subject, at 1x and 2x. A scene whose
         # story is wider than 4:3 (two characters far apart) sets phoneAspect.
@@ -204,10 +220,10 @@ def build(scenes=()):
             h = round(phone.height * w / phone.width)
             im = up_phone.resize((w, h), Image.LANCZOS)
             for fmt in ("webp", "avif"):
-                yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt), {
+                yield f"phone/{scene}-{w}.{fmt}", encode(im, fmt, is_night(scene)), {
                     **up_base, "use": f"phone hero ({aw}:{ah})",
                     "operation": f"crop box {up_box} of the 4x master then resize to {w}x{h} (Lanczos)",
-                    "encoder": ENCODERS[fmt]}
+                    "encoder": (NIGHT_ENCODERS if is_night(scene) else ENCODERS)[fmt]}
 
         # GitHub social preview (1280x640) and Open Graph / Twitter card (1200x630): a window
         # around "wide" (or "og" for the narrower card), or, for a scene whose cast is wider
