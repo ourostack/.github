@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { RULESET, cleanBody, messageFor, needsRearm, readyWithoutAutoMerge } from "./rearm-merges.mjs";
+import { RULESET, cleanBody, messageFor, needsRearm, readyWithoutAutoMerge, isUnmergeable } from "./rearm-merges.mjs";
 
 const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
 
@@ -42,4 +42,11 @@ test("readyWithoutAutoMerge needs green checks, no auto-merge, no review hold", 
   assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED", autoMergeRequest: {} }), false);
   assert.equal(readyWithoutAutoMerge({ ...green, mergeStateStatus: "BLOCKED", isDraft: true }), false);
   assert.equal(readyWithoutAutoMerge({ commits: { nodes: [{ commit: { statusCheckRollup: { state: "FAILURE" } } }] }, mergeStateStatus: "BLOCKED" }), false);
+});
+
+test("isUnmergeable detects conflicting or unmergeable state", () => {
+  assert.equal(isUnmergeable({ mergeable: "CONFLICTING", mergeStateStatus: "CLEAN" }), true);
+  assert.equal(isUnmergeable({ mergeable: "MERGEABLE", mergeStateStatus: "CONFLICTING" }), true);
+  assert.equal(isUnmergeable({ mergeable: "MERGEABLE", mergeStateStatus: "CLEAN" }), false);
+  assert.equal(isUnmergeable({ mergeable: "UNKNOWN", mergeStateStatus: "CLEAN" }), false);
 });
