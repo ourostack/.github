@@ -6,6 +6,8 @@
 //   node tools/red-main/auto-revert.mjs --apply    # rerun the failed job and open the revert PR
 //   node tools/red-main/auto-revert.mjs --repo o/r # only that repo (it must still be opted in, enabled or not, for a dry run)
 //
+// A repo's "ignoreWorkflows" in auto-revert.json lists workflows whose red never counts (file name without .yml, or workflow name); it applies in
+// --self mode too, so a caller's exclusions live here and not in its workflow.
 // A repo is reverted only when it is listed in auto-revert.json with "enabled": true and, all at once:
 //   1. main has been red for at least minRedMinutes (60);
 //   2. the first red commit is the last commit on main and a squash-merged PR (one parent, one merged PR) -
@@ -155,12 +157,12 @@ export const MAX_PAGES = 8;
 // ends there) or main's newest commits are all that is needed. Returns { runs: the stretch's runs plus that green commit's,
 // complete: false when MAX_PAGES pages never reached a green commit (the stretch's start is unknown) }.
 // A commit's runs may continue on the next page, so the page's last commit is judged only once another page shows it whole.
-export async function readRedStretch(repo, get, { perPage = PAGE, maxPages = MAX_PAGES } = {}) {
+export async function readRedStretch(repo, get, { perPage = PAGE, maxPages = MAX_PAGES, ignore = [] } = {}) {
   const all = new Map();
   for (let page = 1; page <= maxPages; page++) {
     const body = await get(`/repos/${repo}/actions/runs?branch=main&event=push&per_page=${perPage}&page=${page}`);
     const got = body.workflow_runs ?? [];
-    for (const r of got) all.set(r.id, r);
+    for (const r of got) if (!ignored(r, ignore)) all.set(r.id, r);
     const last = page * perPage >= (body.total_count ?? 0) || got.length < perPage;
     const runs = [...all.values()];
     const edge = last ? null : got[got.length - 1]?.head_sha;
@@ -171,12 +173,18 @@ export async function readRedStretch(repo, get, { perPage = PAGE, maxPages = MAX
   }
   return { runs: [...all.values()], complete: false };
 }
+// A run of a workflow the repo lists in auto-revert.json's "ignoreWorkflows" (its file name without .yml, or its name) is not read at all:
+// its red neither starts nor extends a red stretch, so no revert follows from it.
+export function ignored(run, ignore) {
+  const stem = String(run.path ?? "").split("@")[0].split("/").pop().replace(/\.ya?ml$/, "");
+  return ignore.includes(stem) || ignore.includes(run.name);
+}
 const ms = (t) => new Date(t).getTime();
 
 // Reads the repo's open red and everything the guards need. Returns null when main is not red.
-export async function gather(repo, now, a = api) {
+export async function gather(repo, now, a = api, { ignore = [] } = {}) {
   const get = (p) => a.get(p);
-  const stretch = await readRedStretch(repo, get);
+  const stretch = await readRedStretch(repo, get, { ignore });
   const eps = episodes(commitVerdicts(await markInfra(repo, stretch.runs, get)));
   const open = eps.find((e) => e.to === null);
   if (!open) return null;
@@ -247,7 +255,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
   const self = argv.includes("--self") ? argv[argv.indexOf("--self") + 1] : null;
   const only = self ?? argv[argv.indexOf("--repo") + 1];
   console.log(apply ? "auto-revert: applying" : "auto-revert: dry run (pass --apply to act)");
-  const repos = self ? { [self]: { enabled: true } } : CONFIG.repos;
+  const repos = self ? { [self]: { ...CONFIG.repos[self], enabled: true } } : CONFIG.repos;
   for (const [repo, cfg] of Object.entries(repos)) {
     if (only && only !== repo) continue;
     if (!cfg.enabled && !only) {
@@ -255,7 +263,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
       continue;
     }
     try {
-      const f = await gather(repo, now, a);
+      const f = await gather(repo, now, a, { ignore: cfg.ignoreWorkflows ?? [] });
       if (!f) {
         console.log(`${repo}: main is not red`);
         continue;
