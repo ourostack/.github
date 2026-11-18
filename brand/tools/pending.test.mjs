@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { pendingFor } from "./pending.mjs";
+import { pendingFor, WINDOWS } from "./pending.mjs";
 
 const now = new Date("2026-11-16T23:00:00Z");
 const ago = (min) => new Date(now - min * 60000);
@@ -36,4 +36,11 @@ test("a pull request's audit, a build's audit and kinds with no sync never wait"
   assert.equal(pendingFor({ id: ID, autoSync: AUTO, kind: "github-readme", problems: lag, mergedAt: ago(1), now, live: true }), null);
   assert.equal(pendingFor({ id: ID, autoSync: AUTO, kind: "website", problems: lag, mergedAt: null, now, live: true }), null);
   assert.equal(pendingFor({ id: ID, autoSync: AUTO, kind: "website", problems: [], mergedAt: ago(1), now, live: true }), null);
+});
+
+test("the windows stay several times the measured sync times", () => {
+  const slowNormalSyncMinutes = 17;
+  const socialRunnerEveryMinutes = 30;
+  assert.ok(WINDOWS.website >= 5 * slowNormalSyncMinutes);
+  assert.ok(WINDOWS["github-social-preview"] >= 8 * socialRunnerEveryMinutes);
 });

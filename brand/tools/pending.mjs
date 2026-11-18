@@ -3,7 +3,11 @@
 // scheduled browser job uploads social previews (GitHub has no API for them). Pending turns stale, so red,
 // once the window since the brand merge has passed. A surface that is stale for any other reason is never pending.
 
-// Minutes after a brand merge that a surface may still be catching up.
+// Minutes after a brand merge that a surface may still be catching up. Sized from measurements (2026-11-18):
+// ouroboros-website's sync pull requests took 3 to 17 minutes from opened to merged in 8 of 9 cases (median 4), and one
+// took 96 because site-checks never started on it (fixed in ouroboros-website's sync-brand.yml, which now starts it by
+// hand and retries rate limits), so 90 is five times the slow normal case. The social-preview runner uploads every 30
+// minutes, so 240 covers eight of its runs. Shrinking either means a sync that retries once goes red.
 export const WINDOWS = { website: 90, "github-social-preview": 240 };
 
 // Problems that say "these bytes are not the brand's current bytes", which is what a sync not having run yet looks like.
