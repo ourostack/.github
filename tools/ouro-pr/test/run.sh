@@ -27,16 +27,17 @@ export PATH="$tmp/bin:$PATH" OURO_PR_MAIN=1
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
-FAKE_OPEN_PRS='[{"number":3,"url":"https://github.com/o/r/pull/3","headRefName":"other","body":"Closes #7."}]' \
-  bash "$here/ouro-pr.sh" --dry-run >"$tmp/out" 2>&1 && fail "a second PR for #7 was allowed"
-grep -q "pull/3 is already open and closes #7" "$tmp/out" || fail "the message does not name the other PR: $(cat "$tmp/out")"
+dup='[{"number":3,"url":"https://github.com/o/r/pull/3","headRefName":"other","body":"Closes #7."}]'
+printf 'Fixes #7 and fixes #8.\n' >"$tmp/body"
+FAKE_OPEN_PRS=$dup bash "$here/ouro-pr.sh" --dry-run --body-file "$tmp/body" >"$tmp/out" 2>&1 || fail "a second PR for #7 was blocked: $(cat "$tmp/out")"
+grep -q "pull/3 is already open and closes #7" "$tmp/out" || fail "the other PR is not named: $(cat "$tmp/out")"
+grep -q "Relates to #7 and fixes #8" "$tmp/out" || fail "the body was not relaxed for #7 only: $(cat "$tmp/out")"
 
 FAKE_OPEN_PRS='[{"number":3,"url":"https://github.com/o/r/pull/3","headRefName":"other","body":"Closes #70"}]' \
-  bash "$here/ouro-pr.sh" --dry-run >/dev/null 2>&1 || fail "#70 was taken for #7"
+  bash "$here/ouro-pr.sh" --dry-run --body-file "$tmp/body" >"$tmp/out" 2>&1 || fail "dry run failed"
+grep -q "Fixes #7 and fixes #8" "$tmp/out" || fail "#70 was taken for #7"
 
 FAKE_OPEN_PRS='[{"number":3,"url":"https://github.com/o/r/pull/3","headRefName":"fix","body":"Closes #7"}]' \
-  bash "$here/ouro-pr.sh" --dry-run >/dev/null 2>&1 || fail "the branch's own PR counted as a duplicate"
-
-FAKE_OPEN_PRS='[{"number":3,"url":"https://github.com/o/r/pull/3","headRefName":"other","body":"Closes #7"}]' OURO_PR_ALLOW_DUPLICATE=1 \
-  bash "$here/ouro-pr.sh" --dry-run >/dev/null 2>&1 || fail "OURO_PR_ALLOW_DUPLICATE=1 did not override"
+  bash "$here/ouro-pr.sh" --dry-run --body-file "$tmp/body" >"$tmp/out" 2>&1 || fail "dry run failed"
+grep -q "Fixes #7 and fixes #8" "$tmp/out" || fail "the branch's own PR counted as a duplicate"
 echo "ouro-pr tests passed"
