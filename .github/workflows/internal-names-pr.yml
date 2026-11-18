@@ -1,0 +1,46 @@
+name: No internal names on the pull request
+
+# ourostack's repositories are public. Fails a pull request whose title, body or commit messages name an internal app,
+# repository or organization (tools/internal-names: the words are listed as hashes, so this repository names none of
+# them, and it reads that list from main, so one file serves every repository). A merge copies the title and body, and a merge commit keeps the branch's messages. Every ourostack repository
+# can call it from its CI:
+#   jobs:
+#     internal-names:
+#       if: github.event_name == 'pull_request'
+#       uses: ourostack/.github/.github/workflows/internal-names-pr.yml@main
+# and require that job (in its own ci aggregate or a ruleset). To check an edited description too, call it from a
+# workflow that runs on pull_request types [opened, edited, synchronize, reopened].
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ourostack/.github
+          path: guard-tools
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+          fetch-depth: 0
+          filter: tree:0
+          persist-credentials: false
+      - name: Title and body
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s\n\n%s\n' "$TITLE" "$BODY" | node guard-tools/tools/internal-names/check.mjs --text
+      - name: Commit messages
+        if: ${{ !cancelled() }}
+        working-directory: repo
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: node ../guard-tools/tools/internal-names/check.mjs "$BASE..$HEAD"

@@ -1,0 +1,16 @@
+name: Internal names tests
+
+on:
+  pull_request:
+    paths: ["tools/internal-names/**", ".github/workflows/internal-names*.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tools/internal-names/test/run.sh
