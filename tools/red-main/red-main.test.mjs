@@ -284,3 +284,41 @@ test("today's run-list URL is the same on every run, so its ETag answers 304 and
     globalThis.fetch = real;
   }
 });
+
+test("without GH_TOKEN every call goes through `gh api -i` (so the gh shim counts it), and never reads or uses a raw token", async () => {
+  const { mkdtempSync, writeFileSync, chmodSync, readFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const dir = mkdtempSync(join(tmpdir(), "red-main-gh-"));
+  const log = join(dir, "log");
+  writeFileSync(join(dir, "gh"), `#!/bin/sh
+echo "$*" >> "${log}"
+[ "$1 $2" = "auth token" ] && { echo secret; exit 0; }
+case "$*" in
+  *"If-None-Match: \\"t\\""*) printf 'HTTP/2.0 304 Not Modified\\r\\nX-Ratelimit-Remaining: 900\\r\\n\\r\\n' ;;
+  *) printf 'HTTP/2.0 200 OK\\r\\nEtag: "t"\\r\\nX-Ratelimit-Remaining: 901\\r\\nX-Ratelimit-Reset: 4102444800\\r\\n\\r\\n{"total_count":0,"workflow_runs":[]}' ;;
+esac
+`);
+  chmodSync(join(dir, "gh"), 0o755);
+  const saved = { PATH: process.env.PATH, token: process.env.GH_TOKEN, fetch: globalThis.fetch };
+  delete process.env.GH_TOKEN;
+  process.env.PATH = `${dir}:${saved.PATH}`;
+  globalThis.fetch = async () => { throw new Error("fetch must not be used without GH_TOKEN"); };
+  try {
+    const cache = { etags: {} };
+    const path = "/repos/o/r/actions/runs?branch=main&event=push&per_page=100";
+    const first = await makeGet(cache)(path);
+    assert.deepEqual(first, { total_count: 0, workflow_runs: [] });
+    const again = makeGet(cache);
+    assert.deepEqual(await again(path), { total_count: 0, workflow_runs: [] });
+    assert.equal(again.calls.notModified, 1);
+    assert.equal(again.calls.remaining, 900);
+    const calls = readFileSync(log, "utf8");
+    assert.match(calls, /^api -i repos\/o\/r\/actions\/runs\?branch=main/m);
+    assert.doesNotMatch(calls, /auth token/);
+  } finally {
+    process.env.PATH = saved.PATH;
+    if (saved.token === undefined) delete process.env.GH_TOKEN; else process.env.GH_TOKEN = saved.token;
+    globalThis.fetch = saved.fetch;
+  }
+});

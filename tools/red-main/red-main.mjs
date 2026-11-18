@@ -20,9 +20,10 @@
 // are GitHub 5xx or ETIMEDOUT errors in the job log, is infrastructure. It is counted apart from code red, opens no
 // episode, wakes nobody and is never auto-reverted.
 //
-// Needs GH_TOKEN (or `gh auth login`). Repos the token cannot read are reported as unreadable, never as green.
+// Needs GH_TOKEN (or `gh auth login`; then every call goes through gh, so the gh shim's budget applies). Repos the token cannot read are reported as unreadable, never as green.
 
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -171,8 +172,20 @@ export function table(rows) {
   return [head, ...lines].join("\n");
 }
 
-function token() {
-  return process.env.GH_TOKEN ?? execFileSync("gh", ["auth", "token"], { encoding: "utf8" }).trim();
+// With GH_TOKEN set (a workflow) the call goes straight to the API. Otherwise it runs `gh api -i`, so the gh shim counts it,
+// caches it and keeps the account above its quota floor; reading `gh auth token` and fetching with it spends the account's
+// hourly bucket where nothing counts it (11-18: about 4,500 uncounted calls drained the work account).
+const run = promisify(execFile);
+async function request(path, headers) {
+  if (process.env.GH_TOKEN) return fetch(`https://api.github.com${path}`, { headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, ...headers } });
+  const args = ["api", "-i", path.replace(/^\//, ""), "-H", `Accept: ${headers.accept}`];
+  if (headers["if-none-match"]) args.push("-H", `If-None-Match: ${headers["if-none-match"]}`);
+  const out = await run("gh", args, { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 }).catch((e) => e);
+  const m = /^HTTP\/[\d.]+ (\d+)[^\r\n]*\r?\n([\s\S]*?)\r?\n\r?\n([\s\S]*)$/.exec(out.stdout ?? "");
+  if (!m) throw new Error(String(out.stderr || out.message || "gh api returned nothing").trim());
+  const status = Number(m[1]);
+  const seen = new Map(m[2].split(/\r?\n/).map((l) => [l.slice(0, l.indexOf(":")).toLowerCase(), l.slice(l.indexOf(":") + 1).trim()]));
+  return { status, ok: status < 400, statusText: "", headers: { get: (k) => seen.get(k.toLowerCase()) ?? null }, text: async () => m[3] };
 }
 
 // A GET that counts what it spends (`calls.total` against the hourly allowance; a 304 answer is free, `calls.notModified`) and,
@@ -191,11 +204,11 @@ export function makeGet(cache = null) {
   const seen = new Set();
   async function get(path) {
     const tagged = cache && /\/actions\/runs\?/.test(path) ? ((cache.etags ??= {}), cache.etags[path]) : null;
-    const headers = { authorization: `Bearer ${token()}`, accept: "application/vnd.github+json" };
+    const headers = { accept: "application/vnd.github+json" };
     if (tagged) headers["if-none-match"] = tagged.etag;
     if (calls.remaining !== null && calls.remaining < QUOTA_FLOOR) throw new QuotaFloor(calls.remaining, calls.reset);
     calls.total++;
-    const res = await fetch(`https://api.github.com${path}`, { headers });
+    const res = await request(path, headers);
     const left = res.headers?.get?.("x-ratelimit-remaining");
     if (left !== null && left !== undefined) {
       calls.remaining = Number(left);
