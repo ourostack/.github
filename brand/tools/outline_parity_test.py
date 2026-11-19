@@ -98,6 +98,15 @@ class OutlineParity(unittest.TestCase):
         r = self.check(picture(30, (110, 100, 120), m, noise=2.0, seed=2))
         self.assertEqual(r["fails"], [])
 
+    def test_a_rim_highlight_on_an_unmoved_edge_passes(self):
+        m = figure_mask()
+        inner = cv2.erode(m[..., 0], np.ones((5, 5), np.uint8))[..., None]
+        rim = np.clip(m - inner, 0, 1)  # a 2 px bright rim just inside the edge, only at night
+        night = picture(30, (110, 100, 120), m, noise=2.0, seed=2).astype(np.float32)
+        night = np.clip(night + rim * np.array([90, 90, 90], np.float32), 0, 255).astype(np.uint8)
+        r = self.check(night)
+        self.assertEqual(r["fails"], [], r["fails"])
+
 
 def disc(radius, blur=0.0):
     m = np.zeros((H, W), np.float32)

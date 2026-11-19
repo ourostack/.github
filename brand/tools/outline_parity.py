@@ -36,7 +36,10 @@ What is checked, for every figure of a scene that has a night:
   settles a point on a night ridge that sits on the day's edge and reaches only 3 px. So a second reading, locate(),
   takes every 3 px the shift (to a fraction of a pixel, within SEARCH = 8 px either side) at which the whole night
   profile best matches the day's, with no override by a ridge that happens to sit on the day's edge. Points whose
-  day edge is weaker than EDGE_LOC (glass, haze) say nothing about position. After a 3-point median, any unbroken
+  day edge is weaker than EDGE_LOC (glass, haze) say nothing about position. A gradient locator can lock onto a rim
+  highlight the night adds, so a point counts only where a second, independent reading, crossing() (the half-way
+  point between the figure's colour and its neighbour's along the colour axis), agrees: same direction, both beyond
+  SHIFT_MAX; the smaller of the two is kept. After a 3-point median, any unbroken
   run of RUN_SHIFT = 24 px or more beyond SHIFT_MAX fails. A person's hood edge 3.5 px inward along 40 px passes
   the 99th percentile on a long outline but fails here.
 - Small parts, size rule. A closed part of a figure that holds a 4 px disc and is under 40 px across (an antenna
@@ -294,6 +297,42 @@ def locate(day_img, night_img, mask):
     return {"pts": pts, "nrm": nrm, "ids": ids, "shift": sh}
 
 
+def crossing(day_img, night_img, pts, nrm):
+    """A second, independent reading of the shift at each contour point: where the picture crosses half way between the
+    figure's colour (6 to 9 px inside) and its neighbour's (6 to 9 px outside), measured along the colour axis between
+    them, within 8 px of the edge, in the day and in the night. A rim highlight or glow on the night's edge moves a
+    gradient ridge but not this. nan where the two strips differ by less than DAY_MIN / 2 or no crossing is found."""
+    t = np.arange(-10, 10.01, 0.25)
+    x = pts[:, 0:1] + nrm[:, 0:1] * t[None]
+    y = pts[:, 1:2] + nrm[:, 1:2] * t[None]
+
+    def cross(img):
+        p = np.stack([map_coordinates(gaussian_filter(img[..., c].astype(np.float32), 0.7), [y, x], order=1, mode="nearest")
+                      for c in range(3)], 2)
+        ins, out = p[:, (t >= -9) & (t <= -6)].mean(1), p[:, (t >= 6) & (t <= 9)].mean(1)
+        ax = out - ins
+        nn = (ax ** 2).sum(1)
+        f = ((p - ins[:, None]) * ax[:, None]).sum(2) / np.maximum(nn, 1e-6)[:, None]
+        res = np.full(len(p), np.nan)
+        for i in range(len(p)):
+            if np.sqrt(nn[i]) < DAY_MIN / 2:
+                continue
+            k = [j for j in np.nonzero((f[i, :-1] - 0.5) * (f[i, 1:] - 0.5) <= 0)[0] if abs(t[j]) <= SEARCH]
+            if k:
+                j = min(k, key=lambda j: abs(t[j]))
+                res[i] = t[j] + (0.5 - f[i, j]) / (f[i, j + 1] - f[i, j] + 1e-9) * 0.25
+        return res
+
+    return cross(night_img) - cross(day_img)
+
+
+def agreed(a, b):
+    """The shift two locators agree on: the smaller of the two where both are beyond SHIFT_MAX in the same direction, else 0."""
+    both = ~np.isnan(a) & ~np.isnan(b)
+    ok = both & (np.sign(a) == np.sign(b)) & (np.abs(a) > SHIFT_MAX) & (np.abs(b) > SHIFT_MAX)
+    return np.where(ok, np.sign(np.nan_to_num(a)) * np.minimum(np.abs(np.nan_to_num(a)), np.abs(np.nan_to_num(b))), 0.0)
+
+
 def local_median(v, ids, size=LOCAL):
     """Running median of v along each contour, over the points that have a value (nan stays nan)."""
     out = np.full(len(v), np.nan)
@@ -395,7 +434,8 @@ def check_figure(day_img, night_img, fig):
             x, y, len(run) * STEP, 100 * ratio[i], tuple(night_img[y, x].tolist()), tuple(day_img[y, x].tolist())))
     loc = locate(day_img, night_img, md)
     if loc is not None:
-        near_s = local_median(loc["shift"], loc["ids"])
+        both = agreed(loc["shift"], crossing(day_img, night_img, loc["pts"], loc["nrm"]))
+        near_s = local_median(both, loc["ids"])
         far = np.nan_to_num(np.abs(near_s), nan=0.0) > SHIFT_MAX
         for run in runs_of(far):
             if len(run) * STEP < RUN_SHIFT:
