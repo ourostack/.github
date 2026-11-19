@@ -85,10 +85,16 @@ export function setTransport(fn) {
   transport = fn;
 }
 
+// gh sends -f as a string and -F as a typed value; an Int! variable (the PR number) fails as a string.
+export function ghArgs(query, vars) {
+  const args = ["api", "graphql", "-f", `query=${query}`];
+  for (const [k, v] of Object.entries(vars)) args.push(typeof v === "number" ? "-F" : "-f", `${k}=${v}`);
+  return args;
+}
+
 function gql(query, vars) {
   if (transport) return transport(query, vars);
-  const args = ["api", "graphql", "-f", `query=${query}`];
-  for (const [k, v] of Object.entries(vars)) args.push("-f", `${k}=${v}`);
+  const args = ghArgs(query, vars);
   return JSON.parse(withRetry(() => execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }))).data;
 }
 
@@ -210,7 +216,7 @@ const REQUIRED_QUERY = `query($id:ID!,$n:Int!){node(id:$id){... on PullRequest{c
 
 function withRequiredContexts(pr) {
   if (!["FAILURE", "ERROR"].includes(pr.commits?.nodes?.[0]?.commit?.statusCheckRollup?.state)) return pr;
-  const commits = gql(REQUIRED_QUERY, { id: pr.id, n: String(pr.number) }).node?.commits;
+  const commits = gql(REQUIRED_QUERY, { id: pr.id, n: pr.number }).node?.commits;
   return commits ? { ...pr, commits } : pr;
 }
 
