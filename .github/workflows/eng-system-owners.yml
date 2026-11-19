@@ -1,0 +1,71 @@
+name: eng-system owners
+
+# Every open task in the eng-system track has a live owner. The track lives in a private desk (arimendelow/desk,
+# eng-system/track.md), and its script (.github/scripts/eng-system-owners.mjs there) finds any open task with no
+# owner named, or with no commit in its folder for 48 hours. This workflow reads that desk with a read-only deploy key
+# scoped to it (secret ENG_SYSTEM_DESK_READ_KEY) and keeps one issue here current with the count, closing it when
+# there is none. This repository is public, so the issue and the log give the count only, never a task's name.
+on:
+  schedule:
+    - cron: "23 16 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths: [".github/workflows/eng-system-owners.yml"]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: eng-system-owners
+  cancel-in-progress: false
+
+jobs:
+  owners:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: arimendelow/desk
+          ssh-key: ${{ secrets.ENG_SYSTEM_DESK_READ_KEY }}
+          persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
+          sparse-checkout: |
+            eng-system
+            .github/scripts
+          path: desk
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: ""
+      - name: Count open tasks without a live owner
+        id: count
+        working-directory: desk
+        shell: bash
+        run: |
+          set +e
+          node .github/scripts/eng-system-owners.mjs > "$RUNNER_TEMP/owners.txt"
+          status=$?
+          set -e
+          if [ "$status" -gt 1 ]; then echo "::error::the owner check failed to run"; exit 1; fi
+          count=$(grep -c '^- ' "$RUNNER_TEMP/owners.txt" || true)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Open eng-system tasks without a live owner: $count" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Keep the issue current
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COUNT: ${{ steps.count.outputs.count }}
+        shell: bash
+        run: |
+          title="eng-system: open tasks without a live owner"
+          open=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)
+          if [ "$COUNT" = "0" ]; then
+            [ -z "$open" ] || gh issue close "$open" -R "$GITHUB_REPOSITORY" --comment "Every open eng-system task has a live owner again."
+            exit 0
+          fi
+          body="$COUNT open task(s) in the eng-system track have no live owner: no owner named in its track.md, or no commit in the task's folder for 48 hours. Run \`node .github/scripts/eng-system-owners.mjs\` in that desk to see which, then take each one over in the Owner column, or close it. Checked daily by [eng-system-owners.yml](https://github.com/ourostack/.github/blob/main/.github/workflows/eng-system-owners.yml); the playbook is [agents/eng-system.md](https://github.com/ourostack/.github/blob/main/agents/eng-system.md)."
+          if [ -n "$open" ]; then gh issue edit "$open" -R "$GITHUB_REPOSITORY" --body "$body"
+          else gh issue create -R "$GITHUB_REPOSITORY" --title "$title" --body "$body"; fi
