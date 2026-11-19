@@ -10,3 +10,15 @@ Switching accounts is server-side state shared by every browser holding the sess
 Needs Edge, `playwright` (`npm i -g playwright`) and `gh` signed in for the repository list. Edge gets 60 s to open its debugging port, polled every 100 ms, so a ready machine starts in about a second; set `EDGE_START_SECONDS` to change it.
 
 `sudo.mjs`: `awaitSudo(session, {what, redo})` after any step that may show GitHub's "Confirm access". It taps "Use GitHub Mobile" when offered (a push to the phone, no window), else reopens Edge in a visible, frontmost window (`session.relaunchHeadful()`) and repeats the step there for a passkey. Either way it prints one line and sends it to Ari's Teams chat with Ouroboros through `workiq create`, with the number GitHub Mobile shows, then waits up to 15 minutes (`sudoTimeout` error, exit 4). Granted sudo lasts a few hours for the browser session, so batch the sudo steps in one session.
+
+## Web-only actions as the personal account `arimendelow`
+
+Never ask Ari to sign in. Use `openAs("arimendelow")` from `browser.mjs` (it is the default user): its own profile under `~/.local/state/github-browser/profiles/arimendelow` is already signed in as `arimendelow` (checked 2026-11-19: `loginOf` returns `arimendelow`, and the switcher also lists `arimendelow_microsoft`). Desk's `browser_context` `mine` is a copy of the Edge Default profile without saved logins, so it cannot do this; Edge has no other profile on this Mac.
+
+```js
+import { openAs } from "<clone of ourostack/.github>/tools/github-browser/browser.mjs";
+const s = await openAs("arimendelow"); // s.page is a Playwright page signed in as arimendelow
+try { /* … */ } finally { await s.close(); }
+```
+
+No API covers these: GitHub has no REST or GraphQL call for a repository's social preview image or for deleting a comment's edit-history revisions (GraphQL only has `minimizeComment` and `deleteIssueComment`, which change the comment, not its history). Social previews: `brand/tools/upload-social-previews.mjs`. Edit history: open the comment's "edited" menu and choose "Delete revision" (confirmed reachable on ourostack/ouro-ui#2111 as `arimendelow`). If `openAs` exits 3 (not signed in), the only human step is Ari's passkey at github.com/login as `arimendelow`, relayed by the coordinator.
