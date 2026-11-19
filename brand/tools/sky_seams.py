@@ -58,9 +58,12 @@ and its clipped core, down to the sky around it), then rebuild the night with up
 derive.py. Needs Pillow, numpy and scipy. Exit 0 when clean, 1 when any night has a seam.
 """
 import argparse
+import contextlib
+import fcntl
 import json
 import os
 import sys
+import tempfile
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -296,11 +299,36 @@ def check_scene(day, crops, opts):
     return found
 
 
+LOCK = Path(tempfile.gettempdir()) / "ourostack-sky-seams.lock"
+
+
+@contextlib.contextmanager
+def one_pool(path=LOCK, out=sys.stderr):
+    """One pool per machine. Each run starts one worker per core at about 0.5 GB each; on 2026-11-19 four
+    started at once on an 18-core Mac (76 processes, 38 GB), memory ran out, and every agent session on it
+    stalled for 50 minutes. A second run waits here for the first and says so."""
+    with open(path, "a+") as f:
+        try:
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            f.seek(0)
+            print(f"sky_seams: waiting for another run on this machine to finish (pid {f.read().strip() or '?'})", file=out, flush=True)
+            fcntl.flock(f, fcntl.LOCK_EX)
+        f.seek(0)
+        f.truncate()
+        f.write(str(os.getpid()))
+        f.flush()
+        try:
+            yield
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("scenes", nargs="*", help="day scene names; default every nightFromDay or nightFromFlatDay scene")
     ap.add_argument("--json", action="store_true")
-    ap.add_argument("--jobs", type=int, default=os.cpu_count(), help="scenes checked at once (default: one per core)")
+    ap.add_argument("--jobs", type=int, default=os.cpu_count(), help="scenes checked at once (default: one per core; one run at a time per machine)")
     ap.add_argument("--step", type=float, default=STEP)
     ap.add_argument("--levels", type=float, default=LEVELS)
     ap.add_argument("--sky", type=float, default=SKY)
@@ -315,7 +343,8 @@ def main():
     for s in scenes:
         if not (BRAND / f"scenes/{s}-dark-3072.webp").exists():
             sys.exit(f"{s}: brand/scenes/{s}-dark-3072.webp is missing")
-    with ProcessPoolExecutor(a.jobs) as pool:  # one scene per core: CI runs all of them on every pull request
+    # One scene per core (CI runs all of them on every pull request), and one pool per machine.
+    with one_pool(), ProcessPoolExecutor(max(1, min(a.jobs, len(scenes)))) as pool:
         results = list(pool.map(check_scene, scenes, [crops] * len(scenes), [opts] * len(scenes)))
     report, bad = {}, 0
     for s, found in zip(scenes, results):

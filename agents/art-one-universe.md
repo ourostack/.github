@@ -37,12 +37,14 @@ Before generating, write the prompt to the one-shot template in [art-prompting.m
 4. **Blind defect hunt: no picture ships without it.** Give a fresh reviewer only the image and crops of each figure at 4x. Don't tell them what changed and don't share the author's description. Ask: "list everything physically wrong".
    - Count heads, arms, hands, legs and tails per figure, and trace every limb to its joint.
    - Check that every held object has a hand holding it.
+   - Check proportions against the body, figure by figure: a person's neck is short and natural under the head (about a third of the head's height, never a stalk or a mannequin pole rising out of the collar), the head is the right size for the shoulders, and arms and legs are the right length for the torso. Reviewers passed the long necks in chart-room and the train scene twice before Ari saw them (2026-11-18), so measure the neck against the head in the 4x crop instead of glancing.
+   - Check every garment's edge: a blanket, throw, scarf, shawl, apron or coat ends in a hem, fold, fringe or overlap shadow where it meets the clothes or body under it, never a fade into them (the meadow's tartan throws dissolved into the jumper and the coat collar, 2026-11-18).
    - Check each object's facing against the camera and its use (a ship's wheel faces the bow, a door hangs on its hinges).
    - Check any device that reads dated: anything that isn't current-generation or clearly vintage.
    - Check day and night separately.
 
    Sort what the reviewer finds:
-   - **Blockers, fixed to zero:** anything physically wrong (limbs, holds, facing, mechanism orientation, a dated device, impossible geometry such as a door that can't fit its opening), and any defect you can see at the shipped size or at 2x, mushy hands included.
+   - **Blockers, fixed to zero:** anything physically wrong (limbs, holds, facing, mechanism orientation, a dated device, impossible geometry such as a door that can't fit its opening, a neck, head or limb out of proportion, a garment that fades into what is under it), and any defect you can see at the shipped size or at 2x, mushy hands included.
    - **Polish, visible only in the 4x crops** (render noise on metal, a missing contact shadow): fix it if it's cheap, otherwise log it on the review list and ship.
 
    It ships only when that reviewer finds no blockers. The author's notes and a "fixed what was asked" check never count as a pass. Ari, 2026-11-15, after reviewers twice passed an airship hero whose person had three arms and whose helm faced the camera.

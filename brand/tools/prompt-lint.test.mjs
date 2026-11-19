@@ -46,6 +46,7 @@ Three candidates at 1536x1024.
 const person = {
   What: "the person",
   Material: "smooth, seamless frosted glass",
+  Build: "natural adult proportions: a head about one-seventh of the standing height and a short neck about a third of the head's height",
   Height: "about 1.4 times the agent's height",
   Outfit: "an amber cardigan",
   Expression: "pleased surprise, head tilted back",
@@ -88,6 +89,20 @@ test("the phrasings that drew fingers and dated devices warn, but bans in Must n
   const banned = lint(prompt(`### The person\n${figure(person)}`).replace("- No text", "- No pointing, no open mitten, no fingers, no laptop.\n- No text"));
   assert.deepEqual(banned.warnings, []);
   assert.equal(lint(prompt(`### The person\n${figure(person)}`)).warnings.length, 0);
+});
+
+test("a person with no neck length or head size, or a throw with no edge, warns", () => {
+  const { Build, ...noBuild } = person;
+  const bare = new Set(lint(prompt(`### The person\n${figure({ ...noBuild, Material: "smooth, seamless frosted glass; a natural neck about four tenths of the head's width" })}`)).warnings.map((w) => w.id));
+  assert.ok(bare.has("neck") && bare.has("head-size"));
+
+  const agent = lint(prompt(`### The agent\n${figure({ ...noBuild, What: "a small robot agent" })}`)).warnings.map((w) => w.id);
+  assert.ok(!agent.includes("neck") && !agent.includes("head-size"));
+
+  const throwOn = (outfit) => lint(prompt(`### The person\n${figure({ ...person, Outfit: outfit })}`)).warnings.map((w) => w.id);
+  assert.ok(throwOn("a cream jumper under a tartan throw wrapped round the shoulders").includes("garment-edge"));
+  assert.ok(!throwOn("a cream jumper under a tartan throw with a folded-over hem where it sits on the jumper").includes("garment-edge"));
+  assert.ok(!throwOn("a cream jumper; no blanket").includes("garment-edge"));
 });
 
 test("the unstructured airship prompt that needed fixes fails and names its risky phrasings", () => {
