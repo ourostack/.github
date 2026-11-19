@@ -4,6 +4,7 @@
 Each test copies upscale.py and relight_transfer.py into a scratch brand/ tree with a tiny synthetic scene and runs
 upscale.py with --reuse (no Real-ESRGAN), so it needs only Pillow, numpy, scipy and scikit-image."""
 import hashlib
+import importlib.util
 import io
 import json
 import shutil
@@ -42,7 +43,9 @@ def scene_images():
     return Image.fromarray(day), Image.fromarray(flat), Image.fromarray(night)
 
 
-class NightFromFlatDay(unittest.TestCase):
+class Scratch(unittest.TestCase):
+    """A scratch brand/ tree with upscale.py, relight_transfer.py and a tiny synthetic scene x."""
+
     def setUp(self):
         self.root = Path(tempfile.mkdtemp())
         brand = self.root / "brand"
@@ -76,6 +79,8 @@ class NightFromFlatDay(unittest.TestCase):
         return subprocess.run([sys.executable, str(self.root / "brand/tools/upscale.py"), "--reuse", str(self.reuse), *scenes],
                               capture_output=True, text=True)
 
+
+class NightFromFlatDay(Scratch):
     def test_night_master_is_the_flat_day_under_night_light(self):
         r = self.run_upscale("x-dark")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
@@ -223,6 +228,98 @@ class NightFromFlatDay(unittest.TestCase):
         r = self.run_upscale("x-dark")
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("not the header's", r.stdout + r.stderr)
+
+
+class KeepFigureEdges(unittest.TestCase):
+    """upscale.keep_figure_edges on a hand-made figure mask: it needs only numpy and scipy, not OpenCV."""
+
+    def setUp(self):
+        sys.path.insert(0, str(TOOLS))
+        import upscale
+        self.up = upscale
+
+    def tearDown(self):
+        sys.path.remove(str(TOOLS))
+
+    def test_thin_bright_disc_keeps_its_size_and_place(self):
+        y, x = np.mgrid[0:200, 0:200]
+        disc = (x - 100) ** 2 + (y - 100) ** 2 <= 10 ** 2  # a 20 px ball on a 4x master: 5 px at the header
+        day_up = np.where(disc, 240.0, 100.0)[..., None].repeat(3, 2)
+        # the transfer's output: the night's light, but the ball shrunk to 6 px radius
+        shrunk = (x - 100) ** 2 + (y - 100) ** 2 <= 6 ** 2
+        out = np.where(shrunk, 100.0, 20.0)[..., None].repeat(3, 2)
+        res = self.up.keep_figure_edges(out, day_up, [disc])[..., 0]
+        lit = res > (res[100, 100] + res[100, 150]) / 2
+        self.assertAlmostEqual(lit.sum() / disc.sum(), 1.0, delta=0.1)
+        self.assertLess(np.hypot(*(np.array([y[lit].mean(), x[lit].mean()]) - [100, 100])), 0.5)
+        self.assertLess(res[100, 100], 240)  # and it is lit by the night's light, not the day's
+
+    def test_figure_edge_stays_where_the_day_has_it_and_stays_sharp(self):
+        y, x = np.mgrid[0:200, 0:200]
+        inside = (x >= 100) & (x < 110)  # a thin bright bar with hard day edges
+        day_up = np.where(inside, 200.0, 100.0)[..., None].repeat(3, 2)
+        soft = np.where((x >= 103) & (x < 108), 90.0, 40.0)  # the transfer shrank it: edges 3 px in and 2 px off, soft
+        out = np.convolve(soft[0], np.ones(5) / 5, "same")[None].repeat(200, 0)[..., None].repeat(3, 2)
+        res = self.up.keep_figure_edges(out, day_up, [inside])[100, :, 0]
+        self.assertGreater(res[99:111].max() - res[95], 30)
+        lit = res > (res[104] + res[95]) / 2
+        self.assertEqual(np.flatnonzero(lit[90:120]).tolist(), list(range(10, 20)))
+        self.assertLess(np.abs(np.diff(res))[96:114].max() / (res[104] - res[95]), 1.01)
+
+
+@unittest.skipUnless(importlib.util.find_spec("cv2"), "figure registries are snapped with OpenCV")
+class FigureRegistry(Scratch):
+    """A scene with brand/figures/<scene>.json gets the night header's light sources from Real-ESRGAN, like its day."""
+
+    def setUp(self):
+        super().setUp()
+        # a lit patch (x 40 to 60) on the dark left half, a figure on the right half; the figure counts as thin here
+        d = np.zeros((H, W, 3), np.uint8); n = np.zeros((H, W, 3), np.uint8)
+        d[:, :96], d[:, 96:], n[:, :96], n[:, 96:] = 200, 100, 30, 90
+        n[:, 40:60] = 220
+        files = {"headers/x.webp": webp(Image.fromarray(d)), "headers/x-dark.webp": webp(Image.fromarray(n)),
+                 "flat/x.webp": webp(Image.fromarray(d))}
+        for rel, data in files.items():
+            (self.root / "brand" / rel).write_bytes(data)
+        self.prov = [e for e in self.prov if e["file"] not in files] + [{"file": r, "sha256": sha(b)} for r, b in files.items()]
+        Image.fromarray(d).resize((W * 4, H * 4), Image.NEAREST).save(self.reuse / "x.png")
+        Image.fromarray(d).resize((W * 4, H * 4), Image.NEAREST).save(self.reuse / "x-dark-flat.png")
+        Image.fromarray(n).resize((W * 4, H * 4), Image.NEAREST).save(self.reuse / "x-dark-header.png")  # its Real-ESRGAN 4x
+        mask = np.zeros((H, W), np.uint8)
+        mask[:, 30:70] = 255
+        data = webp(Image.fromarray(mask))
+        (self.root / "brand/flat/x-lights.webp").write_bytes(data)
+        self.prov.append({"file": "flat/x-lights.webp", "sha256": sha(data)})
+        self.crops["x"]["nightLights"] = "flat/x-lights.webp"
+        self.write()
+
+    def register(self):
+        poly = [[1536, 0], [3072, 0], [3072, 1152], [1536, 1152]]
+        (self.root / "brand/figures").mkdir()
+        (self.root / "brand/figures/x.json").write_text(json.dumps({"figures": [{"name": "right", "kind": "prop", "band": 6, "seeds": [], "polygon": poly}]}))
+        src = (self.root / "brand/tools/upscale.py").read_text()
+        for old, new in (("THIN = 12 ", "THIN = 2000 "), ("SHRUNK = 0.8 ", "SHRUNK = 2 "), ("FLOOR = 0.95", "FLOOR = 0.9")):
+            src = src.replace(old, new)  # the right half counts as a shrunk thin part; SSIM says little about 3 flat colours
+        (self.root / "brand/tools/upscale.py").write_text(src)
+        shutil.copy(TOOLS / "outline_parity.py", self.root / "brand/tools/outline_parity.py")
+
+    def lit_edge_step(self):
+        r = self.run_upscale("x", "x-dark")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        row = np.asarray(Image.open(self.root / "brand/upscaled/x-dark.webp").convert("L"), float)[144]
+        return np.abs(np.diff(row[150:170])).max()  # the patch's left edge at x = 160, a 30 to 220 step in the night
+
+    def test_night_lights_paste_keeps_a_sharp_edge(self):
+        self.register()
+        self.assertGreater(self.lit_edge_step(), 0.8 * (220 - 30))
+
+    def test_scene_without_a_registry_has_no_figure_masks(self):
+        sys.path.insert(0, str(TOOLS))
+        try:
+            import upscale
+            self.assertIsNone(upscale.figure_masks("no-such-scene", np.zeros((8, 8, 3), np.float32)))
+        finally:
+            sys.path.remove(str(TOOLS))
 
 
 if __name__ == "__main__":
