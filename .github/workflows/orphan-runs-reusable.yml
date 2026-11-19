@@ -1,0 +1,46 @@
+name: Cancel orphaned merge-group runs (reusable)
+
+# A reformed merge queue leaves the old groups' merge_group runs going, and they hold runners the live groups wait for.
+# This cancels the calling repository's merge_group runs whose group commit is not a current queue entry, using that
+# repository's own GITHUB_TOKEN, so no personal token is needed. The caller is the whole opt-in: tools/orphan-runs/README.md.
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        description: "List what would be cancelled and cancel nothing."
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    concurrency:
+      group: orphan-runs-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ourostack/.github
+          ref: main
+          path: .ouro-tools
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: ""
+      - name: Cancel the orphans
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          flag=""; [ "$DRY_RUN" = "true" ] && flag="--dry-run"
+          node .ouro-tools/tools/orphan-runs/cancel.mjs $flag 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
