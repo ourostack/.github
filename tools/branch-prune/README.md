@@ -33,6 +33,10 @@ Everything else is kept, with the reason: for example `PR #12 merged, branch cha
 
 Each delete is checked just before it happens. If the branch's tip has moved, or an open pull request has appeared for it, the branch is skipped and the log says so.
 
+## Repositories left out
+
+`excluded-repos.json` lists the repositories branch-prune never runs in, each with its reason. `prune.mjs` exits 0 there without listing or deleting, so a caller workflow that slipped in does nothing. Put starter and template repositories on it, such as `ourostack/my-agent` (the workshop starter attendees clone), and keep the caller workflow out of them. An org-wide rollout reads this file before adding the caller to a repository.
+
 ## Adopting it
 
 Copy this to `.github/workflows/branch-prune.yml`:
