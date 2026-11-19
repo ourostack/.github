@@ -113,5 +113,32 @@ class Rings(unittest.TestCase):
         self.assertEqual(S.discs(lum, np.zeros((H, W), bool)), [])
 
 
+class OnePool(unittest.TestCase):
+    def test_a_second_run_waits_for_the_first_and_says_so(self):
+        import io, subprocess, tempfile, time
+        lock = Path(tempfile.mkdtemp()) / "pool.lock"
+        holder = subprocess.Popen([sys.executable, "-c", f"""
+import sys; sys.path.insert(0, {str(Path(__file__).resolve().parent)!r})
+import time, sky_seams as S
+from pathlib import Path
+with S.one_pool(Path({str(lock)!r})):
+    print("held", flush=True); time.sleep(1.5)
+"""], stdout=subprocess.PIPE, text=True)
+        self.assertEqual(holder.stdout.readline().strip(), "held")
+        said, t0 = io.StringIO(), time.monotonic()
+        with S.one_pool(lock, out=said):
+            waited = time.monotonic() - t0
+        holder.wait()
+        self.assertGreater(waited, 0.8, "it ran beside the other pool")
+        self.assertIn(f"waiting for another run on this machine to finish (pid {holder.pid})", said.getvalue())
+
+    def test_a_lone_run_does_not_wait(self):
+        import io, tempfile
+        said = io.StringIO()
+        with S.one_pool(Path(tempfile.mkdtemp()) / "pool.lock", out=said):
+            pass
+        self.assertEqual(said.getvalue(), "")
+
+
 if __name__ == "__main__":
     unittest.main()
