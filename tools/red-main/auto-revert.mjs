@@ -8,6 +8,9 @@
 //
 // A repo's "ignoreWorkflows" in auto-revert.json lists workflows whose red never counts (file name without .yml, or workflow name); it applies in
 // --self mode too, so a caller's exclusions live here and not in its workflow.
+// Heal first: the moment main's newest commit has a failed run that has not been rerun (any cause: a flake, a lost runner, a real break), its failed
+// jobs are rerun once, at any red age and before any guard below. A rerun that passes makes main green, so nothing downstream ever holds on it; a rerun that
+// fails again is a real red and the guards below take over. Each run is rerun at most once (attempt 2 is never rerun).
 // A repo is reverted only when it is listed in auto-revert.json with "enabled": true and, all at once:
 //   1. main has been red for at least minRedMinutes (60);
 //   2. the first red commit is the last commit on main and a squash-merged PR (one parent, one merged PR) -
@@ -68,6 +71,15 @@ export function classifyFailure(run, jobs) {
     if (hit) return { infra: true, reason: `job "${j.name}" log matches ${hit}` };
   }
   return { infra: false };
+}
+
+// The failed runs of main's newest commit that no one has rerun yet: { id, name }. Only a plain failure or timeout is rerun; a run cancelled by a newer push
+// or one that never started says nothing the rerun would change.
+export function healTargets(runs) {
+  const pushes = runs.filter((r) => r.event === "push");
+  if (!pushes.length) return [];
+  const newest = pushes.reduce((a, b) => (ms(a.created_at) >= ms(b.created_at) ? a : b)).head_sha;
+  return pushes.filter((r) => r.head_sha === newest && r.status === "completed" && ["failure", "timed_out"].includes(r.conclusion) && (r.run_attempt ?? 1) < 2).map((r) => ({ id: r.id, name: r.name }));
 }
 
 // An open PR that already reverts or fixes the red PR (or is this tool's own revert of it).
@@ -185,6 +197,8 @@ const ms = (t) => new Date(t).getTime();
 export async function gather(repo, now, a = api, { ignore = [] } = {}) {
   const get = (p) => a.get(p);
   const stretch = await readRedStretch(repo, get, { ignore });
+  const heal = healTargets(stretch.runs);
+  if (heal.length) return { repo, heal };
   const eps = episodes(commitVerdicts(await markInfra(repo, stretch.runs, get)));
   const open = eps.find((e) => e.to === null);
   if (!open) return null;
@@ -238,6 +252,13 @@ export async function act(repo, f, verdict, { apply, now, log = console.log, a =
   log(`opened ${made.url} with auto-merge on`);
 }
 
+export async function rerunHeal(repo, heal, { apply, a = api, log = console.log } = {}) {
+  for (const r of heal) {
+    log(`${repo}: main's newest commit failed ${r.name} (run ${r.id}); ${apply ? "" : "would "}rerun its failed jobs once before anything holds on it`);
+    if (apply) await a.post(`/repos/${repo}/actions/runs/${r.id}/rerun-failed-jobs`);
+  }
+}
+
 // Counts every API call a run makes, by method.
 export function counted(a = api) {
   const calls = { GET: 0, POST: 0, graphql: 0 };
@@ -266,6 +287,10 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
       const f = await gather(repo, now, a, { ignore: cfg.ignoreWorkflows ?? [] });
       if (!f) {
         console.log(`${repo}: main is not red`);
+        continue;
+      }
+      if (f.heal?.length) {
+        await rerunHeal(repo, f.heal, { apply: apply && cfg.enabled, a });
         continue;
       }
       if (f.tooLong) {
