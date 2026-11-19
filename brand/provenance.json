@@ -49235,5 +49235,995 @@
   "height": 576,
   "bytes": 219156,
   "sha256": "ad04b1c80243786ef33f7af8fef76e8ec57157a7f9c96d8f05a94c94c0933616"
+ },
+ {
+  "file": "stage/bg-sunlit.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the whole 1024x1024 painting, WebP q90 (Pillow 11.3): the surface: sky at sunset over the waterline, sunbeams, kelp on the sand",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the surface band with the ship, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: sunlit water at the surface\n\n## Story\nLooking out through the round porthole of a small diving bell beside Jules Verne's Nautilus, at sunrise, just below the calm surface: sky and sun above the waterline, the long iron hull of the Nautilus floating at the surface, and a shoal of silver sardines in the clear water below.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: just below the surface, so the top fifth of the frame is sky above the waterline and the rest is sea. One vanishing point, at the centre of the frame, where the shafts of light and the sea lead away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: the hull, the shoal and the kelp sit inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain sea and sky, since the site's brass ring overlays it. Top fifth: soft sunrise sky with a low warm sun at the upper right and two small soft clouds at the upper left. Then the waterline, seen as a gently rippled silver line across the frame. Just below it, the dark iron hull of the Nautilus floats from the left edge to the middle of the frame, its round portholes glowing warm. Below and to the right, a shoal of about forty small silver sardines swims left to right. Shafts of sunlight slant down from the surface. At the bottom edge, a few soft green kelp fronds rise from a pale sandy seabed far below.\n\n## Cast\n### The sardines\n- What: a shoal of about forty small silver sardines.\n- Material: bright silver scales catching the light, blue-grey backs.\n- Height: each fish about a fortieth of the frame's height.\n- Pose: swimming together left to right in a loose, curving shoal.\n- Limbs: none; each fish has exactly two side fins, one tail fin and one back fin.\n- Facing: side-on to the camera, heading to the right.\n\n## Props\n- The Nautilus: Jules Verne's submarine, a long dark riveted iron hull floating at the surface, only its lower half below the waterline visible, a row of round portholes glowing warm.\n\n## Setting\nClear blue-green open sea at dawn, calm, with tiny bubbles and gentle caustic light.\n\n## Light\nOne key light: the low sun at the upper right, its light coming down through the water in soft shafts; warm sky, cool sea, the hull's portholes glowing warm.\n\n## Palette\nWarm peach and gold sky, blue-green sea, dark iron hull, silver fish, soft green kelp, pale sand.\n\n## Must not\n- No window frame, brass ring, rivets, bolts or wall.\n- No people, robots, animals other than the sardines.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails, no fog on the glass, no image fades or vignettes.\n\n## References\n1. The first image: the hero picture, for the Nautilus's hull, the sea, the sunrise sky and the world's render, light and materials only; its people, agent and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render, the shafts of light and the silver shoal only.",
+    "input_images": [
+     "scenes/nautilus-960.webp",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "3701413ebbd953fa816bf1e7d72994e155729b14e5f301cb7e10499c297dc45f",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "the ship and the fish move on the stage, so the next step paints both out of the backdrop; they come back as sprites"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the empty sea: hull and fish painted out",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture: remove the submarine hull and the whole shoal of sardines, and paint the open sea back where they were, continuing the water, the shafts of sunlight and the tiny bubbles naturally. Keep everything else exactly as it is, in place, shape and size: the sunrise sky, sun and clouds, the rippled waterline, the light shafts, the kelp and the sandy seabed. Must not: no ship, hull, fish or other creatures anywhere; no text; no outlines; no image fades or vignettes.",
+    "input_images": [
+     "step: the surface band"
+    ],
+    "sha256": "4889648208844e6a3120cf8cdc10354973ef0bafffe4ea2973a7b96bb18bd5d8",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "repeated-looking sunbeams and bubbles"
+     ]
+    }
+   }
+  ],
+  "master_sha256": "4889648208844e6a3120cf8cdc10354973ef0bafffe4ea2973a7b96bb18bd5d8",
+  "width": 1024,
+  "height": 1024,
+  "bytes": 145430,
+  "sha256": "066736fa6cd68c2c91bd0f129df7533c598fed576961a3fcbb36050a78b4ac8d"
+ },
+ {
+  "file": "stage/bg-sunlit-dark.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the whole 1024x1024 painting, WebP q90 (Pillow 11.3): the surface by moonlight",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the surface band with the ship, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: sunlit water at the surface\n\n## Story\nLooking out through the round porthole of a small diving bell beside Jules Verne's Nautilus, at sunrise, just below the calm surface: sky and sun above the waterline, the long iron hull of the Nautilus floating at the surface, and a shoal of silver sardines in the clear water below.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: just below the surface, so the top fifth of the frame is sky above the waterline and the rest is sea. One vanishing point, at the centre of the frame, where the shafts of light and the sea lead away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: the hull, the shoal and the kelp sit inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain sea and sky, since the site's brass ring overlays it. Top fifth: soft sunrise sky with a low warm sun at the upper right and two small soft clouds at the upper left. Then the waterline, seen as a gently rippled silver line across the frame. Just below it, the dark iron hull of the Nautilus floats from the left edge to the middle of the frame, its round portholes glowing warm. Below and to the right, a shoal of about forty small silver sardines swims left to right. Shafts of sunlight slant down from the surface. At the bottom edge, a few soft green kelp fronds rise from a pale sandy seabed far below.\n\n## Cast\n### The sardines\n- What: a shoal of about forty small silver sardines.\n- Material: bright silver scales catching the light, blue-grey backs.\n- Height: each fish about a fortieth of the frame's height.\n- Pose: swimming together left to right in a loose, curving shoal.\n- Limbs: none; each fish has exactly two side fins, one tail fin and one back fin.\n- Facing: side-on to the camera, heading to the right.\n\n## Props\n- The Nautilus: Jules Verne's submarine, a long dark riveted iron hull floating at the surface, only its lower half below the waterline visible, a row of round portholes glowing warm.\n\n## Setting\nClear blue-green open sea at dawn, calm, with tiny bubbles and gentle caustic light.\n\n## Light\nOne key light: the low sun at the upper right, its light coming down through the water in soft shafts; warm sky, cool sea, the hull's portholes glowing warm.\n\n## Palette\nWarm peach and gold sky, blue-green sea, dark iron hull, silver fish, soft green kelp, pale sand.\n\n## Must not\n- No window frame, brass ring, rivets, bolts or wall.\n- No people, robots, animals other than the sardines.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails, no fog on the glass, no image fades or vignettes.\n\n## References\n1. The first image: the hero picture, for the Nautilus's hull, the sea, the sunrise sky and the world's render, light and materials only; its people, agent and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render, the shafts of light and the silver shoal only.",
+    "input_images": [
+     "scenes/nautilus-960.webp",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "3701413ebbd953fa816bf1e7d72994e155729b14e5f301cb7e10499c297dc45f",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "the ship and the fish move on the stage, so the next step paints both out of the backdrop; they come back as sprites"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the surface band's night twin",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture into its night twin: the same camera, composition, waterline, Nautilus hull, sardine shoal, kelp and seabed, unchanged in place, shape and size. Only the time changes, from sunrise to a calm clear night: the sky above the waterline is deep navy with a few soft stars, and a full moon sits where the sun was at the upper right, small and soft; the clouds at the upper left become faint, moonlit grey. Under the water, soft cool moonlight comes down in faint pale shafts; the sea is deep blue-teal, darker than by day. The Nautilus's round portholes glow warm gold and their warm light falls softly on the water just below the hull. The sardines catch the moonlight with a cool silver sheen. The kelp and seabed fall into deep blue shadow. Must not: no frame, ring, rivets or wall; no people; no text; no comic outlines; no glowing trails or lines; no image fades or vignettes.",
+    "input_images": [
+     "step: the surface band"
+    ],
+    "sha256": "c5ea034cd44dba5a727c738a3d59cb26d7436455ad46174dc1eb733a262d0260",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "painted out in the next step, as by day"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the empty sea by night",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture: remove the submarine hull and the whole shoal of sardines, and paint the open night sea back where they were, continuing the dark water, the faint moonlit shafts and the tiny bubbles naturally. Keep everything else exactly as it is, in place, shape and size: the night sky, moon, stars and clouds, the rippled waterline, the moonlit shafts, the kelp and the seabed. Must not: no ship, hull, warm porthole light, fish or other creatures anywhere; no text; no outlines; no image fades or vignettes.",
+    "input_images": [
+     "step: the surface band's night twin"
+    ],
+    "sha256": "005112bce3eaf53bf0ecee3f4b211f4e54ac6727aae2920b8ea5cc888c01cbc6",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "some repetition in the sunbeams and wavelets"
+     ]
+    }
+   }
+  ],
+  "master_sha256": "005112bce3eaf53bf0ecee3f4b211f4e54ac6727aae2920b8ea5cc888c01cbc6",
+  "width": 1024,
+  "height": 1024,
+  "bytes": 102020,
+  "sha256": "76c9e0f34bf535bdba224eead0f69870f1f27d3e418662203ac4165a6626821a"
+ },
+ {
+  "file": "stage/bg-twilight.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the whole 1024x1024 painting, WebP q90 (Pillow 11.3): open water, light falling from far above",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the surface band with the ship, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: sunlit water at the surface\n\n## Story\nLooking out through the round porthole of a small diving bell beside Jules Verne's Nautilus, at sunrise, just below the calm surface: sky and sun above the waterline, the long iron hull of the Nautilus floating at the surface, and a shoal of silver sardines in the clear water below.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: just below the surface, so the top fifth of the frame is sky above the waterline and the rest is sea. One vanishing point, at the centre of the frame, where the shafts of light and the sea lead away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: the hull, the shoal and the kelp sit inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain sea and sky, since the site's brass ring overlays it. Top fifth: soft sunrise sky with a low warm sun at the upper right and two small soft clouds at the upper left. Then the waterline, seen as a gently rippled silver line across the frame. Just below it, the dark iron hull of the Nautilus floats from the left edge to the middle of the frame, its round portholes glowing warm. Below and to the right, a shoal of about forty small silver sardines swims left to right. Shafts of sunlight slant down from the surface. At the bottom edge, a few soft green kelp fronds rise from a pale sandy seabed far below.\n\n## Cast\n### The sardines\n- What: a shoal of about forty small silver sardines.\n- Material: bright silver scales catching the light, blue-grey backs.\n- Height: each fish about a fortieth of the frame's height.\n- Pose: swimming together left to right in a loose, curving shoal.\n- Limbs: none; each fish has exactly two side fins, one tail fin and one back fin.\n- Facing: side-on to the camera, heading to the right.\n\n## Props\n- The Nautilus: Jules Verne's submarine, a long dark riveted iron hull floating at the surface, only its lower half below the waterline visible, a row of round portholes glowing warm.\n\n## Setting\nClear blue-green open sea at dawn, calm, with tiny bubbles and gentle caustic light.\n\n## Light\nOne key light: the low sun at the upper right, its light coming down through the water in soft shafts; warm sky, cool sea, the hull's portholes glowing warm.\n\n## Palette\nWarm peach and gold sky, blue-green sea, dark iron hull, silver fish, soft green kelp, pale sand.\n\n## Must not\n- No window frame, brass ring, rivets, bolts or wall.\n- No people, robots, animals other than the sardines.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails, no fog on the glass, no image fades or vignettes.\n\n## References\n1. The first image: the hero picture, for the Nautilus's hull, the sea, the sunrise sky and the world's render, light and materials only; its people, agent and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render, the shafts of light and the silver shoal only.",
+    "input_images": [
+     "scenes/nautilus-960.webp",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "3701413ebbd953fa816bf1e7d72994e155729b14e5f301cb7e10499c297dc45f",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "the ship and the fish move on the stage, so the next step paints both out of the backdrop; they come back as sprites"
+    }
+   },
+   {
+    "step": "candidate",
+    "what": "the twilight band, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: twilight water\n\n## Story\nThe same round porthole beside Jules Verne's Nautilus, now fifty fathoms down in the twilight water: the sunlight is fading to deep blue, a few soft translucent jellyfish drift and glow faintly, and a manta ray glides past far off.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: mid-water, looking straight out. One vanishing point, at the centre of the frame, where the last shafts of light fade into the deep.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: every creature sits inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain water, since the site's brass ring overlays it. Top of the frame: faint, thin shafts of blue light from far above, no surface or sky in view. Upper left of centre: three small translucent jellyfish drifting, their bells softly glowing pale blue and violet, their fine tentacles trailing short and calm. Lower right: one manta ray gliding left, far off and softly lit from above. A scatter of tiny drifting particles of marine snow. The bottom of the frame fades into deep blue with no seabed.\n\n## Cast\n### The jellyfish\n- What: three small, gentle moon jellyfish.\n- Material: soft, translucent, glassy bells, faintly glowing pale blue and violet from within.\n- Height: each bell about a tenth of the frame's height.\n- Pose: drifting slowly upward, bells relaxed.\n- Limbs: none; each has a short fringe of fine tentacles trailing below its bell, kept inside the circle.\n- Facing: bells up, seen side-on to the camera.\n\n### The manta ray\n- What: one manta ray, far off.\n- Material: smooth dark blue-grey back, pale underside.\n- Height: its wingspan about a quarter of the frame's width.\n- Pose: gliding with its wings level.\n- Limbs: none; two wide wings and one thin tail.\n- Facing: three-quarter view toward the camera, heading to the left.\n\n## Props\n- None.\n\n## Setting\nOpen sea fifty fathoms down: deep, clear blue fading darker below, calm, with drifting marine snow.\n\n## Light\nOne key light: dim blue daylight from far above, lighting the tops of the jellyfish and the ray's back; the jellyfish glow softly from within.\n\n## Palette\nDeep blue and indigo water, pale blue and violet glow, dark blue-grey ray.\n\n## Must not\n- No window frame, brass ring, rivets, bolts, wall, ship or submarine.\n- No people, robots or other animals.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails or lines of light, no fog on the glass, no image fades or vignettes.\n- No scary creatures: no stingers or long tangled tentacles.\n\n## Output\nGenerated whole at 1024x1024, quality high. Ships as the twilight band of the home page's porthole, inside the site's own brass ring.\n\n## References\n1. The first image: the approved sunlit band, for the world's render, water, light and materials only; its hull, shoal, sky and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render only.",
+    "input_images": [
+     "step: the surface band",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "543b9a4d147e9acf35128938ca4f657e13c884bf4dfac382d348de103c3f49b1",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [],
+     "adjudication": "its jellyfish and ray swim on the stage, so the next step paints them out"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the open twilight water, empty",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture: remove the three jellyfish and the manta ray, and paint the open water back where they were, continuing the deep blue water, the faint shafts of light and the drifting marine snow naturally. Keep everything else exactly as it is. Must not: no jellyfish, ray, fish or other creatures anywhere; no text; no outlines; no image fades or vignettes.",
+    "input_images": [
+     "step: the twilight band"
+    ],
+    "sha256": "0bb53e50589a48b337ed2272251b4f8142241960b2c32d594612577e9160feee",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "a few hard-edged flecks among the drifting particles"
+     ]
+    }
+   }
+  ],
+  "master_sha256": "0bb53e50589a48b337ed2272251b4f8142241960b2c32d594612577e9160feee",
+  "width": 1024,
+  "height": 1024,
+  "bytes": 45996,
+  "sha256": "b7aa4f95aa309daf4af90d0adee023565feacd0d23a1972ce13ff2a291dcb6ff"
+ },
+ {
+  "file": "stage/bg-twilight-dark.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the whole 1024x1024 painting, WebP q90 (Pillow 11.3): open water by night",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the surface band with the ship, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: sunlit water at the surface\n\n## Story\nLooking out through the round porthole of a small diving bell beside Jules Verne's Nautilus, at sunrise, just below the calm surface: sky and sun above the waterline, the long iron hull of the Nautilus floating at the surface, and a shoal of silver sardines in the clear water below.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: just below the surface, so the top fifth of the frame is sky above the waterline and the rest is sea. One vanishing point, at the centre of the frame, where the shafts of light and the sea lead away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: the hull, the shoal and the kelp sit inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain sea and sky, since the site's brass ring overlays it. Top fifth: soft sunrise sky with a low warm sun at the upper right and two small soft clouds at the upper left. Then the waterline, seen as a gently rippled silver line across the frame. Just below it, the dark iron hull of the Nautilus floats from the left edge to the middle of the frame, its round portholes glowing warm. Below and to the right, a shoal of about forty small silver sardines swims left to right. Shafts of sunlight slant down from the surface. At the bottom edge, a few soft green kelp fronds rise from a pale sandy seabed far below.\n\n## Cast\n### The sardines\n- What: a shoal of about forty small silver sardines.\n- Material: bright silver scales catching the light, blue-grey backs.\n- Height: each fish about a fortieth of the frame's height.\n- Pose: swimming together left to right in a loose, curving shoal.\n- Limbs: none; each fish has exactly two side fins, one tail fin and one back fin.\n- Facing: side-on to the camera, heading to the right.\n\n## Props\n- The Nautilus: Jules Verne's submarine, a long dark riveted iron hull floating at the surface, only its lower half below the waterline visible, a row of round portholes glowing warm.\n\n## Setting\nClear blue-green open sea at dawn, calm, with tiny bubbles and gentle caustic light.\n\n## Light\nOne key light: the low sun at the upper right, its light coming down through the water in soft shafts; warm sky, cool sea, the hull's portholes glowing warm.\n\n## Palette\nWarm peach and gold sky, blue-green sea, dark iron hull, silver fish, soft green kelp, pale sand.\n\n## Must not\n- No window frame, brass ring, rivets, bolts or wall.\n- No people, robots, animals other than the sardines.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails, no fog on the glass, no image fades or vignettes.\n\n## References\n1. The first image: the hero picture, for the Nautilus's hull, the sea, the sunrise sky and the world's render, light and materials only; its people, agent and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render, the shafts of light and the silver shoal only.",
+    "input_images": [
+     "scenes/nautilus-960.webp",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "3701413ebbd953fa816bf1e7d72994e155729b14e5f301cb7e10499c297dc45f",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "the ship and the fish move on the stage, so the next step paints both out of the backdrop; they come back as sprites"
+    }
+   },
+   {
+    "step": "candidate",
+    "what": "the twilight band, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: twilight water\n\n## Story\nThe same round porthole beside Jules Verne's Nautilus, now fifty fathoms down in the twilight water: the sunlight is fading to deep blue, a few soft translucent jellyfish drift and glow faintly, and a manta ray glides past far off.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: mid-water, looking straight out. One vanishing point, at the centre of the frame, where the last shafts of light fade into the deep.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: every creature sits inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain water, since the site's brass ring overlays it. Top of the frame: faint, thin shafts of blue light from far above, no surface or sky in view. Upper left of centre: three small translucent jellyfish drifting, their bells softly glowing pale blue and violet, their fine tentacles trailing short and calm. Lower right: one manta ray gliding left, far off and softly lit from above. A scatter of tiny drifting particles of marine snow. The bottom of the frame fades into deep blue with no seabed.\n\n## Cast\n### The jellyfish\n- What: three small, gentle moon jellyfish.\n- Material: soft, translucent, glassy bells, faintly glowing pale blue and violet from within.\n- Height: each bell about a tenth of the frame's height.\n- Pose: drifting slowly upward, bells relaxed.\n- Limbs: none; each has a short fringe of fine tentacles trailing below its bell, kept inside the circle.\n- Facing: bells up, seen side-on to the camera.\n\n### The manta ray\n- What: one manta ray, far off.\n- Material: smooth dark blue-grey back, pale underside.\n- Height: its wingspan about a quarter of the frame's width.\n- Pose: gliding with its wings level.\n- Limbs: none; two wide wings and one thin tail.\n- Facing: three-quarter view toward the camera, heading to the left.\n\n## Props\n- None.\n\n## Setting\nOpen sea fifty fathoms down: deep, clear blue fading darker below, calm, with drifting marine snow.\n\n## Light\nOne key light: dim blue daylight from far above, lighting the tops of the jellyfish and the ray's back; the jellyfish glow softly from within.\n\n## Palette\nDeep blue and indigo water, pale blue and violet glow, dark blue-grey ray.\n\n## Must not\n- No window frame, brass ring, rivets, bolts, wall, ship or submarine.\n- No people, robots or other animals.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails or lines of light, no fog on the glass, no image fades or vignettes.\n- No scary creatures: no stingers or long tangled tentacles.\n\n## Output\nGenerated whole at 1024x1024, quality high. Ships as the twilight band of the home page's porthole, inside the site's own brass ring.\n\n## References\n1. The first image: the approved sunlit band, for the world's render, water, light and materials only; its hull, shoal, sky and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render only.",
+    "input_images": [
+     "step: the surface band",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "543b9a4d147e9acf35128938ca4f657e13c884bf4dfac382d348de103c3f49b1",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [],
+     "adjudication": "its jellyfish and ray swim on the stage, so the next step paints them out"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the twilight band's night twin",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture into its night twin: the same camera, composition, jellyfish, manta ray and marine snow, unchanged in place, shape and size. Only the time changes, from day to night: the faint shafts from above become very faint, cool, pale moonlight; the water is a deeper, darker indigo throughout. The jellyfish's own soft pale blue and violet glow now stands out more against the dark water, gently lighting their fine tentacles. The manta ray is darker, lit only faintly on its back by the moonlight. Must not: no frame, ring, rivets, wall, ship or moon in view; no people; no text; no comic outlines; no glowing trails or lines; no image fades or vignettes.",
+    "input_images": [
+     "step: the twilight band"
+    ],
+    "sha256": "a9b3d0965db070fc4887a5475e8cff05112ee11c66a9bdae6ef38a72b60ece0f",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [],
+     "adjudication": "its creatures are painted out in the next step"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the open twilight water by night, empty",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture: remove the three glowing jellyfish and the manta ray, and paint the open night water back where they were, continuing the dark indigo water, the very faint moonlit shafts and the drifting marine snow naturally. Keep everything else exactly as it is. Must not: no jellyfish, ray, fish, glow or other creatures anywhere; no text; no outlines; no image fades or vignettes.",
+    "input_images": [
+     "step: the twilight band's night twin"
+    ],
+    "sha256": "dcab5cf4e4b5ddab57ebf9bdc8620e48e1614069297da44e9c08d5130bfb82f7",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "a few hard-edged flecks"
+     ]
+    }
+   }
+  ],
+  "master_sha256": "dcab5cf4e4b5ddab57ebf9bdc8620e48e1614069297da44e9c08d5130bfb82f7",
+  "width": 1024,
+  "height": 1024,
+  "bytes": 32880,
+  "sha256": "755ee545ca22c7268a85603541d4884c4d67502cd6bf66328032ae021fc4165e"
+ },
+ {
+  "file": "stage/bg-midnight.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the whole 1024x1024 painting, WebP q90 (Pillow 11.3): the deep: near black water over a dim rocky floor, by day and by night",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the surface band with the ship, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: sunlit water at the surface\n\n## Story\nLooking out through the round porthole of a small diving bell beside Jules Verne's Nautilus, at sunrise, just below the calm surface: sky and sun above the waterline, the long iron hull of the Nautilus floating at the surface, and a shoal of silver sardines in the clear water below.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: just below the surface, so the top fifth of the frame is sky above the waterline and the rest is sea. One vanishing point, at the centre of the frame, where the shafts of light and the sea lead away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: the hull, the shoal and the kelp sit inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain sea and sky, since the site's brass ring overlays it. Top fifth: soft sunrise sky with a low warm sun at the upper right and two small soft clouds at the upper left. Then the waterline, seen as a gently rippled silver line across the frame. Just below it, the dark iron hull of the Nautilus floats from the left edge to the middle of the frame, its round portholes glowing warm. Below and to the right, a shoal of about forty small silver sardines swims left to right. Shafts of sunlight slant down from the surface. At the bottom edge, a few soft green kelp fronds rise from a pale sandy seabed far below.\n\n## Cast\n### The sardines\n- What: a shoal of about forty small silver sardines.\n- Material: bright silver scales catching the light, blue-grey backs.\n- Height: each fish about a fortieth of the frame's height.\n- Pose: swimming together left to right in a loose, curving shoal.\n- Limbs: none; each fish has exactly two side fins, one tail fin and one back fin.\n- Facing: side-on to the camera, heading to the right.\n\n## Props\n- The Nautilus: Jules Verne's submarine, a long dark riveted iron hull floating at the surface, only its lower half below the waterline visible, a row of round portholes glowing warm.\n\n## Setting\nClear blue-green open sea at dawn, calm, with tiny bubbles and gentle caustic light.\n\n## Light\nOne key light: the low sun at the upper right, its light coming down through the water in soft shafts; warm sky, cool sea, the hull's portholes glowing warm.\n\n## Palette\nWarm peach and gold sky, blue-green sea, dark iron hull, silver fish, soft green kelp, pale sand.\n\n## Must not\n- No window frame, brass ring, rivets, bolts or wall.\n- No people, robots, animals other than the sardines.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails, no fog on the glass, no image fades or vignettes.\n\n## References\n1. The first image: the hero picture, for the Nautilus's hull, the sea, the sunrise sky and the world's render, light and materials only; its people, agent and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render, the shafts of light and the silver shoal only.",
+    "input_images": [
+     "scenes/nautilus-960.webp",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "3701413ebbd953fa816bf1e7d72994e155729b14e5f301cb7e10499c297dc45f",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "a submarine hull across the middle",
+      "a shoal of near-identical fish"
+     ],
+     "polish": [],
+     "adjudication": "the ship and the fish move on the stage, so the next step paints both out of the backdrop; they come back as sprites"
+    }
+   },
+   {
+    "step": "candidate",
+    "what": "the twilight band, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: twilight water\n\n## Story\nThe same round porthole beside Jules Verne's Nautilus, now fifty fathoms down in the twilight water: the sunlight is fading to deep blue, a few soft translucent jellyfish drift and glow faintly, and a manta ray glides past far off.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: mid-water, looking straight out. One vanishing point, at the centre of the frame, where the last shafts of light fade into the deep.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: every creature sits inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm plain water, since the site's brass ring overlays it. Top of the frame: faint, thin shafts of blue light from far above, no surface or sky in view. Upper left of centre: three small translucent jellyfish drifting, their bells softly glowing pale blue and violet, their fine tentacles trailing short and calm. Lower right: one manta ray gliding left, far off and softly lit from above. A scatter of tiny drifting particles of marine snow. The bottom of the frame fades into deep blue with no seabed.\n\n## Cast\n### The jellyfish\n- What: three small, gentle moon jellyfish.\n- Material: soft, translucent, glassy bells, faintly glowing pale blue and violet from within.\n- Height: each bell about a tenth of the frame's height.\n- Pose: drifting slowly upward, bells relaxed.\n- Limbs: none; each has a short fringe of fine tentacles trailing below its bell, kept inside the circle.\n- Facing: bells up, seen side-on to the camera.\n\n### The manta ray\n- What: one manta ray, far off.\n- Material: smooth dark blue-grey back, pale underside.\n- Height: its wingspan about a quarter of the frame's width.\n- Pose: gliding with its wings level.\n- Limbs: none; two wide wings and one thin tail.\n- Facing: three-quarter view toward the camera, heading to the left.\n\n## Props\n- None.\n\n## Setting\nOpen sea fifty fathoms down: deep, clear blue fading darker below, calm, with drifting marine snow.\n\n## Light\nOne key light: dim blue daylight from far above, lighting the tops of the jellyfish and the ray's back; the jellyfish glow softly from within.\n\n## Palette\nDeep blue and indigo water, pale blue and violet glow, dark blue-grey ray.\n\n## Must not\n- No window frame, brass ring, rivets, bolts, wall, ship or submarine.\n- No people, robots or other animals.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No glowing trails or lines of light, no fog on the glass, no image fades or vignettes.\n- No scary creatures: no stingers or long tangled tentacles.\n\n## Output\nGenerated whole at 1024x1024, quality high. Ships as the twilight band of the home page's porthole, inside the site's own brass ring.\n\n## References\n1. The first image: the approved sunlit band, for the world's render, water, light and materials only; its hull, shoal, sky and composition are not to be copied.\n2. The second image: the chapter porthole, for the underwater render only.",
+    "input_images": [
+     "step: the surface band",
+     "scenes/nautilus-porthole-free-960.webp"
+    ],
+    "sha256": "543b9a4d147e9acf35128938ca4f657e13c884bf4dfac382d348de103c3f49b1",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [],
+     "adjudication": "its jellyfish and ray swim on the stage, so the next step paints them out"
+    }
+   },
+   {
+    "step": "candidate",
+    "what": "the midnight band, a style study",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "# Stage porthole: midnight water\n\n## Story\nThe same round porthole beside Jules Verne's Nautilus, two hundred fathoms down in the midnight water: almost no daylight reaches here; tiny lanternfish glint with soft blue lights, a small gentle anglerfish hangs its glowing lure, and far below, on dark rocks, an octopus rests unseen in the dark.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Square on to the glass, the glass fills the frame; no window frame, ring or wall shows. Eye level: mid-water, looking straight out and a little down. One vanishing point, at the centre of the frame, where the dark water leads away.\n\n## Composition\nGenerated at 1024x1024; only a centred circle 960 pixels across ships. The crop band is a circle 860 pixels across at the centre: every creature sits inside it. Safe area: the outer ring of the circle, outside the 860 pixel band, stays calm dark water, since the site's brass ring overlays it. Upper half: a loose group of about a dozen tiny lanternfish, each a small dark fish with a row of tiny soft blue lights along its side, scattered across the upper middle. Left of centre: one small anglerfish facing right, its round lure glowing soft warm gold just in front of its face, lighting its face a little. Bottom third: dark rocks on the seabed; on the rocks at the lower right, an octopus resting, barely visible, only a faint hint of its shape in the dark. Drifting marine snow throughout.\n\n## Cast\n### The lanternfish\n- What: about a dozen tiny lanternfish.\n- Material: dark, smooth bodies with a row of tiny soft blue light spots along each side.\n- Height: each about a thirtieth of the frame's height.\n- Pose: hanging still or swimming slowly in a loose group.\n- Limbs: none; each has two side fins and one tail fin.\n- Facing: side-on to the camera, some heading left and some right.\n\n### The anglerfish\n- What: one small, gentle anglerfish, more curious than fierce.\n- Material: smooth dark brown-grey skin.\n- Height: about an eighth of the frame's height.\n- Pose: hanging in the water, its thin stalk curving up and forward over its head to its round glowing lure.\n- Limbs: none; two side fins and one tail fin.\n- Facing: three-quarter view toward the camera, heading to the right.\n\n### The octopus\n- What: one octopus resting on the rocks, nearly hidden in the dark.\n- Material: soft, smooth deep red-brown skin.\n- Height: about a sixth of the frame's height.\n- Pose: resting curled on top of the rocks, its arms tucked loosely around it.\n- Limbs: eight arms, tucked around its body, none reaching out.\n- Facing: three-quarter view toward the camera.\n\n## Props\n- The rocks: a low ridge of dark, rounded rocks along the bottom of the frame.\n\n## Setting\nDeep sea two hundred fathoms down: near-black blue water, very calm, with drifting marine snow.\n\n## Light\nNo daylight. The only lights: the lanternfish's tiny blue spots and the anglerfish's warm gold lure, which lights its face and nothing else. The octopus and the rocks are almost lost in darkness.\n\n## Palette\nNear-black deep blue water, tiny cool blue lights, one warm gold lure, faint red-brown hint of the octopus.\n\n## Must not\n- No window frame, brass ring, rivets, bolts, wall, ship, submarine or searchlight.\n- No people, robots or other animals.\n- No text, letters, numbers, logos or symbols.\n- No comic or cartoon styling: no outlines.\n- No scary creatures: no huge teeth, no open jaws.\n- No glowing trails or lines of light, no fog on the glass, no image fades or vignettes.\n\n## Output\nGenerated whole at 1024x1024, quality high. Ships as the midnight band of the home page's porthole; its second state is the same picture lit by the ship's floodlights, which shows the octopus.\n\n## References\n1. The first image: the approved twilight band, for the world's render, water, light and materials only; its jellyfish, ray and composition are not to be copied.",
+    "input_images": [
+     "step: the twilight band"
+    ],
+    "sha256": "2722668bc5a530a6eaebfbd3ef8e0d4016217b82c9ea33b6b6a534ff6e27b3e3",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [],
+     "adjudication": "its creatures are found by the lantern on the stage, so the next step paints them out"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the midnight water, empty",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1024x1024",
+    "prompt": "Edit this picture: remove all the lanternfish, the anglerfish and its glowing lure, and the octopus on the rocks, and paint the dark water and the rocks back where they were, continuing them naturally. Keep everything else exactly as it is: the near-black deep blue water, the marine snow and the low ridge of dark rounded rocks along the bottom. Must not: no fish, lure, glow, octopus or other creatures anywhere; no text; no outlines; no image fades or vignettes.",
+    "input_images": [
+     "step: the midnight band"
+    ],
+    "sha256": "94d2d52825da6aba3dfdf8d7143d064887a3e36adbe92462af126e37a40f9376",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "the rock on the floor is an uneven mound"
+     ]
+    }
+   }
+  ],
+  "master_sha256": "94d2d52825da6aba3dfdf8d7143d064887a3e36adbe92462af126e37a40f9376",
+  "width": 1024,
+  "height": 1024,
+  "bytes": 38810,
+  "sha256": "465c0db09b67cfc4a4ec378ef2d6504ae14a1f30295bb6adbedf29aac2c7687a"
+ },
+ {
+  "file": "stage/nautilus.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1504x285, lossless WebP (Pillow 11.3): the Nautilus, side on, bow to the right, portholes dark",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the Nautilus alone on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "Jules Verne's submarine the Nautilus, alone, seen exactly side-on in profile from below the waterline, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. The whole ship fits inside the frame with a small margin and fills its width: a long, slender, cigar-shaped hull of dark riveted iron plates, tapering to a pointed steel spur at the bow on the RIGHT, and at the stern on the LEFT a four-bladed brass screw propeller with a rudder behind it. On top, a little left of the middle, a low flat platform with a small rounded wheelhouse, and a brass lantern housing on top of it at the front. A neat row of small round brass-rimmed portholes runs along the side of the hull, unlit, their glass dark. Render: premium animated-film render matching the reference picture's hull, materials and light: soft light from above, a gentle sheen along the top of the hull, the belly in soft shadow. Must not: no water, waves, bubbles, people, figures, text, letters, numbers or logos; no outline or cartoon styling; no green tint on the ship.",
+    "input_images": [
+     "scenes/nautilus-960.webp"
+    ],
+    "sha256": "425278ea8336f3335a338c53586822f3cbdbe42712687c3ad6d872f9ff0bc738",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "not a nautilus; it's a submarine"
+     ],
+     "polish": [],
+     "adjudication": "she is Verne's submarine the Nautilus, as asked"
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out> --with <the lit ship's painting> (one box for both)",
+    "sha256": "5e9ef552f9c8ce571dd3fc807a6e5a032c6f0bbabefa757f65feac1dcfaad2a6"
+   }
+  ],
+  "master_sha256": "5e9ef552f9c8ce571dd3fc807a6e5a032c6f0bbabefa757f65feac1dcfaad2a6",
+  "width": 1504,
+  "height": 285,
+  "bytes": 341984,
+  "sha256": "781bef02f26b6ad3eebe5d2866cd06f213d352a5843c03c51c75bb82a4713655"
+ },
+ {
+  "file": "stage/nautilus-lit.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1504x285, lossless WebP (Pillow 11.3): the Nautilus with her portholes and saloon lit, to stack over her",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the Nautilus alone on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "Jules Verne's submarine the Nautilus, alone, seen exactly side-on in profile from below the waterline, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. The whole ship fits inside the frame with a small margin and fills its width: a long, slender, cigar-shaped hull of dark riveted iron plates, tapering to a pointed steel spur at the bow on the RIGHT, and at the stern on the LEFT a four-bladed brass screw propeller with a rudder behind it. On top, a little left of the middle, a low flat platform with a small rounded wheelhouse, and a brass lantern housing on top of it at the front. A neat row of small round brass-rimmed portholes runs along the side of the hull, unlit, their glass dark. Render: premium animated-film render matching the reference picture's hull, materials and light: soft light from above, a gentle sheen along the top of the hull, the belly in soft shadow. Must not: no water, waves, bubbles, people, figures, text, letters, numbers or logos; no outline or cartoon styling; no green tint on the ship.",
+    "input_images": [
+     "scenes/nautilus-960.webp"
+    ],
+    "sha256": "425278ea8336f3335a338c53586822f3cbdbe42712687c3ad6d872f9ff0bc738",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "not a nautilus; it's a submarine"
+     ],
+     "polish": [],
+     "adjudication": "she is Verne's submarine the Nautilus, as asked"
+    }
+   },
+   {
+    "step": "edit",
+    "what": "the same ship with her lights lit",
+    "tool": "GitHub Copilot app image_generation, quality high edit, 1536x1024",
+    "prompt": "Edit this picture: the same ship, in exactly the same place, shape and size, on the same flat pure green background. Only change: every round porthole along the hull now glows warm gold from the cabin lights inside, and the brass lantern on top glows warm white at its front lens. Each glow stays inside its own porthole rim and lens, with only a very soft, small warm halo on the hull right around it. Nothing else changes. Must not: no beams or rays of light, no glow on the green background, no text, no outlines.",
+    "input_images": [
+     "step: the Nautilus"
+    ],
+    "sha256": "e33ce39094d893358dc9b644fb99ded038dce1f4892e6fce924c69c6c128032a",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "not a nautilus; it's a submarine"
+     ],
+     "polish": [],
+     "adjudication": "as above"
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out> --with <the lit ship's painting> (one box for both)",
+    "sha256": "8b10818a551964dabf9fce717b599b70b18ea7d8eb786df53fc5c893ad43f0cf"
+   }
+  ],
+  "master_sha256": "8b10818a551964dabf9fce717b599b70b18ea7d8eb786df53fc5c893ad43f0cf",
+  "width": 1504,
+  "height": 285,
+  "bytes": 332276,
+  "sha256": "404ee06e08b7e408453a4ab2cabc62094bd838089f92e2754950c01d43aad9ee"
+ },
+ {
+  "file": "stage/sardine.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1469x394, lossless WebP (Pillow 11.3): a silver sardine, turned to swim left",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "a sardine on a transparent background (rejected)",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "One single small silver sardine, alone, seen exactly side-on, heading to the right, swimming level, on a fully transparent background (a cut-out sprite with an alpha channel, nothing behind it). The fish fills the frame from left to right with a little margin. Material and render as in the reference: premium animated-film render, bright silver scales catching soft light from above, blue-grey back, one calm dark eye with a small highlight, exactly two side fins, one back fin and one tail fin. Must not: no water, no background colour, no shadow, no other fish, no bubbles, no text, no outline, no cartoon styling.",
+    "input_images": [
+     "step: the surface band"
+    ],
+    "sha256": "911a79002ad846733d5df8ebc3c429ce1df5e5c284b42a377bae94ff53ba34fc",
+    "hunt": {
+     "blind": false,
+     "blockers": [
+      "the transparent background came back as a painted checkerboard"
+     ],
+     "polish": [],
+     "adjudication": "repainted on key green in the next step"
+    }
+   },
+   {
+    "step": "candidate",
+    "what": "the same sardine on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "The same single silver sardine as in the reference image, exactly the same fish, pose, size and place in the frame, but on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key), with no gradient, no shadow, no checkerboard, no water and nothing else at all. Keep the fish's colours free of green: silver scales, blue-grey back, clear fins. Must not: no text, no outline, no other objects.",
+    "input_images": [
+     "step: the rejected sardine"
+    ],
+    "sha256": "1f30f369028729429d6be57a8ac247a64ec281341a64cc473760684af5595951",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": []
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out> --mirror",
+    "sha256": "c556cc59e1a6053af5a8e5e68459d171b9433dab2b55f1dd2b4af5450ca04d40"
+   }
+  ],
+  "master_sha256": "c556cc59e1a6053af5a8e5e68459d171b9433dab2b55f1dd2b4af5450ca04d40",
+  "width": 1469,
+  "height": 394,
+  "bytes": 499240,
+  "sha256": "2e739d25463536452f5f93a342e0ea07cac733d60bfd0c144572afa6e3226cdd"
+ },
+ {
+  "file": "stage/lanternfish.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1346x401, lossless WebP (Pillow 11.3): a lanternfish with its row of lamps, facing left",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "a lanternfish on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "One single small lanternfish, alone, seen exactly side-on, heading to the LEFT (its head and big eye on the left, its forked tail on the right), swimming level, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. The fish fills the frame's width with a small margin. Its body is dark blue-grey and smooth with a soft sheen, one large calm dark eye with a small highlight, exactly two side fins, one back fin and one forked tail fin, and a neat row of tiny soft blue light spots along its lower side, glowing gently. Render: premium animated-film render matching the reference picture's lanternfish. Must not: no water, bubbles, other fish, text, outline or cartoon styling; no green tint on the fish.",
+    "input_images": [
+     "step: the midnight band"
+    ],
+    "sha256": "d5bba66276ac8bc76b225590af203409d0bf617b5e43f10391d28f171a7bb060",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "green fringe on the fins"
+     ],
+     "adjudication": "the green fringe the hunt saw is keyed out with --cool"
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out> --cool",
+    "sha256": "96d265dac7c4c5fb6d96ac76c7446a6cb2046e5ccad97158f4082ab02c06001d"
+   }
+  ],
+  "master_sha256": "96d265dac7c4c5fb6d96ac76c7446a6cb2046e5ccad97158f4082ab02c06001d",
+  "width": 1346,
+  "height": 401,
+  "bytes": 399222,
+  "sha256": "0fbaf3feb2ae7112d530f416d5de1d3fc124900e4578b8362b284b164df8abf4"
+ },
+ {
+  "file": "stage/jellyfish.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 664x1328, lossless WebP (Pillow 11.3): a moon jellyfish, bell up",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "a moon jellyfish on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1536",
+    "prompt": "One single gentle moon jellyfish, alone, seen side-on with its bell up at the top and a short fringe of fine tentacles hanging straight down below it, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. It fills the frame's height with a small margin: the bell the top third, the tentacles the rest. Its bell is soft, translucent and glassy, glowing pale blue and violet from within, with four faint rose rings inside; its tentacles are fine, pale and calm, all hanging down, none tangled. Render: premium animated-film render matching the jellyfish in the reference picture. Must not: no water, bubbles, other creatures, text, outline or cartoon styling; no green tint on the jellyfish; no stingers.",
+    "input_images": [
+     "step: the twilight band"
+    ],
+    "sha256": "2cca258b42509e3901e7054fbbcc971a1849efe09b140683de411a525696a7b0",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "tentacles clipped by the bottom edge"
+     ],
+     "polish": [
+      "green among the strands"
+     ],
+     "adjudication": "the hunt saw the tightly trimmed sprite; the painting ends its tentacles 96 px above its edge, and --cool takes out the green"
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out> --cool",
+    "sha256": "5a445b886cbecbde612c1baf262dc9a18372c628fba5f4d48439f5a4f083b630"
+   }
+  ],
+  "master_sha256": "5a445b886cbecbde612c1baf262dc9a18372c628fba5f4d48439f5a4f083b630",
+  "width": 664,
+  "height": 1328,
+  "bytes": 530740,
+  "sha256": "b9371aab43e4d2cf3431e24c3f28f4375a5b1cc085b7738799ee98007fe91b02"
+ },
+ {
+  "file": "stage/ray.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1446x925, lossless WebP (Pillow 11.3): a manta ray seen from above",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "a manta ray from above on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "One single manta ray, alone, seen from directly above as it glides, its two wide wings spread level to the left and right, its head with two short curled cephalic fins at the top, and its thin tail trailing down from the bottom, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. It fills the frame's width with a small margin. Smooth dark blue-grey back with a few soft pale markings on the shoulders, softly lit from above. Render: premium animated-film render matching the manta ray in the reference picture. Must not: no water, bubbles, other creatures, text, outline or cartoon styling; no green tint on the ray.",
+    "input_images": [
+     "step: the twilight band"
+    ],
+    "sha256": "0f84d6af705fbf29971b2f18ec8325d04910bb78b17a0dd078014afdb5997a99",
+    "hunt": {
+     "blind": true,
+     "blockers": [
+      "no visible eyes"
+     ],
+     "polish": [
+      "wing tips near the sides"
+     ],
+     "adjudication": "a manta seen from above carries its eyes on the sides of its head lobes, as painted"
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out>",
+    "sha256": "499cae9958555c7b636bfb9bbd92832042c2a5ece6262dc4fc58c3ce29a8ded4"
+   }
+  ],
+  "master_sha256": "499cae9958555c7b636bfb9bbd92832042c2a5ece6262dc4fc58c3ce29a8ded4",
+  "width": 1446,
+  "height": 925,
+  "bytes": 379336,
+  "sha256": "e9f7d0ab11779ee1cbe0a0cad3ff1d4fe2deab18ae57a5ae4a2e93c032bef442"
+ },
+ {
+  "file": "stage/anglerfish.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 1322x637, lossless WebP (Pillow 11.3): an anglerfish with its lit lure, facing left",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "an anglerfish on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1536x1024",
+    "prompt": "One single small, gentle anglerfish, alone, seen side-on heading to the LEFT (its round face and calm eye on the left, its tail fin on the right), on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no water and nothing else. It fills the frame's width with a small margin. A round, plump body of smooth dark brown-grey skin, one calm dark eye with a small highlight, a small closed mouth with no teeth showing, exactly two side fins and one tail fin; a thin stalk curving up from its forehead and forward over its face to a round lure that glows soft warm gold. More curious than fierce. Render: premium animated-film render matching the anglerfish in the reference picture. Must not: no teeth, no open jaws, no water, bubbles, other creatures, text, outline or cartoon styling; no green tint.",
+    "input_images": [
+     "step: the midnight band"
+    ],
+    "sha256": "909819afc46386ecd635d47e82fdfb0244851ed756002d4998856cf81b138c7c",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": [
+      "one eye shows, side on"
+     ]
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out>",
+    "sha256": "a61d87174953d6102afe0d1bc10f55371f8458bc950ae16881370b5a7fe94469"
+   }
+  ],
+  "master_sha256": "a61d87174953d6102afe0d1bc10f55371f8458bc950ae16881370b5a7fe94469",
+  "width": 1322,
+  "height": 637,
+  "bytes": 550618,
+  "sha256": "1b499413a7295163c12dd4d75e153f1012a3487c37a62e0652a8ecf65f0ebdfc"
+ },
+ {
+  "file": "stage/octopus.webp",
+  "for": "https://ui.ouroboros.bot/",
+  "model": "GitHub Copilot app image_generation, quality high; targeted edits",
+  "generated": "2026-11-19",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then, 2026-11-19, on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". The home page's porthole moves from line drawings to this world. Made with the one-shot loop in agents/art-prompting.md.",
+  "crop": "the keyed sprite, 967x845, lossless WebP (Pillow 11.3): a red octopus from the front, eight arms",
+  "checked": "blind defect hunts (fresh reviewer, the picture whole, a small copy and crops); final hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "an octopus on key green",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "One single octopus, alone, seen from the front, resting as if on a rock, on a perfectly flat, uniform, pure bright green background (#00FF00 chroma key) with no gradient, no shadow, no rock, no water and nothing else. It fills the frame's height with a small margin. A round, soft head on top with two calm eyes, each with a small soft highlight, looking gently toward the camera; below it, exactly eight arms, each clearly starting from under the head and curling loosely out to the sides and down, the arms not crossing or merging, their tips curled. Soft, smooth deep red and coral skin with small pale spots, softly lit from above by warm light. Render: premium animated-film render matching the octopus in the reference picture. Must not: no suckers turned to the camera, no beak, no scary or angry look, no water, rocks, bubbles, other creatures, text, outline or cartoon styling; no green tint.",
+    "input_images": [
+     "step: the midnight band, lit"
+    ],
+    "sha256": "b6bd76747a9f8a068538354989658da221fe4e9f460479fbf7abe6172a5594e9",
+    "hunt": {
+     "blind": true,
+     "blockers": [],
+     "polish": []
+    }
+   },
+   {
+    "step": "key",
+    "what": "keyed off key green, edges unmixed, trimmed",
+    "tool": "python3 brand/tools/chroma_key.py <painting> <out>",
+    "sha256": "34860c49fa5fd8c7e19b0a6d7f5a97a6ae16a20eeba73321d17a89c987ffd233"
+   }
+  ],
+  "master_sha256": "34860c49fa5fd8c7e19b0a6d7f5a97a6ae16a20eeba73321d17a89c987ffd233",
+  "width": 967,
+  "height": 845,
+  "bytes": 688858,
+  "sha256": "79ee60e32d21d83f17d802f8d1df1095553204abe65753d7c5859843973c6918"
+ },
+ {
+  "file": "stage/bg-sunlit-480.webp",
+  "derivedFrom": {
+   "file": "stage/bg-sunlit.webp",
+   "sha256": "066736fa6cd68c2c91bd0f129df7533c598fed576961a3fcbb36050a78b4ac8d"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 480x480 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 480,
+  "height": 480,
+  "bytes": 26790,
+  "sha256": "4b926f4c6e4ef7f02dfa7c060eda69335e8fb429a666d268f8e7ae265f2e6398"
+ },
+ {
+  "file": "stage/bg-sunlit-720.webp",
+  "derivedFrom": {
+   "file": "stage/bg-sunlit.webp",
+   "sha256": "066736fa6cd68c2c91bd0f129df7533c598fed576961a3fcbb36050a78b4ac8d"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 720x720 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 720,
+  "height": 720,
+  "bytes": 50876,
+  "sha256": "3b2fca60fec5563fdc5fbc7429fe4fe3157b2abfc443e702fc700c01dc8e0a84"
+ },
+ {
+  "file": "stage/bg-sunlit-dark-480.webp",
+  "derivedFrom": {
+   "file": "stage/bg-sunlit-dark.webp",
+   "sha256": "76c9e0f34bf535bdba224eead0f69870f1f27d3e418662203ac4165a6626821a"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 480x480 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 480,
+  "height": 480,
+  "bytes": 17948,
+  "sha256": "9fa36c7000efd355697ed8c378f2516d4826ccfc9cc97f19ad061ab72ec12b80"
+ },
+ {
+  "file": "stage/bg-sunlit-dark-720.webp",
+  "derivedFrom": {
+   "file": "stage/bg-sunlit-dark.webp",
+   "sha256": "76c9e0f34bf535bdba224eead0f69870f1f27d3e418662203ac4165a6626821a"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 720x720 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 720,
+  "height": 720,
+  "bytes": 35642,
+  "sha256": "edc4ba2eb53bfb48457ff89763672f38885073f1441f5151e3a4e6aa903e7442"
+ },
+ {
+  "file": "stage/bg-twilight-480.webp",
+  "derivedFrom": {
+   "file": "stage/bg-twilight.webp",
+   "sha256": "b7aa4f95aa309daf4af90d0adee023565feacd0d23a1972ce13ff2a291dcb6ff"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 480x480 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 480,
+  "height": 480,
+  "bytes": 7658,
+  "sha256": "de2c5f8a5102e5d286d6df032e73f2b99491c48f15ec20c5f813827bfc5ec842"
+ },
+ {
+  "file": "stage/bg-twilight-720.webp",
+  "derivedFrom": {
+   "file": "stage/bg-twilight.webp",
+   "sha256": "b7aa4f95aa309daf4af90d0adee023565feacd0d23a1972ce13ff2a291dcb6ff"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 720x720 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 720,
+  "height": 720,
+  "bytes": 14004,
+  "sha256": "b25cbc284333cd9e006d9753ced9af1f207fbfbc947d05d8ff11aa2bf9baee69"
+ },
+ {
+  "file": "stage/bg-twilight-dark-480.webp",
+  "derivedFrom": {
+   "file": "stage/bg-twilight-dark.webp",
+   "sha256": "755ee545ca22c7268a85603541d4884c4d67502cd6bf66328032ae021fc4165e"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 480x480 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 480,
+  "height": 480,
+  "bytes": 5036,
+  "sha256": "e1335655307fb9fe3b1ed2c5ef22c2e5704b979bd3bc74ccf34b4fa96910d59b"
+ },
+ {
+  "file": "stage/bg-twilight-dark-720.webp",
+  "derivedFrom": {
+   "file": "stage/bg-twilight-dark.webp",
+   "sha256": "755ee545ca22c7268a85603541d4884c4d67502cd6bf66328032ae021fc4165e"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 720x720 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 720,
+  "height": 720,
+  "bytes": 9280,
+  "sha256": "18578146174ce0137ce1abbf91689690ec8740ff0d5094a491d32ceb5915adad"
+ },
+ {
+  "file": "stage/bg-midnight-480.webp",
+  "derivedFrom": {
+   "file": "stage/bg-midnight.webp",
+   "sha256": "465c0db09b67cfc4a4ec378ef2d6504ae14a1f30295bb6adbedf29aac2c7687a"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 480x480 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 480,
+  "height": 480,
+  "bytes": 3300,
+  "sha256": "1d6a3f5f631c4feaa74a7a9f85a0039be2dd59c7358a85347b0e8a680ef77815"
+ },
+ {
+  "file": "stage/bg-midnight-720.webp",
+  "derivedFrom": {
+   "file": "stage/bg-midnight.webp",
+   "sha256": "465c0db09b67cfc4a4ec378ef2d6504ae14a1f30295bb6adbedf29aac2c7687a"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 720x720 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 720,
+  "height": 720,
+  "bytes": 7542,
+  "sha256": "d010b1b7e80c9a0a78c33a52dd59e2317f14af818d4febac0b5c8611dbf8a656"
+ },
+ {
+  "file": "stage/nautilus-660.webp",
+  "derivedFrom": {
+   "file": "stage/nautilus.webp",
+   "sha256": "781bef02f26b6ad3eebe5d2866cd06f213d352a5843c03c51c75bb82a4713655"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 660x125 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 660,
+  "height": 125,
+  "bytes": 18172,
+  "sha256": "8c7a1f7a0f21e043e4e84fe88ee9794f37f73c0c7efe6d5402fa920eda273ef4"
+ },
+ {
+  "file": "stage/nautilus-lit-660.webp",
+  "derivedFrom": {
+   "file": "stage/nautilus-lit.webp",
+   "sha256": "404ee06e08b7e408453a4ab2cabc62094bd838089f92e2754950c01d43aad9ee"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 660x125 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 660,
+  "height": 125,
+  "bytes": 19590,
+  "sha256": "f613d18b3d09d3db82b85f2667a7bd825c9ee0d12bdd4281a21491a5c01e8add"
+ },
+ {
+  "file": "stage/ray-256.webp",
+  "derivedFrom": {
+   "file": "stage/ray.webp",
+   "sha256": "e9f7d0ab11779ee1cbe0a0cad3ff1d4fe2deab18ae57a5ae4a2e93c032bef442"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 256x164 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 256,
+  "height": 164,
+  "bytes": 6402,
+  "sha256": "e28fbb68283c19c4a72ff48a2d19851f372e3890cbbd8c750720225631b503d3"
+ },
+ {
+  "file": "stage/anglerfish-160.webp",
+  "derivedFrom": {
+   "file": "stage/anglerfish.webp",
+   "sha256": "1b499413a7295163c12dd4d75e153f1012a3487c37a62e0652a8ecf65f0ebdfc"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 160x77 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 160,
+  "height": 77,
+  "bytes": 4842,
+  "sha256": "cea3026c44e0164ca95d8c6fe86e2bbc5722ef49c28dbb31131ddd18a893a607"
+ },
+ {
+  "file": "stage/octopus-112.webp",
+  "derivedFrom": {
+   "file": "stage/octopus.webp",
+   "sha256": "79ee60e32d21d83f17d802f8d1df1095553204abe65753d7c5859843973c6918"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 112x98 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 112,
+  "height": 98,
+  "bytes": 6498,
+  "sha256": "fe0f7116df58f4206bc56d5ca5746c4ed8cba12f9b3473c327750792215c03ef"
+ },
+ {
+  "file": "stage/sardine-72.webp",
+  "derivedFrom": {
+   "file": "stage/sardine.webp",
+   "sha256": "2e739d25463536452f5f93a342e0ea07cac733d60bfd0c144572afa6e3226cdd"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 72x19 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 72,
+  "height": 19,
+  "bytes": 1576,
+  "sha256": "ef8c5475f985b7de4d8d18d8703e82cbee68d0d06434a897c683bc52bacadba5"
+ },
+ {
+  "file": "stage/lanternfish-56.webp",
+  "derivedFrom": {
+   "file": "stage/lanternfish.webp",
+   "sha256": "0fbaf3feb2ae7112d530f416d5de1d3fc124900e4578b8362b284b164df8abf4"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 56x17 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 56,
+  "height": 17,
+  "bytes": 1036,
+  "sha256": "98f572b0f3d7829f37c6bc974354cf04d2f81ecfbe7f569e57304dfc89f26e57"
+ },
+ {
+  "file": "stage/jellyfish-64.webp",
+  "derivedFrom": {
+   "file": "stage/jellyfish.webp",
+   "sha256": "b9371aab43e4d2cf3431e24c3f28f4375a5b1cc085b7738799ee98007fe91b02"
+  },
+  "use": "ui.ouroboros.bot home page porthole (site/src/voyage/stage/)",
+  "operation": "resized to 64x128 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6, alpha quality 100",
+  "approval": "Ari, 2026-11-17, on the Nautilus pages of ui.ouroboros.bot: \"make it match the other art (like the hero etc)!!!\" and \"NOT storybook universe - that's the OLD one\"; then on the home page: \"these ballast tanks and porthole (etc) need to be brought up to speed too\". Derived by resize only; nothing new is drawn.",
+  "width": 64,
+  "height": 128,
+  "bytes": 5662,
+  "sha256": "7dbd345ce190b387ecc7d628059dce4ae80e9cb1335511452cf389db9f19660b"
  }
 ]
