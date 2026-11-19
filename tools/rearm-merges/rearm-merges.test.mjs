@@ -113,3 +113,44 @@ test("withRetry treats a GraphQL 'Something went wrong' and a secondary rate lim
     assert.equal(withRetry(() => { if (++calls < 2) throw Object.assign(new Error("failed"), { stderr }); return "ok"; }, { delays: [1], sleep: () => {}, log: () => {} }), "ok");
   }
 });
+
+import { stuckReason, failedChecks, processQueue } from "./rearm-merges.mjs";
+
+const failing = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "FAILURE" } } }] } };
+const T0 = Date.parse("2026-11-19T15:00:00Z");
+const entry = (over = {}, pr = {}) => ({ id: "E1", repo: "o/r", base: "main", state: "QUEUED", enqueuedAt: "2026-11-19T15:00:00Z", pullRequest: { id: "P1", number: 7, title: "T", mergeable: "MERGEABLE", ...pr }, ...over });
+
+test("failedChecks reports a failing rollup", () => {
+  assert.deepEqual(failedChecks(failing), ["required checks"]);
+  assert.deepEqual(failedChecks(green), []);
+});
+
+test("stuckReason: unmergeable and conflicting leave at once, failed checks after 10 minutes", () => {
+  assert.equal(stuckReason(entry({ state: "UNMERGEABLE" }), T0), "unmergeable");
+  assert.equal(stuckReason(entry({}, { mergeable: "CONFLICTING" }), T0), "conflict");
+  assert.equal(stuckReason(entry({}, failing), T0 + 9 * 60000), null);
+  assert.equal(stuckReason(entry({}, failing), T0 + 11 * 60000), "failed-checks");
+  assert.equal(stuckReason(entry({ state: "UNMERGEABLE" }, failing), T0), "failed-checks");
+  assert.equal(stuckReason(entry(), T0 + 3600000), null);
+});
+
+test("processQueue dequeues, comments on a conflict once, and updates and re-arms a stale base", () => {
+  const calls = [];
+  setTransport((q, v) => {
+    calls.push([q.match(/dequeuePullRequest|updatePullRequestBranch|enablePullRequestAutoMerge|addComment|comments\(/)?.[0], v.id]);
+    if (/comments\(/.test(q)) return { node: { comments: { nodes: [] } } };
+    return {};
+  });
+  const logs = [];
+  const r = processQueue([entry({}, { mergeable: "CONFLICTING" }), entry({ state: "UNMERGEABLE" }, { id: "P2", number: 8 }), entry()], { now: T0, log: (m) => logs.push(m) });
+  setTransport(null);
+  assert.equal(r.dequeued, 2);
+  assert.deepEqual(calls.map((c) => c[0]), ["dequeuePullRequest", "comments(", "addComment", "dequeuePullRequest", "updatePullRequestBranch", "enablePullRequestAutoMerge"]);
+});
+
+test("processQueue dry run changes nothing", () => {
+  setTransport(() => assert.fail("no writes in a dry run"));
+  const r = processQueue([entry({ state: "UNMERGEABLE" })], { dryRun: true, log: () => {} });
+  setTransport(null);
+  assert.equal(r.dequeued, 0);
+});
