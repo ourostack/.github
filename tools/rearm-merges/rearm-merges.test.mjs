@@ -198,3 +198,32 @@ test("ghArgs sends a number as a typed -F value and a string as -f (an Int! PR n
   assert.ok(args.join(" ").includes("-f id=PR_1"));
   assert.ok(args.join(" ").includes("-f b=@body"));
 });
+
+test("cancelOrphanRuns warns, and does not fail, when the token lacks actions: write", () => {
+  const logs = [];
+  setRest((method, path) => {
+    if (method === "POST") throw Object.assign(new Error("x"), { stderr: "gh: Resource not accessible by personal access token (HTTP 403)\n" });
+    return path.includes("status=queued") ? { workflow_runs: [mkRun(2, "old")] } : {};
+  });
+  try {
+    const r = cancelOrphanRuns([{ repo: "o/r", headCommit: { oid: "live" } }], { log: (m) => logs.push(m) });
+    assert.equal(r.failed, 0);
+    assert.deepEqual(r.denied, ["o/r"]);
+    assert.equal(logs.length, 1);
+    assert.match(logs[0], /^::warning .*o\/r.*actions: write/);
+  } finally {
+    setRest(null);
+  }
+});
+
+test("cancelOrphanRuns still fails on an error that is not a permission gap", () => {
+  setRest((method, path) => {
+    if (method === "POST") throw Object.assign(new Error("x"), { stderr: "HTTP 500 boom" });
+    return path.includes("status=queued") ? { workflow_runs: [mkRun(2, "old")] } : {};
+  });
+  try {
+    assert.equal(cancelOrphanRuns([{ repo: "o/r", headCommit: { oid: "live" } }], { log() {} }).failed, 1);
+  } finally {
+    setRest(null);
+  }
+});
