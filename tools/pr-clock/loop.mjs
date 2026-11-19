@@ -9,7 +9,9 @@
 // - the repository's deployments: a PR is live when the first successful deployment of its merge commit, or of a later
 //   commit on the default branch, says so. --env keeps one environment. A repository with no deployments in the window
 //   says so; its loop then ends at merge;
-// - the default branch's first-parent commits in the window: the share whose checks ended red (the commit's check rollup).
+// - the default branch's first-parent commits in the window: the share of the time it was red, from a red commit to the
+//   next green one (a flaky job that the next commit passes costs minutes, a real break costs until its fix), and the
+//   share of commits whose checks ended red (the commit's check rollup).
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
@@ -52,8 +54,26 @@ export function liveTimes(pulls, deployments, line, environment = null) {
   });
 }
 
+/**
+ * The default branch's red stretches: each runs from a red commit to the next green one, and one still open runs to `now`.
+ * line: the first-parent line, newest first, with `state` and `at` (committed time). Returns the stretches in minutes.
+ */
+export function redStretches(line, now = Date.now()) {
+  const stretches = [];
+  let since = null;
+  for (const commit of [...line].reverse()) {
+    if ((commit.state === "FAILURE" || commit.state === "ERROR") && since === null) since = Date.parse(commit.at);
+    else if (commit.state === "SUCCESS" && since !== null) {
+      stretches.push((Date.parse(commit.at) - since) / 60_000);
+      since = null;
+    }
+  }
+  if (since !== null) stretches.push((now - since) / 60_000);
+  return stretches;
+}
+
 /** The numbers for a window: medians and p90s in minutes, and the default branch's red share. */
-export function summarize({ pulls, commits, hasDeployments }) {
+export function summarize({ pulls, commits, hasDeployments, windowMinutes = null, now = Date.now() }) {
   const stat = (values) => ({ median: percentile(values, 50), p90: percentile(values, 90), n: values.length });
   const live = pulls.filter((pull) => pull.liveAt);
   const settled = commits.filter((commit) => ["SUCCESS", "FAILURE", "ERROR"].includes(commit.state));
@@ -67,6 +87,8 @@ export function summarize({ pulls, commits, hasDeployments }) {
     mainRedShare: settled.length ? red / settled.length : null,
     mainRed: red,
     mainSettled: settled.length,
+    mainRedTime: windowMinutes ? Math.min(1, redStretches(commits, now).reduce((sum, value) => sum + value, 0) / windowMinutes) : null,
+    mainRedStretch: percentile(redStretches(commits, now), 50),
   };
 }
 
@@ -75,7 +97,9 @@ const row = (label, stat) => `| ${label} | ${stat ? fmt(stat.median) : "no deplo
 
 /** The Markdown report. */
 export function render(repo, days, numbers) {
-  const share = numbers.mainRedShare === null ? "–" : `${Math.round(numbers.mainRedShare * 100)}% (${numbers.mainRed} of ${numbers.mainSettled} settled commits)`;
+  const commits = numbers.mainRedShare === null ? "–" : `${Math.round(numbers.mainRedShare * 100)}% of settled commits (${numbers.mainRed} of ${numbers.mainSettled})`;
+  const time = numbers.mainRedTime === null || numbers.mainRedTime === undefined ? "" : `${Math.round(numbers.mainRedTime * 100)}% of the time${numbers.mainRedStretch === null ? "" : ` (median stretch ${fmt(numbers.mainRedStretch)})`}; `;
+  const share = `${time}${commits}`;
   return [
     `## The loop for ${repo}, last ${days} days`,
     "",
@@ -86,6 +110,9 @@ export function render(repo, days, numbers) {
     row("PR opened to live", numbers.openToLive),
     "",
     `Default branch red: ${share}. ${numbers.merged} PRs merged.`,
+    ...(numbers.topRedChecks?.length
+      ? ["", `What turned it red (the newest ${numbers.redChecksRead} red commits): ${numbers.topRedChecks.map(([check, count]) => `${check} (${count})`).join(", ")}. Fix the most frequent first: a flaky check is red time with no break behind it.`]
+      : []),
   ].join("\n");
 }
 
@@ -145,15 +172,41 @@ function readDeployments(owner, name, since) {
 function readCommits(owner, name, since) {
   const query = `query($owner: String!, $name: String!, $since: GitTimestamp!, $after: String) { repository(owner: $owner, name: $name) {
     defaultBranchRef { target { ... on Commit { oid history(first: 100, since: $since, after: $after) { pageInfo { hasNextPage endCursor }
-      nodes { oid parents(first: 1) { nodes { oid } } statusCheckRollup { state } } } } } } } }`;
+      nodes { oid committedDate parents(first: 1) { nodes { oid } } statusCheckRollup { state } } } } } } } }`;
   let head = null;
   const read = pages((after) => {
     const { target } = graphql(query, { owner, name, since, ...cursor(after) }).repository.defaultBranchRef;
     head = target.oid;
-    const items = target.history.nodes.map((commit) => ({ oid: commit.oid, parent: commit.parents.nodes[0]?.oid ?? null, state: commit.statusCheckRollup?.state ?? null }));
+    const items = target.history.nodes.map((commit) => ({ oid: commit.oid, at: commit.committedDate, parent: commit.parents.nodes[0]?.oid ?? null, state: commit.statusCheckRollup?.state ?? null }));
     return { items, pageInfo: target.history.pageInfo };
   });
   return { line: firstParents(read.nodes, head), capped: read.capped };
+}
+
+/** The checks that failed most often on red commits, as [name, count] pairs, most first. failures: one list of names per commit. */
+export function topRedChecks(failures, limit = 5) {
+  const counts = new Map();
+  for (const names of failures) for (const name of new Set(names)) counts.set(name, (counts.get(name) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit);
+}
+
+const RED = new Set(["FAILURE", "TIMED_OUT", "STARTUP_FAILURE", "ERROR"]);
+
+/** Which checks failed on each of the newest `limit` red commits, ten commits to a query. */
+function readRedChecks(owner, name, line, limit = 50) {
+  const red = line.filter((commit) => commit.state === "FAILURE" || commit.state === "ERROR").slice(0, limit);
+  const failures = [];
+  for (let start = 0; start < red.length; start += 10) {
+    const batch = red.slice(start, start + 10);
+    const fields = batch.map((commit, index) => `c${index}: object(oid: "${commit.oid}") { ... on Commit { statusCheckRollup { contexts(first: 100) {
+      nodes { ... on CheckRun { name conclusion } ... on StatusContext { context state } } } } } }`).join("\n");
+    const repository = graphql(`query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { ${fields} } }`, { owner, name }).repository;
+    for (const index of batch.keys()) {
+      const contexts = repository[`c${index}`]?.statusCheckRollup?.contexts.nodes ?? [];
+      failures.push(contexts.filter((check) => RED.has(check.conclusion ?? check.state)).map((check) => check.name ?? check.context));
+    }
+  }
+  return { failures, read: red.length };
 }
 
 function main(argv) {
@@ -170,8 +223,11 @@ function main(argv) {
   const deployments = readDeployments(owner, name, since);
   const commits = readCommits(owner, name, since);
   const hasDeployments = deployments.nodes.some((deployment) => deployment.createdAt >= since && deployment.liveAt);
-  const numbers = summarize({ pulls: liveTimes(pulls.nodes, deployments.nodes, commits.line, option("--env", null)), commits: commits.line, hasDeployments });
+  const numbers = summarize({ pulls: liveTimes(pulls.nodes, deployments.nodes, commits.line, option("--env", null)), commits: commits.line, hasDeployments, windowMinutes: days * 24 * 60 });
   if (pulls.capped || commits.capped || deployments.capped) numbers.capped = true;
+  const redChecks = readRedChecks(owner, name, commits.line);
+  numbers.topRedChecks = topRedChecks(redChecks.failures);
+  numbers.redChecksRead = redChecks.read;
   console.log(argv.includes("--json") ? JSON.stringify({ repo, days, ...numbers }, null, 2) : render(repo, days, numbers));
   if (numbers.capped) console.error(`loop: read the first ${MAX_PAGES * 100} only; use fewer --days for the whole window`);
   return 0;
