@@ -203,6 +203,17 @@ const QUEUES_QUERY = `query($org:String!,$after:String){organization(login:$org)
       autoMergeRequest{mergeMethod commitHeadline commitBody}
       commits(last:1){nodes{commit{statusCheckRollup{state}}}}}}}}}}}}`;
 
+// A red rollup counts every check, optional ones too. For those PRs, ask which failed checks the base requires.
+const REQUIRED_QUERY = `query($id:ID!,$n:Int!){node(id:$id){... on PullRequest{commits(last:1){nodes{commit{statusCheckRollup{state
+  contexts(first:100){nodes{__typename ... on CheckRun{name conclusion isRequired(pullRequestNumber:$n)}
+    ... on StatusContext{context state isRequired(pullRequestNumber:$n)}}}}}}}}}}`;
+
+function withRequiredContexts(pr) {
+  if (!["FAILURE", "ERROR"].includes(pr.commits?.nodes?.[0]?.commit?.statusCheckRollup?.state)) return pr;
+  const commits = gql(REQUIRED_QUERY, { id: pr.id, n: String(pr.number) }).node?.commits;
+  return commits ? { ...pr, commits } : pr;
+}
+
 export function queueEntries() {
   const out = [];
   let after = "";
@@ -210,7 +221,7 @@ export function queueEntries() {
     const d = gql(QUEUES_QUERY, { org: ORG, ...(after ? { after } : {}) }).organization.repositories;
     for (const repo of d.nodes) {
       for (const e of repo.mergeQueue?.entries?.nodes ?? []) {
-        out.push({ ...e, repo: repo.nameWithOwner, base: repo.defaultBranchRef?.name ?? "main" });
+        out.push({ ...e, pullRequest: e.pullRequest && withRequiredContexts(e.pullRequest), repo: repo.nameWithOwner, base: repo.defaultBranchRef?.name ?? "main" });
       }
     }
     if (!d.pageInfo.hasNextPage) return out;
@@ -218,8 +229,16 @@ export function queueEntries() {
   }
 }
 
+const FAILED = new Set(["FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "STARTUP_FAILURE", "ACTION_REQUIRED"]);
+
+// The required checks that failed on the PR's head. A failed optional check never blocks the queue, and counting
+// one kept a green PR out (gatefold#491's Shots). Without per-check detail, the rollup's state stands in.
 export function failedChecks(pr) {
-  return ["FAILURE", "ERROR"].includes(pr.commits?.nodes?.[0]?.commit?.statusCheckRollup?.state) ? ["required checks"] : [];
+  const rollup = pr.commits?.nodes?.[0]?.commit?.statusCheckRollup;
+  const contexts = rollup?.contexts?.nodes;
+  if (!contexts) return ["FAILURE", "ERROR"].includes(rollup?.state) ? ["required checks"] : [];
+  const out = contexts.filter((c) => c.isRequired && FAILED.has(c.conclusion ?? c.state)).map((c) => c.name ?? c.context);
+  return [...new Set(out)];
 }
 
 // Why an entry has to leave the queue, or null. Failed checks count after the entry has sat 10 minutes, so a rerun gets its chance.
