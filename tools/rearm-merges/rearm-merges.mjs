@@ -79,7 +79,14 @@ export function withRetry(call, { delays = RETRY_DELAYS_MS, sleep = sleepSync, l
   }
 }
 
+let transport = null;
+// Tests swap the GitHub transport; null means the real gh call.
+export function setTransport(fn) {
+  transport = fn;
+}
+
 function gql(query, vars) {
+  if (transport) return transport(query, vars);
   const args = ["api", "graphql", "-f", `query=${query}`];
   for (const [k, v] of Object.entries(vars)) args.push("-f", `${k}=${v}`);
   return JSON.parse(withRetry(() => execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }))).data;
@@ -100,6 +107,22 @@ const UPDATE = `mutation($id:ID!){updatePullRequestBranch(input:{pullRequestId:$
 const DISABLE = `mutation($id:ID!){disablePullRequestAutoMerge(input:{pullRequestId:$id}){clientMutationId}}`;
 const ENABLE = `mutation($id:ID!,$m:PullRequestMergeMethod!,$h:String!,$b:String!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:$m,commitHeadline:$h,commitBody:$b}){clientMutationId}}`;
 const MERGE = `mutation($id:ID!,$m:PullRequestMergeMethod!,$h:String!,$b:String!){mergePullRequest(input:{pullRequestId:$id,mergeMethod:$m,commitHeadline:$h,commitBody:$b}){clientMutationId}}`;
+
+const REREAD = `query($id:ID!){node(id:$id){... on PullRequest{state autoMergeRequest{commitHeadline}}}}`;
+
+// A write that failed may have lost a race with a merge. Re-read the PR: merged or closed, or auto-merge already
+// carrying an explicit message, means the wanted state holds and the failure is not one.
+export function settledAfterFailure(pr) {
+  let now;
+  try {
+    now = gql(REREAD, { id: pr.id }).node;
+  } catch {
+    return false;
+  }
+  if (!now) return false;
+  if (now.state === "MERGED" || now.state === "CLOSED") return true;
+  return Boolean(now.autoMergeRequest?.commitHeadline);
+}
 
 const label = (pr) => `${pr.repository.nameWithOwner}#${pr.number}`;
 
@@ -129,11 +152,9 @@ export function mergeNow(pr, { dryRun = false, log = console.log } = {}) {
   log(`merged ${label(pr)} as "${headline}"`);
 }
 
-function main() {
-  const args = new Set(process.argv.slice(2));
-  const opts = { dryRun: args.has("--dry-run") };
-  const prs = openPrs();
+export function processPrs(prs, args, opts = {}) {
   let acted = 0;
+  let failed = 0;
   const unmergeable = [];
   for (const pr of prs) {
     try {
@@ -159,12 +180,23 @@ function main() {
       // Only fail on actual errors, not on unmergeable PRs
       if (/not mergeable|CONFLICTING/i.test(msg)) {
         unmergeable.push(`${label(pr)} (${msg})`);
+      } else if (!opts.dryRun && settledAfterFailure(pr)) {
+        console.log(`${label(pr)} changed under us (${msg}); on re-read it is merged, closed or already armed, so nothing to do`);
       } else {
         console.log(`failed on ${label(pr)}: ${msg}`);
-        process.exitCode = 1;
+        failed++;
       }
     }
   }
+  return { acted, failed, unmergeable };
+}
+
+function main() {
+  const args = new Set(process.argv.slice(2));
+  const opts = { dryRun: args.has("--dry-run") };
+  const prs = openPrs();
+  const { acted, failed, unmergeable } = processPrs(prs, args, opts);
+  if (failed > 0) process.exitCode = 1;
   console.log(`${prs.length} open PRs checked, ${acted} needed action.`);
   if (unmergeable.length > 0) {
     console.log(`\nSkipped ${unmergeable.length} unmergeable PR(s):`);
