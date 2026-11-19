@@ -10,10 +10,17 @@
     "hyperellipse": "Fork of mikhailmogilnikov/hyperellipse, the corner-shape polyfill Ouro UI's squircles use where a browser has no native corner-shape (ourostack/ouro-ui-core docs/decisions/2026-11-13-squircles-switch-avatars.md). Its main mirrors upstream exactly until we need to tweak it, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "image-gen-mcp": "Archived.",
     "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here.",
-    "my-agent": "New repository (2026-11-19), the companion to the blog post \"Just give the model a keyboard\" (https://ouroboros.bot/blog/build-ai-agent-from-scratch/). Its header is being drawn through the usual gates; when it ships, this exclusion goes and its README and social preview entries come in, in the same pull request."
+    "my-agent": "The companion to the blog post \"Just give the model a keyboard\" (https://ouroboros.bot/blog/build-ai-agent-from-scratch/): a tiny agent a reader studies line by line. Its own AGENTS.md allows no extra files, so it has no README and no header; its social preview carries the brand (social:my-agent)."
   },
   "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14); the Ouro Labs enterprise shows the same render and is registered below as enterprise:avatar so the audit notices if they drift apart.",
   "surfaces": [
+    {
+      "id": "social:my-agent",
+      "kind": "github-social-preview",
+      "repo": "ourostack/my-agent",
+      "image": "social/my-agent.jpg",
+      "held": "First upload: GitHub has no API for social previews, so the uploader can only set it after this merges; a follow-up removes this hold once it is current."
+    },
     {
       "id": "about:my-agent",
       "kind": "github-about",

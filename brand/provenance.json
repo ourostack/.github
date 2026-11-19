@@ -50973,5 +50973,986 @@
   "height": 128,
   "bytes": 5662,
   "sha256": "7dbd345ce190b387ecc7d628059dce4ae80e9cb1335511452cf389db9f19660b"
+ },
+ {
+  "file": "flat/my-agent-lights.png",
+  "use": "my-agent's night-only light sources (nightLights)",
+  "sha256": "577441f72156b4b0875f09fb85e7beb14502ff538137eb44d81994b123e2b234"
+ },
+ {
+  "file": "flat/my-agent.webp",
+  "use": "my-agent's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
+  "width": 1536,
+  "height": 512,
+  "bytes": 146170,
+  "sha256": "e401c368da4d33b20134d73c097cc358abc0baf98ee65977ae52fc58cb490a20"
+ },
+ {
+  "file": "headers/my-agent-dark.webp",
+  "for": "https://github.com/ourostack/my-agent",
+  "model": "GitHub Copilot app built-in image_generation tool, 1536x1024, quality high; night light transferred onto the day",
+  "generated": "2026-11-18",
+  "approval": "as the day",
+  "crop": "1536x512, light transfer (relight_transfer.py) onto the flattened day",
+  "generation": [
+   {
+    "step": "flat (sun and window light removed)",
+    "prompt": "Edit this picture: the wide picture band in the middle is the picture; the flat grey bars above and below are empty canvas, leave them flat grey exactly as they are. Inside the picture only: remove every patch of direct sunlight and every window light pattern: the bright sun pools and glare streaks on the floor at the lower left, the diagonal light and shadow stripes on the floor at the right and the faint light streaks on the right wall; make the floor and walls evenly lit, soft overcast daylight with no hard light or shadow shapes. Change nothing else: every figure, pose, object, colour and position stays exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen16/flat-raw.png",
+    "output_sha256": "d6b0c17538238209b2f89d55aa9bfa0134bd7d971f609dfa9e943a13b3917215"
+   },
+   {
+    "step": "night relight",
+    "prompt": "Relight this picture as the same moment at night. The wide picture band in the middle is the picture; the flat grey bars above and below it are empty canvas: paint them as more dark wall and ceiling above and more oak floor below, continuing the picture seamlessly. Keep the same frame, composition, camera, every figure, pose, object and its position exactly as they are: the faceless glass person in the sage-green sweater with both hands in his trouser pockets; the small coral robot on the pine stool with both mittens resting on the slim silver keyboard; Ouro coiled into one round ring on the folded linen; the walnut desk, the brass lamp, the steel-framed windows, the potted plant at the right and the plain plaster wall (there is no shelf). Only the light and time of day change. Night light: it is deep night and there is no sun and no daylight anywhere: the tall windows show a very dark navy night sky with a small pale moon and a distant city skyline of many small lit windows, the park below nearly black; no sunlit patch or leaf shadow on any floor or wall; the brass desk lamp is lit and is the key light, its shade staying the same cream colour as before, glowing warm, casting warm amber light across the desk, the keyboard, the robot and Ouro, and a little onto the person; the room is otherwise dim and blue; the person's glass head glows softly warm from within; the robot's two crescent visor eyes glow. The robot's visor shows only its two glowing eyes and nothing else. The person stays faceless. Every hand stays exactly as drawn: a smooth mitten with one thumb. Keycaps stay blank. No text anywhere. Same premium animated-film render, no outlines.",
+    "output": "hdr/my-agent-work/gen16/night-raw.png",
+    "output_sha256": "6dae7a90497d2cdddc7b50f6109de33a2719b327c3c57a862fb2dfd9a5ad115b"
+   },
+   {
+    "step": "night window (true night city plate, lit windows only)",
+    "prompt": "Edit this picture: it shows a steel-framed window wall with a city skyline and park seen from a room in daylight. Change only the view outside the windows into the same view at deep night. Keep every window bar, mullion and transom, every building and tower, the park trees and the room (chair, wall, floor) exactly the same shape and in exactly the same position; only the light and colour change. At night: the sky is deep navy to near black with a small pale full moon in the upper-middle pane and no clouds; every building facade is dark and nearly black-blue with a cool rim of moonlight; scatter many small warm yellow-orange lit windows across the facades, each a tiny rectangle, some floors lit and some dark, the way an office skyline looks at night; the park trees are nearly black. The room beside the window is dim and blue. No text anywhere.",
+    "output": "hdr/my-agent-work/win/w1-out.png",
+    "output_sha256": "dc4c8999ffed244d942748a46bf3e9740a20901e5501efbdddadcb613731e42a",
+    "input_images": [
+     "win/w1-in.png"
+    ]
+   },
+   {
+    "step": "plate darkening (facades and sky x0.3; lit windows and moon kept), relight_transfer.py with lights4 mask passing only lit windows, moon, lamp, eyes, antenna",
+    "prompt": "deterministic: win/lights.py, relight_transfer.py day/header.png win/plate2.png --keep-mask gen8/lights4.png --exclude-mask gen16/exclude.png --radius 16",
+    "output": "hdr/my-agent-work/win/night2.png",
+    "output_sha256": "4f4a2618f9812e80a1a1922e2df22f05a3ca0024f94382f162b795ee05f78f58",
+    "input_images": [
+     "win/plate1.png"
+    ]
+   }
+  ],
+  "master_sha256": "4f4a2618f9812e80a1a1922e2df22f05a3ca0024f94382f162b795ee05f78f58",
+  "width": 1536,
+  "height": 512,
+  "bytes": 56724,
+  "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3",
+  "previous": {
+   "sha256": null,
+   "generated": null
+  }
+ },
+ {
+  "file": "headers/my-agent.webp",
+  "for": "https://github.com/ourostack/my-agent",
+  "model": "GitHub Copilot app built-in image_generation tool; core at 1536x1024, quality high, widened by two outpaint edits, then resized to the header by Lanczos, WebP q86; detail fixes by crop edits patched back with ECC alignment (hdr/my-agent-work/EDITS.md)",
+  "generated": "2026-11-18",
+  "approval": "Ari, 2026-11-16: premium film, not storybook; a new scene for the companion repo of 'Just give the model a keyboard'",
+  "crop": "1536x512, the whole 3:1 frame of the 3072x1024 master (core at x 768-2304) resized by Lanczos; no crop",
+  "generation": [
+   {
+    "step": "core scene (v3 prompt, gen5/c8)",
+    "prompt": "# My Agent: the agent you build, ready to keep going\n\n## Story\nIn a bright, contemporary loft study on a quiet morning, a small agent types at a slim silver keyboard while its person stands beside the desk and watches, and Ouro dozes on a folded linen cloth at the desk's far end.\n\n## Camera\n40 mm lens, premium animated-film render, natural film colour. Eye level: the person's chest height, as if we stand a few steps back from the desk. The desk is square on to the camera: its long front edge runs straight across the frame, parallel to the bottom of the picture, and the oak floorboards run straight away from us. One vanishing point, on the back wall at the centre of the picture at the person's chest height, where the floorboards, the desk's two short ends and the window frames converge; the desk's top is a shallow rectangle whose two short side edges run straight to that same single vanishing point, and the stool's legs do too.\n\n## Composition\nGenerated at 1536x1024; the chosen picture is widened on both sides to a 3:1 strip, so the crop band is the whole height, and the person, the desk, the agent and Ouro stand together across the middle half of the width and fill most of its height. The desk stands in the middle with its front edge level; the desk is compact: it fills only the middle-right third of the picture's width, as wide as about two and a half standing people, with plain floor on both sides of it; the agent stands on a low wooden stool wholly behind the desk's middle, further back than the desk's back legs; the person stands on the floor in the far left quarter of the picture, his whole body, including his shoulders and elbows, entirely left of the desk's left edge with a clear gap of floor and wall between them, to the left of the desk's left end, clear of it with a full step of bare floor between his body and the desk, his feet level with the desk's front legs and well in front of the back wall; and Ouro lies on the desk's right end. Safe area: the left quarter is a calm pale plaster wall with one tall window; the right quarter is a plain pale plaster wall with a tall leafy potted plant standing on the floor and nothing else, no shelves and no books. Nothing important in the top or bottom sixth of the frame.\n\n## Cast\n\n### The person\n- What: a faceless adult person from the shared universe, watching the agent work.\n- Material: a smooth, seamless, lightly frosted translucent glass head, glassy with a soft sheen and a visible warm glow, not matte porcelain or plaster,, neck and hands with a soft warm inner light, warm white turning soft gold at the core; the head reads as one soft, opaque-looking frosted form with nothing visible inside it; a real adult head: a slightly elongated oval skull, a clear, readable jaw line that narrows from the cheeks to a firm chin, and a slender natural neck about four tenths of the head's width (clearly narrower than the jaw), not thick of the head's width joining the shoulders; no ears: the sides of the head are smooth bare glass where ears would be; no face at all: no eyes, nose, brow, mouth or smile; never a clear bubble or bulb, never milky white or saturated green or mint.\n- Build: natural adult proportions and an ordinary build: real shoulders, a head about one-seventh of the body height, a normal torso, arms and legs of natural length and thickness; never stretched tall and thin, never toy-like or balloon-like.\n- Height: the tallest figure; the desk's top is at the person's hip.\n- Outfit: a sage-green knit sweater over a white shirt, charcoal trousers with two open side pockets; bareheaded, no hat.\n- Expression: faceless; quiet pride shown by the body: head tilted a little toward the agent, shoulders relaxed.\n- Pose: standing upright and relaxed, his head level on a short upright neck (not bowed or craned), on the floor beside the desk's left end, clear of the desk, his head level and tilted only slightly toward the agent, his neck short and upright.\n- Limbs: exactly two arms, each from its own shoulder, and two legs.\n- Hands: smooth glass mitten hands, each with exactly one small thumb, never separate fingers; each mitten small, no wider than the wrist. Both hands are pushed into the two side trouser pockets, each pocket's opening clearly visible with the glass wrist going into it.\n- Facing: body three-quarters toward the camera, turned to the right of frame toward the agent; head turned toward the agent.\n\n### The typing agent\n- What: a small robot agent at the keyboard.\n- Material: smooth, seamless pale coral glass lit softly from within, brass joints, a dark rounded visor, a round brass ear disc and a tiny brass antenna with a coral bead.\n- Height: standing on a low wooden stool behind the desk's middle, its head reaches the person's shoulder.\n- Outfit: none; plain glass body.\n- Expression: focused and content: on its visor, two soft glowing eyes, gently arched; no mouth and no line under the eyes; its head tilts down toward the keyboard.\n- Pose: standing on the stool behind the desk, leaning slightly forward over the keyboard.\n- Limbs: exactly two arms and two legs.\n- Hands: round mittens, each with exactly one small thumb, never separate fingers; each mitten small, no wider than its brass wrist ring. Each mitten is one smooth rounded shape, like a small winter mitten with a single small thumb on its inner side and no finger divisions at all. Each mitten is a single smooth rounded lobe, like a small winter mitten, with one small thumb and no finger divisions. Both mittens rest closed and flat on the keyboard's top, a little apart, the agent leaning on them.\n- Facing: body three-quarters toward the camera, turned slightly to the left of frame; head turned a little toward the camera so both eyes read.\n\n### Ouro\n- What: Ouro, the pet snake, exactly as in the second reference image.\n- Material: smooth, seamless glossy emerald body with a gentle inner glow and a pale jade belly; the face, eyes and smile of the second reference image.\n- Height: about the size of a curled-up house cat; his whole coil is about as tall as the agent's head, much smaller than the agent.\n- Outfit: none; he is the pet, not a mascot.\n- Expression: content, eyes soft and half closed.\n- Pose: one continuous tube coiled into a single round \"O\" resting on a folded linen cloth on the desk's right end, the ring open at the top right: his head rests over the top of the ring and his one short tail tip rises only a little, well below the top of his head, just to the right of his head; no marks or drips on his chin. Belly on the inner curve, a soft shadow under the coil on the cloth.\n- Limbs: none: one head, one continuous body, one short tail tip.\n- Hands: none.\n- Facing: head in three-quarter view toward the keyboard, so the camera sees one eye and the curve of his smile.\n\n## Props\n- Desk: a compact, low walnut desk with a thin top and four slim tapered legs standing on the floor, its long front edge level across the frame and parallel to the bottom of the picture, its top seen a little from above, its two short ends receding toward the vanishing point.\n- Keyboard: a slim silver aluminium wireless keyboard like Apple's Magic Keyboard, lying flat on the middle of the desk, its long edge parallel to the desk's front edge, with a low flat profile and a grid of plain smooth keycaps in a uniform pale grey, each a blank flat square with no characters, dots, glyphs or marks at all; nothing is legible on it.\n- Lamp: a table lamp, a slim brass desk lamp with a plain cream drum shade whose bottom opening is not visible (the shade is seen from above its lower rim) and a round brass base, standing on the desk's left end, switched on, glowing a soft warm white, entirely on the desk top and overlapping nobody; it has no cord, no wire and no cable at all.\n- Stool: a low pine step stool on the floor standing wholly behind the desk: its front legs touch the floor clearly further from the camera than the desk's back legs, with a hand's width of bare floor between them, so no part of the stool is under the desk; the keyboard lies at the desk's back edge so the agent's mittens reach it.\n- Linen: a folded cream linen cloth on the desk's right end.\n\n## Setting\nA contemporary loft study with pale plaster walls, wide oak floorboards, a tall steel-framed window at the left with a calm soft view of a green city park and distant pale buildings, and a tall potted plant against the plain wall at the right. The air is still. Every hung or mounted thing shows its own holder.\n\n## Light\nBright daytime: soft, bright, cool-neutral morning daylight from the window at the left, with the sun itself out of frame: a gentle key light on every figure's left side and soft, even daylight everywhere else, so the desk and the floor are lit smoothly. Shadows are few and soft-edged: a soft contact shadow under the desk legs, the stool, the agent's feet, the person and Ouro's coil; no hard cast shadows, no stripes or bands of light, no glints on the floor. The lamp adds a small warm glow on the desk. The person's warm inner light glows softly through the glass head and hands.\n\n## Palette\nClean pale plaster white, soft daylight blue, light oak and walnut, brass gold, sage green and cream; emerald for Ouro; coral for the agent.\n\n## Must not\n- No third arm, no extra or missing limbs and no fused legs.\n- No separate fingers on any hand: mitten hands, exactly one thumb, never separate fingers; no pointing, no waving, no thumbs-up.\n- No hand holding a mug, tool or card.\n- No stretched, tall-and-thin or stick-figure person; no green, mint, milky or coloured-balloon person; no face and no ears on the person; no hat.\n- No text, letters, numbers, logos or symbols anywhere: the keyboard's keycaps are blank, nothing carries a label or spine.\n- No emoji faces on visors: no \">\" or \"<\" eyes, no tongues, no winks, no mouths, no grins, no curved line under the eyes.\n- No comic or cartoon styling: no outlines, no exaggerated squash and stretch.\n- No glowing trails or lines of light.\n- No monitors, screens, laptops or phones.\n- No tiles, cells or facets on the glass bodies.\n- No rustic, cottage or storybook look.\n- No sun in the sky, no sunbeams, no lens flare, no window light patterns on the floor.\n- No figure facing the camera full on.\n- No giant Ouro: he is never taller than the agent's head.\n- No image fades or vignettes.\n\n## Output\nGenerated whole at 1536x1024, quality high. The chosen picture is widened on both sides to a 3072x1024 master and shipped as a 1536x512 header and as phone and social crops centred on the cast. The night twin is a relight of the chosen picture: the same frame, figures and poses at night, lit by the brass lamp, the agent's eyes and the city lights outside.\n\n## References\n1. The first image: the current ouroboros.bot airship master's centre, for the render quality, light, materials and the look of the people and agents only. Its airship, setting and composition are not to be copied.\n2. The second image: `brand/ouro.png`, for Ouro's exact face and coil.",
+    "output": "hdr/my-agent-work/gen5/c8.png",
+    "output_sha256": "1731f2373aa4141e2ab094f76ca294f73fae8bf12a192883ae3e9e2fbd7db246",
+    "input_images": [
+     "brand/ouro.png"
+    ]
+   },
+   {
+    "step": "fix1 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the small coral robot's two hands and the keyboard under them. Each hand becomes one smooth rounded mitten, like a small winter mitten: a single soft lobe with exactly one small thumb on the inner side and no finger divisions, no grooves, no knuckles, resting closed on the keyboard, a little smaller than its brass wrist ring. The slim silver keyboard keys become a neat grid of plain smooth blank pale-grey squares, with no characters, speckles, smudges or marks at all. Keep the robot, its arms, the desk, the lamp, Ouro and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix1-out.png",
+    "output_sha256": "4234c0a6c1a9e5affbac9e67725a6d3c1b17f2f9c5e65726dfcfcaf3fde22c45",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix2 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the slim silver keyboard. Redraw it as a clean, simple, real low-profile aluminium keyboard: exactly three straight horizontal rows of identical plain smooth blank pale-grey rounded squares, in a perfectly regular straight grid with thin straight dividers all the way to both ends, no extra lines, no smears, no speckles, no characters or marks at all. Keep the robot's mittens, wrist cuffs and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix2-out.png",
+    "output_sha256": "79b55729eb79b65343f3958831f4e11f694a17cd31a6d03d722192478b58a629",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix11 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the small coral robot's two hands. Each hand becomes a small smooth rounded mitten, clearly NARROWER than the brass wrist ring above it (about two thirds of the ring's width), with exactly one small thumb on the inner side tucked flat against it and no finger divisions, no grooves, no knuckles, resting flat on the keyboard. Keep the keyboard, the robot, its arms and rings, the desk, the lamp, Ouro and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix11-out.png",
+    "output_sha256": "316a101106dff496e649ac59904dc3707848c780cd8d80c6abe0dd493127689a",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix12 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the small coral robot's two hands. Each hand becomes a tiny smooth coral mitten, much smaller than the brass wrist ring above it, a short soft rounded bump with one small thumb nub on the inner side, no finger divisions, no grooves, resting flat on the keyboard so only its top half shows above the keyboard's near edge. Keep the keyboard, the robot, its arms and rings, the desk, the lamp, Ouro and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix12-out.png",
+    "output_sha256": "da20bb63aea112225e907fda18c87adc615382646725f0e6e5a1242bd9e5a3cb",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix13 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the small coral robot's two hands. Each hand becomes a small smooth rounded mitten, clearly NARROWER than the brass wrist ring above it (about two thirds of the ring's width), with exactly one small thumb on the inner side tucked flat against it and no finger divisions, no grooves, no knuckles, resting flat on the keyboard. Keep the keyboard, the robot, its arms and rings, the desk, the lamp, Ouro and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix13-out.png",
+    "output_sha256": "d9d3885995fa222bea5927695c08e92d11cdae8bc6e4e4aefce0ad208a67cf7a",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix14 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the slim silver keyboard. Redraw it as a clean, simple, real low-profile aluminium keyboard: exactly three straight horizontal rows of identical plain smooth blank pale-grey rounded squares, in a perfectly regular straight grid with thin straight dividers all the way to both ends, no extra lines, no smears, no speckles, no characters or marks at all. Keep the robot's mittens, wrist cuffs and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix14-out.png",
+    "output_sha256": "c2bcfaad1904b613c08947e2f1ffee70ee857dea2fd3c519ce54954f59fc53fe",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix15 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the steel-framed window on the far left edge. Redraw its frame so it is a flat frontal window: every transom and bar is perfectly horizontal and level, every mullion perfectly vertical, no slanted bars, the bottom sill level; keep the same view of the park and sky, the same size and position of the window, the wall, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix15-out.png",
+    "output_sha256": "a8dec018a6bbd9da3925abda2ba08fac71dc5b99970d7cf0b1ddb71577bd84b7",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix21 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the steel-framed window on the far left and the floor below it. Every window mullion becomes a solid opaque dark steel bar of equal width with no transparent, ghost or angled parts; remove any angled glass-pane shape above the top bar; the bottom rail is one continuous level bar; the floor below the window is plain oak boards with no translucent slab, panel or reflection shape. Keep the park view, window size and position, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix21-out.png",
+    "output_sha256": "24988bb5446d31166960ed11bd1f5af5d8b21c95574634a48b9c4ed16f2bd59f",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix22 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the two places where the glass person's sleeve cuffs meet the trouser pockets. Each hand and wrist goes fully inside a clearly drawn trouser pocket opening, the pocket lip overlapping the cuff completely, so no bare pale wedge or pointed tip of skin shows. Keep the person, pose, trousers, sweater, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix22-out.png",
+    "output_sha256": "6458f463ef591a450ebd09b7fbf9087d62ea510060263f696e743df8420ebffc",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "fix23 (crop edit patched back)",
+    "prompt": "Edit this picture: change only the slim silver keyboard under the robot's mittens. Every key is a plain smooth blank pale-grey rounded square with no letters, glyphs, marks or speckles at all, in a regular straight grid of three rows. Keep the mittens, wrist rings and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen3/fix23-out.png",
+    "output_sha256": "0832d591b81f60b52a3cf82b3588695c00b5bb2015fd69965f6ca5f9a6eb21a2",
+    "input_images": [
+     "crop of the previous master"
+    ]
+   },
+   {
+    "step": "outpaint left",
+    "prompt": "Extend this picture to the left: the grey area on the left is empty canvas, paint it as the continuation of the same contemporary loft study. Continue the steel-framed window wall flat and frontal: every window bar and transom perfectly horizontal and level, every mullion perfectly vertical, the sill level, with the soft park view, then pale plaster wall, oak floorboards and the daylight seamlessly. Keep the existing picture (the right part) exactly as it is. Add no people, no robots, no animals and no text; only calm wall, window, floor and a plain wooden chair at most. Same premium animated-film render, same eye level and perspective.",
+    "output": "hdr/my-agent-work/gen8/L-out.png",
+    "output_sha256": "5f3a929757426a2f27d187abcde7c01dbc003653831338bba3ad5eb55ff7897a",
+    "input_images": [
+     "gen8/L-in.png"
+    ]
+   },
+   {
+    "step": "outpaint right",
+    "prompt": "Extend this picture to the right: the grey area on the right is empty canvas, paint it as the continuation of the same contemporary loft study, continuing the plain pale plaster wall and the oak floorboards and the daylight seamlessly, with at most a leafy potted plant. Keep the existing picture (the left part) exactly as it is. Add no people, no robots, no animals, no shelves, no books and no text. Same premium animated-film render, same eye level and perspective.",
+    "output": "hdr/my-agent-work/gen8/R-out.png",
+    "output_sha256": "e805d0b8a96290265d979c91d0baa93dd3a74522b40978585c5b01333ac6c45e",
+    "input_images": [
+     "gen8/R-in.png"
+    ]
+   },
+   {
+    "step": "m1 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the vertical bar in the window at about 27 percent from the left of the picture and the floor below it. The window must have evenly spaced solid opaque dark steel mullions with no extra, see-through, ghost or doubled bar and no angled part; the top crossbar is one straight level bar across every pane; delete the translucent grey post, footplate or slab standing on the floor below the window so the floor is plain oak boards. Keep the city view, the window frame, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m1-out.png",
+    "output_sha256": "3f0d186555b2845c73fa05b1a92a92568f46bdceb277a9faa897e06aa82f71cc",
+    "input_images": [
+     "gen8/m1-in.png"
+    ]
+   },
+   {
+    "step": "m2 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the glass person's left sleeve cuff at the centre (the cuff on the left side of the picture). The ribbed cuff must go into a clearly drawn slanted trouser pocket opening: draw a dark pocket slit in the trouser side seam with the trouser fabric edge overlapping the cuff end, like the matching pocket on the other side. Keep the person, trousers, sweater and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m2-out.png",
+    "output_sha256": "30da7bad21059d5660f2346567e62b84e403cd4aeeca23a92395e8f1296ce15a",
+    "input_images": [
+     "gen8/m2-in.png"
+    ]
+   },
+   {
+    "step": "m3 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the right end of the slim silver keyboard on the right. Make that end a square rounded corner exactly like the keyboard's left end, three rows of plain blank evenly spaced keys right to the end, with nothing sloping, pale or protruding past the end. Keep the mitten and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m3-out.png",
+    "output_sha256": "e77d19d547e669c0924741e65d78a31897fa8dd36f78a090bf216ffbfb0b6f45",
+    "input_images": [
+     "gen8/m3-in.png"
+    ]
+   },
+   {
+    "step": "m4 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only what is seen through the big steel-framed window on the left: make it bright midday daytime, a clear light-blue sky with a few white clouds, sunlit city buildings with no lit windows, and a sunny green park with no lamps lit. Also make every window bar one straight, solid, level dark steel bar of equal thickness all the way across every pane, with no steps, thick blocks or smudges anywhere on the frame, including the top right corner. Keep the window frame position and size, the room, the floor, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m4-out.png",
+    "output_sha256": "870ff5b3268c27062ac3b9fbcf992b58c93bb00e42413e3b80b4e8ad65b81d2c",
+    "input_images": [
+     "gen8/m4-in.png"
+    ]
+   },
+   {
+    "step": "m5 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only what is seen through the big steel-framed window on the left: make it bright midday daytime, an evenly lit clear light-blue sky filling every pane edge to edge with a few soft white clouds and no dark corners or circular vignette, sunlit city buildings with no lit windows, and a sunny green park with no lit lamps. Also make every window bar one straight, solid, level dark steel bar of equal thickness running unbroken across every pane to the right frame, with no steps, offsets, thick blocks or smudges anywhere, including the top right corner. Keep the window frame position and size, the room, the floor, and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m5-out.png",
+    "output_sha256": "6e692031943180b8d5f2b2dd10ed058317ff55badb3456eed44522b05db4711b",
+    "input_images": [
+     "gen8/m5-in.png"
+    ]
+   },
+   {
+    "step": "m6 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the two orange mittens of the robot resting on the keyboard. Make each mitten a little smaller and narrower than the gold wrist ring above it (about 85 percent of the ring's width), a plain rounded mitten with one small thumb tucked flat against its side, resting on the keyboard. Keep the arms, wrist rings, the keyboard keys and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m6-out.png",
+    "output_sha256": "212630c460e8a7a2ab1ff85e8b146850f6b8253b4dcc6fcd178590ca3f4c598a",
+    "input_images": [
+     "gen8/m6-in.png"
+    ]
+   },
+   {
+    "step": "m7 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the faceless frosted-glass person's head. Remove the oval ear shape on the side of the head so the side of the skull is one smooth continuous frosted surface with no ear, dent or bump, and soften the bright white rim highlight along the jaw and back of the head to a gentle even frosted edge. Keep the head size and shape, the jaw, the neck, the sweater and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m7-out.png",
+    "output_sha256": "504ab5011ad545def9ab3fefcee155d179236e711b26b97cf32be9c1f269d5d5",
+    "input_images": [
+     "gen8/m7-in.png"
+    ]
+   },
+   {
+    "step": "m8 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the faceless frosted-glass person's head outline. Remove the thin dark contour line and the pale grey halo band along the crown and upper-left edge of the head, so the skull edge is one clean soft frosted edge that blends naturally into the wall behind, and soften the bright rim under the chin to a gentle even frosted edge. Keep the head size and shape, the jaw, the neck, the sweater and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m8-out.png",
+    "output_sha256": "53654daf5331d65b67a5869dbe616f384f555c7f5cc14b30357e86bb2df51fe6",
+    "input_images": [
+     "gen8/m8-in.png"
+    ]
+   },
+   {
+    "step": "m9 (master crop edit patched back)",
+    "prompt": "Edit this picture: change only the glass person's left sleeve cuff at the centre (the cuff on the left side of the picture). Its lower-left edge currently merges into the pale wall strip behind it: give the cuff a crisp, clearly separated outline against the wall, with a thin darker edge along the lower-left of the ribbed cuff, and keep the dark slanted pocket slit with the trouser edge overlapping the cuff end. Keep the person, trousers, sweater and everything else exactly the same. No text.",
+    "output": "hdr/my-agent-work/gen8/m9-out.png",
+    "output_sha256": "3d86089b79bacd0d44006d23bdd5e3ce6494e8752a4c26192c29bea65a38d640",
+    "input_images": [
+     "gen8/m9-in.png"
+    ]
+   }
+  ],
+  "master_sha256": "6a43c6000e1b9f350471052d4866b197e8bcc4ad618ffd4420bf54a0dd258fd4",
+  "width": 1536,
+  "height": 512,
+  "bytes": 104746,
+  "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2",
+  "previous": {
+   "sha256": null,
+   "generated": null
+  }
+ },
+ {
+  "file": "scenes/my-agent-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 240828,
+  "sha256": "5f486804a002e48943e51e5b9efbfa45d918e0b8adaa558533aa5f9ba4e0f7bf"
+ },
+ {
+  "file": "scenes/my-agent-dark-3072.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 181786,
+  "sha256": "6b1edc670f7eb8574685da5ef85d957d186f3f8a3e9aa5304e5fd524ff11368b"
+ },
+ {
+  "file": "upscaled/my-agent-dark.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "alsoFrom": {
+   "file": "flat/my-agent.webp",
+   "sha256": "e401c368da4d33b20134d73c097cc358abc0baf98ee65977ae52fc58cb490a20"
+  },
+  "lightsFrom": {
+   "file": "flat/my-agent-lights.png",
+   "sha256": "577441f72156b4b0875f09fb85e7beb14502ff538137eb44d81994b123e2b234"
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "the day's 4x master upscaled/my-agent.webp (sha256 292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538) wherever the flattened copy flat/my-agent.webp (sha256 e401c368da4d33b20134d73c097cc358abc0baf98ee65977ae52fc58cb490a20) equals the day (52.6% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/my-agent.webp (SSIM 0.9713 against it) where its sun pattern was removed, given the light and colour of headers/my-agent-dark.webp (sha256 2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/my-agent-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x; within 24 px (at 1536 wide) of that mask, fading out by 72 px, its log light coarser than 4 px is the night header's wherever the day is featureless (light_falloff), so the switch at the mask's edge leaves no ring in the sky",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/my-agent-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9536 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-19",
+  "encoder": "Pillow WebP quality 100 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 2048,
+  "bytes": 1297660,
+  "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+ },
+ {
+  "file": "upscaled/my-agent.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "4x master for site heroes wider than the 1536 px header",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/my-agent.webp (sha256 b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/my-agent.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9727 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-19",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
+  "width": 6144,
+  "height": 2048,
+  "bytes": 1066488,
+  "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+ },
+ {
+  "file": "scenes/my-agent-640.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 20480,
+  "sha256": "3c86451c5fac5e408a21718a30db8a73c1dd70dbb4275a383403246707c2476a"
+ },
+ {
+  "file": "scenes/my-agent-640.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 15034,
+  "sha256": "e6f705abaa8bcfa90247906b5ca1941a509e1c3359c655d04493cdcb914e229d"
+ },
+ {
+  "file": "scenes/my-agent-960.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 37904,
+  "sha256": "7ca3eea0e89ad220c777e07fb713b1f0145e9c447da6d3336c431d8b5fe1f0fe"
+ },
+ {
+  "file": "scenes/my-agent-960.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 27801,
+  "sha256": "3fb308b5ba91ae38403abd3dde2a3b3020cbff816a16453903e8e581eeb1adbd"
+ },
+ {
+  "file": "scenes/my-agent-1536.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 512,
+  "bytes": 58149,
+  "sha256": "59232b8e6ec29ad30c8cd4fd23a37504f4cf42de275968efd96915f8524eb268"
+ },
+ {
+  "file": "scenes/my-agent-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 768,
+  "bytes": 109769,
+  "sha256": "a4065d2889688e356f94c81600838d01cd89499964eb3508a9867dbf90c33f4d"
+ },
+ {
+  "file": "scenes/my-agent-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 166418,
+  "sha256": "d1a49be3158493f3ab74db1e3d5091efd4ae0a76d53d6e44c3c7a628e3a24a7d"
+ },
+ {
+  "file": "scenes/my-agent-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x1280 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 1280,
+  "bytes": 231097,
+  "sha256": "12af0eeff4687596693056779dc5fb685ab739ad1ed0fb6631c2a91e3c56be9c"
+ },
+ {
+  "file": "scenes/my-agent-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x1707 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 1707,
+  "bytes": 343552,
+  "sha256": "a86cee35b83f9f595dfcca9be5943bdbd029e03b26dcdaff6affe30cd5f5f8d9"
+ },
+ {
+  "file": "scenes/my-agent-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 522249,
+  "sha256": "48ee7b36e50ce1d71ac5996abf95ff497fef899baf2fe33cf60f22f5302715a0"
+ },
+ {
+  "file": "scenes/my-agent-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 860648,
+  "sha256": "7ddefcf842156f7f3988f01a8fbc3450ccf85c3208dfbdf7a28ac24675d165e0"
+ },
+ {
+  "file": "phone/my-agent-384.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 384x192 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 192,
+  "bytes": 11676,
+  "sha256": "4125b803fe319a7fb9f1cc4c7d19eb604b5b01d7caf9c1f3d53c8f1d74b07083"
+ },
+ {
+  "file": "phone/my-agent-384.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 384x192 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 192,
+  "bytes": 9087,
+  "sha256": "bc101e2a342e526f9bbcfc9ab8c990230078e7e53460d558b99fae180d3803b1"
+ },
+ {
+  "file": "phone/my-agent-768.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 768x384 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 384,
+  "bytes": 34466,
+  "sha256": "6fb3db073bdacbf214df3f2ce72f21e9a6fc481b7814d4304551248de47483af"
+ },
+ {
+  "file": "phone/my-agent-768.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 768x384 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 384,
+  "bytes": 25503,
+  "sha256": "090c69fe9eecac73468cdb98d4e1d59eb35f9cbda9045a5c1a614390c725518c"
+ },
+ {
+  "file": "phone/my-agent-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 576,
+  "bytes": 68162,
+  "sha256": "bfa3798aac0cd6c1a07644fb65486c747dd89921017e450fc3e5ae21ca6eb4de"
+ },
+ {
+  "file": "phone/my-agent-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 576,
+  "bytes": 48328,
+  "sha256": "5dd2e911440f1dd8a561a03357c6b1a4828cf694094448c3f4995810250594d2"
+ },
+ {
+  "file": "phone/my-agent-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 768,
+  "bytes": 103328,
+  "sha256": "c58d20e50f5aca5c58c5c99cc91faa0fcd2c9583f8cda347d9c64a4d1981e3a0"
+ },
+ {
+  "file": "phone/my-agent-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent.webp",
+   "sha256": "292456a2b973f910c3e5f0f26744d69d349932a1e972d86089952c10baa3a538"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 768,
+  "bytes": 73165,
+  "sha256": "b0c25031eb90836adf2f434ffdfc268a66f075669541fa40a06dfe911593d92d"
+ },
+ {
+  "file": "social/my-agent.jpg",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 175001,
+  "sha256": "130e135413c75c607022f97a3416131f33617736eb1ae4cab44cf015ed8550b8"
+ },
+ {
+  "file": "og/my-agent.jpg",
+  "derivedFrom": {
+   "file": "headers/my-agent.webp",
+   "sha256": "b5ba1b5ab0424dd5389b7f1c55194e6119668575338bb8b918e9d356b8f087b2"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [256, 0, 1231, 512] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 163418,
+  "sha256": "9352958eea8c53b20d89dfe2da248e0a01b91bca91d676173b8ded1ba7f82a7c"
+ },
+ {
+  "file": "scenes/my-agent-dark-640.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 11210,
+  "sha256": "6d5146ff72021fc92e5f35368be36f2a16105b2d3320899841133fe4a3cb57ae"
+ },
+ {
+  "file": "scenes/my-agent-dark-640.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 640x213 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 640,
+  "height": 213,
+  "bytes": 7754,
+  "sha256": "5eb0536ccd91d5861c764afd65910fc2542b5c0886c001e73284061d4003a482"
+ },
+ {
+  "file": "scenes/my-agent-dark-960.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 19718,
+  "sha256": "8014b8be3d2add1551a9a0860dbbe8f3646429506d5ab543d62fdf7b79b82233"
+ },
+ {
+  "file": "scenes/my-agent-dark-960.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene resized to 960x320 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 960,
+  "height": 320,
+  "bytes": 13509,
+  "sha256": "e2b2bd306c00293a12165294005a33bf860b155a635942c1851986c3a0fcddda"
+ },
+ {
+  "file": "scenes/my-agent-dark-1536.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "site hero, responsive width",
+  "operation": "whole scene",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1536,
+  "height": 512,
+  "bytes": 26750,
+  "sha256": "141b13f34bdcac3231595d230ea84dca986ae767f405a4bcf649692a86586ff2"
+ },
+ {
+  "file": "scenes/my-agent-dark-2304.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 2304x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 2304,
+  "height": 768,
+  "bytes": 87084,
+  "sha256": "cc98eedc23a639b0394233df5aa7789aa75507d1cb2a408846b4c8d5aa5b6ea7"
+ },
+ {
+  "file": "scenes/my-agent-dark-3072.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3072x1024 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3072,
+  "height": 1024,
+  "bytes": 130856,
+  "sha256": "56f5e08032c8f5e9413251e9d7f42e33cde5f90a9f21256d04465cd4b23ade55"
+ },
+ {
+  "file": "scenes/my-agent-dark-3840.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 3840x1280 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 3840,
+  "height": 1280,
+  "bytes": 177862,
+  "sha256": "4a3722f52cc8b47675e2b825098f3829afc5c845638b568128d973b44138867c"
+ },
+ {
+  "file": "scenes/my-agent-dark-5120.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 5120x1707 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 5120,
+  "height": 1707,
+  "bytes": 264000,
+  "sha256": "f2a8fb62366b423dd1c5b590440da89dc8dd7f1c57a7db543ea13b5c6b5b318b"
+ },
+ {
+  "file": "scenes/my-agent-dark-7680.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 454585,
+  "sha256": "72842758b60faf80f73fc035bf30a9dac55c05717cd50066cd3335bbbfd4cefe"
+ },
+ {
+  "file": "scenes/my-agent-dark-7680.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "site hero, responsive width",
+  "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 7680,
+  "height": 2560,
+  "bytes": 623506,
+  "sha256": "52ed63ccf3ee8ee88fc761360c218973e2ad095690e8a6c783d7e80c91c883bd"
+ },
+ {
+  "file": "phone/my-agent-dark-384.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 384x192 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 192,
+  "bytes": 7848,
+  "sha256": "85d77a4c8340d8c1bf4a8b44a2baab28cbe4d176a4b3db4a36cf4eb56fd919b8"
+ },
+ {
+  "file": "phone/my-agent-dark-384.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 384x192 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 384,
+  "height": 192,
+  "bytes": 5804,
+  "sha256": "aadf72be50e63896715ce1b72ee57be7499413e6c6c843eca21314e2843d6efa"
+ },
+ {
+  "file": "phone/my-agent-dark-768.webp",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 768x384 (Lanczos)",
+  "encoder": "Pillow WebP quality 82 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 384,
+  "bytes": 21508,
+  "sha256": "af0359c34137ce31757d7c87d3492ed5102feb096bea8ee679f9bc3c289b7b4d"
+ },
+ {
+  "file": "phone/my-agent-dark-768.avif",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 768x384 (Lanczos)",
+  "encoder": "Pillow AVIF quality 60 speed 4",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 768,
+  "height": 384,
+  "bytes": 14628,
+  "sha256": "a7d2fd27aedf0a95bcbeccd4663ead6e2ee4d0c05ff3e0ed4bfd5617a915903f"
+ },
+ {
+  "file": "phone/my-agent-dark-1152.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 576,
+  "bytes": 62316,
+  "sha256": "c33041384c1ea140f167b18cfa672914e2e21a3ef73dbf7de13f78b227a5a946"
+ },
+ {
+  "file": "phone/my-agent-dark-1152.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1152,
+  "height": 576,
+  "bytes": 45340,
+  "sha256": "141556d7f240727b020f66d110c68a34854ad0c59ccf4d903b21008dab48b6b9"
+ },
+ {
+  "file": "phone/my-agent-dark-1536.webp",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
+  "encoder": "Pillow WebP quality 90 method 6",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 768,
+  "bytes": 94138,
+  "sha256": "f076fc3c6ea5293a3b7eea659ca5475798a12339e37874df6ec5f16b4fc9a160"
+ },
+ {
+  "file": "phone/my-agent-dark-1536.avif",
+  "derivedFrom": {
+   "file": "upscaled/my-agent-dark.webp",
+   "sha256": "02de37260912e91f6aa27d33877f787dbbd3866f75adb7af4e1968046c0441ed"
+  },
+  "use": "phone hero (2:1)",
+  "operation": "crop box [928, 0, 5024, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
+  "encoder": "Pillow AVIF quality 70 speed 4, libaom tune=iq",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
+  "width": 1536,
+  "height": 768,
+  "bytes": 68014,
+  "sha256": "3beee0f392c4c654638a5f364d919c0b454b206f26fd65f3bd1465d60ade1f57"
+ },
+ {
+  "file": "social/my-agent-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "GitHub social preview (1280x640)",
+  "operation": "crop box [232, 0, 1256, 512] then resize to 1280x640 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1280,
+  "height": 640,
+  "bytes": 129447,
+  "sha256": "ce24ab72362ed3ffece21a291b5f15a5ee78b8e112f8ea41410912ec09d2d42f"
+ },
+ {
+  "file": "og/my-agent-dark.jpg",
+  "derivedFrom": {
+   "file": "headers/my-agent-dark.webp",
+   "sha256": "2f5a4ede52279eb10f9476cf0bb33762307eb63ceb21b30dedcef6397d26f0c3"
+  },
+  "use": "Open Graph and Twitter card (1200x630)",
+  "operation": "crop box [256, 0, 1231, 512] then resize to 1200x630 (Lanczos)",
+  "encoder": "Pillow JPEG quality 88, 4:4:4, optimized",
+  "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
+  "width": 1200,
+  "height": 630,
+  "bytes": 123177,
+  "sha256": "4b8352332ba59675ddb0a70d37c5b813aa1c15ec7a920542875ff7def536fff2"
  }
 ]
