@@ -22,11 +22,14 @@ A branch is deleted only when one of these holds, and never when one of the keep
 
 - (a) a branch fully merged into the default branch, with no commits the default branch lacks;
 - (b) a branch whose most recent pull request was closed unmerged at least `min-age-days` days ago, and whose tip is still that pull request's head;
-- (c) a branch whose most recent pull request was merged at least `min-age-days` days ago, and whose tip is still that pull request's head. A squash or rebase merge leaves the branch's own commits outside the default branch, so it isn't fully merged, but nothing on it is left to merge.
+- (c) a branch whose most recent pull request was merged at least `min-age-days` days ago, and whose tip is still that pull request's head. A squash or rebase merge leaves the branch's own commits outside the default branch, so it isn't fully merged, but nothing on it is left to merge;
+- (d) a branch with no pull request, not merged, whose last push (or its tip's commit date, when no push is recorded) is at least `stale-days` days old (14 by default). Work nobody opened a pull request for in that time is abandoned; anything worth keeping goes on a `rescue/` branch.
+
+A `rescue/` branch with no pull request is never deleted by (d): someone saved it on purpose, so a person decides. Rules (a) to (c) still apply to it.
 
 Only pull requests from this repository count. A pull request from a fork does not protect or condemn a branch.
 
-Everything else is kept, with the reason: for example `PR #12 merged, branch changed since`, `PR #12 closed unmerged, branch changed since`, or `no PR, not merged`.
+Everything else is kept, with the reason: for example `PR #12 merged, branch changed since`, `PR #12 closed unmerged, branch changed since`, `no PR, not merged, pushed 10 days ago`, or `rescue branch, no PR: a person decides`.
 
 Each delete is checked just before it happens. If the branch's tip has moved, or an open pull request has appeared for it, the branch is skipped and the log says so.
 
@@ -59,6 +62,7 @@ jobs:
     with:
       dry-run: ${{ inputs.dry-run || false }}
       min-age-days: 3
+      stale-days: 14
 ```
 
 It runs daily at 07:17 UTC and by hand. The caller grants `contents: write`, which deleting a branch needs, and `pull-requests: read`, which the rule reads. The reusable workflow checks out `ourostack/.github` at `main` for the CLI, with the checkout SHA the other reusable workflows pin, and sets up Node 24 with `actions/setup-node` v7.1.0 and no cache.
@@ -90,7 +94,7 @@ Exit codes: a delete that fails with anything other than a missing branch (a 404
 To try it by hand from a checkout, with a token that can read the branches and pull requests:
 
 ```sh
-GH_TOKEN=<token> REPO=owner/name node tools/branch-prune/prune.mjs --dry-run [--min-age-days 3]
+GH_TOKEN=<token> REPO=owner/name node tools/branch-prune/prune.mjs --dry-run [--min-age-days 3] [--stale-days 14]
 ```
 
 Drop `--dry-run` to delete. The CLI reads `REPO` and `GH_TOKEN` from the environment and needs `gh` on the path.

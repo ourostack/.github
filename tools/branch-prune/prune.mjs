@@ -7,10 +7,11 @@
 // release or system branch (release/…, releases/…, hotfix/…, vX.Y.Z, gh-readonly-queue/…, gh-pages…); a branch with
 // an open pull request from it or into it; a branch pushed to in the last min-age days (its last push, else its tip's
 // commit date). Deleted: a branch fully merged into the default branch; a branch whose most recent pull request was
-// merged, or closed unmerged, at least min-age days ago, while the branch still points where that pull request's head did.
-// Everything else is kept with its reason. Pull requests count only when they come from this repository, not a fork.
+// merged, or closed unmerged, at least min-age days ago, while the branch still points where that pull request's head did;
+// a branch with no pull request, not merged, last pushed at least stale days ago (14 by default), unless it is a rescue/
+// branch, which someone saved on purpose and only a person deletes. Everything else is kept with its reason. Pull requests count only when they come from this repository, not a fork.
 //
-// Usage (CI sets REPO and GH_TOKEN): GH_TOKEN=… REPO=owner/name node tools/branch-prune/prune.mjs [--dry-run] [--min-age-days 3]
+// Usage (CI sets REPO and GH_TOKEN): GH_TOKEN=… REPO=owner/name node tools/branch-prune/prune.mjs [--dry-run] [--min-age-days 3] [--stale-days 14]
 // --dry-run lists what would go and deletes nothing. The exit code is 1 when a delete fails for any reason but a
 // missing branch (another run deleted it first), or when GitHub cannot be read, since nothing can then be decided.
 import { spawnSync } from "node:child_process";
@@ -21,6 +22,7 @@ const HOUR_MS = 3_600_000;
 const PAGE_SIZE = 100;
 const RELEASE_NAMES = [/^(release|releases|hotfix)([/-]|$)/, /^v\d+(\.\d+)*$/];
 const SYSTEM_PREFIXES = ["gh-readonly-queue/", "gh-pages"];
+const RESCUE_PREFIX = "rescue/";
 // GitHub answers 404 for a branch that is gone, and 422 ("Reference does not exist") for a ref a delete finds missing.
 const MISSING = /HTTP (404|422)\b|Reference does not exist/;
 // A branch with no common history with the default branch has nothing merged into it: GitHub answers 404 to its compare.
@@ -60,7 +62,14 @@ function verdict(branch, ctx) {
   if (typeof branch.aheadBy !== "number") throw new TypeError(`decide needs aheadBy for ${branch.name}`);
   if (branch.aheadBy === 0) return { action: "delete", reason: `fully merged into ${ctx.defaultBranch}` };
   const last = latestPull(branch.prs ?? []);
-  if (!last) return keep("no PR, not merged");
+  if (!last) {
+    if (branch.name.startsWith(RESCUE_PREFIX)) return keep("rescue branch, no PR: a person decides");
+    // recentPushReason has read a push time, and found it outside the min-age window.
+    const pushedMs = ctx.now - Date.parse(branch.lastPushAt ?? branch.headCommitAt);
+    const pushedDays = Math.floor(pushedMs / DAY_MS);
+    if (pushedMs >= ctx.staleDays * DAY_MS) return { action: "delete", reason: `no PR, not merged, last pushed ${pushedDays} days ago` };
+    return keep(`no PR, not merged, pushed ${pushedDays} days ago`);
+  }
   // A squash or rebase merge leaves the branch's own commits outside the default branch, so it is not fully merged; its
   // pull request merged it all the same, and a branch still at that pull request's head carries nothing more.
   const how = last.merged ? "merged" : "closed unmerged";
@@ -73,9 +82,9 @@ function verdict(branch, ctx) {
 }
 
 /** Each branch with its action ("delete" or "keep") and reason. Branch records: see README.md. */
-export function decide(branches, { defaultBranch, now = new Date(), minAgeDays = 3 } = {}) {
+export function decide(branches, { defaultBranch, now = new Date(), minAgeDays = 3, staleDays = 14 } = {}) {
   if (!defaultBranch) throw new TypeError("decide needs the repository's defaultBranch");
-  const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays };
+  const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays, staleDays };
   return branches.map((branch) => ({ ...branch, ...verdict(branch, ctx) }));
 }
 
@@ -161,14 +170,15 @@ function kindOf(reason) {
     .replace(/^open PR #\d+/, "open PR")
     .replace(/^pushed \d+h ago$/, "pushed inside the window")
     .replace(/^PR #\d+ (merged|closed unmerged) \d+ days ago$/, "PR $1, inside the window")
+    .replace(/^no PR, not merged, pushed \d+ days ago$/, "no PR, not merged")
     .replace(/^PR #\d+/, "PR");
 }
 
 /** Prunes one repository. Returns the exit code: 0, or 1 when a delete failed for a reason other than a missing branch. */
-export function run({ repo, dryRun = false, minAgeDays = 3, gh = ghCall, log = console.log, err = console.error, now = new Date() }) {
+export function run({ repo, dryRun = false, minAgeDays = 3, staleDays = 14, gh = ghCall, log = console.log, err = console.error, now = new Date() }) {
   if (!repo) throw new Error("REPO is not set (owner/name)");
   const defaultBranch = JSON.parse(ghOk(gh, ["api", `repos/${repo}`])).default_branch;
-  const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays };
+  const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays, staleDays };
   const before = listBranches(repo, gh);
   const { byHead, targets } = listPulls(repo, gh);
   const records = before.map((branch) => gather(repo, gh, branch, ctx, byHead.get(branch.name) ?? [], targets.get(branch.name) ?? null));
@@ -208,16 +218,20 @@ export function run({ repo, dryRun = false, minAgeDays = 3, gh = ghCall, log = c
   return failed === 0 ? 0 : 1;
 }
 
+const DAY_OPTIONS = { "--min-age-days": "minAgeDays", "--stale-days": "staleDays" };
+
 export function parseArgs(argv) {
-  const options = { dryRun: false, minAgeDays: 3 };
+  const options = { dryRun: false, minAgeDays: 3, staleDays: 14 };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--dry-run") options.dryRun = true;
-    else if (argv[i] === "--min-age-days" && argv[i + 1] !== undefined) {
+    else if (DAY_OPTIONS[argv[i]] && argv[i + 1] !== undefined) {
+      const flag = argv[i];
       const value = argv[++i];
-      if (!/^\d+(\.\d+)?$/.test(value)) throw new Error(`--min-age-days takes a number of days, not ${value}`);
-      options.minAgeDays = Number(value);
-    } else throw new Error(`usage: prune.mjs [--dry-run] [--min-age-days <n>]  (unknown argument: ${argv[i]})`);
+      if (!/^\d+(\.\d+)?$/.test(value)) throw new Error(`${flag} takes a number of days, not ${value}`);
+      options[DAY_OPTIONS[flag]] = Number(value);
+    } else throw new Error(`usage: prune.mjs [--dry-run] [--min-age-days <n>] [--stale-days <n>]  (unknown argument: ${argv[i]})`);
   }
+  if (options.staleDays < options.minAgeDays) throw new Error(`--stale-days (${options.staleDays}) must be at least --min-age-days (${options.minAgeDays})`);
   return options;
 }
 
