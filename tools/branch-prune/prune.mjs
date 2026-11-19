@@ -7,7 +7,7 @@
 // release or system branch (release/…, releases/…, hotfix/…, vX.Y.Z, gh-readonly-queue/…, gh-pages…); a branch with
 // an open pull request from it or into it; a branch pushed to in the last min-age days (its last push, else its tip's
 // commit date). Deleted: a branch fully merged into the default branch; a branch whose most recent pull request was
-// closed unmerged at least min-age days ago, while the branch still points where that pull request's head did.
+// merged, or closed unmerged, at least min-age days ago, while the branch still points where that pull request's head did.
 // Everything else is kept with its reason. Pull requests count only when they come from this repository, not a fork.
 //
 // Usage (CI sets REPO and GH_TOKEN): GH_TOKEN=… REPO=owner/name node tools/branch-prune/prune.mjs [--dry-run] [--min-age-days 3]
@@ -61,13 +61,15 @@ function verdict(branch, ctx) {
   if (branch.aheadBy === 0) return { action: "delete", reason: `fully merged into ${ctx.defaultBranch}` };
   const last = latestPull(branch.prs ?? []);
   if (!last) return keep("no PR, not merged");
-  if (last.merged) return keep(`PR #${last.number} merged, branch not fully merged (squash)`);
+  // A squash or rebase merge leaves the branch's own commits outside the default branch, so it is not fully merged; its
+  // pull request merged it all the same, and a branch still at that pull request's head carries nothing more.
+  const how = last.merged ? "merged" : "closed unmerged";
   const closed = Date.parse(last.closedAt);
-  if (Number.isNaN(closed)) return keep(`PR #${last.number} closed, close time unknown`);
+  if (Number.isNaN(closed)) return keep(`PR #${last.number} ${how}, close time unknown`);
   const days = Math.floor((ctx.now - closed) / DAY_MS);
-  if (ctx.now - closed < ctx.minAgeDays * DAY_MS) return keep(`PR #${last.number} closed unmerged ${days} days ago`);
-  if (last.headSha !== branch.sha) return keep(`PR #${last.number} closed, branch changed since`);
-  return { action: "delete", reason: `PR #${last.number} closed unmerged ${days} days ago, unchanged since` };
+  if (ctx.now - closed < ctx.minAgeDays * DAY_MS) return keep(`PR #${last.number} ${how} ${days} days ago`);
+  if (last.headSha !== branch.sha) return keep(`PR #${last.number} ${how}, branch changed since`);
+  return { action: "delete", reason: `PR #${last.number} ${how} ${days} days ago, unchanged since` };
 }
 
 /** Each branch with its action ("delete" or "keep") and reason. Branch records: see README.md. */
@@ -158,7 +160,7 @@ function kindOf(reason) {
   return reason
     .replace(/^open PR #\d+/, "open PR")
     .replace(/^pushed \d+h ago$/, "pushed inside the window")
-    .replace(/^PR #\d+ closed unmerged \d+ days ago$/, "PR closed unmerged, inside the window")
+    .replace(/^PR #\d+ (merged|closed unmerged) \d+ days ago$/, "PR $1, inside the window")
     .replace(/^PR #\d+/, "PR");
 }
 

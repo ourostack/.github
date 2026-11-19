@@ -21,11 +21,12 @@ A branch is deleted only when one of these holds, and never when one of the keep
 **Deleted:**
 
 - (a) a branch fully merged into the default branch, with no commits the default branch lacks;
-- (b) a branch whose most recent pull request was closed unmerged at least `min-age-days` days ago, and whose tip is still that pull request's head.
+- (b) a branch whose most recent pull request was closed unmerged at least `min-age-days` days ago, and whose tip is still that pull request's head;
+- (c) a branch whose most recent pull request was merged at least `min-age-days` days ago, and whose tip is still that pull request's head. A squash or rebase merge leaves the branch's own commits outside the default branch, so it isn't fully merged, but nothing on it is left to merge.
 
 Only pull requests from this repository count. A pull request from a fork does not protect or condemn a branch.
 
-Everything else is kept, with the reason: for example `PR #12 merged, branch not fully merged (squash)`, `PR #12 closed, branch changed since`, or `no PR, not merged`.
+Everything else is kept, with the reason: for example `PR #12 merged, branch changed since`, `PR #12 closed unmerged, branch changed since`, or `no PR, not merged`.
 
 Each delete is checked just before it happens. If the branch's tip has moved, or an open pull request has appeared for it, the branch is skipped and the log says so.
 

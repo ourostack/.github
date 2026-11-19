@@ -71,11 +71,13 @@ test("decide keeps a branch whose PR was closed unmerged 2 days ago", () => {
 });
 
 test("decide keeps a branch closed unmerged 5 days ago whose head has moved on", () => {
-  assert.deepEqual(outcome({ prs: [pull({ closedAt: ago(5), headSha: sha("b") })] }), ["keep", "PR #1 closed, branch changed since"]);
+  assert.deepEqual(outcome({ prs: [pull({ closedAt: ago(5), headSha: sha("b") })] }), ["keep", "PR #1 closed unmerged, branch changed since"]);
 });
 
-test("decide keeps a branch whose merged PR left it not fully merged (squash)", () => {
-  assert.deepEqual(outcome({ prs: [pull({ merged: true, closedAt: ago(20) })] }), ["keep", "PR #1 merged, branch not fully merged (squash)"]);
+test("decide deletes a branch its PR squash-merged days ago and nothing changed since, and keeps one changed or merged inside the window", () => {
+  assert.deepEqual(outcome({ prs: [pull({ merged: true, closedAt: ago(20) })] }), ["delete", "PR #1 merged 20 days ago, unchanged since"]);
+  assert.deepEqual(outcome({ prs: [pull({ merged: true, closedAt: ago(20), headSha: "other" })] }), ["keep", "PR #1 merged, branch changed since"]);
+  assert.deepEqual(outcome({ prs: [pull({ merged: true, closedAt: ago(2) })] }), ["keep", "PR #1 merged 2 days ago"]);
 });
 
 test("decide keeps a branch with no PR that is not merged", () => {
