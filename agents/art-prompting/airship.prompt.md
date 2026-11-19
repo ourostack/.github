@@ -14,7 +14,7 @@ Generated at 1536x1024 and shipped as a 3:1 strip, so the crop band is rows 256 
 ### The person
 - What: Ari, as a faceless person from the shared universe, looking out from the bow.
 - Material: smooth, seamless frosted glass with a warm brass core and an emerald glow inside; no face at all.
-- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a soft round torso, short soft limbs.
+- Build: chubby, rounded and toy-like: a big soft round head about a third of the body, a short neck hidden inside the scarf so the head sits right on the shoulders, a soft round torso, short soft limbs.
 - Height: the tallest figure; the agents reach between their knee and waist, and Ouro's coil is about the size of their head.
 - Outfit: a moss-green knitted scarf, both ends streaming back toward the stern (left of frame) in the wind.
 - Expression: faceless; quiet wonder shown by the body: head lifted toward the horizon, weight on the back foot, shoulders loose.

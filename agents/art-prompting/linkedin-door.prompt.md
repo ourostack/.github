@@ -14,7 +14,7 @@ Generated at 1536x1024; compose.py builds the 4:1 banner from it, so the crop ba
 ### The Captain
 - What: the person, CIT's Captain.
 - Material: smooth, seamless frosted glass with a soft warm amber glow in the head and chest; no face.
-- Build: a chunky designer-vinyl figurine: a big round head about a third of the body, a soft round torso, short stubby limbs.
+- Build: a chunky designer-vinyl figurine: a big round head about a third of the body, sitting on a short neck no taller than a third of the head, a soft round torso, short stubby limbs.
 - Height: about 1.4 times the Stoker's height; the top of the Stoker's head is level with the Captain's shoulder.
 - Outfit: a plain amber canvas apron with no texture or pattern: the host getting the house ready for a new guest.
 - Expression: faceless; a warm welcome shown by the body: head tilted toward the Stoker, weight on one hip, shoulders loose.
