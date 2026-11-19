@@ -74,8 +74,8 @@
   "master_sha256": "d351d5bdacad9a8e2afe0dbcb790306b1bda486b90157cde591fd284910cda05",
   "width": 1536,
   "height": 512,
-  "bytes": 276908,
-  "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20",
+  "bytes": 267384,
+  "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330",
   "previous": {
    "sha256": "1a20ba40f2d424ac554f03e52a781c6f0bd88a0fc82c156602938c18a8ab8c6a",
    "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")"
@@ -362,6 +362,32 @@
      }
     ],
     "previous_sha256": "388b152866fb9dd0dcfa0714b0cbbed13e50fd2dd19fd35852b3ea4b24122e31"
+   },
+   {
+    "date": "2026-11-18",
+    "what": "Ari, 2026-11-18: both tartan throws faded into the jumper and the coat collar with no edge. Each throw now has a folded-over hem with a shadow line where it sits on the clothes, by day and by night; nothing else changed.",
+    "how": "the header's box x 400-1000, y 80-480 was cut from its 4x master, resized to 1536x1024 and edited with the GitHub Copilot app image_generation tool (quality high) using the prompt below; the edit was resized back by Lanczos and pasted only through a feathered mask over the two throws' upper halves (x 70-570, y 190-640 and x 880-1280, y 280-600 of the edit, Gaussian sigma 10); WebP q86",
+    "prompt": "Edit this picture. Change only the two tartan throws where they meet the clothes underneath; keep every other pixel, figure, pose, colour, light and object exactly as it is.\n\nThe problem: the dark green-and-navy tartan wool throw wrapped around each faceless glass person has no edge where it meets the clothing under it. On the left person, the throw's top edge across the shoulders, neck and upper arms dissolves into the cream cable-knit jumper. On the right person in the straw hat, the throw's top edge dissolves into the rust-red knitted coat collar and the white shirt.\n\nThe fix: give each throw a real, crisp edge everywhere it meets clothing. Along the top of each throw, around the neck and across both shoulders, draw a clear folded-over wool hem: a thick turned-down band of the same tartan, about two finger-widths deep, with a soft shadow line beneath it where it sits on the jumper or coat, so the throw clearly lies ON TOP of the clothing as a separate piece of cloth. The cream jumper on the left person and the rust-red collar and white shirt on the right person stay fully visible, solid and unchanged, ending cleanly at that hem line, never blending or fading into the tartan. Where a throw's side edge meets the jumper sleeve on the left person's left arm, draw the same clean hem with a short shadow. Keep the existing fringed tassels on the throws' lower edges exactly as they are.\n\nKeep unchanged: both glass heads and their necks, the straw hat, the mustard mitten on each person's chest holding the throw closed, the gold robot in the blue knit beanie, the bread and wicker hamper, the green snake on the patchwork quilt, the mugs, fruit, honey jar, the picnic blanket, the meadow and the sky. Same premium animated-film render, same sunrise light from the right. No text, letters or logos. No fades, no glow, no soft dissolving edges on any cloth.",
+    "input_images": [
+     "upscaled/ourostack.webp (box above, 4x)"
+    ],
+    "previous_sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20",
+    "hunt": {
+     "blind": true,
+     "reviewer": "fresh general-purpose agent, picture and 4x crops only, day and night",
+     "blockers": [],
+     "preexisting_outside_edit": [
+      "night: a soft second rim on the moon's upper-left edge",
+      "night: the mint robot's antenna ball lost against the blossom tree"
+     ],
+     "polish": [
+      "teapot handle not held",
+      "throw clasps lumpy",
+      "small mark on the basket lid",
+      "picnic blanket checks smeary"
+     ],
+     "note": "neither throw was flagged: both edges read; the two night items are in main's bytes unchanged (mean difference 1-2 levels, re-encode only)"
+    }
    }
   ]
  },
@@ -7608,7 +7634,7 @@
   "file": "scenes/ourostack-640.webp",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -7616,14 +7642,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 52112,
-  "sha256": "ac379098bbbb9764bfd390f47fd46fe9f315faebf2424269a1456e6efd26de79"
+  "bytes": 51410,
+  "sha256": "dffa3bafebf9c42755cbe83e70d80ec2ca1ce28bd7ab47cfc2f2cda3e95c8e73"
  },
  {
   "file": "scenes/ourostack-640.avif",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -7631,14 +7657,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 43866,
-  "sha256": "ec80734ec25053c2ac33d6cda8d7375f4460b0ed59c6dec6a92600ba237cdb0e"
+  "bytes": 42956,
+  "sha256": "accc972658635722268cd8bbed5852966da22b389bc30cf2e026486d7ea612d7"
  },
  {
   "file": "scenes/ourostack-960.webp",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -7646,14 +7672,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 105044,
-  "sha256": "d1af514b7dd22bfe5a318d39bf28949d6b133f05f168af842190f16d0c68dea7"
+  "bytes": 103864,
+  "sha256": "47a139fe0bc78a2f4d3a0de24511ae9702197ac5c80b72de60fe3d20b0018930"
  },
  {
   "file": "scenes/ourostack-960.avif",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -7661,14 +7687,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 88027,
-  "sha256": "85079c754cecdd5b798e36a22d845eb53f57684d89dbd468951b8b92765c5af0"
+  "bytes": 86660,
+  "sha256": "07a4312dd2ae1ae061790041c1e021f2ac153ae12618a09cf4793967e62dbc6e"
  },
  {
   "file": "scenes/ourostack-1536.avif",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -7676,14 +7702,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 192441,
-  "sha256": "20cb56737f21185a608c4cf90bc47a7b3167c4caa6af6f8134518c0d9365a895"
+  "bytes": 189021,
+  "sha256": "692b01d7d6421c5c3555ba04a247f1a016fddc643095fb0caf9b530555ed668c"
  },
  {
   "file": "phone/ourostack-384.webp",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 384x192 (Lanczos)",
@@ -7691,14 +7717,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 28034,
-  "sha256": "4fb8df8ca3d98df5f2d2b0d502d0105e362288c94d0c32016c66197fd8968611"
+  "bytes": 27534,
+  "sha256": "0dc1de3a15c611b4b95269ad93b1170459f457f023d6591564ea91757b61db4e"
  },
  {
   "file": "phone/ourostack-384.avif",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 384x192 (Lanczos)",
@@ -7706,14 +7732,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 24614,
-  "sha256": "b49ed5247b864125e965a14a67b75210e26d6aabf33aceb0af69813388ec302c"
+  "bytes": 24241,
+  "sha256": "7ae827201298031694ee9d2a0f8d37a30074e66fba4f29cac4f4ec4de4344ab4"
  },
  {
   "file": "phone/ourostack-768.webp",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 768x384 (Lanczos)",
@@ -7721,14 +7747,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 96020,
-  "sha256": "90872ab4e58bbcf5460576af5d078f2dcd6794145eb42b7df1549e692370e982"
+  "bytes": 94252,
+  "sha256": "a58cca724f2510dcc1d946f9401f74cecbb7c2681e3bf95d9ed1c5ec907f5ad7"
  },
  {
   "file": "phone/ourostack-768.avif",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 768x384 (Lanczos)",
@@ -7736,14 +7762,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 79801,
-  "sha256": "417c460a6739c74f8b47d94338109076eadf23ff7e24c881aec4691f4adbdcac"
+  "bytes": 78440,
+  "sha256": "dc022867ffd757f3d48ef637708847bf35c1350a84bee1c225b74c825a50081b"
  },
  {
   "file": "social/ourostack.jpg",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 1280x640 (Lanczos)",
@@ -7751,14 +7777,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 348785,
-  "sha256": "604978a8e1d62e495722b5d15d56157184ef088fa14fb623ef1326895a4a4d1e"
+  "bytes": 339149,
+  "sha256": "178414b91bd2ae26af08dfddfd72f328db82fde5856f2ab4122074ca5fc948d2"
  },
  {
   "file": "og/ourostack.jpg",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [278, 0, 1253, 512] then resize to 1200x630 (Lanczos)",
@@ -7766,8 +7792,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 323990,
-  "sha256": "0e8c909cc1acd383fd4ea2d5f2b3d93b1241388a7d72f9581394bdeb3378a2b0"
+  "bytes": 315096,
+  "sha256": "b33c67e6c27c1a8c1e0abe8bad8a9df9e72cb843c0fbc61b485cd6c201123aa9"
  },
  {
   "file": "scenes/playwright-focus-proof-640.webp",
@@ -10349,18 +10375,18 @@
   "file": "upscaled/ourostack.webp",
   "derivedFrom": {
    "file": "headers/ourostack.webp",
-   "sha256": "74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20"
+   "sha256": "6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ourostack.webp (sha256 74c60f4076133e1b98f7aab1e748f8ceaf4320550e31ea4eaf3c50ce1345fb20); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/ourostack.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9662 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-17",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/ourostack.webp (sha256 6626646c39e71c8752405a40ea963835615ecf741a39ea1c53b50f9694b0a330); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/ourostack.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9675 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 2271838,
-  "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+  "bytes": 2271292,
+  "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
  },
  {
   "file": "upscaled/playwright-focus-proof.webp",
@@ -13025,7 +13051,7 @@
   "file": "scenes/ourostack-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -13033,14 +13059,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 325250,
-  "sha256": "f53295ae46f46af259b6c5a1004574ae9ab86b2b29b3a13c75e72caa660ba009"
+  "bytes": 318547,
+  "sha256": "c573a87d25a7cbf2ceec632d8187e95653faf3b44c55c0a80a316e681f131686"
  },
  {
   "file": "scenes/ourostack-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -13048,14 +13074,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 464318,
-  "sha256": "7662c26cc2d56b72a2cd8341640abcea4f8959b4f2ef9a79fa003998e8dafd43"
+  "bytes": 455793,
+  "sha256": "8db4937fe76a23e90892aef296b3202fc59b7ba5d7d8afbb61399d515eba26eb"
  },
  {
   "file": "scenes/ourostack-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -13063,14 +13089,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 616742,
-  "sha256": "f50ad75df383a2df40f3140b65ba599bb45704bacaa835026f48be23efc9add0"
+  "bytes": 603392,
+  "sha256": "66d0201d5a4bd5739cfabc7e592404b494770de31c0145aec5a114c2ee22375d"
  },
  {
   "file": "scenes/ourostack-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -13078,14 +13104,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 602028,
-  "sha256": "0db0635973b1e4205dcc6ee685951434d3079ab1b4b41779d8ee166c3e84076f"
+  "bytes": 592028,
+  "sha256": "7c827204c219f377ceb7e707e591716ffa87f1851eb890376421188134e07cdc"
  },
  {
   "file": "scenes/ourostack-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -13093,14 +13119,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 819608,
-  "sha256": "300e401918c026116f2deed28c5091fe99051db4538a6007bd5393366507aa0a"
+  "bytes": 805864,
+  "sha256": "deccbac6ce809bf40dacefe2a85891ad78fdd05bc836a411155acd27a710883e"
  },
  {
   "file": "scenes/ourostack-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -13108,14 +13134,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1185096,
-  "sha256": "3abc57193d692c16552a45b3c978c3b741efda40fd4010f8a29eedc348ee957e"
+  "bytes": 1169685,
+  "sha256": "3e6e89a067d149830000d41c2a38067e775d0f94f1fad061a2041556df8e0f45"
  },
  {
   "file": "scenes/ourostack-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -13123,8 +13149,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1872322,
-  "sha256": "0b88def6cb1e18c0e224b98d7cc8038255454c9439cdd6a55ef2e72e4b8a7a70"
+  "bytes": 1845476,
+  "sha256": "6854dd3e4c45ececc06cea1679523982ac8341e03013ae42cc1b55f89c95e27b"
  },
  {
   "file": "scenes/playwright-focus-proof-2304.avif",
@@ -15132,7 +15158,7 @@
   "file": "phone/ourostack-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -15140,14 +15166,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 176718,
-  "sha256": "4e7713aa036dc2d87127f97469fd161494e3e7de02d0f2e3b37267ea78d26330"
+  "bytes": 173580,
+  "sha256": "784bdde60e982e84d6acd8431a6f2a4860c73235cb223d264a9c4fff1fc70872"
  },
  {
   "file": "phone/ourostack-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -15155,14 +15181,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 146759,
-  "sha256": "d9590fd44aff0b70f618b3d6b7d59a84daf0b7e35f9fd2a5d2527e965f9c4fc1"
+  "bytes": 143899,
+  "sha256": "c1263e65b56b8ea8e8f5c99cc7178afd8f776d9ad255d34ca2f308c60b86bb46"
  },
  {
   "file": "phone/ourostack-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -15170,14 +15196,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 272470,
-  "sha256": "1cb37f31bcf1afcf3f9983952f50b48cc49f2e1fc3446abe36e1cc259bd09aea"
+  "bytes": 267118,
+  "sha256": "34bf019dd68aa6f8bb902dc1a1686d82eb3a81c097a3cedc7faa6b8724ad7cdd"
  },
  {
   "file": "phone/ourostack-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack.webp",
-   "sha256": "77de95bd24da82e1abc68181ae78084a3dc264a582543955b279cdd9815999bf"
+   "sha256": "593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -15185,8 +15211,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 215061,
-  "sha256": "3085f72f438a354d811c7cfd84993a57e076afbfc5144d6c730010d733896d19"
+  "bytes": 211498,
+  "sha256": "94178ba37b92b5600d54a678ceb06a36c5acd4b185dd97bfc132cd8357ca3578"
  },
  {
   "file": "phone/playwright-focus-proof-1152.webp",
@@ -22351,8 +22377,8 @@
   "master_sha256": "1b799db2547478aae4957c678ffbd2d9ab32a3b40971a734950fc5b013ec7944",
   "width": 1536,
   "height": 512,
-  "bytes": 237000,
-  "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27",
+  "bytes": 233176,
+  "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500",
   "previous": {
    "sha256": "618ab6778550d35d59f13993768154c4ef4ff0eb2964fd6b8bdcf75cd7572f5c",
    "generated": "Dark master, 2026-11-13, edited from the light header"
@@ -22372,6 +22398,32 @@
     "date": "2026-11-18",
     "what": "night polish, light only: the flat day now carries the day's clouds (it had none), so the night keeps them faintly moonlit (inside the sky boxes x 0-0.35 and 0.9-1.0, y 0-0.10, feathered); the warm meadow flowers graded dim and desaturated instead of cobalt (cobalt-hue share 0.28 to 0.01 and 0.21 to 0.00); both run to the relight_transfer fixed point; the night header at WebP q95 so the 4x agrees with it (SSIM 0.957).",
     "previous_sha256": "bd361464b0fe416c7d3794f51ef78032222572447a6fdd1b353a5d313320752b"
+   },
+   {
+    "date": "2026-11-18",
+    "what": "Ari, 2026-11-18: both tartan throws faded into the jumper and the coat collar with no edge. Each throw now has a folded-over hem with a shadow line where it sits on the clothes, by day and by night; nothing else changed.",
+    "how": "the same patch carried over as light only: inside the day's feathered mask this file is the fixed day given this file's own light and colour by brand/tools/relight_transfer.py (radius 24), so its shapes match the day; WebP q95",
+    "prompt": "Edit this picture. Change only the two tartan throws where they meet the clothes underneath; keep every other pixel, figure, pose, colour, light and object exactly as it is.\n\nThe problem: the dark green-and-navy tartan wool throw wrapped around each faceless glass person has no edge where it meets the clothing under it. On the left person, the throw's top edge across the shoulders, neck and upper arms dissolves into the cream cable-knit jumper. On the right person in the straw hat, the throw's top edge dissolves into the rust-red knitted coat collar and the white shirt.\n\nThe fix: give each throw a real, crisp edge everywhere it meets clothing. Along the top of each throw, around the neck and across both shoulders, draw a clear folded-over wool hem: a thick turned-down band of the same tartan, about two finger-widths deep, with a soft shadow line beneath it where it sits on the jumper or coat, so the throw clearly lies ON TOP of the clothing as a separate piece of cloth. The cream jumper on the left person and the rust-red collar and white shirt on the right person stay fully visible, solid and unchanged, ending cleanly at that hem line, never blending or fading into the tartan. Where a throw's side edge meets the jumper sleeve on the left person's left arm, draw the same clean hem with a short shadow. Keep the existing fringed tassels on the throws' lower edges exactly as they are.\n\nKeep unchanged: both glass heads and their necks, the straw hat, the mustard mitten on each person's chest holding the throw closed, the gold robot in the blue knit beanie, the bread and wicker hamper, the green snake on the patchwork quilt, the mugs, fruit, honey jar, the picnic blanket, the meadow and the sky. Same premium animated-film render, same sunrise light from the right. No text, letters or logos. No fades, no glow, no soft dissolving edges on any cloth.",
+    "input_images": [
+     "headers/ourostack.webp (fixed)"
+    ],
+    "previous_sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27",
+    "hunt": {
+     "blind": true,
+     "reviewer": "fresh general-purpose agent, picture and 4x crops only, day and night",
+     "blockers": [],
+     "preexisting_outside_edit": [
+      "night: a soft second rim on the moon's upper-left edge",
+      "night: the mint robot's antenna ball lost against the blossom tree"
+     ],
+     "polish": [
+      "teapot handle not held",
+      "throw clasps lumpy",
+      "small mark on the basket lid",
+      "picnic blanket checks smeary"
+     ],
+     "note": "neither throw was flagged: both edges read; the two night items are in main's bytes unchanged (mean difference 1-2 levels, re-encode only)"
+    }
    }
   ]
  },
@@ -22379,32 +22431,32 @@
   "file": "upscaled/ourostack-dark.webp",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "alsoFrom": {
    "file": "flat/ourostack.webp",
-   "sha256": "cdce35f1c6beecfa4bd3ceae5edc666026f55e1a3c68f66ba83ead3d4ad3a63a"
+   "sha256": "5a910d2f80cdfbdd5b65803abae46ef74a7747f9e28f942f3d51b422d5657353"
   },
   "lightsFrom": {
    "file": "flat/ourostack-lights.png",
    "sha256": "5795ce36b044640943a6fd05dd711e9cac9c04a262f32ed09c94e056726e71c5"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "the day's 4x master upscaled/ourostack.webp (sha256 e02529b8d10b5c309c63bbdb327b1ce0243f3589b9955f212605fee5bf6c7553) wherever the flattened copy flat/ourostack.webp (sha256 cdce35f1c6beecfa4bd3ceae5edc666026f55e1a3c68f66ba83ead3d4ad3a63a) equals the day (16.7% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/ourostack.webp (SSIM 0.9665 against it) where its sun pattern was removed, given the light and colour of headers/ourostack-dark.webp (sha256 ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/ourostack-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x; within 24 px (at 1536 wide) of that mask, fading out by 72 px, its log light coarser than 4 px is the night header's wherever the day is featureless (light_falloff), so the switch at the mask's edge leaves no ring in the sky",
-  "checked": "Lanczos-downsized to 1536x512, it matches headers/ourostack-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9571 (floor 0.95); same crop, subject and aspect",
+  "operation": "the day's 4x master upscaled/ourostack.webp (sha256 593565a4a701485afe116c6d3a077d4e48e112c04dd7c0bec4f392846a5dd491) wherever the flattened copy flat/ourostack.webp (sha256 5a910d2f80cdfbdd5b65803abae46ef74a7747f9e28f942f3d51b422d5657353) equals the day (12.0% of the header), and Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan)'s 4x of flat/ourostack.webp (SSIM 0.9681 against it) where its sun pattern was removed, given the light and colour of headers/ourostack-dark.webp (sha256 b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's or the flat day's, so each night size has the day's structure without its sun pattern (nightFromFlatDay in crops.json); inside the night-light mask flat/ourostack-lights.png (lit lamps, glowing eyes) it is the night header itself, Lanczos 4x; within 24 px (at 1536 wide) of that mask, fading out by 72 px, its log light coarser than 4 px is the night header's wherever the day is featureless (light_falloff), so the switch at the mask's edge leaves no ring in the sky",
+  "checked": "Lanczos-downsized to 1536x512, it matches headers/ourostack-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9582 (floor 0.95); same crop, subject and aspect",
   "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 100 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Real-ESRGAN's 4x of the day's flattened copy (its sun pattern removed) given only this night's light and colour, so the night has the day's shapes without the day's sunlight; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2048,
-  "bytes": 2655960,
-  "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+  "bytes": 2653794,
+  "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
  },
  {
   "file": "scenes/ourostack-dark-640.avif",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -22412,14 +22464,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 22342,
-  "sha256": "69580e5a3552ad75a6acc0a18570f1a0adb31c2e73e0c849c1e01c5c247fd39b"
+  "bytes": 22146,
+  "sha256": "b64efddc6907f4042f482db158bad1f032430d5e94491401a0c2aea85360d902"
  },
  {
   "file": "scenes/ourostack-dark-640.webp",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x213 (Lanczos)",
@@ -22427,14 +22479,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 213,
-  "bytes": 27090,
-  "sha256": "680abafb9d2e6beaf90b81e47011fdae200f200d7093d04c17115de20dcbb20f"
+  "bytes": 26796,
+  "sha256": "c44561809dc819536dbb2d8aef8b107599b3b01d2010eda5f50700a8ca143879"
  },
  {
   "file": "scenes/ourostack-dark-960.avif",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -22442,14 +22494,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 44227,
-  "sha256": "bc20a241846abf7cccd3dd1d51dadfe42529fe8b8ada9f9d8fa05565bfa61041"
+  "bytes": 43871,
+  "sha256": "223ad68513ff374ba1e4b1642ea37dadb702217b9b1a7f04c344c0951215c04f"
  },
  {
   "file": "scenes/ourostack-dark-960.webp",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x320 (Lanczos)",
@@ -22457,14 +22509,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 320,
-  "bytes": 53950,
-  "sha256": "4abf06281df12a7e15a8a720ad758672f24d758da1952e0872bcaa8ba88ce752"
+  "bytes": 52934,
+  "sha256": "c5ee819b05bdc10a6a293fa826a08dc1b8a443723ec278a0678de2a5c34a1677"
  },
  {
   "file": "scenes/ourostack-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -22472,14 +22524,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 512,
-  "bytes": 97149,
-  "sha256": "6bf94c3cda9fda8703c383238eb78534395ce2b7f6707dad2d7d4ac03ba3eeb3"
+  "bytes": 95584,
+  "sha256": "b681ed5a9cf524c8ae41f8f084eeeeaad05bdf2fe7acf69d244a3bc080fa4b9e"
  },
  {
   "file": "scenes/ourostack-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x768 (Lanczos)",
@@ -22487,14 +22539,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 768,
-  "bytes": 237552,
-  "sha256": "751cd2440a1b62205c294ed5ecbe25b317c9dc0787cf6da57a3d91292056cbea"
+  "bytes": 234449,
+  "sha256": "c77f96da4aecbd4f10db4caba67a79d02564eb4b26474815ada27a440abdd81d"
  },
  {
   "file": "scenes/ourostack-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -22502,14 +22554,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 348522,
-  "sha256": "b626894d3ff1b3ac74e461136712beeece6c50c7d7a1161245031096fdef774d"
+  "bytes": 345201,
+  "sha256": "64c4e58758772e8e0a1aecc2635ae10ba5776c302ed7ee1ac45e46411f0b1459"
  },
  {
   "file": "scenes/ourostack-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1024 (Lanczos)",
@@ -22517,14 +22569,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1024,
-  "bytes": 467296,
-  "sha256": "290c38eb7b79e9b3fdd7bace892a0ad6f42df88206b4243fb90dc6a53f13ec56"
+  "bytes": 461548,
+  "sha256": "e51bdf535bbfedb07cb646f0635a4a40abbb6c698fdc12e6dd06c62e9eca3f26"
  },
  {
   "file": "scenes/ourostack-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1280 (Lanczos)",
@@ -22532,14 +22584,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1280,
-  "bytes": 463565,
-  "sha256": "827004c648b1f80e1d71d249da7701fdafe70cbe9516d0d52b947e1d368dc1b5"
+  "bytes": 461299,
+  "sha256": "7879cc6f69a59007f03823a4ee3377029ba377b223320c4d16682b727fd24273"
  },
  {
   "file": "scenes/ourostack-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1707 (Lanczos)",
@@ -22547,14 +22599,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1707,
-  "bytes": 656691,
-  "sha256": "8a0a96585a1e8f5fc67af866913920d8c42e1f1477c75d9ee6c6398aa6e9b82d"
+  "bytes": 654481,
+  "sha256": "21154723fd92be5b81120dbe392a2253dc9ea7aae6a239a9488638fbeeef0c05"
  },
  {
   "file": "scenes/ourostack-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -22562,14 +22614,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1053928,
-  "sha256": "9bbbd4447196ed7bd737df380c2074aa8ddcf5da05f490559e94badf4834e3e5"
+  "bytes": 1057889,
+  "sha256": "f564fd1cdd69c8592f07a49cae2fac688304c54b826a8d921c47155d78461a72"
  },
  {
   "file": "phone/ourostack-dark-384.avif",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 384x192 (Lanczos)",
@@ -22577,14 +22629,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 13300,
-  "sha256": "ff749c026334e74beb60cfec67bfae4f1de75cb17ce409b79cfb047c511ba9aa"
+  "bytes": 13242,
+  "sha256": "0c8b1da06a3f052f098f61de28de7e77027d959326bda9f0faef94daafd8ced4"
  },
  {
   "file": "phone/ourostack-dark-384.webp",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 384x192 (Lanczos)",
@@ -22592,14 +22644,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 15454,
-  "sha256": "f17e2e2a116e8cff7eef7db70547827a9169b5672f3d2e7cec69b8d375ce3955"
+  "bytes": 15366,
+  "sha256": "f31d49566da429275985eb1210b85ed224a856753c23bcc403145322c91510b2"
  },
  {
   "file": "phone/ourostack-dark-768.avif",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 768x384 (Lanczos)",
@@ -22607,14 +22659,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 41506,
-  "sha256": "e8939c3808b8c83504dc92ff0aebcae4ff6ef23aa1050cbdb1a9fd1d799635f8"
+  "bytes": 40949,
+  "sha256": "aa2278fde289660195de41e024588f15debc8b0f7c6328836ada0a31e9d4ab7d"
  },
  {
   "file": "phone/ourostack-dark-768.webp",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 768x384 (Lanczos)",
@@ -22622,14 +22674,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 50680,
-  "sha256": "d4cf7234af6624c7a5c2b1684fa3c3690a7bbcc5eef173bbeb6080fcb87c8e6e"
+  "bytes": 50048,
+  "sha256": "0bc7ed099f6e2307861c98506ad89003ad281f6dc9c94ec2cc33607d599829f0"
  },
  {
   "file": "og/ourostack-dark.jpg",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "Open Graph and Twitter card (1200x630)",
   "operation": "crop box [278, 0, 1253, 512] then resize to 1200x630 (Lanczos)",
@@ -22637,8 +22689,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 206682,
-  "sha256": "00542dab9e9b21ef219be626dd310984892b9ce84a71492abd3ccd7cbcf26cb9"
+  "bytes": 202678,
+  "sha256": "d8eabe44207d514cf57902e7c18173defcc71bad8536df8ad56c2431f460b732"
  },
  {
   "file": "headers/shepherd-dark.webp",
@@ -23293,7 +23345,7 @@
   "file": "phone/ourostack-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -23301,14 +23353,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 142508,
-  "sha256": "629fae36b50cbcc8c11029478c5a99dd96547a245bb985e7a0aeef6367d095db"
+  "bytes": 139794,
+  "sha256": "4c3fc5145ca059749e371bc0ae29f5149871e0156480a821d2448ea2b6090c4a"
  },
  {
   "file": "phone/ourostack-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -23316,14 +23368,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 107017,
-  "sha256": "078ae4006faf6dd9a51399c54f9408e5fbdcdd57a70e64d35fa1ba80955a40bc"
+  "bytes": 105390,
+  "sha256": "dde4ba3164ab41ef5803a14267a664c32cec31fb650fbe9f11dc0926281107d5"
  },
  {
   "file": "phone/ourostack-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -23331,14 +23383,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 215370,
-  "sha256": "d6b226ccb552352e98176b4c2518e3ae0f7dc960d6e1fe728fab81d69bf8c9c9"
+  "bytes": 213418,
+  "sha256": "c56e769c7d4d8580224d4ac147ed4c47ae05e4f5fdf090ac2690bdee0c007ebf"
  },
  {
   "file": "phone/ourostack-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [1012, 0, 5108, 2048] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -23346,8 +23398,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 160633,
-  "sha256": "0959c36fd404e54be869567271e575906ad6dd8a23e8e1f812b05f6930bf72ff"
+  "bytes": 158997,
+  "sha256": "7a584ac600b5595bd95cf9e9198bbf6e396dbcac22360437f2c8a2b1b6134a8c"
  },
  {
   "file": "phone/playwright-focus-proof-dark-1152.webp",
@@ -27299,7 +27351,7 @@
   "file": "scenes/ourostack-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/ourostack-dark.webp",
-   "sha256": "e88ae59342b9fd6ec8d4e76418496a353ce59b43fe756e4e53590e6aa80a044f"
+   "sha256": "a334ba8f35c91ec4b5f1fc88cf455ebd878cb70ecc06c8364c5669367d247ef4"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2560 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27307,14 +27359,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2560,
-  "bytes": 1358160,
-  "sha256": "bfd757a1a994eb4909b20a3f8d00b7b5b5ecbfbaf815b74a9861341c63b5df76"
+  "bytes": 1364024,
+  "sha256": "a5163b3848cf7fe85599f37596aac2859a2dfc79204a57102c001327a7c64ce6"
  },
  {
   "file": "social/ourostack-dark.jpg",
   "derivedFrom": {
    "file": "headers/ourostack-dark.webp",
-   "sha256": "ae402cc6668774468af6739d91a3c61304e473208046c058643ae7ebbd628b27"
+   "sha256": "b5eba1c1c3ddc43a3ac4193ed0bf81a4a1ff1cb3df208d0eada2fedfd831f500"
   },
   "use": "GitHub social preview (1280x640)",
   "operation": "crop box [253, 0, 1277, 512] then resize to 1280x640 (Lanczos)",
@@ -27322,8 +27374,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 222749,
-  "sha256": "ba9b2d6fe060b39fc11390672a78ff9e5d593292133962ade5e75f41e88d65ac"
+  "bytes": 218174,
+  "sha256": "128330b7aacebe41fc9759574c34893d94d9527d467625a0cfa3dcb8b8dee2ab"
  },
  {
   "file": "scenes/apple-distribution-kit-dark-7680.webp",
@@ -38595,8 +38647,20 @@
   "use": "ourostack's day with its sun pattern removed, the base of its night's 4x master (nightFromFlatDay)",
   "width": 1536,
   "height": 512,
-  "bytes": 354328,
-  "sha256": "cdce35f1c6beecfa4bd3ceae5edc666026f55e1a3c68f66ba83ead3d4ad3a63a"
+  "bytes": 388314,
+  "sha256": "5a910d2f80cdfbdd5b65803abae46ef74a7747f9e28f942f3d51b422d5657353",
+  "edits": [
+   {
+    "date": "2026-11-18",
+    "what": "Ari, 2026-11-18: both tartan throws faded into the jumper and the coat collar with no edge. Each throw now has a folded-over hem with a shadow line where it sits on the clothes, by day and by night; nothing else changed.",
+    "how": "the same patch carried over as light only: inside the day's feathered mask this file is the fixed day given this file's own light and colour by brand/tools/relight_transfer.py (radius 24), so its shapes match the day; WebP q95",
+    "prompt": "Edit this picture. Change only the two tartan throws where they meet the clothes underneath; keep every other pixel, figure, pose, colour, light and object exactly as it is.\n\nThe problem: the dark green-and-navy tartan wool throw wrapped around each faceless glass person has no edge where it meets the clothing under it. On the left person, the throw's top edge across the shoulders, neck and upper arms dissolves into the cream cable-knit jumper. On the right person in the straw hat, the throw's top edge dissolves into the rust-red knitted coat collar and the white shirt.\n\nThe fix: give each throw a real, crisp edge everywhere it meets clothing. Along the top of each throw, around the neck and across both shoulders, draw a clear folded-over wool hem: a thick turned-down band of the same tartan, about two finger-widths deep, with a soft shadow line beneath it where it sits on the jumper or coat, so the throw clearly lies ON TOP of the clothing as a separate piece of cloth. The cream jumper on the left person and the rust-red collar and white shirt on the right person stay fully visible, solid and unchanged, ending cleanly at that hem line, never blending or fading into the tartan. Where a throw's side edge meets the jumper sleeve on the left person's left arm, draw the same clean hem with a short shadow. Keep the existing fringed tassels on the throws' lower edges exactly as they are.\n\nKeep unchanged: both glass heads and their necks, the straw hat, the mustard mitten on each person's chest holding the throw closed, the gold robot in the blue knit beanie, the bread and wicker hamper, the green snake on the patchwork quilt, the mugs, fruit, honey jar, the picnic blanket, the meadow and the sky. Same premium animated-film render, same sunrise light from the right. No text, letters or logos. No fades, no glow, no soft dissolving edges on any cloth.",
+    "input_images": [
+     "headers/ourostack.webp (fixed)"
+    ],
+    "previous_sha256": "cdce35f1c6beecfa4bd3ceae5edc666026f55e1a3c68f66ba83ead3d4ad3a63a"
+   }
+  ]
  },
  {
   "file": "flat/factory-lights.png",
