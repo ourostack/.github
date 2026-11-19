@@ -39,6 +39,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRAND_COMMIT: ${{ github.event_name != 'pull_request' && github.sha || '' }}
           BRAND_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+          BRAND_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
         run: node brand/tools/audit.mjs --format text
 
   # The only job that writes: it files, updates and closes the convergence issue. Never on a pull request.

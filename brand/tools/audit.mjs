@@ -26,6 +26,7 @@
 // "unregistered" and fails, so converge.mjs files the same one issue for it. A pull request that edits a repository's
 // registration still fails on its own mistake.
 // BRAND_COMMIT=<commit> reads canonical bytes at that commit but still audits production (CI sets it on every run but a pull request's).
+// BRAND_BASE=<commit> is the base the pull request was built on, where its registry is compared from (CI sets it; empty means main).
 // BRAND_REF=<commit> checks that commit's canonical bytes instead of main's (CI sets it on pull requests).
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
 
@@ -419,7 +420,7 @@ async function coverage() {
   const socials = new Set(registry.surfaces.filter((s) => s.kind === "github-social-preview").map((s) => s.repo.split("/")[1]));
   const abouts = new Set(registry.surfaces.filter((s) => s.kind === "github-about").map((s) => s.repo.split("/")[1]));
   const pr = !originOverride && !!process.env.BRAND_REF;
-  const main = pr ? await get(registry.canonicalRaw + "surfaces.json").then((res) => (res.status === 200 ? JSON.parse(res.body.toString("utf8")) : null), () => null) : null;
+  const main = pr ? await get(canonicalUrl(registry.canonicalRaw, "surfaces.json", process.env.BRAND_BASE)).then((res) => (res.status === 200 ? JSON.parse(res.body.toString("utf8")) : null), () => null) : null;
   const status = (name) => unregisteredFor({ pr, registry, main, name });
   const pendingNote = (name) => (status(name) === "unregistered-pending" ? { reason: "an organization-wide gap this pull request does not touch: the post-merge audit files an issue for it" } : {});
   const out = [];
