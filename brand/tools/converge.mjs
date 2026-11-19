@@ -54,7 +54,7 @@ async function main() {
   try {
     report = JSON.parse(ran.stdout);
   } catch {
-    console.error(`audit gave no report (exit ${ran.status}): ${ran.stderr.slice(0, 300)}`);
+    console.error(`audit gave no report (exit ${ran.status}, signal ${ran.signal ?? "none"}${ran.error ? `, ${ran.error.message}` : ""}): stdout ${ran.stdout?.length ?? 0} bytes, starts ${JSON.stringify((ran.stdout ?? "").slice(0, 200))}, ends ${JSON.stringify((ran.stdout ?? "").slice(-100))}; stderr ${ran.stderr?.length ?? 0} bytes, starts ${JSON.stringify((ran.stderr ?? "").slice(0, 300))}`);
     process.exit(3);
   }
   // A surface that could not be checked says nothing about convergence: change nothing.
