@@ -3825,8 +3825,8 @@
   "master_sha256": "e390f1ccadba53bf62e843b033fb21b04079f07e8bcc3a0bc5e041d1c4bc5cce",
   "width": 1536,
   "height": 576,
-  "bytes": 90914,
-  "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b",
+  "bytes": 98628,
+  "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82",
   "previous": {
    "sha256": "7ff59bab71a510ecc252dba82d0ca483e9b23fe72bd39bf00de8127dbf44345a",
    "generated": "2026-11-05/06 overnight, for Ari (\"make every header beautiful and fitting to each product\")"
@@ -3936,6 +3936,28 @@
     ],
     "checked": "re-hunt with the fixed blind step: rh13 and rh14 (Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes, the same files: BLIND 'No blocking defects' for day and night in both, the night reads as night; head look PASS (real head, jaw and neck, no ears); STRUCT rh13 clean after a 10x look, STRUCT rh14 blocks one item of the original composition (the front seat by the right-hand bench is drawn at about 0.5-0.6 of the scale its depth needs), also on main. Shipped forward as strictly better than main; the seat goes to a composition re-set.",
     "previous_sha256": "76da9377e8f5ae36a7a3efc549af846e1aafa7a12b5eabc9b61c0d7884a2761e"
+   },
+   {
+    "date": "2026-11-18",
+    "what": "Ari, 2026-11-18: the person on the train had a neck like a stalk rising out of the hoodie. The head now sits lower, on a short natural neck about a third of its height, by day and by night; nothing else changed.",
+    "how": "the header's box x 740-1160, y 40-320 was cut from its 4x master, resized to 1536x1024 and edited with the GitHub Copilot app image_generation tool (quality high) using the prompt below; the edit was resized back by Lanczos and pasted only through a feathered mask over the changed figure; WebP q90",
+    "prompt": "Edit this picture. Change only the faceless glass person's neck and the height of their head; keep every other pixel, object, colour and the light exactly as they are.\n\nThe problem: the person's neck is far too long, a tall white stalk rising out of the green hoodie's hood, so the head floats high above the shoulders like a mannequin.\n\nThe fix: lower the head so it sits naturally on the shoulders, with a short, natural adult neck: only a short band of glass neck, about one third of the head's height, shows between the bunched hood at the back of the neck and the jaw. Keep the head exactly the same shape, size, smooth white frosted-glass material, tilt and facing (turned to the right, toward the window); just move it straight down. Keep the green hoodie, its hood bunched behind the neck, the shoulders, both arms with hands in the front pocket, and the seat exactly as they are. Where the head used to be, continue the background exactly: the train's luggage rack, ceiling light strip, window frame and the beige wall.\n\nKeep unchanged: the green snake on the seat, the camel coat hanging on its hook, the clock, the door at the end of the carriage and the window view. Same premium animated-film render. The person stays faceless: no eyes, nose or mouth, no ears. No text, letters or logos. No fades or glow halos.",
+    "input_images": [
+     "upscaled/playwright-focus-proof.webp (box above, 4x)"
+    ],
+    "previous_sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b",
+    "hunt": {
+     "blind": true,
+     "reviewer": "fresh general-purpose agent, picture and 4x crops only, day and night",
+     "blockers": [],
+     "polish": [
+      "night: The warm LED strips along the ceiling edges and the glass luggage racks turn a pale mint green at night, a colour cast from the relighting that the day doesn't have",
+      "night: The same mint-green cast shows on the ceiling light strip and luggage-rack glass on the right side",
+      "both: The seated person's lower legs look slightly long against the torso, and the knees are barely defined, so the legs read as straight columns from hoodie hem to shoes",
+      "both: The blue robot's laptop screen is turned toward the camera more than toward the robot, which types on it from the side"
+     ],
+     "note": "no blocker; the head and neck read as natural"
+    }
    }
   ]
  },
@@ -7849,7 +7871,7 @@
   "file": "scenes/playwright-focus-proof-640.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -7857,14 +7879,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 21832,
-  "sha256": "d1a970ffbda4f2e93bdf394391ae17fed297df00056ffb5348310a09998821cd"
+  "bytes": 21538,
+  "sha256": "08fd298f5d7d34202b24a6e60aacb2c2325e2f1613df23a4648a4d85f5901ea8"
  },
  {
   "file": "scenes/playwright-focus-proof-640.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -7872,14 +7894,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 15815,
-  "sha256": "c7044b5785cae6ecf248184e444c6ddc63a19d10811ab31613820ae636a46921"
+  "bytes": 15522,
+  "sha256": "dae3adc25f796b4149bd953441163388a321b4f9e3a20214e552d652c89de2bf"
  },
  {
   "file": "scenes/playwright-focus-proof-960.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -7887,14 +7909,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 37906,
-  "sha256": "fb16d7b3734ba1aba7be42679c40f06abb83ab6f9f6c62a192b24a4af30309ad"
+  "bytes": 36752,
+  "sha256": "dd7f2c423c8924e3078df983369f7ef9b145f37ed11a7ce1326f221dc275b443"
  },
  {
   "file": "scenes/playwright-focus-proof-960.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -7902,14 +7924,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 25208,
-  "sha256": "4a3371301597c4f3511e8d679d9b415ae81b74bc9c383393d290023cb1feb5ac"
+  "bytes": 24602,
+  "sha256": "3e81838435596d13a24f456b11c5b7df9ea025df3727fed8fcf7989c46613797"
  },
  {
   "file": "scenes/playwright-focus-proof-1536.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -7917,14 +7939,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 46214,
-  "sha256": "f867cd35edc9a86e88e2ca1dfefd53e816d8641201b77997a30759dd6712ddfc"
+  "bytes": 44587,
+  "sha256": "825ce4797902d98a69cb8fa941f51cc1b27451f3a3e17fb8a97e329b20ede283"
  },
  {
   "file": "phone/playwright-focus-proof-384.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 384x192 (Lanczos)",
@@ -7932,14 +7954,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 13434,
-  "sha256": "12ee30dc63f95bf2961383c243d59253c3aa2e5c439d24f3f47a331bc15c61e9"
+  "bytes": 13228,
+  "sha256": "cc6e49f0fc3b3a2c6a68314ddfb44233d24d3fde121b0d1d2146799c82a6e785"
  },
  {
   "file": "phone/playwright-focus-proof-384.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 384x192 (Lanczos)",
@@ -7947,14 +7969,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 10486,
-  "sha256": "7bc7cb27942b603970aa4b56d8cca22d4cc37fb32e6074bf30da8122cf251e06"
+  "bytes": 10387,
+  "sha256": "be0688d6c053c006b66724c3f36432bf5a122bd0b35226f6ccfbe400acf39c20"
  },
  {
   "file": "phone/playwright-focus-proof-768.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 768x384 (Lanczos)",
@@ -7962,14 +7984,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 34290,
-  "sha256": "4a75e5bec455dbbf8d0dded4dbf4f092582c2f906e91afb50b0889be8c8ab533"
+  "bytes": 33346,
+  "sha256": "dfa046a57deacdc3b0024e7698aa1f5ed7f031ff32609375eecb3b7d194665d7"
  },
  {
   "file": "phone/playwright-focus-proof-768.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 768x384 (Lanczos)",
@@ -7977,14 +7999,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 24142,
-  "sha256": "ab07cfe2f781a1bd029f2b68de93258d9e03286fa95d1d84eb33fd9bf3ee9be1"
+  "bytes": 23697,
+  "sha256": "f63b949d99c1283a0137ebf4ebefbb756920c31313d98cf156a8ec92ec87d574"
  },
  {
   "file": "social/playwright-focus-proof.jpg",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "alsoFrom": {
    "file": "skies/playwright-focus-proof.webp",
@@ -7996,14 +8018,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 181525,
-  "sha256": "7b3a43efb2f4faaf3f556959ed4bdda79f903700e00d97031b10fe0b53882607"
+  "bytes": 178339,
+  "sha256": "bcf66884cd749268612401020d7bef4f15b32f269d2ded3d55f04cb7032fcd74"
  },
  {
   "file": "og/playwright-focus-proof.jpg",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "alsoFrom": {
    "file": "skies/playwright-focus-proof.webp",
@@ -8015,8 +8037,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 170679,
-  "sha256": "fcb3f0f9bfb09cad0747d842fcb8a60bf99fde01fa5c4a89dd1ff7d7021afe3e"
+  "bytes": 167694,
+  "sha256": "3e5ee2326bb246f58fc28e862f0348fd173a1925e57eb458dccc4de85c8cbb1f"
  },
  {
   "file": "scenes/shepherd-640.webp",
@@ -10477,18 +10499,18 @@
   "file": "upscaled/playwright-focus-proof.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof.webp",
-   "sha256": "1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b"
+   "sha256": "bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/playwright-focus-proof.webp (sha256 1c6ae2161f1a20b2b94ebe10e9a7cf5d3d3d7be9c919fb4dffb7b0fe7fe6087b); the header is the best source kept, its lossless master is not",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/playwright-focus-proof.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9808 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-17",
+  "operation": "upscaled 4x with Real-ESRGAN (realesrgan-x4plus, realesrgan-ncnn-vulkan) from headers/playwright-focus-proof.webp (sha256 bd0f60a28dbc5dc487b428136bc1e634af53188279e835e03ab2a385dff36e82); the header is the best source kept, its lossless master is not",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/playwright-focus-proof.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9799 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 90 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". Upscaled 4x with Real-ESRGAN only; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 622920,
-  "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+  "bytes": 598416,
+  "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
  },
  {
   "file": "upscaled/shepherd.webp",
@@ -13241,7 +13263,7 @@
   "file": "scenes/playwright-focus-proof-2304.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -13249,14 +13271,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 68913,
-  "sha256": "282e69416d0651ad0c0cf0a23ccb2d5a069acaa5c4d0b3e3b487cbfbc5f33f7f"
+  "bytes": 66765,
+  "sha256": "f59239008276c1e7afd60abedc67e7929151208648588d10531ec99b4823a654"
  },
  {
   "file": "scenes/playwright-focus-proof-3072.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -13264,14 +13286,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 91071,
-  "sha256": "bb29cf1af098f988f96b36e6e8cb053dc1b7363053b03e23154ee935d6f81d60"
+  "bytes": 87989,
+  "sha256": "b329ab40281e448bda17f0c581398c56af45b583a8f5828905e3ff62bb25fd06"
  },
  {
   "file": "scenes/playwright-focus-proof-3072.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -13279,14 +13301,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 166404,
-  "sha256": "b0808c5df20e8fd2f7972c9acedf25e02be6ee0bbdb32c9f2ba2235cc273cbae"
+  "bytes": 159572,
+  "sha256": "901a3717c9b9bf1897cc4d041e49c7df5010578a6d86b476023b3a14d7aa9483"
  },
  {
   "file": "scenes/playwright-focus-proof-3840.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -13294,14 +13316,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 112883,
-  "sha256": "74361117f92bf7d64d49bc6b65115a45828ddae1a863da2f567a28978ea76f26"
+  "bytes": 109461,
+  "sha256": "e07c48bf5b54e4fb5657e3c7a4ba198f6fa097ac8f3ba9b3f3bbd94c94233fbb"
  },
  {
   "file": "scenes/playwright-focus-proof-5120.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -13309,14 +13331,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 147805,
-  "sha256": "2c4289bb40b855f634b75ce73ef9d0f44bfc05b071855480da337d0c2ee20b70"
+  "bytes": 142511,
+  "sha256": "e96002ffffd95de686d3ebe21e6b292e444a3a293db303e23018bfbb2cce803f"
  },
  {
   "file": "scenes/playwright-focus-proof-7680.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -13324,14 +13346,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 216918,
-  "sha256": "598f9e819cb03672bc7243e418e219d27a16679c5e73a804d8152ec17a3e49d4"
+  "bytes": 209012,
+  "sha256": "fd5eb8d2379b64116b0b7bcad31e844b285b8b8077f0db240fdd9d302be841d3"
  },
  {
   "file": "scenes/playwright-focus-proof-7680.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -13339,8 +13361,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 472856,
-  "sha256": "456541e6ce40e1faacb4ef4dc281d4844e6501647b5e6291e06bf253e71ea259"
+  "bytes": 456254,
+  "sha256": "d9049c284b8e62f09ea28b0328f376635926fdecc9c90f8359a141c9079222f5"
  },
  {
   "file": "scenes/shepherd-2304.avif",
@@ -15303,7 +15325,7 @@
   "file": "phone/playwright-focus-proof-1152.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -15311,14 +15333,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 59532,
-  "sha256": "5de33aeb30b2b91a36e10d9b03133cf1fbd7c6d30fc443330569c626003c6fb2"
+  "bytes": 57702,
+  "sha256": "115e1e2bc179bf414f429cebee95e82aa70a3192f07b6191aa0e6aeacc171294"
  },
  {
   "file": "phone/playwright-focus-proof-1152.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -15326,14 +15348,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 39106,
-  "sha256": "2d6bab1e4c8cdcb097a5e2a07532d220fb65339bf086dd81c356970e3c16658c"
+  "bytes": 38077,
+  "sha256": "1180b96f0cd9612dad787073b41d2992dd41cbebcf6da4120a3cb4f614092220"
  },
  {
   "file": "phone/playwright-focus-proof-1536.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -15341,14 +15363,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 86352,
-  "sha256": "e88ea9a601591a71a772e8663d2f35504f6ba381161e1bf4fc31e0a9f27108e2"
+  "bytes": 83078,
+  "sha256": "37e4f229716994eac242c7ea54a917681b05f05ba88acae5287aeec5e6d4fee4"
  },
  {
   "file": "phone/playwright-focus-proof-1536.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -15356,8 +15378,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 53707,
-  "sha256": "517efd023eac7c1b8720bcbad0b080723c318a93b1f54eb03f06647137f0607d"
+  "bytes": 52064,
+  "sha256": "7219995739d3f48545982992a7e1c5d8e2d05ad4d4140a8c202dbc197e929f92"
  },
  {
   "file": "headers/playwright-focus-proof-dark.webp",
@@ -15381,8 +15403,8 @@
   "master_sha256": "c3f8f2592f4984c7040d949f1d6bd5ba46fa19d9c9dfc3ed4f9a9621d6aded6d",
   "width": 1536,
   "height": 576,
-  "bytes": 67442,
-  "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0",
+  "bytes": 96576,
+  "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442",
   "previous": {
    "sha256": "6d83d3946bd3c2e6c5bb00775c8c0784c49c717b13e36d33967437012407948a",
    "generated": "Dark master, 2026-11-13, edited from the light master"
@@ -15403,6 +15425,28 @@
     "what": "main's light-only night with the day's changed regions carried in by relight_transfer (the night still builds from the day's 4x, nightFromDay); the blinds down at night too.",
     "checked": "re-hunt with the fixed blind step: rh13 and rh14 (Opus 5.5 with 4-10x crops, plus the structure hunter) on the shipped-path 3072 scenes, the same files: BLIND 'No blocking defects' for day and night in both, the night reads as night; head look PASS (real head, jaw and neck, no ears); STRUCT rh13 clean after a 10x look, STRUCT rh14 blocks one item of the original composition (the front seat by the right-hand bench is drawn at about 0.5-0.6 of the scale its depth needs), also on main. Shipped forward as strictly better than main; the seat goes to a composition re-set.",
     "previous_sha256": "7951b902f59e1bef221d946b790274538b83f2912af18003af56a97245c3a9ea"
+   },
+   {
+    "date": "2026-11-18",
+    "what": "Ari, 2026-11-18: the person on the train had a neck like a stalk rising out of the hoodie. The head now sits lower, on a short natural neck about a third of its height, by day and by night; nothing else changed.",
+    "how": "the same patch carried over as light only: inside the day's feathered mask this file is the fixed day given this file's own light and colour by brand/tools/relight_transfer.py (radius 24), so its shapes match the day; WebP q95",
+    "prompt": "Edit this picture. Change only the faceless glass person's neck and the height of their head; keep every other pixel, object, colour and the light exactly as they are.\n\nThe problem: the person's neck is far too long, a tall white stalk rising out of the green hoodie's hood, so the head floats high above the shoulders like a mannequin.\n\nThe fix: lower the head so it sits naturally on the shoulders, with a short, natural adult neck: only a short band of glass neck, about one third of the head's height, shows between the bunched hood at the back of the neck and the jaw. Keep the head exactly the same shape, size, smooth white frosted-glass material, tilt and facing (turned to the right, toward the window); just move it straight down. Keep the green hoodie, its hood bunched behind the neck, the shoulders, both arms with hands in the front pocket, and the seat exactly as they are. Where the head used to be, continue the background exactly: the train's luggage rack, ceiling light strip, window frame and the beige wall.\n\nKeep unchanged: the green snake on the seat, the camel coat hanging on its hook, the clock, the door at the end of the carriage and the window view. Same premium animated-film render. The person stays faceless: no eyes, nose or mouth, no ears. No text, letters or logos. No fades or glow halos.",
+    "input_images": [
+     "headers/playwright-focus-proof.webp (fixed)"
+    ],
+    "previous_sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0",
+    "hunt": {
+     "blind": true,
+     "reviewer": "fresh general-purpose agent, picture and 4x crops only, day and night",
+     "blockers": [],
+     "polish": [
+      "night: The warm LED strips along the ceiling edges and the glass luggage racks turn a pale mint green at night, a colour cast from the relighting that the day doesn't have",
+      "night: The same mint-green cast shows on the ceiling light strip and luggage-rack glass on the right side",
+      "both: The seated person's lower legs look slightly long against the torso, and the knees are barely defined, so the legs read as straight columns from hoodie hem to shoes",
+      "both: The blue robot's laptop screen is turned toward the camera more than toward the robot, which types on it from the side"
+     ],
+     "note": "no blocker; the head and neck read as natural"
+    }
    }
   ]
  },
@@ -15410,7 +15454,7 @@
   "file": "scenes/playwright-focus-proof-dark-640.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -15418,14 +15462,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 11679,
-  "sha256": "c0f72e2b5883729760bf05d8034636553aaf37910dcde4826d0a00dac4dd8245"
+  "bytes": 11606,
+  "sha256": "b70c9fcb1aac57565ad8f25c71cc7be6ac9dc09252eced9e8dbff9f05d7d9ad6"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-640.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 640x240 (Lanczos)",
@@ -15433,14 +15477,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 640,
   "height": 240,
-  "bytes": 16042,
-  "sha256": "3829cdaadaa472c063a6ac704bf89b66893fd58261a3fdf8f292de5bd67f57f6"
+  "bytes": 15796,
+  "sha256": "8eb9e7f1ad13ccd521c0db84fa9f7a1fb67fdaa482c3f08f1387c7b74e42d9ac"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-960.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -15448,14 +15492,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 18613,
-  "sha256": "d7bdd3837d44ac5a99f20ddbabf13f04c57975b5e1834f929b0b26a379285fff"
+  "bytes": 18350,
+  "sha256": "414b82446aeae6a5a425a467a72d8201958fd88e86d1f53e08e0015b2e8ad8ce"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-960.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene resized to 960x360 (Lanczos)",
@@ -15463,14 +15507,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 960,
   "height": 360,
-  "bytes": 27630,
-  "sha256": "fae56cfa582b045b0d3435b64f80727e27a704599af78b8b1f5a771bc1c7dc9b"
+  "bytes": 26966,
+  "sha256": "9154d54ed28f74a4160fac0e194153eb4a47ee22a596b1932387204f278ce337"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-1536.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "site hero, responsive width",
   "operation": "whole scene",
@@ -15478,14 +15522,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1536,
   "height": 576,
-  "bytes": 32362,
-  "sha256": "0c7e244e8e842ac0bf186ded9d0bf886d4a43ef6aa3f7270270ee169b42c98e9"
+  "bytes": 32218,
+  "sha256": "ba1cbc0e1ea3ae0b586a1386b43bbf4809c855a5d3477e86798fb9654680ad46"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-2304.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 2304x864 (Lanczos)",
@@ -15493,14 +15537,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 2304,
   "height": 864,
-  "bytes": 89548,
-  "sha256": "4e9f5b5fa832486ac9e2c8599faea66da2a3cbcbc8c1abd612a4bd5672ce2c3a"
+  "bytes": 86938,
+  "sha256": "d2deb53ff6aaee31de1fd4d13be5a6fd8f38b6bab01469010ef0d34fc03ae3c3"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-3072.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -15508,14 +15552,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 127883,
-  "sha256": "f407a07a4699b851c3388a8032022227b110abe0e8ec230091ecd92ee5fc586c"
+  "bytes": 124034,
+  "sha256": "66e94fb25f5ccc296c5d51d62c4cad67cc5e8776c2fc3ec67ae02c8d54e23615"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-3072.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3072x1152 (Lanczos)",
@@ -15523,14 +15567,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3072,
   "height": 1152,
-  "bytes": 187864,
-  "sha256": "38a11677bee2cea8f7a1a03d3d07eed4a0448ff50b71888c7c87d0aeb72d5144"
+  "bytes": 181530,
+  "sha256": "e5db35b2d24893918d44f7c63cc7b31f15b095255541a2f9ec45db8b3be8248a"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-3840.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 3840x1440 (Lanczos)",
@@ -15538,14 +15582,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 3840,
   "height": 1440,
-  "bytes": 167397,
-  "sha256": "3b785d798c9e4492c07810bc3f010ff57c2dd073cfc683e082d0831a75166784"
+  "bytes": 162475,
+  "sha256": "564c124b8f8e8437582f4b4977cef8b37138b762d5a8c0c69bc7bbfd35983254"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-5120.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 5120x1920 (Lanczos)",
@@ -15553,14 +15597,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 5120,
   "height": 1920,
-  "bytes": 240980,
-  "sha256": "82d14855e61f42513f0d167468b944ba5ef6cde8fdad3cb0bdbbeea4e8d62adf"
+  "bytes": 233490,
+  "sha256": "888e53573cfa1209248fad6f4e1d2eefde5d293d280cc4f2ee2eaf73d324dcb1"
  },
  {
   "file": "scenes/playwright-focus-proof-dark-7680.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -15568,14 +15612,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 411828,
-  "sha256": "84aaed7d7ecaa781f4dd98947e7434712696542832a6d76561287c6ff54c28ba"
+  "bytes": 399436,
+  "sha256": "0755a82c501c9e5fee22a709a4e22798721b5095e361b5c722cff67a6a26d1bb"
  },
  {
   "file": "phone/playwright-focus-proof-dark-384.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 384x192 (Lanczos)",
@@ -15583,14 +15627,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 8162,
-  "sha256": "f2120ddb5b985f65dae052dab196e35f0450f28747145d94fb576cd8b9a84dff"
+  "bytes": 8085,
+  "sha256": "c8968e9b9049a86b8471705c51d52d4f547611ca580d5c509d8a8b5cdcac7d78"
  },
  {
   "file": "phone/playwright-focus-proof-dark-384.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 384x192 (Lanczos)",
@@ -15598,14 +15642,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 384,
   "height": 192,
-  "bytes": 10496,
-  "sha256": "9d63678cd894f9626446f332610f21260310f63c6bf88aaadf49771e10425847"
+  "bytes": 10278,
+  "sha256": "2e550f872fabb104cf2af0b57249101b8311671f6de32001b76260e3af0c4d42"
  },
  {
   "file": "phone/playwright-focus-proof-dark-768.avif",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 768x384 (Lanczos)",
@@ -15613,14 +15657,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 18502,
-  "sha256": "46bbe35be7a2bda59f65c64db80d9b1320735963131b9aaebbee31c9e77404bf"
+  "bytes": 18230,
+  "sha256": "79c0e751dfbc48ced8a5f22d5ddf044ed503f1ff0f3b24510e0abc424e9f7224"
  },
  {
   "file": "phone/playwright-focus-proof-dark-768.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [158, 0, 1310, 576] then resize to 768x384 (Lanczos)",
@@ -15628,14 +15672,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 768,
   "height": 384,
-  "bytes": 26208,
-  "sha256": "049da4171c58f7ef4094e7f1b69c79d05f8012fa350deff2e36cc47e8c7857a3"
+  "bytes": 25596,
+  "sha256": "3b782cbae3f6d13060a5aea54c6fb9bca2d884b4e7cfa03e98c8d23c6e080a28"
  },
  {
   "file": "og/playwright-focus-proof-dark.jpg",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "alsoFrom": {
    "file": "skies/playwright-focus-proof-dark.webp",
@@ -15647,8 +15691,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1200,
   "height": 630,
-  "bytes": 133141,
-  "sha256": "4de7c8f1f97be97c18214f0cbb3ecf3d7087302cdc31b1aab9e1ad5f96657c9a"
+  "bytes": 132286,
+  "sha256": "2f92594505bee6d81861e1c1e8d4784babfbcf51b610e442f27570d7653ae333"
  },
  {
   "file": "phone/shepherd-1152.webp",
@@ -23540,7 +23584,7 @@
   "file": "phone/playwright-focus-proof-dark-1152.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -23548,14 +23592,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 68466,
-  "sha256": "d131af69553831cc31610ba50a5f10921645f38ca03412a3d6dac7faafdea32c"
+  "bytes": 66292,
+  "sha256": "97f32388c700a16a92e7fee6f2c5cfbd2922da5862891bce3ad0f996bcd80c1f"
  },
  {
   "file": "phone/playwright-focus-proof-dark-1152.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1152x576 (Lanczos)",
@@ -23563,14 +23607,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1152,
   "height": 576,
-  "bytes": 47854,
-  "sha256": "ea8d6c19872a51b82c92c06ae99a1dfa9d40247007811622bbe89306ff0e232d"
+  "bytes": 46580,
+  "sha256": "ffd344e804d6ec57ef2eb5bcc6e75daadb2d7ae960276d549f20363e3d81e69c"
  },
  {
   "file": "phone/playwright-focus-proof-dark-1536.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -23578,14 +23622,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 100490,
-  "sha256": "02c806049911f79e3723103b46886d9834e47aebaddcd16fd1008eebaebd9208"
+  "bytes": 94932,
+  "sha256": "52f12ac998253e1d3a4bcf43fef36764caa87a8289bf2446e9b400c5c2751da3"
  },
  {
   "file": "phone/playwright-focus-proof-dark-1536.avif",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "phone hero (2:1)",
   "operation": "crop box [632, 0, 5240, 2304] of the 4x master then resize to 1536x768 (Lanczos)",
@@ -23593,8 +23637,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 1536,
   "height": 768,
-  "bytes": 68734,
-  "sha256": "1b6f16c2d4b8cd5ca850c874a39f98eb143bd205869a5a4463af041425bf32cc"
+  "bytes": 66659,
+  "sha256": "fb8369a2e3a05ad905d2ad24d9ede090fa6787234bc06a9975d47ea16eaf2d16"
  },
  {
   "file": "upscaled/friends-relay-dark.webp",
@@ -23700,22 +23744,22 @@
   "file": "upscaled/playwright-focus-proof-dark.webp",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "alsoFrom": {
    "file": "upscaled/playwright-focus-proof.webp",
-   "sha256": "8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682"
+   "sha256": "167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac"
   },
   "use": "4x master for site heroes wider than the 1536 px header",
-  "operation": "the day's 4x master upscaled/playwright-focus-proof.webp (sha256 8812c5761018943346d767b3c7a48d278f188b9efbe4929ffff9950b59a05682) given the light and colour of headers/playwright-focus-proof-dark.webp (sha256 175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's, so each night size has the day's exact structure (nightFromDay in crops.json)",
-  "checked": "Lanczos-downsized to 1536x576, it matches headers/playwright-focus-proof-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9761 (floor 0.95); same crop, subject and aspect",
-  "upscaled": "2026-11-17",
+  "operation": "the day's 4x master upscaled/playwright-focus-proof.webp (sha256 167ac561dee6ddbe75161e0be627dc5291ea00b35ad8bc42ca9d616255f94eac) given the light and colour of headers/playwright-focus-proof-dark.webp (sha256 0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442) by brand/tools/relight_transfer.py (local mean and contrast of log colour in 193 px windows, radius 24 at 1536 px wide); every shape is the day master's, so each night size has the day's exact structure (nightFromDay in crops.json)",
+  "checked": "Lanczos-downsized to 1536x576, it matches headers/playwright-focus-proof-dark.webp with a luma SSIM (Gaussian, sigma 1.5) of 0.9744 (floor 0.95); same crop, subject and aspect",
+  "upscaled": "2026-11-18",
   "encoder": "Pillow WebP quality 100 method 6",
   "approval": "Ari asked for every undersized piece of art on ouroboros.bot and the Ouro UI site to be AI-upscaled, 2026-11-12 (relayed in the art-upscale brief): \"upscale all the art, and make it impossible to use too-small imagery\". The day's 4x Real-ESRGAN master given only this night's light and colour, so the night has no texture the day lacks; checked to keep the same crop, subject and aspect as its source.",
   "width": 6144,
   "height": 2304,
-  "bytes": 1006932,
-  "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+  "bytes": 981192,
+  "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
  },
  {
   "file": "phone/apple-distribution-kit-dark-1152.webp",
@@ -27850,7 +27894,7 @@
   "file": "scenes/playwright-focus-proof-dark-7680.webp",
   "derivedFrom": {
    "file": "upscaled/playwright-focus-proof-dark.webp",
-   "sha256": "05a60ffb2fa76a9c3a283ea46f8ac6ec4e7f6e2666ff4cd655e61a10a6dcbcbb"
+   "sha256": "194398499a690b28e084fe2a65a658504acbb908d28f48f95eb85489cd7c119c"
   },
   "use": "site hero, responsive width",
   "operation": "4x master resized to 7680x2880 (Lanczos), 1.25x up from the 6144 px master; no new detail is drawn",
@@ -27858,14 +27902,14 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn. Ari asked for every undersized piece of art to be AI-upscaled, 2026-11-12: \"upscale all the art, and make it impossible to use too-small imagery\". Cut from the scene's 4x Real-ESRGAN master.",
   "width": 7680,
   "height": 2880,
-  "bytes": 577742,
-  "sha256": "c200a7111518d7ff438a30d16ce166a068ab179b01fc0f596b24ef9f555bee85"
+  "bytes": 548602,
+  "sha256": "9095a8de2163426eb3c74c01d508c69378f1a48621ba3f54436ba6890fa0fcf3"
  },
  {
   "file": "social/playwright-focus-proof-dark.jpg",
   "derivedFrom": {
    "file": "headers/playwright-focus-proof-dark.webp",
-   "sha256": "175d7bcbe763ef1d73bc6a7d33c51a12a8efd9c77e1e1f079cf2daf74ec087c0"
+   "sha256": "0b0a25ba45d73e2691ed6faed4bd851585ae751c63e17492f5e38ea805b33442"
   },
   "alsoFrom": {
    "file": "skies/playwright-focus-proof-dark.webp",
@@ -27877,8 +27921,8 @@
   "approval": "Ari made the storybook headers and asked us to build on them, 2026-11-06: \"you'll also see i made new brand assets for the github surfaces - let's build on those further and bring em to the site etc :)\" Derived by crop, resize or recomposition only; nothing new is drawn.",
   "width": 1280,
   "height": 640,
-  "bytes": 141782,
-  "sha256": "e2f8d69fcc7a5de0abc8aa2a9cd2877a57d965e78066f1ff1b2c27df1addd389"
+  "bytes": 141018,
+  "sha256": "308e991c30c41a4f0f0bbd10a07286b486d29237cea75084fc090afcde024bff"
  },
  {
   "file": "scenes/shepherd-dark-7680.webp",
