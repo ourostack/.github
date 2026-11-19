@@ -7,6 +7,7 @@
 //
 //   GH_TOKEN=... node brand/tools/converge.mjs [--dry-run]
 
+import { InfraError, callWithInfraRetry, exitInfra } from "../../tools/infra/infra.mjs";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
@@ -32,10 +33,13 @@ export function render(items, key) {
   return `These surfaces are still stale on main, past the time their automatic sync is allowed (the audit run: ${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY ?? "ourostack/.github"}/actions/runs/${process.env.GITHUB_RUN_ID ?? ""}).\n\n${lines.join("\n")}\n\nRun \`node brand/tools/audit.mjs --format text\` for each fix. This issue closes itself when the audit is green.\n\n<!-- brand-converge: ${key} -->`;
 }
 
-async function gh(path, { method = "GET", body, token } = {}) {
-  const res = await fetch(`https://api.github.com${path}`, { method, headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
-  if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${(await res.text()).slice(0, 200)}`);
-  return res.status === 204 ? null : res.json();
+export async function gh(path, { method = "GET", body, token, doFetch = fetch, sleep } = {}) {
+  const { res, payload } = await callWithInfraRetry(async () => {
+    const res = await doFetch(`https://api.github.com${path}`, { method, headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    return { res, payload: res.status === 204 ? null : await res.text() };
+  }, { sleep });
+  if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${String(payload).slice(0, 200)}`);
+  return payload === null ? null : JSON.parse(payload);
 }
 
 const lastMarker = (text) => [...(text ?? "").matchAll(MARK)].map((m) => m[1]).pop();
@@ -86,4 +90,11 @@ async function main() {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try {
+    await main();
+  } catch (err) {
+    if (err instanceof InfraError) exitInfra(err);
+    throw err;
+  }
+}

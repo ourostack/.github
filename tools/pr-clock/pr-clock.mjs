@@ -13,6 +13,7 @@
 
 import { pathToFileURL } from "node:url";
 import { readSeats, seatLine } from "./seat-guard.mjs";
+import { InfraError, callWithInfraRetry, exitInfra } from "../infra/infra.mjs";
 
 export const LIMIT_MIN = 30;
 export const SOON_MIN = 20;
@@ -231,13 +232,15 @@ export async function fetchRetry(url, init, { tries = 5, sleep = (ms) => new Pro
   }
 }
 
-async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN } = {}) {
-  const res = await fetchRetry(`https://api.github.com${path}`, {
-    method,
-    headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" },
-    body: body && JSON.stringify(body),
-  });
-  const json = await res.json().catch(() => ({}));
+export async function gh(path, { method = "GET", body, token = process.env.GH_TOKEN, doFetch = fetchRetry, sleep } = {}) {
+  const { res, payload: json } = await callWithInfraRetry(async () => {
+    const res = await doFetch(`https://api.github.com${path}`, {
+      method,
+      headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "content-type": "application/json" },
+      body: body && JSON.stringify(body),
+    });
+    return { res, payload: await res.json().catch(() => ({})) };
+  }, { sleep });
   // A partial GraphQL error (one PR it could not read) still leaves the rest worth reporting.
   if (json.errors && json.data) console.error(`partial: ${JSON.stringify(json.errors).slice(0, 500)}`);
   else if (!res.ok || json.errors) throw new Error(`${method} ${path}: ${res.status} ${JSON.stringify(json.errors ?? json.message)}`);
@@ -361,26 +364,31 @@ async function updateIssue({ title, body }) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  if (!process.env.GH_TOKEN) {
-    console.error("Set GH_TOKEN.");
-    process.exit(3);
-  }
-  const now = new Date().toISOString();
-  const { prs, mains } = await fetchState();
-  const seats = await readSeats((path) => gh(path, { token: process.env.SEAT_TOKEN || process.env.GH_TOKEN }));
-  console.error(seatLine(seats));
-  const view = render(prs, now, seats, mains);
-  if (process.argv.includes("--json"))
-    console.log(JSON.stringify({
-      prs: view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })),
-      redMains: view.reds.map((r) => ({ repository: r.main.repository.nameWithOwner, commit: r.main.commit.oid, age: r.age, red: r.text, owner: r.owner })),
-    }, null, 2));
-  else if (process.argv.includes("--update-issue")) {
-    const url = await updateIssue(view);
-    console.log(`${view.title}\n${url}`);
-    if (process.env.GITHUB_STEP_SUMMARY) {
-      const { appendFileSync } = await import("node:fs");
-      appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${view.body}\n`);
+  try {
+    if (!process.env.GH_TOKEN) {
+      console.error("Set GH_TOKEN.");
+      process.exit(3);
     }
-  } else console.log(`# ${view.title}\n\n${view.body}`);
+    const now = new Date().toISOString();
+    const { prs, mains } = await fetchState();
+    const seats = await readSeats((path) => gh(path, { token: process.env.SEAT_TOKEN || process.env.GH_TOKEN }));
+    console.error(seatLine(seats));
+    const view = render(prs, now, seats, mains);
+    if (process.argv.includes("--json"))
+      console.log(JSON.stringify({
+        prs: view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })),
+        redMains: view.reds.map((r) => ({ repository: r.main.repository.nameWithOwner, commit: r.main.commit.oid, age: r.age, red: r.text, owner: r.owner })),
+      }, null, 2));
+    else if (process.argv.includes("--update-issue")) {
+      const url = await updateIssue(view);
+      console.log(`${view.title}\n${url}`);
+      if (process.env.GITHUB_STEP_SUMMARY) {
+        const { appendFileSync } = await import("node:fs");
+        appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${view.body}\n`);
+      }
+    } else console.log(`# ${view.title}\n\n${view.body}`);
+  } catch (err) {
+    if (err instanceof InfraError) exitInfra(err);
+    throw err;
+  }
 }

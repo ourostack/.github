@@ -62,7 +62,7 @@ const QUERY = `query($q:String!,$after:String){search(query:$q,type:ISSUE,first:
     commits(last:1){nodes{commit{statusCheckRollup{state}}}}}}}}`;
 
 // A GitHub 5xx or a dropped connection is retried with backoff; anything else (a rejected mutation, a 4xx) fails at once.
-export const TRANSIENT = /\bHTTP 50[0234]\b|\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|ETIMEDOUT|ECONNRESET|EAI_AGAIN/i;
+export const TRANSIENT = /Something went wrong while executing your query|secondary rate limit|abuse detection|\bHTTP 50[0234]\b|\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|ETIMEDOUT|ECONNRESET|EAI_AGAIN/i;
 export const RETRY_DELAYS_MS = [2000, 5000, 15000, 30000];
 const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 
@@ -192,6 +192,18 @@ export function processPrs(prs, args, opts = {}) {
 }
 
 function main() {
+  try {
+    run();
+  } catch (err) {
+    const text = `${err.stderr ?? ""}\n${err.message ?? ""}`;
+    if (!TRANSIENT.test(text)) throw err;
+    const id = /\b([0-9A-F]{4}:[0-9A-F:]{6,})\b/.exec(text)?.[1] ?? "unknown";
+    console.log(`::error title=infra::GitHub transient failure persisted after retries: ${text.trim().split("\n")[0].slice(0, 200)} (GitHub request id ${id})`);
+    process.exit(1);
+  }
+}
+
+function run() {
   const args = new Set(process.argv.slice(2));
   const opts = { dryRun: args.has("--dry-run") };
   const prs = openPrs();
