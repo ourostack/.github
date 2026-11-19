@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable, withRetry } from "./rearm-merges.mjs";
+import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable, withRetry, processPrs, setTransport } from "./rearm-merges.mjs";
 
 const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
 
@@ -72,4 +72,37 @@ test("withRetry gives up after the last delay and never retries a non-5xx error"
   calls = 0;
   assert.throws(() => withRetry(() => { calls++; throw Object.assign(new Error("x"), { stderr: "gh: HTTP 403" }); }, { delays: [1, 1], sleep: () => {}, log: () => {} }));
   assert.equal(calls, 1);
+});
+
+const racing = {
+  id: "PR_1", number: 103, title: "T", body: "", mergeStateStatus: "CLEAN",
+  repository: { nameWithOwner: "o/r" },
+  autoMergeRequest: { mergeMethod: "SQUASH", commitHeadline: null },
+};
+
+function withTransport(reread) {
+  setTransport((query) => {
+    if (query.includes("disablePullRequestAutoMerge")) {
+      throw Object.assign(new Error("x"), { stderr: "Can't disable auto-merge for this pull request." });
+    }
+    return reread;
+  });
+}
+
+test("a write that lost a race with a merge counts as done", () => {
+  withTransport({ node: { state: "MERGED", autoMergeRequest: null } });
+  try {
+    assert.equal(processPrs([racing], new Set()).failed, 0);
+  } finally {
+    setTransport(null);
+  }
+});
+
+test("a write that fails and persists on re-read fails the job", () => {
+  withTransport({ node: { state: "OPEN", autoMergeRequest: { commitHeadline: null } } });
+  try {
+    assert.equal(processPrs([racing], new Set()).failed, 1);
+  } finally {
+    setTransport(null);
+  }
 });
