@@ -191,6 +191,98 @@ export function processPrs(prs, args, opts = {}) {
   return { acted, failed, unmergeable };
 }
 
+// ---- Merge queues: an entry whose head cannot merge blocks every entry behind it, so it is taken out. ----
+
+export const STUCK_AFTER_MS = 10 * 60 * 1000;
+const MARKER = "<!-- ourostack:rearm-merges:dequeued -->";
+
+const QUEUES_QUERY = `query($org:String!,$after:String){organization(login:$org){repositories(first:50,after:$after,isArchived:false){
+  pageInfo{hasNextPage endCursor}
+  nodes{nameWithOwner defaultBranchRef{name} mergeQueue{entries(first:50){nodes{id state enqueuedAt
+    pullRequest{id number title mergeable mergeStateStatus headRefName
+      autoMergeRequest{mergeMethod commitHeadline commitBody}
+      commits(last:1){nodes{commit{statusCheckRollup{state}}}}}}}}}}}}`;
+
+export function queueEntries() {
+  const out = [];
+  let after = "";
+  for (;;) {
+    const d = gql(QUEUES_QUERY, { org: ORG, ...(after ? { after } : {}) }).organization.repositories;
+    for (const repo of d.nodes) {
+      for (const e of repo.mergeQueue?.entries?.nodes ?? []) {
+        out.push({ ...e, repo: repo.nameWithOwner, base: repo.defaultBranchRef?.name ?? "main" });
+      }
+    }
+    if (!d.pageInfo.hasNextPage) return out;
+    after = d.pageInfo.endCursor;
+  }
+}
+
+export function failedChecks(pr) {
+  return ["FAILURE", "ERROR"].includes(pr.commits?.nodes?.[0]?.commit?.statusCheckRollup?.state) ? ["required checks"] : [];
+}
+
+// Why an entry has to leave the queue, or null. Failed checks count after the entry has sat 10 minutes, so a rerun gets its chance.
+export function stuckReason(entry, now = Date.now()) {
+  const pr = entry.pullRequest;
+  if (!pr) return null;
+  const failing = failedChecks(pr).length > 0;
+  if (failing && (entry.state === "UNMERGEABLE" || now - Date.parse(entry.enqueuedAt) > STUCK_AFTER_MS)) return "failed-checks";
+  if (pr.mergeable === "CONFLICTING") return "conflict";
+  return entry.state === "UNMERGEABLE" ? "unmergeable" : null;
+}
+
+const DEQUEUE = `mutation($id:ID!){dequeuePullRequest(input:{id:$id}){clientMutationId}}`;
+const COMMENTS = `query($id:ID!){node(id:$id){... on PullRequest{comments(last:50){nodes{body}}}}}`;
+const COMMENT = `mutation($id:ID!,$b:String!){addComment(input:{subjectId:$id,body:$b}){clientMutationId}}`;
+
+export function processQueue(entries, { dryRun = false, now = Date.now(), log = console.log } = {}) {
+  let dequeued = 0;
+  let failed = 0;
+  for (const entry of entries) {
+    const pr = entry.pullRequest;
+    const why = stuckReason(entry, now);
+    if (!why) continue;
+    const name = `${entry.repo}#${pr.number}`;
+    if (dryRun) {
+      log(`would dequeue ${name} (${why})`);
+      continue;
+    }
+    try {
+      gql(DEQUEUE, { id: pr.id });
+      dequeued++;
+      log(`dequeued ${name} (${why}) so the entries behind it can merge`);
+      if (why === "failed-checks") {
+        comment(pr, `Taken out of the merge queue: required checks failed (see the PR's Checks tab). Fix them and push; auto-merge re-queues it once green.`, log);
+      } else if (why === "conflict") {
+        comment(pr, `Taken out of the merge queue: it conflicts with \`${entry.base}\`. Rebase or merge \`${entry.base}\` and resolve the conflict; auto-merge re-queues it once green.`, log);
+      } else {
+        // A stale base is not a conflict: bring it up to date and arm it again.
+        gql(UPDATE, { id: pr.id });
+        const { headline, body } = messageFor({ ...pr, body: "" });
+        gql(ENABLE, { id: pr.id, m: pr.autoMergeRequest?.mergeMethod ?? "SQUASH", h: headline, b: body });
+        log(`updated ${name} from ${entry.base} and re-armed auto-merge`);
+      }
+    } catch (err) {
+      const msg = String(err.stderr ?? err.message).trim().split("\n")[0];
+      if (/conflict|not mergeable/i.test(msg)) {
+        comment(pr, `Taken out of the merge queue: it cannot be updated from \`${entry.base}\` (${msg}). Resolve the conflict and push.`, log);
+      } else {
+        log(`failed on ${name}: ${msg}`);
+        failed++;
+      }
+    }
+  }
+  return { dequeued, failed };
+}
+
+// One comment per PR is enough: a PR that was already told stays quiet.
+function comment(pr, text, log) {
+  const prior = gql(COMMENTS, { id: pr.id }).node?.comments?.nodes ?? [];
+  if (prior.some((c) => c.body?.includes(MARKER))) return log(`#${pr.number} was already told why it left the queue`);
+  gql(COMMENT, { id: pr.id, b: `${text}\n\n${MARKER}` });
+}
+
 function main() {
   try {
     run();
@@ -206,6 +298,9 @@ function main() {
 function run() {
   const args = new Set(process.argv.slice(2));
   const opts = { dryRun: args.has("--dry-run") };
+  const queued = processQueue(queueEntries(), opts);
+  if (queued.failed > 0) process.exitCode = 1;
+  console.log(`${queued.dequeued} stuck merge-queue entr${queued.dequeued === 1 ? "y" : "ies"} dequeued.`);
   const prs = openPrs();
   const { acted, failed, unmergeable } = processPrs(prs, args, opts);
   if (failed > 0) process.exitCode = 1;
