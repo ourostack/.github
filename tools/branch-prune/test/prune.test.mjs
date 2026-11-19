@@ -80,8 +80,22 @@ test("decide deletes a branch its PR squash-merged days ago and nothing changed 
   assert.deepEqual(outcome({ prs: [pull({ merged: true, closedAt: ago(2) })] }), ["keep", "PR #1 merged 2 days ago"]);
 });
 
-test("decide keeps a branch with no PR that is not merged", () => {
-  assert.deepEqual(outcome({ prs: [] }), ["keep", "no PR, not merged"]);
+test("decide keeps a branch with no PR that is not merged, pushed inside the 14-day stale window", () => {
+  assert.deepEqual(outcome({ prs: [], lastPushAt: ago(10) }), ["keep", "no PR, not merged, pushed 10 days ago"]);
+  assert.deepEqual(outcome({ prs: [], lastPushAt: ago(13.9) }), ["keep", "no PR, not merged, pushed 13 days ago"]);
+});
+
+test("decide deletes a branch with no PR that is not merged once its last push is 14 days old, reading the tip's date when there is no push", () => {
+  assert.deepEqual(outcome({ prs: [], lastPushAt: ago(14) }), ["delete", "no PR, not merged, last pushed 14 days ago"]);
+  assert.deepEqual(outcome({ prs: [], lastPushAt: null, headCommitAt: ago(40) }), ["delete", "no PR, not merged, last pushed 40 days ago"]);
+  const [entry] = decide([branch({ prs: [], lastPushAt: ago(20) })], { defaultBranch: DEFAULT, now: NOW, staleDays: 30 });
+  assert.deepEqual([entry.action, entry.reason], ["keep", "no PR, not merged, pushed 20 days ago"]);
+});
+
+test("decide keeps a rescue/ branch with no PR however old, and still judges one with a PR by its PR", () => {
+  assert.deepEqual(outcome({ name: "rescue/old-work", prs: [], lastPushAt: ago(90) }), ["keep", "rescue branch, no PR: a person decides"]);
+  assert.deepEqual(outcome({ name: "rescue/old-work", aheadBy: 0, lastPushAt: ago(90) }), ["delete", "fully merged into main"]);
+  assert.deepEqual(outcome({ name: "rescue/old-work", prs: [pull()] }), ["delete", "PR #1 closed unmerged 4 days ago, unchanged since"]);
 });
 
 test("decide judges the most recent PR by close date, not by list order", () => {
@@ -90,11 +104,14 @@ test("decide judges the most recent PR by close date, not by list order", () => 
   assert.deepEqual(outcome({ prs: [newer, older] }), ["delete", "PR #2 closed unmerged 4 days ago, unchanged since"]);
 });
 
-test("parseArgs reads --dry-run and --min-age-days, and rejects a value that is not a number of days", () => {
-  assert.deepEqual(parseArgs(["--dry-run", "--min-age-days", "5"]), { dryRun: true, minAgeDays: 5 });
-  assert.deepEqual(parseArgs([]), { dryRun: false, minAgeDays: 3 });
-  assert.throws(() => parseArgs(["--min-age-days", "-1"]), /takes a number of days/);
+test("parseArgs reads --dry-run, --min-age-days and --stale-days, and rejects a value that is not a number of days", () => {
+  assert.deepEqual(parseArgs(["--dry-run", "--min-age-days", "5"]), { dryRun: true, minAgeDays: 5, staleDays: 14 });
+  assert.deepEqual(parseArgs(["--stale-days", "30"]), { dryRun: false, minAgeDays: 3, staleDays: 30 });
+  assert.deepEqual(parseArgs([]), { dryRun: false, minAgeDays: 3, staleDays: 14 });
+  assert.throws(() => parseArgs(["--min-age-days", "-1"]), /--min-age-days takes a number of days/);
   assert.throws(() => parseArgs(["--min-age-days", "soon"]), /takes a number of days/);
+  assert.throws(() => parseArgs(["--stale-days", "later"]), /--stale-days takes a number of days/);
+  assert.throws(() => parseArgs(["--stale-days", "2"]), /must be at least --min-age-days/);
 });
 
 const topic = (name, letter, extra = {}) => ({
@@ -182,7 +199,7 @@ const board = () => [
   topic("merged-old", "m", { aheadBy: 0, lastPush: ago(10) }),
   topic("open-pr", "o"),
   topic("fresh", "f", { aheadBy: 0, lastPush: ago(1) }),
-  topic("stale", "s", { aheadBy: 4, lastPush: ago(20) }),
+  topic("unmerged", "u", { aheadBy: 4, lastPush: ago(10) }),
   topic("ruled", "r", { aheadBy: 0, rules: [{ type: "deletion" }] }),
   topic("stacked", "t", { aheadBy: 0 }),
 ];
@@ -224,6 +241,17 @@ test("run deletes the branches the rule picks, checks each one first, and lists 
   assert.ok(lines.includes("before: 8 branches"));
   assert.ok(lines.includes("after: 6 branches"));
   assert.ok(!lines.includes("dry run: nothing deleted"));
+});
+
+test("run deletes a no-PR branch left 14 days, keeps a rescue/ one, and groups the kept by kind", () => {
+  const branches = [topic("main", "1", { aheadBy: 0 }), topic("stale", "s", { lastPush: ago(20) }), topic("rescue/saved", "r", { lastPush: ago(60) }), topic("young", "y", { lastPush: ago(10) })];
+  const { gh, calls } = fakeGithub({ branches });
+  const { lines, log } = logger();
+  assert.equal(run({ repo: REPO, gh, log, err: () => assert.fail("no error expected"), now: NOW }), 0);
+  assert.deepEqual(deletes(calls), [`repos/${REPO}/git/refs/heads/stale`]);
+  assert.ok(lines.includes("deleted stale: no PR, not merged, last pushed 20 days ago"));
+  assert.ok(lines.includes("  rescue branch, no PR: a person decides: 1"));
+  assert.ok(lines.includes("  no PR, not merged: 1"));
 });
 
 test("run treats a delete that 404s or 422s as done, and exits 1 for any other failure", () => {
