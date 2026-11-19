@@ -6,10 +6,10 @@
 //
 // Needs GH_TOKEN (or a logged-in gh). It reads, with GraphQL only:
 // - the PRs merged in the window: opened to merged;
-// - the repository's deployments: a PR is live at the first successful deployment created at or after its merge
-//   (deployments are assumed to ship the default branch's head, as Pages and most deploy jobs do). --env keeps one
-//   environment. A repository with no deployments in the window says so; its loop then ends at merge;
-// - the default branch's commits in the window: the share whose checks ended red (the commit's check rollup).
+// - the repository's deployments: a PR is live when the first successful deployment of its merge commit, or of a later
+//   commit on the default branch, says so. --env keeps one environment. A repository with no deployments in the window
+//   says so; its loop then ends at merge;
+// - the default branch's first-parent commits in the window: the share whose checks ended red (the commit's check rollup).
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
@@ -26,16 +26,29 @@ export function percentile(values, p) {
 const minutes = (from, to) => (Date.parse(to) - Date.parse(from)) / 60_000;
 
 /**
- * When each merged PR went live: the first successful deployment created at or after its merge, or null.
- * deployments: [{ createdAt, environment, liveAt }] where liveAt is its first SUCCESS status time (or null).
+ * The default branch's first-parent line, newest first, from history nodes `{ oid, parent, state }` (`parent` is the first
+ * parent's oid). Following first parents leaves out the commits of merged branches.
  */
-export function liveTimes(pulls, deployments, environment = null) {
-  const live = deployments
-    .filter((deployment) => deployment.liveAt && (!environment || deployment.environment === environment))
-    .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+export function firstParents(nodes, head) {
+  const byOid = new Map(nodes.map((node) => [node.oid, node]));
+  const line = [];
+  for (let oid = head; byOid.has(oid); oid = byOid.get(oid).parent) line.push(byOid.get(oid));
+  return line;
+}
+
+/**
+ * When each merged PR went live: the earliest success of a deployment whose commit is the PR's merge commit or a later
+ * commit on the default branch; null when there is none yet. pulls: [{ createdAt, mergedAt, mergeOid }];
+ * deployments: [{ oid, environment, liveAt }] (liveAt is its first SUCCESS status, or null); line: the first-parent
+ * line, newest first.
+ */
+export function liveTimes(pulls, deployments, line, environment = null) {
+  const position = new Map(line.map((commit, index) => [commit.oid, index]));
+  const live = deployments.filter((deployment) => deployment.liveAt && position.has(deployment.oid) && (!environment || deployment.environment === environment));
   return pulls.map((pull) => {
-    const deployment = live.find((candidate) => Date.parse(candidate.createdAt) >= Date.parse(pull.mergedAt));
-    return { ...pull, liveAt: deployment?.liveAt ?? null };
+    const merged = position.get(pull.mergeOid);
+    const times = merged === undefined ? [] : live.filter((deployment) => position.get(deployment.oid) <= merged).map((deployment) => deployment.liveAt).sort();
+    return { ...pull, liveAt: times[0] ?? null };
   });
 }
 
@@ -98,40 +111,49 @@ const cursor = (after) => (after ? { after } : {});
 
 function readPulls(repo, since) {
   const query = `query($q: String!, $after: String) { search(query: $q, type: ISSUE, first: 100, after: $after) {
-    pageInfo { hasNextPage endCursor } nodes { ... on PullRequest { number createdAt mergedAt } } } }`;
-  return pages((after) => {
+    issueCount pageInfo { hasNextPage endCursor } nodes { ... on PullRequest { number createdAt mergedAt mergeCommit { oid } } } } }`;
+  let total = 0;
+  const read = pages((after) => {
     const { search } = graphql(query, { q: `repo:${repo} is:pr is:merged merged:>=${since.slice(0, 10)}`, ...cursor(after) });
-    return { items: search.nodes.filter((pull) => pull.mergedAt && pull.mergedAt >= since), pageInfo: search.pageInfo };
+    total = search.issueCount;
+    const items = search.nodes.map((pull) => ({ createdAt: pull.createdAt, mergedAt: pull.mergedAt, mergeOid: pull.mergeCommit?.oid ?? null }));
+    return { items, pageInfo: search.pageInfo };
   });
+  // Search answers at most 1,000 results, and says it has no next page once it stops.
+  return { nodes: read.nodes.filter((pull) => pull.mergedAt && pull.mergedAt >= since), capped: read.capped || total > read.nodes.length };
 }
 
 function readDeployments(owner, name, since) {
   const query = `query($owner: String!, $name: String!, $after: String) { repository(owner: $owner, name: $name) {
     deployments(first: 100, after: $after, orderBy: { field: CREATED_AT, direction: DESC }) { pageInfo { hasNextPage endCursor }
-      nodes { createdAt environment statuses(first: 10) { nodes { state createdAt } } } } } }`;
+      nodes { createdAt commitOid environment statuses(first: 10) { nodes { state createdAt } } } } } }`;
   const nodes = [];
   let after = null;
   for (let page = 0; page < MAX_PAGES; page += 1) {
     const { deployments } = graphql(query, { owner, name, ...cursor(after) }).repository;
     for (const node of deployments.nodes) {
       const success = node.statuses.nodes.filter((status) => status.state === "SUCCESS").map((status) => status.createdAt).sort()[0];
-      nodes.push({ createdAt: node.createdAt, environment: node.environment, liveAt: success ?? null });
+      nodes.push({ createdAt: node.createdAt, oid: node.commitOid, environment: node.environment, liveAt: success ?? null });
     }
     const oldest = deployments.nodes.at(-1)?.createdAt;
-    if (!deployments.pageInfo.hasNextPage || (oldest && oldest < since)) break;
+    if (!deployments.pageInfo.hasNextPage || (oldest && oldest < since)) return { nodes, capped: false };
     after = deployments.pageInfo.endCursor;
   }
-  return nodes;
+  return { nodes, capped: true };
 }
 
 function readCommits(owner, name, since) {
   const query = `query($owner: String!, $name: String!, $since: GitTimestamp!, $after: String) { repository(owner: $owner, name: $name) {
-    defaultBranchRef { target { ... on Commit { history(first: 100, since: $since, after: $after) { pageInfo { hasNextPage endCursor }
-      nodes { oid statusCheckRollup { state } } } } } } } }`;
-  return pages((after) => {
-    const { history } = graphql(query, { owner, name, since, ...cursor(after) }).repository.defaultBranchRef.target;
-    return { items: history.nodes.map((commit) => ({ oid: commit.oid, state: commit.statusCheckRollup?.state ?? null })), pageInfo: history.pageInfo };
+    defaultBranchRef { target { ... on Commit { oid history(first: 100, since: $since, after: $after) { pageInfo { hasNextPage endCursor }
+      nodes { oid parents(first: 1) { nodes { oid } } statusCheckRollup { state } } } } } } } }`;
+  let head = null;
+  const read = pages((after) => {
+    const { target } = graphql(query, { owner, name, since, ...cursor(after) }).repository.defaultBranchRef;
+    head = target.oid;
+    const items = target.history.nodes.map((commit) => ({ oid: commit.oid, parent: commit.parents.nodes[0]?.oid ?? null, state: commit.statusCheckRollup?.state ?? null }));
+    return { items, pageInfo: target.history.pageInfo };
   });
+  return { line: firstParents(read.nodes, head), capped: read.capped };
 }
 
 function main(argv) {
@@ -147,9 +169,9 @@ function main(argv) {
   const pulls = readPulls(repo, since);
   const deployments = readDeployments(owner, name, since);
   const commits = readCommits(owner, name, since);
-  const hasDeployments = deployments.some((deployment) => deployment.createdAt >= since && deployment.liveAt);
-  const numbers = summarize({ pulls: liveTimes(pulls.nodes, deployments, option("--env", null)), commits: commits.nodes, hasDeployments });
-  if (pulls.capped || commits.capped) numbers.capped = true;
+  const hasDeployments = deployments.nodes.some((deployment) => deployment.createdAt >= since && deployment.liveAt);
+  const numbers = summarize({ pulls: liveTimes(pulls.nodes, deployments.nodes, commits.line, option("--env", null)), commits: commits.line, hasDeployments });
+  if (pulls.capped || commits.capped || deployments.capped) numbers.capped = true;
   console.log(argv.includes("--json") ? JSON.stringify({ repo, days, ...numbers }, null, 2) : render(repo, days, numbers));
   if (numbers.capped) console.error(`loop: read the first ${MAX_PAGES * 100} only; use fewer --days for the whole window`);
   return 0;

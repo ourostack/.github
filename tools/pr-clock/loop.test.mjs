@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { liveTimes, percentile, render, summarize } from "./loop.mjs";
+import { firstParents, liveTimes, percentile, render, summarize } from "./loop.mjs";
 
 test("percentile is the nearest rank and ignores missing values", () => {
   assert.equal(percentile([5, 1, 3, null], 50), 3);
@@ -8,17 +8,31 @@ test("percentile is the nearest rank and ignores missing values", () => {
   assert.equal(percentile([], 50), null);
 });
 
-test("a PR is live at the first successful deployment created at or after its merge", () => {
-  const deployments = [
-    { createdAt: "2026-11-19T10:00:00Z", environment: "github-pages", liveAt: "2026-11-19T10:01:00Z" },
-    { createdAt: "2026-11-19T10:05:00Z", environment: "github-pages", liveAt: null },
-    { createdAt: "2026-11-19T10:06:00Z", environment: "preview", liveAt: "2026-11-19T10:07:00Z" },
-    { createdAt: "2026-11-19T10:10:00Z", environment: "github-pages", liveAt: "2026-11-19T10:12:00Z" },
+test("the default branch's line follows first parents only", () => {
+  const nodes = [
+    { oid: "m2", parent: "m1" },
+    { oid: "b1", parent: "m0" },
+    { oid: "m1", parent: "m0" },
+    { oid: "m0", parent: "old" },
   ];
-  const pulls = [{ createdAt: "2026-11-19T09:50:00Z", mergedAt: "2026-11-19T10:04:00Z" }];
-  assert.equal(liveTimes(pulls, deployments)[0].liveAt, "2026-11-19T10:07:00Z");
-  assert.equal(liveTimes(pulls, deployments, "github-pages")[0].liveAt, "2026-11-19T10:12:00Z");
-  assert.equal(liveTimes([{ ...pulls[0], mergedAt: "2026-11-19T11:00:00Z" }], deployments)[0].liveAt, null);
+  assert.deepEqual(firstParents(nodes, "m2").map((commit) => commit.oid), ["m2", "m1", "m0"]);
+});
+
+test("a PR is live at the first successful deployment of its merge commit or a later one", () => {
+  const line = [{ oid: "c3" }, { oid: "c2" }, { oid: "c1" }];
+  const deployments = [
+    // Created after c2 merged, but it ships c1: it doesn't make c2 live.
+    { oid: "c1", environment: "github-pages", liveAt: "2026-11-19T10:05:00Z" },
+    { oid: "c2", environment: "github-pages", liveAt: null },
+    { oid: "c3", environment: "preview", liveAt: "2026-11-19T10:07:00Z" },
+    { oid: "c3", environment: "github-pages", liveAt: "2026-11-19T10:12:00Z" },
+    { oid: "branch", environment: "github-pages", liveAt: "2026-11-19T10:06:00Z" },
+  ];
+  const pulls = [{ createdAt: "2026-11-19T09:50:00Z", mergedAt: "2026-11-19T10:04:00Z", mergeOid: "c2" }];
+  assert.equal(liveTimes(pulls, deployments, line)[0].liveAt, "2026-11-19T10:07:00Z");
+  assert.equal(liveTimes(pulls, deployments, line, "github-pages")[0].liveAt, "2026-11-19T10:12:00Z");
+  assert.equal(liveTimes([{ ...pulls[0], mergeOid: "c1" }], deployments, line, "github-pages")[0].liveAt, "2026-11-19T10:05:00Z");
+  assert.equal(liveTimes([{ ...pulls[0], mergeOid: "elsewhere" }], deployments, line)[0].liveAt, null);
 });
 
 test("the summary times each stretch and counts red default-branch commits among settled ones", () => {
