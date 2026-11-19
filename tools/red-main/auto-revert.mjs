@@ -194,11 +194,11 @@ export function ignored(run, ignore) {
 const ms = (t) => new Date(t).getTime();
 
 // Reads the repo's open red and everything the guards need. Returns null when main is not red.
-export async function gather(repo, now, a = api, { ignore = [] } = {}) {
+export async function gather(repo, now, a = api, { ignore = [], heal: healFirst = true } = {}) {
   const get = (p) => a.get(p);
   const stretch = await readRedStretch(repo, get, { ignore });
   const heal = healTargets(stretch.runs);
-  if (heal.length) return { repo, heal };
+  if (healFirst && heal.length) return { repo, heal };
   const eps = episodes(commitVerdicts(await markInfra(repo, stretch.runs, get)));
   const open = eps.find((e) => e.to === null);
   if (!open) return null;
@@ -253,10 +253,18 @@ export async function act(repo, f, verdict, { apply, now, log = console.log, a =
 }
 
 export async function rerunHeal(repo, heal, { apply, a = api, log = console.log } = {}) {
+  let ok = true;
   for (const r of heal) {
     log(`${repo}: main's newest commit failed ${r.name} (run ${r.id}); ${apply ? "" : "would "}rerun its failed jobs once before anything holds on it`);
-    if (apply) await a.post(`/repos/${repo}/actions/runs/${r.id}/rerun-failed-jobs`);
+    if (!apply) continue;
+    try {
+      await a.post(`/repos/${repo}/actions/runs/${r.id}/rerun-failed-jobs`);
+    } catch (e) {
+      log(`${repo}: could not rerun run ${r.id} (${e.message}); the revert guards decide instead`);
+      ok = false;
+    }
   }
+  return ok;
 }
 
 // Counts every API call a run makes, by method.
@@ -284,14 +292,15 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
       continue;
     }
     try {
-      const f = await gather(repo, now, a, { ignore: cfg.ignoreWorkflows ?? [] });
+      let f = await gather(repo, now, a, { ignore: cfg.ignoreWorkflows ?? [] });
       if (!f) {
         console.log(`${repo}: main is not red`);
         continue;
       }
       if (f.heal?.length) {
-        await rerunHeal(repo, f.heal, { apply: apply && cfg.enabled, a });
-        continue;
+        if (await rerunHeal(repo, f.heal, { apply: apply && cfg.enabled, a })) continue;
+        f = await gather(repo, now, a, { ignore: cfg.ignoreWorkflows ?? [], heal: false });
+        if (!f) continue;
       }
       if (f.tooLong) {
         console.log(`${repo}: red ${f.minutes}m+ across more than ${MAX_PAGES * PAGE} runs, start of the stretch unknown, not reverting`);

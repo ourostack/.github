@@ -343,3 +343,11 @@ test("heal: a fresh red main is rerun at 1 minute old, before the 60-minute guar
   await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: base, log() {} });
   assert.equal(posts.at(-1), "/repos/o/r/actions/runs/4/rerun-failed-jobs");
 });
+
+test("heal: a rejected rerun is reported and lets the revert guards decide instead of blocking them", async () => {
+  const lines = [];
+  const ok = await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: { post: async () => { throw new Error("403 run too old"); } }, log: (l) => lines.push(l) });
+  assert.equal(ok, false);
+  assert.ok(lines.some((l) => /could not rerun run 4/.test(l)));
+  assert.equal(await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: { post: async () => ({}) }, log() {} }), true);
+});
