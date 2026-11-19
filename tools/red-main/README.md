@@ -43,6 +43,8 @@ process.exit(1);
 
 Only a job that fails counts; emit it only for causes outside the code under test. A commit that has any non-infra failure is still red. A runner that is lost cannot annotate its own job, so red-main classes these as infra itself, in both `red-main.mjs` and `auto-revert.mjs`: run conclusion `startup_failure`; a run `cancelled` with no newer push of the same workflow (a concurrency cancel by a newer push is not a failure at all; a user's cancel leaves no trace in the API, so it is treated as infra too); a failed job that ran no steps or was assigned no runner; and log or annotation text such as `The runner has received a shutdown signal`, `lost communication with the server`, `The job was not acquired by Runner`, `The operation was canceled`. A run whose only failures show GitHub 5xx (`POST /graphql: 504`, `502 Bad Gateway`) or `ETIMEDOUT` in the job log is classed infra without any annotation.
 
+GitHub's own transient failures (GraphQL "Something went wrong while executing your query", HTTP 502/503/504, secondary rate limits) are retried once after a pause by `tools/infra/infra.mjs`, used by pr-clock, rearm-merges and brand converge; a second failure exits with `::error title=infra::` and the GitHub request id.
+
 **Heal first.** Before any guard, auto-revert reruns the failed jobs of main's newest commit once (`rerun-failed-jobs`, only while `run_attempt` is 1), whatever the cause, so a flake or infra red clears itself within one tick and the merge relay does not hold on it. A red that survives the rerun is a real red and follows the guards above.
 
 ## Opting a repository in with its own token (no cross-repo secret)

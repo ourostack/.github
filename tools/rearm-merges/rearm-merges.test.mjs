@@ -106,3 +106,10 @@ test("a write that fails and persists on re-read fails the job", () => {
     setTransport(null);
   }
 });
+
+test("withRetry treats a GraphQL 'Something went wrong' and a secondary rate limit as transient", () => {
+  for (const stderr of ["Something went wrong while executing your query. E840:1:2", "You have exceeded a secondary rate limit"]) {
+    let calls = 0;
+    assert.equal(withRetry(() => { if (++calls < 2) throw Object.assign(new Error("failed"), { stderr }); return "ok"; }, { delays: [1], sleep: () => {}, log: () => {} }), "ok");
+  }
+});

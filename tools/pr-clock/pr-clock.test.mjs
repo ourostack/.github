@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { autoMergeOff, fetchRetry, fetchState, readGroup, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
+import { InfraError } from "../infra/infra.mjs";
+import { gh, autoMergeOff, fetchRetry, fetchState, readGroup, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
 
 const NOW = "2026-11-07T20:00:00Z";
 const run = (name, status, conclusion = null, startedAt = "2026-11-07T19:40:00Z") => ({ __typename: "CheckRun", name, status, conclusion, startedAt });
@@ -192,4 +193,37 @@ test("pages are small and followed by cursor", async () => {
   const { prs } = await fetchState(["o/big"], run);
   assert.equal(prs.length, 7);
   assert.ok(log.length > 1 && log.every((q) => !q.includes("OPEN,first:50")));
+});
+
+const reply = (status, json, headers = {}) => ({ status, ok: status < 400, headers: { get: (k) => headers[k] ?? null }, json: async () => json });
+const GQL_BLIP = [{ message: "Something went wrong while executing your query. Please include `E840:2A3B4C:5D6E7F:691D8A1C` when reporting this issue." }];
+
+test("gh passes after one transient GraphQL error", async () => {
+  const seq = [reply(200, { errors: GQL_BLIP }), reply(200, { data: { ok: 1 } })];
+  const waits = [];
+  const json = await gh("/graphql", { token: "t", doFetch: async () => seq.shift(), sleep: async (ms) => waits.push(ms) });
+  assert.deepEqual(json.data, { ok: 1 });
+  assert.equal(waits.length, 1);
+});
+
+test("gh throws InfraError with the request id after two transient failures", async () => {
+  let calls = 0;
+  await assert.rejects(
+    gh("/graphql", { token: "t", doFetch: async () => (calls++, reply(200, { errors: GQL_BLIP })), sleep: async () => {} }),
+    (err) => err instanceof InfraError && err.requestId === "E840:2A3B4C:5D6E7F:691D8A1C",
+  );
+  assert.equal(calls, 2);
+  await assert.rejects(
+    gh("/graphql", { token: "t", doFetch: async () => reply(503, { message: "unavailable" }, { "x-github-request-id": "ABCD:1234" }), sleep: async () => {} }),
+    (err) => err instanceof InfraError && err.requestId === "ABCD:1234",
+  );
+});
+
+test("gh fails normally on a real error and does not retry it", async () => {
+  let calls = 0;
+  await assert.rejects(
+    gh("/graphql", { token: "t", doFetch: async () => (calls++, reply(200, { errors: [{ message: "Field 'nope' doesn't exist on type 'Query'" }] })), sleep: async () => {} }),
+    (err) => !(err instanceof InfraError) && /doesn't exist/.test(err.message),
+  );
+  assert.equal(calls, 1);
 });

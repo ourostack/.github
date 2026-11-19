@@ -11,9 +11,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["tools/pr-clock/**", ".github/workflows/pr-clock.yml"]
+    paths: ["tools/pr-clock/**", "tools/infra/**", ".github/workflows/pr-clock.yml"]
   pull_request:
-    paths: ["tools/pr-clock/**", ".github/workflows/pr-clock.yml"]
+    paths: ["tools/pr-clock/**", "tools/infra/**", ".github/workflows/pr-clock.yml"]
 
 permissions:
   contents: read
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Test the clock
-        run: node --test tools/pr-clock/pr-clock.test.mjs tools/pr-clock/seat-guard.test.mjs tools/github-browser/browser.test.mjs
+        run: node --test tools/pr-clock/pr-clock.test.mjs tools/pr-clock/seat-guard.test.mjs tools/infra/infra.test.mjs tools/github-browser/browser.test.mjs
       # Optional: a read-only GitHub App (pull requests, checks, statuses, contents, actions)
       # installed on arimendelow lets the clock count late PRs in its private repositories; the
       # issue is public, so it never names them. Without it the workflow token reads every public
