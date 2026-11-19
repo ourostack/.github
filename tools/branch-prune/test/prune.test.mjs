@@ -39,6 +39,15 @@ test("decide keeps release and system branch names, and not a name that only sta
   }
 });
 
+test("decide deletes a release branch whose tip is tagged once it has rested stale-days, and keeps it before then", () => {
+  assert.deepEqual(outcome({ name: "release/1.1", tag: "v1.1.0", aheadBy: 5, lastPushAt: ago(20) }), ["delete", "released as v1.1.0, last pushed 20 days ago"]);
+  assert.deepEqual(outcome({ name: "release/1.2", tag: "v1.2.0", aheadBy: 5, lastPushAt: ago(5) }), ["keep", "released as v1.2.0, pushed 5 days ago"]);
+  assert.deepEqual(outcome({ name: "release/1.2", tag: "v1.2.0", lastPushAt: ago(1) }), ["keep", "pushed 24h ago"]);
+  assert.deepEqual(outcome({ name: "release/1.3", tag: null, aheadBy: 0, lastPushAt: ago(40) }), ["keep", "release or system branch"]);
+  assert.deepEqual(outcome({ name: "gh-pages", tag: "v1.0.0", lastPushAt: ago(40) }), ["keep", "release or system branch"]);
+  assert.deepEqual(outcome({ name: "release/1.1", tag: "v1.1.0", lastPushAt: ago(40), targetOf: 9 }), ["keep", "open PR #9 targets it"]);
+});
+
 test("decide keeps a branch with an open PR, even one merged into the default branch", () => {
   const open = pull({ number: 7, state: "open", closedAt: null });
   assert.deepEqual(outcome({ aheadBy: 0, prs: [open] }), ["keep", "open PR #7"]);
@@ -129,7 +138,7 @@ const NOT_FOUND = { status: 1, stdout: "", stderr: "gh: Not Found (HTTP 404)" };
  * A fake gh over one repository. Each branch answers its endpoints: its last push, its tip's commit date, its ahead
  * count and rules, and optionally a tip that moved, a delete error, or an open PR that appears only on a head lookup.
  */
-function fakeGithub({ branches = [], pulls = [], defaultBranch = DEFAULT } = {}) {
+function fakeGithub({ branches = [], pulls = [], tags = [], defaultBranch = DEFAULT } = {}) {
   const live = new Map(branches.map((entry) => [entry.name, entry]));
   const calls = [];
   const bySha = (value) => branches.find((entry) => entry.sha === value);
@@ -166,6 +175,7 @@ function fakeGithub({ branches = [], pulls = [], defaultBranch = DEFAULT } = {})
       const matching = [...pulls, ...late].filter((entry) => (state === "all" || entry.state === state) && (head === undefined || entry.head.ref === head));
       return ok(page(matching, url));
     }
+    if (rest === "/tags") return ok(page(tags, url));
     if (rest.startsWith("/rules/branches/")) {
       const entry = live.get(nameAfter("/rules/branches/"));
       return entry ? ok(entry.rules) : NOT_FOUND;
@@ -263,6 +273,19 @@ test("run deletes a no-PR branch left 14 days, keeps a rescue/ one, and groups t
   assert.ok(lines.includes("deleted stale: no PR, not merged, last pushed 20 days ago"));
   assert.ok(lines.includes("  rescue branch, no PR: a person decides: 1"));
   assert.ok(lines.includes("  no PR, not merged: 1"));
+});
+
+test("run reads tags only when there is a release branch, and deletes a released one left stale-days", () => {
+  const plain = fakeGithub({ branches: [topic("main", "1", { aheadBy: 0 }), topic("young", "y", { lastPush: ago(1) })] });
+  run({ repo: REPO, gh: plain.gh, log: () => {}, err: () => {}, now: NOW });
+  assert.ok(!plain.calls.some((args) => args.some((arg) => arg.includes("/tags"))));
+  const branches = [topic("main", "1", { aheadBy: 0 }), topic("release/1.1", "o", { lastPush: ago(20) }), topic("release/1.2", "n", { lastPush: ago(20) })];
+  const { gh, calls } = fakeGithub({ branches, tags: [{ name: "v1.1.0", commit: { sha: sha("o") } }] });
+  const { lines, log } = logger();
+  assert.equal(run({ repo: REPO, gh, log, err: () => assert.fail("no error expected"), now: NOW }), 0);
+  assert.deepEqual(deletes(calls), [`repos/${REPO}/git/refs/heads/release/1.1`]);
+  assert.ok(lines.includes("deleted release/1.1: released as v1.1.0, last pushed 20 days ago"));
+  assert.ok(!calls.some((args) => args.some((arg) => arg.includes("/compare/") && arg.endsWith(sha("o")))));
 });
 
 test("run treats a delete that 404s or 422s as done, and exits 1 for any other failure", () => {

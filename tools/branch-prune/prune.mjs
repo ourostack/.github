@@ -4,7 +4,8 @@
 // the counts before and after.
 //
 // The rule, first match wins. Kept: the default branch; a protected branch or one a ruleset forbids deleting; a
-// release or system branch (release/…, releases/…, hotfix/…, vX.Y.Z, gh-readonly-queue/…, gh-pages…); a branch with
+// release or system branch (release/…, releases/…, hotfix/…, vX.Y.Z, gh-readonly-queue/…, gh-pages…), except a
+// release branch whose tip a tag marks as released, which is deleted once it hasn't been pushed to for stale-days; a branch with
 // an open pull request from it or into it; a branch pushed to in the last min-age days (its last push, else its tip's
 // commit date). Deleted: a branch fully merged into the default branch; a branch whose most recent pull request was
 // merged, or closed unmerged, at least min-age days ago, while the branch still points where that pull request's head did;
@@ -41,6 +42,7 @@ const MISSING = /HTTP (404|422)\b|Reference does not exist/;
 const NO_COMMON_HISTORY = /No common ancestor/;
 
 const keep = (reason) => ({ action: "keep", reason });
+const isRelease = (name) => RELEASE_NAMES.some((pattern) => pattern.test(name));
 const isReleaseOrSystem = (name) => RELEASE_NAMES.some((pattern) => pattern.test(name)) || SYSTEM_PREFIXES.some((prefix) => name.startsWith(prefix));
 const closedMs = (pull) => Date.parse(pull.closedAt) || 0;
 const latestPull = (pulls) => [...pulls].sort((a, b) => closedMs(b) - closedMs(a) || b.number - a.number)[0];
@@ -49,7 +51,9 @@ const latestPull = (pulls) => [...pulls].sort((a, b) => closedMs(b) - closedMs(a
 export function screen(branch, { defaultBranch }) {
   if (branch.name === defaultBranch) return keep("default branch");
   if (branch.protected) return keep("protected");
-  if (isReleaseOrSystem(branch.name)) return keep("release or system branch");
+  // A release branch whose tip is tagged has shipped; the rest of the rule decides it (trunk-based development: release
+  // branches are deleted some time after their release, and the tag keeps the code).
+  if (isReleaseOrSystem(branch.name) && !(isRelease(branch.name) && branch.tag)) return keep("release or system branch");
   const open = (branch.prs ?? []).find((pull) => pull.state === "open");
   if (open) return keep(`open PR #${open.number}`);
   if (branch.targetOf) return keep(`open PR #${branch.targetOf} targets it`);
@@ -71,6 +75,12 @@ function verdict(branch, ctx) {
   if (branch.rulesDeletion) return keep("a ruleset forbids deleting");
   const recent = recentPushReason(branch, ctx);
   if (recent) return keep(recent);
+  if (isRelease(branch.name) && branch.tag) {
+    const pushedMs = ctx.now - Date.parse(branch.lastPushAt ?? branch.headCommitAt);
+    const pushedDays = Math.floor(pushedMs / DAY_MS);
+    if (pushedMs >= ctx.staleDays * DAY_MS) return { action: "delete", reason: `released as ${branch.tag}, last pushed ${pushedDays} days ago` };
+    return keep(`released as ${branch.tag}, pushed ${pushedDays} days ago`);
+  }
   if (typeof branch.aheadBy !== "number") throw new TypeError(`decide needs aheadBy for ${branch.name}`);
   if (branch.aheadBy === 0) return { action: "delete", reason: `fully merged into ${ctx.defaultBranch}` };
   const last = latestPull(branch.prs ?? []);
@@ -125,6 +135,16 @@ function listBranches(repo, gh) {
   }
 }
 
+/** Each tagged commit's sha and one of its tags, read only when the repository has a release branch. */
+function listTags(repo, gh) {
+  const tags = new Map();
+  for (let page = 1; ; page += 1) {
+    const batch = JSON.parse(ghOk(gh, ["api", `repos/${repo}/tags?per_page=${PAGE_SIZE}&page=${page}`]));
+    for (const tag of batch) if (!tags.has(tag.commit.sha)) tags.set(tag.commit.sha, tag.name);
+    if (batch.length < PAGE_SIZE) return tags;
+  }
+}
+
 const pullOf = (pull) => ({ number: pull.number, state: pull.state, merged: pull.merged_at != null, closedAt: pull.closed_at ?? null, headSha: pull.head.sha });
 
 /** The pull requests from this repository by head branch, and the number of an open one into each branch. */
@@ -143,8 +163,8 @@ function listPulls(repo, gh) {
 }
 
 /** A branch's record for decide(), fetching only what the rule needs once the earlier verdicts have not decided it. */
-function gather(repo, gh, branch, ctx, prs, targetOf) {
-  const record = { ...branch, prs, targetOf, rulesDeletion: false, lastPushAt: null, headCommitAt: null, aheadBy: null };
+function gather(repo, gh, branch, ctx, prs, targetOf, tag = null) {
+  const record = { ...branch, prs, targetOf, tag, rulesDeletion: false, lastPushAt: null, headCommitAt: null, aheadBy: null };
   if (screen(record, ctx)) return record;
   const rules = JSON.parse(ghOk(gh, ["api", `repos/${repo}/rules/branches/${encodePath(branch.name)}`]));
   record.rulesDeletion = rules.some((rule) => rule.type === "deletion");
@@ -155,6 +175,7 @@ function gather(repo, gh, branch, ctx, prs, targetOf) {
     record.headCommitAt = JSON.parse(ghOk(gh, ["api", `repos/${repo}/commits/${branch.sha}`])).commit.committer.date ?? null;
   }
   if (recentPushReason(record, ctx)) return record;
+  if (isRelease(record.name) && record.tag) return record;
   const compare = gh(["api", `repos/${repo}/compare/${encodePath(ctx.defaultBranch)}...${branch.sha}`]);
   if (compare.status === 0) record.aheadBy = JSON.parse(compare.stdout).ahead_by;
   else if (NO_COMMON_HISTORY.test(compare.stderr)) record.aheadBy = Number.POSITIVE_INFINITY;
@@ -183,6 +204,7 @@ function kindOf(reason) {
     .replace(/^pushed \d+h ago$/, "pushed inside the window")
     .replace(/^PR #\d+ (merged|closed unmerged) \d+ days ago$/, "PR $1, inside the window")
     .replace(/^no PR, not merged, pushed \d+ days ago$/, "no PR, not merged")
+    .replace(/^released as .+, pushed \d+ days ago$/, "released, inside the stale window")
     .replace(/^PR #\d+/, "PR");
 }
 
@@ -198,7 +220,8 @@ export function run({ repo, dryRun = false, minAgeDays = 3, staleDays = 14, gh =
   const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays, staleDays };
   const before = listBranches(repo, gh);
   const { byHead, targets } = listPulls(repo, gh);
-  const records = before.map((branch) => gather(repo, gh, branch, ctx, byHead.get(branch.name) ?? [], targets.get(branch.name) ?? null));
+  const tags = before.some((branch) => isRelease(branch.name)) ? listTags(repo, gh) : new Map();
+  const records = before.map((branch) => gather(repo, gh, branch, ctx, byHead.get(branch.name) ?? [], targets.get(branch.name) ?? null, tags.get(branch.sha) ?? null));
   const verdicts = decide(records, ctx);
   const doomed = verdicts.filter((entry) => entry.action === "delete");
   const kept = verdicts.filter((entry) => entry.action === "keep");
