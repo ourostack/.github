@@ -15,7 +15,19 @@
 // --dry-run lists what would go and deletes nothing. The exit code is 1 when a delete fails for any reason but a
 // missing branch (another run deleted it first), or when GitHub cannot be read, since nothing can then be decided.
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+
+/** The repositories branch-prune stays out of, as { "owner/name": reason }, read from excluded-repos.json. */
+export function loadExcluded(path = new URL("./excluded-repos.json", import.meta.url)) {
+  return JSON.parse(readFileSync(path, "utf8")).repos ?? {};
+}
+
+/** The reason a repository is excluded (compared case-insensitively), or null. */
+export function exclusionReason(repo, excluded = loadExcluded()) {
+  const key = Object.keys(excluded).find((name) => name.toLowerCase() === String(repo).toLowerCase());
+  return key === undefined ? null : excluded[key];
+}
 
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
@@ -175,8 +187,13 @@ function kindOf(reason) {
 }
 
 /** Prunes one repository. Returns the exit code: 0, or 1 when a delete failed for a reason other than a missing branch. */
-export function run({ repo, dryRun = false, minAgeDays = 3, staleDays = 14, gh = ghCall, log = console.log, err = console.error, now = new Date() }) {
+export function run({ repo, dryRun = false, minAgeDays = 3, staleDays = 14, gh = ghCall, log = console.log, err = console.error, now = new Date(), excluded = loadExcluded() }) {
   if (!repo) throw new Error("REPO is not set (owner/name)");
+  const excludedBecause = exclusionReason(repo, excluded);
+  if (excludedBecause !== null) {
+    log(`${repo}: excluded from branch-prune (${excludedBecause}); nothing listed, nothing deleted`);
+    return 0;
+  }
   const defaultBranch = JSON.parse(ghOk(gh, ["api", `repos/${repo}`])).default_branch;
   const ctx = { defaultBranch, now: new Date(now).getTime(), minAgeDays, staleDays };
   const before = listBranches(repo, gh);

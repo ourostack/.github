@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { decide, parseArgs, run, screen } from "../prune.mjs";
+import { decide, exclusionReason, loadExcluded, parseArgs, run, screen } from "../prune.mjs";
 
 const DAY = 86_400_000;
 const NOW = new Date("2026-11-18T12:00:00Z");
@@ -225,6 +225,17 @@ test("run in dry-run lists what it would delete, counts what it would leave, and
   }
   assert.ok(lines.includes("dry run: nothing deleted"));
   assert.ok(lines.includes("would leave: 6 branches"));
+});
+
+test("run does nothing in an excluded repository, and the shipped list excludes the workshop starter ourostack/my-agent", () => {
+  assert.notEqual(exclusionReason("ourostack/my-agent", loadExcluded()), null);
+  assert.notEqual(exclusionReason("OuroStack/My-Agent", loadExcluded()), null);
+  assert.equal(exclusionReason("ourostack/desk", loadExcluded()), null);
+  const { gh, calls } = fakeGithub({ branches: board(), pulls: boardPulls });
+  const { lines, log } = logger();
+  assert.equal(run({ repo: "ourostack/my-agent", gh, log, now: NOW }), 0);
+  assert.deepEqual(calls, []);
+  assert.match(lines[0], /excluded from branch-prune/);
 });
 
 test("run deletes the branches the rule picks, checks each one first, and lists the branches again", () => {
