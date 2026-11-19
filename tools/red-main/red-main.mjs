@@ -137,13 +137,18 @@ export function measure(runs, { since, now }) {
   };
 }
 
-// openReds: { repo -> { since, url, name } } for repos red now. Returns who to wake, owners first.
+// openReds: { repo -> { since, url, name } } for repos red now. Returns who to wake: a repository's fixers (its drain) first,
+// then its owner, then the tooling coordinator once a red outlasts escalateMin.
 export function route(openReds, { now, owners = OWNERS, escalateMin = ESCALATE_MIN } = {}) {
   const wakes = [];
   for (const [repo, red] of Object.entries(openReds)) {
     const owner = owners.repos[repo] ?? owners.fallback;
     const minutes = Math.round(mins(red.since, now));
     const link = red.url ? ` ${red.url}` : "";
+    // A repository's drain fixes a red main, so it hears first and drops what it is doing; its owner still hears, to steer.
+    for (const fixer of owner.fixers ?? []) {
+      wakes.push({ repo, session: fixer.session, who: fixer.name, reason: "fixer", minutes, message: `main is red in ${repo} (${red.name ?? "a check"}, ${minutes}m): find the breaking commit and revert it or fix forward before other work.${link}` });
+    }
     wakes.push({ repo, session: owner.session, who: owner.name, reason: "owner", minutes, message: `main is red in ${repo} (${red.name ?? "a check"}, ${minutes}m).${link}` });
     const tooling = owners.tooling;
     if (owner.session !== tooling.session && minutes >= escalateMin) {
