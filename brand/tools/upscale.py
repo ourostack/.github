@@ -65,6 +65,17 @@ shape keeps the day master's sharp outline instead of the night header's soft
 Lanczos 4x, for a mask that covers a lit figure or a lit edge rather than a
 point of light.
 
+A scene with a figure registry (brand/figures/<day>.json, the one outline_parity.py checks) gets two more things, and a
+scene without one is built exactly as before. (1) The night header's light sources under "nightLights" come from
+Real-ESRGAN's 4x of the night header, like the day, not from a smooth Lanczos 4x, so a lit edge is as sharp as the day's.
+(2) A thin figure (no more than THIN px from its centre line to its edge at 3072 wide: an antenna and its ball, an arm)
+whose lit area the transfer cut below SHRUNK of the day's gets the day master's own edge back: the transfer's smooth light
+field and the night header's softer detail made a 3 to 5 px antenna ball 3 to 5 px smaller at night. Inside and along
+such a figure the master is the day master times the night's light as a gain that is smooth inside the figure and smooth
+outside it, stepping only at the day's edge (keep_figure_edges). A figure the transfer kept at the day's size, and a
+figure thicker than THIN, is left as the transfer made it: a gain stepped at a large figure's edge made a stronger ridge
+than the day's and moved it, and one stepped on a ball the transfer had kept moved its ridge.
+
 Real-ESRGAN on a GPU does not give the same bytes twice, so the committed WebP is
 the record; rerunning makes a new one with a new sha256.
 
@@ -174,6 +185,111 @@ def ratio_lit(day_up, day, night, r=RATIO_RADIUS, eps=RATIO_EPS):
     guide = np.log(day_up.mean(2) + e)
     gain = np.stack([guided(guide, gain[..., c], r, eps) for c in range(3)], -1)
     return (day_up + e) * np.exp(gain) - e
+
+
+EDGE_GROW, EDGE_FEATHER = 6, 8  # px at 4x: the figures' region grows by the first and fades out over the second
+SHRUNK = 0.8  # a thin part is rebuilt only if the transfer left under this fraction of its lit area
+THIN = 12  # px at 3072 wide: a figure no thicker than this (its half-width) is a thin part
+EDGE_SIGMAS = (3, 12)  # header px: the gain's fine and coarse smoothing, inside a figure and outside it
+
+
+def figure_masks(day, day_up):
+    """(matte, region) at day_up's size for every figure in brand/figures/<day>.json, or None when the scene has no
+    registry. The registry's polygons are in the pixels of the day's 3072 scene; each is snapped to the real edge in the
+    day master by outline_parity.snap (the mask the outline check measures). `matte` is that mask given the day
+    master's own edge (a guided filter), `region` is it grown and feathered: where the figures' light is replaced."""
+    reg = BRAND / "figures" / f"{day}.json"
+    if not reg.exists():
+        return None
+    import outline_parity
+    from scipy.ndimage import distance_transform_edt
+    h, w = day_up.shape[:2]
+    day_3072 = np.asarray(Image.fromarray(day_up.round().clip(0, 255).astype(np.uint8)).resize((3072, round(3072 * h / w)), Image.LANCZOS))
+    parts = []
+    for f in json.loads(reg.read_text())["figures"]:
+        m = outline_parity.snap(day_3072, f["polygon"], f.get("seeds", ()), f.get("band", outline_parity.BAND))
+        if distance_transform_edt(m).max() <= THIN:
+            parts.append(m)
+    return parts or None
+
+
+def shrunk_parts(parts, up, base_up):
+    """The union of the thin figures that `up` made smaller: a bright part's lit area (above the midpoint of its own
+    range) is under SHRUNK of the day's. A part the transfer kept at the day's size is left as it made it."""
+    h, w = base_up.shape[:2]
+    keep = np.zeros(parts[0].shape, bool)
+    lum = lambda a: np.asarray(Image.fromarray(np.asarray(a, np.float32).mean(2)).resize(keep.shape[::-1], Image.BOX))
+    lu, lb = lum(up), lum(base_up)
+    from scipy.ndimage import binary_dilation
+    for m in parts:
+        ring = binary_dilation(m, iterations=6)
+        areas = []
+        for a in (lb, lu):
+            lo, hi = np.percentile(a[ring], (5, 95))
+            areas.append(((a > (lo + hi) / 2) & ring).sum())
+        if areas[1] < SHRUNK * areas[0]:
+            keep |= m
+    return keep
+
+
+def soften_masks(union, day_up):
+    from scipy.ndimage import distance_transform_edt
+    h, w = day_up.shape[:2]
+    big = np.asarray(Image.fromarray(union.astype(np.uint8) * 255).resize((w, h), Image.BILINEAR), np.float32) >= 127.5
+    t = np.clip((distance_transform_edt(~big) - EDGE_GROW) / EDGE_FEATHER, 0, 1)
+    region = 1 - t * t * (3 - 2 * t)
+    matte = np.clip(guided(np.log(day_up.mean(2) + 4.0), big.astype(np.float32), 16, 1e-2), 0, 1)
+    return matte, region
+
+
+def _masked_blur(g, wt, sigma):
+    from scipy.ndimage import gaussian_filter
+    den = gaussian_filter(wt, sigma)
+    num = np.stack([gaussian_filter(g[..., c] * wt, sigma) for c in range(3)], -1)
+    return num / np.maximum(den, 1e-9)[..., None], den
+
+
+def figure_gain(base_up, up, matte, e=4.0):
+    """The light gain (log, per channel) of `up` over `base_up`, at matte's size: smooth inside the figures and smooth
+    outside them, each kept from the other's side. Every gain pixel is the ratio of the same side's mean light in `up`
+    to its mean in `base_up` (a margin of 2 header px either side of the day's edge is left out, and the means are
+    taken at header size), so the step between the two gains sits on the day's edge. A ratio of means, not a mean of
+    ratios: a dark rim in the day would otherwise get a huge gain."""
+    from scipy.ndimage import binary_dilation, binary_erosion
+    h, w = matte.shape
+    hh, hw = round(h / 4), round(w / 4)
+    small = lambda a: np.stack([np.asarray(Image.fromarray(np.asarray(a, np.float32)[..., c] + e).resize((hw, hh), Image.BOX)) for c in range(3)], -1)
+    day, night = small(base_up), small(up)
+    a = np.asarray(Image.fromarray((matte * 255).round().astype(np.uint8)).resize((hw, hh), Image.BOX), np.float32) / 255
+    inside = binary_erosion(a > 0.99, iterations=1)
+    outside = ~binary_dilation(a > 0.01, iterations=2)
+    sides = []
+    for sel in (inside, outside):
+        wt = sel.astype(np.float32)
+        parts = [((_masked_blur(night, wt, s)[0] + 1e-6) / (_masked_blur(day, wt, s)[0] + 1e-6), _masked_blur(day, wt, s)[1])
+                 for s in EDGE_SIGMAS]
+        fine, den = parts[0]
+        conf = np.clip(den / 0.05, 0, 1)[..., None]
+        sides.append(np.log(conf * fine + (1 - conf) * parts[1][0]))
+    up_ = lambda g: np.stack([np.asarray(Image.fromarray(g[..., c]).resize((w, h), Image.BILINEAR)) for c in range(3)], -1)
+    g_in, g_out = up_(sides[0]), up_(sides[1])
+    return matte[..., None] * g_in + (1 - matte[..., None]) * g_out
+
+
+def keep_figure_edges(up, base_up, parts, e=4.0):
+    """`up` (the transfer's output, with the night's light sources pasted) with the day master's own edges inside and
+    along each thin figure of `parts` (from figure_masks) that `up` shrank: there it is `base_up` (the day master the transfer started from)
+    times the light gain of `up` over it, smooth inside the figure and smooth outside it, stepping only at the day's edge.
+
+    The transfer's own light field is smooth over windows of ~190 px at 4x and its contrast match follows the night
+    header, so it shrinks a thin bright part (an antenna ball, 3 to 5 px at 3072 px wide) whose night header is softer
+    and smaller than the day's."""
+    union = shrunk_parts(parts, up, base_up)
+    if not union.any():
+        return up
+    matte, region = soften_masks(union, base_up)
+    lit = (base_up + e) * np.exp(figure_gain(base_up, up, matte, e)) - e
+    return up * (1 - region[..., None]) + lit * region[..., None]
 
 
 def smooth_sky(day, size, grad=6):
@@ -297,6 +413,7 @@ def main():
             day_up = np.asarray(Image.open(io.BytesIO(day_up_bytes)).convert("RGB"), np.float32)
             base = Image.fromarray((day_up * (1 - cm) + np.asarray(flat_up, np.float32) * cm).round().clip(0, 255).astype(np.uint8))
             up = transfer(base, header)
+            fm = figure_masks(day, np.asarray(base, np.float32))
             lights_rel = CROPS[day].get("nightLights")
             if lights_rel:
                 # small night-only light sources (lit lamps, glowing eyes) are below the transfer's window, so inside this
@@ -318,11 +435,21 @@ def main():
                     lit = ratio_lit(day_up, day_im, header)
                 else:
                     lit = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)  # header_up, below
+                    if (BRAND / "figures" / f"{day}.json").exists():
+                        # a scene with a figure registry gets the night header's own light sources from Real-ESRGAN too,
+                        # not a smooth Lanczos 4x, so a lit edge is as sharp as the day's
+                        lit = np.asarray(Image.open(reuse / f"{scene}-header.png").convert("RGB") if reuse and (reuse / f"{scene}-header.png").exists()
+                                         else esrgan(header, scratch), np.float32)
+                        if lit.shape[:2] != (up.height, up.width):
+                            sys.exit(f"{scene}: Real-ESRGAN gave {lit.shape[1]}x{lit.shape[0]} for {header_rel}, not 4x")
                 header_up = np.asarray(header.resize(up.size, Image.LANCZOS), np.float32)
                 k = up.width / 1536
                 around = light_falloff(np.asarray(up, np.float32), header_up, m[..., 0], RADIUS * k, FALLOFF_SIGMA * k,
                                        smooth_sky(day_im, up.size))
                 up = Image.fromarray((around * (1 - m) + lit * m).round().clip(0, 255).astype(np.uint8))
+            if fm is not None:
+                up = Image.fromarray(keep_figure_edges(np.asarray(up, np.float32), np.asarray(base, np.float32), fm)
+                                     .round().clip(0, 255).astype(np.uint8))
             origin = None
             also = {"file": flat_rel, "sha256": sha(flat_bytes)}
             r = max(1, round(RADIUS * flat_up.width / 1536))
@@ -356,6 +483,10 @@ def main():
                 sys.exit(f"{scene}: {day_up_rel} differs from its provenance entry; run python3 brand/tools/upscale.py {day} first")
             day_up = Image.open(io.BytesIO(day_up_bytes)).convert("RGB")
             up = transfer(day_up, header)
+            fm = figure_masks(day, np.asarray(day_up, np.float32))
+            if fm is not None:
+                up = Image.fromarray(keep_figure_edges(np.asarray(up, np.float32), np.asarray(day_up, np.float32), fm)
+                                     .round().clip(0, 255).astype(np.uint8))
             origin = None
             also = {"file": day_up_rel, "sha256": sha(day_up_bytes)}
             r = max(1, round(RADIUS * day_up.width / 1536))
