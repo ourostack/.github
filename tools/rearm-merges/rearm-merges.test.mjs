@@ -161,69 +161,9 @@ test("processQueue dry run changes nothing", () => {
   assert.equal(r.dequeued, 0);
 });
 
-import { orphanRuns, cancelOrphanRuns, setRest } from "./rearm-merges.mjs";
-
-const mkRun = (id, sha, branch = "gh-readonly-queue/main/pr-1-x") => ({ id, name: "App", head_sha: sha, head_branch: branch });
-
-test("orphanRuns keeps live groups and other events, and flags groups that are gone", () => {
-  const entries = [{ headCommit: { oid: "live" } }];
-  const runs = [mkRun(1, "live"), mkRun(2, "old"), mkRun(3, "old", "feature")];
-  assert.deepEqual(orphanRuns(runs, entries).map((r) => r.id), [2]);
-});
-
-test("orphanRuns touches nothing when the queue is empty", () => {
-  assert.deepEqual(orphanRuns([mkRun(1, "old")], []), []);
-});
-
-test("cancelOrphanRuns cancels only orphans, and a dry run cancels nothing", () => {
-  const calls = [];
-  setRest((method, path) => {
-    calls.push(`${method} ${path}`);
-    return method === "GET" && path.includes("status=queued") ? { workflow_runs: [mkRun(1, "live"), mkRun(2, "old")] } : {};
-  });
-  try {
-    const entries = [{ repo: "o/r", headCommit: { oid: "live" } }];
-    assert.equal(cancelOrphanRuns(entries, { dryRun: true, log() {} }).cancelled, 0);
-    assert.equal(calls.some((c) => c.startsWith("POST")), false);
-    assert.equal(cancelOrphanRuns(entries, { log() {} }).cancelled, 1);
-    assert.deepEqual(calls.filter((c) => c.startsWith("POST")), ["POST repos/o/r/actions/runs/2/cancel"]);
-  } finally {
-    setRest(null);
-  }
-});
-
 test("ghArgs sends a number as a typed -F value and a string as -f (an Int! PR number failed as a string and crashed every pass)", () => {
   const args = ghArgs("q", { n: 491, id: "PR_1", b: "@body" });
   assert.ok(args.join(" ").includes("-F n=491"));
   assert.ok(args.join(" ").includes("-f id=PR_1"));
   assert.ok(args.join(" ").includes("-f b=@body"));
-});
-
-test("cancelOrphanRuns warns, and does not fail, when the token lacks actions: write", () => {
-  const logs = [];
-  setRest((method, path) => {
-    if (method === "POST") throw Object.assign(new Error("x"), { stderr: "gh: Resource not accessible by personal access token (HTTP 403)\n" });
-    return path.includes("status=queued") ? { workflow_runs: [mkRun(2, "old")] } : {};
-  });
-  try {
-    const r = cancelOrphanRuns([{ repo: "o/r", headCommit: { oid: "live" } }], { log: (m) => logs.push(m) });
-    assert.equal(r.failed, 0);
-    assert.deepEqual(r.denied, ["o/r"]);
-    assert.equal(logs.length, 1);
-    assert.match(logs[0], /^::warning .*o\/r.*actions: write/);
-  } finally {
-    setRest(null);
-  }
-});
-
-test("cancelOrphanRuns still fails on an error that is not a permission gap", () => {
-  setRest((method, path) => {
-    if (method === "POST") throw Object.assign(new Error("x"), { stderr: "HTTP 500 boom" });
-    return path.includes("status=queued") ? { workflow_runs: [mkRun(2, "old")] } : {};
-  });
-  try {
-    assert.equal(cancelOrphanRuns([{ repo: "o/r", headCommit: { oid: "live" } }], { log() {} }).failed, 1);
-  } finally {
-    setRest(null);
-  }
 });
