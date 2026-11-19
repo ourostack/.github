@@ -301,62 +301,6 @@ export function processQueue(entries, { dryRun = false, now = Date.now(), log = 
   return { dequeued, failed };
 }
 
-// ---- Orphaned merge-group runs: a reformed queue leaves the old groups' runs going, and they hold the runners. ----
-
-let restTransport = null;
-// Tests swap the REST transport; null means the real gh call.
-export function setRest(fn) {
-  restTransport = fn;
-}
-
-function rest(method, path) {
-  if (restTransport) return restTransport(method, path);
-  const out = withRetry(() => execFileSync("gh", ["api", "-X", method, path], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }));
-  return out.trim() ? JSON.parse(out) : {};
-}
-
-// A merge_group run is live while some queue entry's group commit is its head. Any other queued or running one belongs to a
-// group that no longer exists. A repository with no entries at all is left alone: nothing proves its groups are gone.
-export function orphanRuns(runs, entries) {
-  const live = new Set(entries.map((e) => e.headCommit?.oid).filter(Boolean));
-  if (live.size === 0) return [];
-  return runs.filter((r) => r.head_branch?.startsWith("gh-readonly-queue/") && !live.has(r.head_sha));
-}
-
-export function cancelOrphanRuns(entries, { dryRun = false, log = console.log } = {}) {
-  const byRepo = Map.groupBy(entries, (e) => e.repo);
-  let cancelled = 0;
-  let failed = 0;
-  const denied = new Set();
-  for (const [repo, list] of byRepo) {
-    const runs = ["queued", "in_progress"].flatMap((s) => rest("GET", `repos/${repo}/actions/runs?event=merge_group&status=${s}&per_page=100`).workflow_runs ?? []);
-    for (const r of orphanRuns(runs, list)) {
-      if (dryRun) {
-        log(`would cancel ${repo} run ${r.id} (${r.name}) for ${r.head_branch}: its merge group is gone`);
-        continue;
-      }
-      try {
-        rest("POST", `repos/${repo}/actions/runs/${r.id}/cancel`);
-        cancelled++;
-        log(`cancelled ${repo} run ${r.id} (${r.name}) for ${r.head_branch}: its merge group is gone`);
-      } catch (err) {
-        const msg = String(err.stderr ?? err.message).trim().split("\n")[0];
-        // A token without Actions write is a setup gap to warn about, not a run to fail; the other writes still ran.
-        if (/Resource not accessible|HTTP 403/.test(msg)) {
-          denied.add(repo);
-          continue;
-        }
-        log(`failed to cancel ${repo} run ${r.id}: ${msg}`);
-        failed++;
-      }
-    }
-  }
-  if (denied.size > 0) {
-    log(`::warning title=REARM_MERGES_TOKEN cannot cancel runs::Orphaned merge-group runs were left running in ${[...denied].join(", ")}: the token needs the "actions: write" permission on those repositories.`);
-  }
-  return { cancelled, failed, denied: [...denied] };
-}
-
 // One comment per PR is enough: a PR that was already told stays quiet.
 function comment(pr, text, log) {
   const prior = gql(COMMENTS, { id: pr.id }).node?.comments?.nodes ?? [];
@@ -382,10 +326,7 @@ function run() {
   const entries = queueEntries();
   const queued = processQueue(entries, opts);
   if (queued.failed > 0) process.exitCode = 1;
-  // Entries just dequeued still count as live here; their runs go on the next pass.
-  const orphans = cancelOrphanRuns(entries, opts);
-  if (orphans.failed > 0) process.exitCode = 1;
-  console.log(`${orphans.cancelled} orphaned merge-group run${orphans.cancelled === 1 ? "" : "s"} cancelled.`);
+  // Orphaned merge-group runs are cancelled by each repository with its own token (tools/orphan-runs).
   console.log(`${queued.dequeued} stuck merge-queue entr${queued.dequeued === 1 ? "y" : "ies"} dequeued.`);
   const prs = openPrs();
   const { acted, failed, unmergeable } = processPrs(prs, args, opts);
