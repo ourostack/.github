@@ -125,13 +125,19 @@ test("failedChecks reports a failing rollup", () => {
   assert.deepEqual(failedChecks(green), []);
 });
 
-test("stuckReason: unmergeable and conflicting leave at once, failed checks after 10 minutes", () => {
-  assert.equal(stuckReason(entry({ state: "UNMERGEABLE" }), T0), "unmergeable");
-  assert.equal(stuckReason(entry({}, { mergeable: "CONFLICTING" }), T0), "conflict");
-  assert.equal(stuckReason(entry({}, failing), T0 + 9 * 60000), null);
-  assert.equal(stuckReason(entry({}, failing), T0 + 11 * 60000), "failed-checks");
-  assert.equal(stuckReason(entry({ state: "UNMERGEABLE" }, failing), T0), "failed-checks");
-  assert.equal(stuckReason(entry(), T0 + 3600000), null);
+const rollup = (state, ...contexts) => ({ commits: { nodes: [{ commit: { statusCheckRollup: { state, contexts: { nodes: contexts } } } }] } });
+const run = (name, conclusion, isRequired) => ({ __typename: "CheckRun", name, conclusion, isRequired });
+
+test("failedChecks counts only required checks (gatefold#491: a failed Shots kept a green PR out of the queue)", () => {
+  assert.deepEqual(failedChecks(rollup("FAILURE", run("Shots (ipad)", "FAILURE", false), run("iPad (place)", "SUCCESS", true))), []);
+  assert.deepEqual(failedChecks(rollup("FAILURE", run("iPad (place)", "TIMED_OUT", true), run("iPad (place)", "FAILURE", true))), ["iPad (place)"]);
+  assert.deepEqual(failedChecks(rollup("FAILURE", { __typename: "StatusContext", context: "ci/status", state: "ERROR", isRequired: true })), ["ci/status"]);
+  assert.deepEqual(failedChecks(rollup("PENDING", run("iPad (place)", null, true))), []);
+});
+
+test("stuckReason keeps an entry whose only failed check is optional", () => {
+  assert.equal(stuckReason(entry({}, rollup("FAILURE", run("Shots (ipad)", "FAILURE", false))), T0 + 3600000), null);
+  assert.equal(stuckReason(entry({}, rollup("FAILURE", run("Shots (ipad)", "FAILURE", true))), T0 + 3600000), "failed-checks");
 });
 
 test("processQueue dequeues, comments on a conflict once, and updates and re-arms a stale base", () => {
