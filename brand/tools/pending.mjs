@@ -36,3 +36,19 @@ export function afterMergeFor({ id, autoSync, kind, problems, pr }) {
   if (!autoSync?.some((prefix) => id?.startsWith(prefix))) return null;
   return problems.every(isByteLag) ? { minutes: WINDOWS[kind] } : null;
 }
+
+// How a repository is registered in brand/surfaces.json: its github-about, README and social-preview entries and any exclusion.
+export function registrationOf(registry, name) {
+  const has = (kind) => registry.surfaces.some((s) => s.kind === kind && s.repo?.split("/")[1] === name);
+  return JSON.stringify([has("github-about"), has("github-readme"), has("github-social-preview"), name in (registry.excluded ?? {})]);
+}
+
+// A repository missing from brand/surfaces.json is a fact about the organization, not about any one pull request, so a pull
+// request's audit must not go red for one it does not touch: it is "unregistered-pending" (listed, counted, exit 0) and the
+// post-merge audit (brand/tools/converge.mjs) files the one issue for it. A pull request that changes how the repository is
+// registered (its entries or its exclusion differ from main's) still fails on its own mistake.
+// pr: true only for a pull request's audit (BRAND_REF set, no --origin). main: main's registry, or null when unreadable (then it fails).
+export function unregisteredFor({ pr, registry, main, name }) {
+  if (!pr || !main) return "unregistered";
+  return registrationOf(registry, name) === registrationOf(main, name) ? "unregistered-pending" : "unregistered";
+}

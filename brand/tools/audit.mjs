@@ -12,7 +12,7 @@
 //                                              # also hash every file the build ships under the site's brand
 //                                              # folder, so a copied file no page links to is checked too
 //
-// Exit codes: 0 every surface is current (held, waiting, pending, after-merge and manual surfaces are listed, not failed),
+// Exit codes: 0 every surface is current (held, waiting, pending, after-merge, unregistered-pending and manual surfaces are listed, not failed),
 // 1 at least one surface is stale or unregistered, 2 usage, 3 environment not ready (no GitHub token, network).
 // A website or social preview that is stale only on bytes within a window after the newest brand art commit on main is "pending"
 // (listed, not failed): its sync is in flight (brand/tools/pending.mjs). After the window it is stale. Pull requests (BRAND_REF)
@@ -21,6 +21,10 @@
 // is "after-merge" (listed, not failed), since only the merge starts its sync. After the merge, brand/tools/converge.mjs
 // (the brand-audit workflow's converge job) runs this audit on main and files or updates one issue if a surface has not
 // converged within its window, and closes it once the audit is green.
+// A repository missing from brand/surfaces.json is likewise an organization-wide gap: on a pull request that does not change
+// its registration it is "unregistered-pending" (listed, not failed), and on main (push, schedule, converge) it is
+// "unregistered" and fails, so converge.mjs files the same one issue for it. A pull request that edits a repository's
+// registration still fails on its own mistake.
 // BRAND_COMMIT=<commit> reads canonical bytes at that commit but still audits production (CI sets it on every run but a pull request's).
 // BRAND_REF=<commit> checks that commit's canonical bytes instead of main's (CI sets it on pull requests).
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
@@ -30,7 +34,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterMergeFor, pendingFor } from "./pending.mjs";
+import { afterMergeFor, pendingFor, unregisteredFor } from "./pending.mjs";
 import { canonicalUrl } from "./canonical.mjs";
 
 const BRAND = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -414,10 +418,14 @@ async function coverage() {
   const readmes = new Set(registry.surfaces.filter((s) => s.kind === "github-readme" && !s.path).map((s) => s.repo.split("/")[1]));
   const socials = new Set(registry.surfaces.filter((s) => s.kind === "github-social-preview").map((s) => s.repo.split("/")[1]));
   const abouts = new Set(registry.surfaces.filter((s) => s.kind === "github-about").map((s) => s.repo.split("/")[1]));
+  const pr = !originOverride && !!process.env.BRAND_REF;
+  const main = pr ? await get(registry.canonicalRaw + "surfaces.json").then((res) => (res.status === 200 ? JSON.parse(res.body.toString("utf8")) : null), () => null) : null;
+  const status = (name) => unregisteredFor({ pr, registry, main, name });
+  const pendingNote = (name) => (status(name) === "unregistered-pending" ? { reason: "an organization-wide gap this pull request does not touch: the post-merge audit files an issue for it" } : {});
   const out = [];
   for (const r of repos) {
     if (r.archived || abouts.has(r.name)) continue;
-    out.push({ id: `unregistered:about:${r.name}`, status: "unregistered", problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
+    out.push({ id: `unregistered:about:${r.name}`, status: status(r.name), ...pendingNote(r.name), problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
   }
   for (const r of repos) {
     if (r.name in (registry.excluded ?? {}) || r.archived) continue;
@@ -425,7 +433,8 @@ async function coverage() {
     if (missing.length)
       out.push({
         id: `unregistered:${r.name}`,
-        status: "unregistered",
+        status: status(r.name),
+        ...pendingNote(r.name),
         problems: [`ourostack/${r.name} has no ${missing.join(" or ")} entry in brand/surfaces.json`],
         fix: "Add it to brand/surfaces.json (draw its header with the prompt chain in brand/provenance.json), or list it under excluded with the reason.",
       });
@@ -597,7 +606,7 @@ if (only === "" || "unregistered:".startsWith(only)) results.push(...(await cove
 results.sort((a, b) => a.id.localeCompare(b.id));
 
 const count = (st) => results.filter((r) => r.status === st).length;
-const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), held: count("held"), waiting: count("waiting"), pending: count("pending"), "after-merge": count("after-merge"), manual: count("manual"), unchecked: count("unchecked") };
+const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), "unregistered-pending": count("unregistered-pending"), held: count("held"), waiting: count("waiting"), pending: count("pending"), "after-merge": count("after-merge"), manual: count("manual"), unchecked: count("unchecked") };
 const failed = summary.stale + summary.unregistered > 0;
 const exit = failed ? 1 : summary.unchecked ? 3 : 0;
 
@@ -606,7 +615,7 @@ if (format === "json") {
 } else {
   const color = process.stdout.isTTY && !process.env.NO_COLOR;
   const c = (code, t) => (color ? `\x1b[${code}m${t}\x1b[0m` : t);
-  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), "after-merge": c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
+  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), "unregistered-pending": c(33, "▲"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), "after-merge": c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
   process.stdout.write(`BRAND AUDIT  ${registry.surfaces.length} surfaces in brand/surfaces.json\n\n`);
   for (const r of results) {
     const extra = r.pages ? c(2, ` (${r.pages} pages)`) : "";
