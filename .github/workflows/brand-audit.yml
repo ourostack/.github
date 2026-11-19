@@ -79,7 +79,7 @@ jobs:
       # Required with the upscale tests: a night that moves a figure's outline, or loses a figure into the sky, can't merge.
       # OpenCV pins numpy below 2.3, so it goes in after the tests above that ran on the newest numpy.
       - name: Install OpenCV for outline_parity.py
-        run: /tmp/upscale-venv/bin/pip install --quiet opencv-python-headless==4.12.0.88
+        run: /tmp/upscale-venv/bin/pip install --quiet --force-reinstall opencv-python-headless==4.12.0.88 scipy scikit-image
       - name: Test upscale.py's figure-registry night paths (they need OpenCV)
         run: /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
       - name: Test how outline_parity.py tells a moved or sunk figure from anti-aliasing
