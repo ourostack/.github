@@ -14,7 +14,7 @@ A branch is deleted only when one of these holds, and never when one of the keep
 
 - the default branch;
 - a protected branch, or one a ruleset forbids deleting;
-- a release or system branch: `release/…`, `releases/…`, `hotfix…`, a version tag such as `v1.3.0`, the merge queue's `gh-readonly-queue/…`, and `gh-pages`. A name that only starts like one, such as `released-notes`, is an ordinary branch;
+- a release or system branch: `release/…`, `releases/…`, `hotfix…`, a version tag such as `v1.3.0`, the merge queue's `gh-readonly-queue/…`, and `gh-pages`. A name that only starts like one, such as `released-notes`, is an ordinary branch. A release branch whose tip a tag marks as released is the exception: rule (e) decides it;
 - a branch with an open pull request, from it or into it. Deleting the base of an open pull request would close that pull request;
 - a branch pushed to in the last `min-age-days` days (3 by default). Its last push counts, or the commit date of its tip when no push is recorded. A branch with neither time is kept.
 
@@ -24,6 +24,7 @@ A branch is deleted only when one of these holds, and never when one of the keep
 - (b) a branch whose most recent pull request was closed unmerged at least `min-age-days` days ago, and whose tip is still that pull request's head;
 - (c) a branch whose most recent pull request was merged at least `min-age-days` days ago, and whose tip is still that pull request's head. A squash or rebase merge leaves the branch's own commits outside the default branch, so it isn't fully merged, but nothing on it is left to merge;
 - (d) a branch with no pull request, not merged, whose last push (or its tip's commit date, when no push is recorded) is at least `stale-days` days old (14 by default). Work nobody opened a pull request for in that time is abandoned; anything worth keeping goes on a `rescue/` branch.
+- (e) a release branch whose tip carries a tag (it has shipped), last pushed at least `stale-days` days ago. Trunk-based development deletes a release branch some time after its release, and the tag keeps the code; a fix goes to the default branch first and is cherry-picked to a release branch ([trunkbaseddevelopment.com](https://trunkbaseddevelopment.com/youre-doing-it-wrong/)). Tags are read only when the repository has a release branch.
 
 A `rescue/` branch with no pull request is never deleted by (d): someone saved it on purpose, so a person decides. Rules (a) to (c) still apply to it.
 
