@@ -31,6 +31,7 @@
 // Needs Node 20+ and a GitHub token in GH_TOKEN or GITHUB_TOKEN (or a signed-in `gh`) for READMEs and social previews.
 
 import { createHash } from "node:crypto";
+import { exitAfterFlush } from "./exit-after-flush.mjs";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
@@ -631,4 +632,4 @@ if (format === "json") {
   process.stdout.write(`\n${Object.entries(summary).filter(([, n]) => n).map(([k, n]) => `${n} ${k}`).join(", ")}\n`);
   process.stdout.write(exit === 0 ? c(32, "Every surface carries the brand.\n") : exit === 1 ? c(31, "Stale surfaces above. A branding update is done only when this is green.\n") : c(31, `Some surfaces could not be checked: ${envError}\n`));
 }
-process.exit(exit);
+exitAfterFlush(exit);
