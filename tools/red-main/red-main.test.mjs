@@ -146,7 +146,7 @@ test("a repository's fixer, its drain, hears a red main first, told to clear it 
 });
 
 test("every watched repo is mapped", () => {
-  assert.equal(Object.keys(OWNERS.repos).length, 13);
+  assert.equal(Object.keys(OWNERS.repos).length, 17);
 });
 
 test("the table marks unreadable repos instead of showing green", () => {

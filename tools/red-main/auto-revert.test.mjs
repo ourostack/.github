@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { OWNERS } from "./red-main.mjs";
 import { CONFIG, act, healTargets, rerunHeal, ignored, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 17, 12, 0);
@@ -88,6 +89,11 @@ test("the revert body names the PR, the failing job and the run", () => {
 test("config: disabled by default for tandem, enabled for ourostack repos", () => {
   assert.equal(CONFIG.repos["teams-microsoft/tandem"].enabled, false);
   assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/")).every(([, c]) => c.enabled));
+  for (const r of ["hackamore", "ouro-ui-core", "m365crawl", "ouro-ui", "ouro-ui-apple", "gatefold"]) {
+    assert.equal(CONFIG.repos[`ourostack/${r}`].enabled, true, r);
+    assert.equal(CONFIG.repos[`ourostack/${r}`].ignoreWorkflows, undefined, r);
+    assert.ok(OWNERS.repos[`ourostack/${r}`], `${r} has an owner`);
+  }
   assert.equal(CONFIG.minRedMinutes, 60);
 });
 
