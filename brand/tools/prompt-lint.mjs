@@ -58,6 +58,14 @@ const RISKS = [
 
 const NEGATION = /^\s*(no|never|not|nothing|without|don't|do not)\b/i;
 
+// A figure block for one of the shared universe's people (not an agent, robot or pet).
+const isPerson = (what) => /\b(person|people|man|woman|human|captain|ari)\b/i.test(what) && !/\b(robot|agent|snake|pet|stoker)\b/i.test(what);
+// Neck length, not just width: "a natural neck about four tenths of the head's width" still drew stalks (ourostack).
+const NECK_LENGTH = /\bneck\b[^.;]*\b(short|hidden|tucked|covered|third|quarter)\b|\b(short|hidden|tucked|covered)\b[^.;]*\bneck\b|\bno (visible )?neck\b/i;
+const HEAD_SIZE = /\bhead\b[^.;]*\b(third|quarter|fifth|sixth|seventh|eighth|half|\d+(\.\d+)? heads?|times|head-widths?)\b/i;
+const WRAP = /\b(blankets?|throws?|shawls?|ponchos?|cloaks?|capes?|quilts?|stoles?)\b/i;
+const EDGE = /\b(hem|hems|hemmed|fringe|fringed|tassels?|folded|fold|edge|edges|border|binding|overlap)\b/i;
+
 function sentences(text) {
   return text.split(/(?<=[.!?;])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
 }
@@ -144,6 +152,19 @@ export function lint(text) {
     if (height && !/\b(times|×|\d+(\.\d+)?x|half|third|quarter|level with|height|tall as|knee|waist|shoulder|hip|reference|smallest|tallest)\b/i.test(height)) err(where, "Height: give it relative to another figure or prop (\"about half Loop's height\"); \"bigger\" and \"large\" swung Ouro too big (#88, #102)");
     if (/\bglass\b/i.test(material) && !/\b(smooth|seamless)\b/i.test(material)) warn(where, "\"glass\" alone came out as tiled cells or facets on every airship candidate; say \"smooth, seamless\"", "glass-cells");
     if (expression && /^(happy|smiling|a smile|smile|cute|friendly|neutral|calm)\.?$/i.test(expression)) warn(where, "Expression: a stock word gives the stock smile (#114). Name the feeling of this moment and the face or pose that shows it", "stock-expression");
+    const what = f.fields.get("what") ?? "";
+    const block = f.lines.join("\n");
+    if (isPerson(what)) {
+      if (!NECK_LENGTH.test(block)) warn(where, "a person with no neck length came back with a stalk of a neck rising out of the collar (chart-room, playwright-focus-proof, ouro-hx, labs, ouroboros; 2026-11-18). In Build say \"a short, natural neck, about a third of the head's height, the head sitting right on the collar\", or hide it under a scarf or collar", "neck");
+      if (!HEAD_SIZE.test(f.fields.get("build") ?? "")) warn(where, "a person with no head size in Build came back with a small head on broad shoulders or an 8-head mannequin body (ouro-md, ouroboros; 2026-11-18). Give the head against the body: \"a head about one-seventh of the standing height, shoulders about two and a half head-widths across\"", "head-size");
+    }
+    for (const s of sentences(block.replace(/^\s*[-*]\s*/gm, ""))) {
+      const kept = s.split(/[,;:(]/).filter((c) => c.trim() && !NEGATION.test(c)).join(",");
+      if (WRAP.test(kept) && !EDGE.test(block)) {
+        warn(where, "a blanket or throw worn over clothes with no edge named faded into the jumper and coat under it (ourostack meadow, 2026-11-18). Name its edge where it meets the clothes: \"a folded-over hem with a thin shadow line where it sits on the jumper\", or a fringe", "garment-edge");
+        break;
+      }
+    }
   }
 
   const mustNot = body("Must not");
