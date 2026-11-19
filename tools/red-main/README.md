@@ -1,6 +1,6 @@
 # red-main
 
-- `red-main.mjs`: red-minutes measure and owner routing.
+- `red-main.mjs`: red-minutes measure and owner routing. `owners.json` maps each repository to the coordinator that owns it, and optionally to `fixers`, such as its issue drain: a red main wakes the fixers first, telling them to clear it before other work, then the owner.
 - `auto-revert.mjs`: reverts the one squash-merged PR behind a main that has stayed red for 60 minutes (guards and opt-in list in the file header and `auto-revert.json`; tests in `auto-revert.test.mjs`).
 
 The measure reads the whole window, not just the API's newest 1,000 runs: it queries `created` ranges and halves any range that reports more than 1,000.

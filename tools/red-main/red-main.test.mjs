@@ -119,7 +119,8 @@ const red = (minutes, name = "check") => ({ since: at(0), url: "https://x/run/1"
 test("a product red wakes its owner with the run link and not the tooling coordinator", () => {
   const w = route({ "ourostack/ouro-ui": red(), "teams-microsoft/tandem": red(), "gim-home/CIT-pages": red(), "ourostack/ouroboros": red() }, { now: at(10) });
   const repos = ["ourostack/ouro-ui", "teams-microsoft/tandem", "gim-home/CIT-pages", "ourostack/ouroboros"];
-  assert.deepEqual(w.map((x) => [x.repo, x.session, x.reason]), repos.map((repo) => [repo, OWNERS.repos[repo].session, "owner"]));
+  assert.deepEqual(w.filter((x) => x.reason === "owner").map((x) => [x.repo, x.session]), repos.map((repo) => [repo, OWNERS.repos[repo].session]));
+  assert.ok(w.every((x) => x.reason !== "escalation"));
   assert.match(w[0].message, /https:\/\/x\/run\/1/);
 });
 
@@ -130,10 +131,18 @@ test("repos the tooling coordinator owns wake it once; unknown repos fall back t
 });
 
 test("a red past the threshold escalates to the tooling coordinator, once, and only before it", () => {
-  assert.equal(route({ "ourostack/ouro-ui": red() }, { now: at(59) }).length, 1);
-  const w = route({ "ourostack/ouro-ui": red() }, { now: at(60) });
-  assert.deepEqual(w.map((x) => [x.session, x.reason]), [["34c6f98e", "owner"], ["4deb13bb", "escalation"]]);
+  assert.equal(route({ "ourostack/ouroboros": red() }, { now: at(59) }).length, 1);
+  const w = route({ "ourostack/ouroboros": red() }, { now: at(60) });
+  assert.deepEqual(w.map((x) => [x.session, x.reason]), [["9603c7f8", "owner"], ["4deb13bb", "escalation"]]);
   assert.equal(route({ "ourostack/desk": red() }, { now: at(600) }).length, 1);
+});
+
+test("a repository's fixer, its drain, hears a red main first, told to clear it before other work, and its owner still hears", () => {
+  const w = route({ "ourostack/ouro-ui": red() }, { now: at(5) });
+  assert.deepEqual(w.map((x) => [x.session, x.reason]), [["1376cf68", "fixer"], ["34c6f98e", "owner"]]);
+  assert.match(w[0].message, /before other work/);
+  const none = route({ "o/r": red() }, { now: at(5), owners: { tooling: { session: "t", name: "t" }, fallback: { session: "f", name: "f" }, repos: { "o/r": { session: "o", name: "o" } } } });
+  assert.deepEqual(none.map((x) => x.reason), ["owner"]);
 });
 
 test("every watched repo is mapped", () => {
