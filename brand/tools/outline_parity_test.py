@@ -86,6 +86,44 @@ class OutlineParity(unittest.TestCase):
         r = op.check_figure(flat_day, night, FIG)
         self.assertFalse(any("edge lost" in f for f in r["fails"]), r["fails"])
 
+    def test_a_short_run_of_shifted_edge_fails(self):
+        m = figure_mask()
+        m[140:180, 220:] = figure_mask(dx=-3.5)[140:180, 220:]  # the right edge, 40 px of it, 3.5 px inward
+        r = self.check(picture(30, (110, 100, 120), m, noise=2.0, seed=2))
+        self.assertTrue(any("edge moved" in f for f in r["fails"]), r["fails"])
+
+    def test_a_short_run_of_shift_within_the_limit_passes(self):
+        m = figure_mask()
+        m[140:180, 220:] = figure_mask(dx=-1.5)[140:180, 220:]
+        r = self.check(picture(30, (110, 100, 120), m, noise=2.0, seed=2))
+        self.assertEqual(r["fails"], [])
+
+
+def disc(radius, blur=0.0):
+    m = np.zeros((H, W), np.float32)
+    cv2.circle(m, (240, 180), radius, 1.0, -1, cv2.LINE_AA)
+    return (cv2.GaussianBlur(m, (0, 0), blur) if blur else m)[..., None]
+
+
+BALL = {"name": "ball", "polygon": [[240 + 14 * np.cos(a), 180 + 14 * np.sin(a)] for a in np.linspace(0, 6.28, 16, endpoint=False)], "band": 4}
+
+
+class SmallParts(unittest.TestCase):
+    def check(self, night_radius, blur=0.0):
+        day_img = picture(200, (60, 160, 255), disc(10), noise=2.0, seed=1)
+        night_img = picture(30, (50, 130, 200), disc(night_radius, blur), noise=2.0, seed=2)
+        return op.check_figure(day_img, night_img, BALL)
+
+    def test_same_size_ball_passes(self):
+        self.assertEqual(self.check(10, 0.8)["fails"], [])
+
+    def test_ball_one_pixel_smaller_passes(self):
+        self.assertEqual(self.check(9, 0.8)["fails"], [])
+
+    def test_ball_four_pixels_smaller_in_diameter_fails(self):
+        r = self.check(8, 0.8)
+        self.assertTrue(any("small part changed size" in f for f in r["fails"]), r["fails"])
+
 
 if __name__ == "__main__":
     unittest.main()
