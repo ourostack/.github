@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { afterMergeFor, pendingFor, WINDOWS } from "./pending.mjs";
+import { afterMergeFor, pendingFor, registrationOf, unregisteredFor, WINDOWS } from "./pending.mjs";
 
 const now = new Date("2026-11-16T23:00:00Z");
 const ago = (min) => new Date(now - min * 60000);
@@ -63,4 +63,26 @@ test("on a pull request, anything the PR can make true stays stale", () => {
 test("outside a pull request nothing is after-merge, and the live main audit is unchanged", () => {
   assert.equal(pr({ pr: false }), null);
   assert.deepEqual(pendingFor({ id: ID, autoSync: AUTO, kind: "website", problems: lag, mergedAt: ago(10), now, live: true }), { ageMinutes: 10, minutes: 90 });
+});
+
+const reg = (extra = [], excluded = {}) => ({ surfaces: [{ kind: "github-about", repo: "ourostack/old" }, ...extra], excluded });
+const readme = { kind: "github-readme", repo: "ourostack/new" };
+const social = { kind: "github-social-preview", repo: "ourostack/new" };
+
+test("on a pull request, a new repository the PR does not register is unregistered-pending, not a failure", () => {
+  const main = reg();
+  assert.equal(unregisteredFor({ pr: true, registry: reg(), main, name: "new" }), "unregistered-pending");
+});
+
+test("a pull request that changes the repository's registration still fails on its own mistake", () => {
+  const main = reg();
+  assert.equal(unregisteredFor({ pr: true, registry: reg([readme]), main, name: "new" }), "unregistered");
+  assert.equal(unregisteredFor({ pr: true, registry: reg([readme, social]), main: reg([readme]), name: "new" }), "unregistered");
+  assert.equal(unregisteredFor({ pr: true, registry: reg([], { new: "later" }), main, name: "new" }), "unregistered");
+  assert.notEqual(registrationOf(reg([readme]), "new"), registrationOf(reg(), "new"));
+});
+
+test("on main, or when main's registry cannot be read, an unregistered repository fails", () => {
+  assert.equal(unregisteredFor({ pr: false, registry: reg(), main: reg(), name: "new" }), "unregistered");
+  assert.equal(unregisteredFor({ pr: true, registry: reg(), main: null, name: "new" }), "unregistered");
 });

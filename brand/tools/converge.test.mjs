@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { decide, keyOf } from "./converge.mjs";
+import { decide, keyOf, render } from "./converge.mjs";
 
 const issue = { number: 7 };
 const A = ["site:ouroboros.bot", "social:housesitter"];
@@ -19,4 +19,10 @@ test("an open issue gets a comment only when the stale set changed", () => {
 test("a green audit closes the open issue and does nothing without one", () => {
   assert.deepEqual(decide({ staleIds: [], issue }), { action: "close" });
   assert.deepEqual(decide({ staleIds: [], issue: null }), { action: "none" });
+});
+
+test("an unregistered repository on main opens the one issue, like a stale surface", () => {
+  const ids = ["unregistered:my-agent"];
+  assert.deepEqual(decide({ staleIds: ids, issue: null }), { action: "open", key: keyOf(ids) });
+  assert.match(render([{ id: ids[0], status: "unregistered", problems: ["ourostack/my-agent has no README or social preview entry in brand/surfaces.json"] }], keyOf(ids)), /unregistered:my-agent/);
 });

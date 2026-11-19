@@ -4,9 +4,10 @@ name: brand audit
 # On a pull request the audit checks only what the pull request can make true (canonical bytes
 # and provenance, masters, derived files, registration, the gates below). A website or social
 # preview that lags only on bytes shows as after-merge, not red, because its sync starts after
-# the merge. After the merge, the converge job runs the live audit on main every 30 minutes and
+# the merge, and a repository missing from the registry that the pull request does not touch
+# shows as unregistered-pending. After the merge, the converge job runs the live audit on main every 30 minutes and
 # files or updates one issue ("Brand surfaces have not converged") when a surface is still stale
-# past its window, and closes it when the audit is green. Red on a pull request means something
+# past its window or a repository is still unregistered, and closes it when the audit is green. Red on a pull request means something
 # in the pull request is wrong: see AGENTS.md ("A branding update reaches every surface").
 on:
   push:

@@ -18,7 +18,7 @@ const MARK = /<!-- brand-converge: ([0-9a-f]{12}) -->/g;
 
 export const keyOf = (staleIds) => createHash("sha256").update([...new Set(staleIds)].sort().join("\n")).digest("hex").slice(0, 12);
 
-// staleIds: ids the live audit calls stale or unregistered. issue: the open issue, or null; lastKey: the key in its
+// staleIds: ids the live audit calls stale or unregistered (a repository missing from brand/surfaces.json is converged-on like a stale surface). issue: the open issue, or null; lastKey: the key in its
 // newest comment (or its body). One comment per distinct set of stale surfaces, so a lingering set stays quiet.
 export function decide({ staleIds, issue, lastKey }) {
   if (!staleIds.length) return issue ? { action: "close" } : { action: "none" };
