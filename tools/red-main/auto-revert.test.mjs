@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIG, act, ignored, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
+import { CONFIG, act, healTargets, rerunHeal, ignored, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 17, 12, 0);
 const SHA = "a".repeat(40);
@@ -164,7 +164,9 @@ test("a job annotated title=infra is never reverted, and gather reads the annota
       throw new Error(p);
     },
   };
-  assert.equal(await gather("o/r", NOW, a), null);
+  const f = await gather("o/r", NOW, a);
+  assert.equal(f.sha, undefined, "an unreran red run is rerun first, before any guard is read");
+  assert.deepEqual(f.heal, [{ id: 5, name: "CI" }]);
 });
 
 test("runner lost, never started, system cancel and annotation text are infra, never reverted", () => {
@@ -308,3 +310,36 @@ test("main --self reads the repo's ignoreWorkflows row: a red first-run-gate is 
 function commitsOf(runs) {
   return new Set(runs.map((r) => r.head_sha)).size;
 }
+
+const run = (over = {}) => ({ id: 1, name: "ci", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 1, created_at: "2026-11-17T11:00:00Z", ...over });
+
+test("heal: main's newest commit's unreran failed runs are rerun once; reran, cancelled, running and older-commit runs are not", () => {
+  const old = run({ id: 2, head_sha: "b".repeat(40), created_at: "2026-11-17T10:00:00Z" });
+  assert.deepEqual(healTargets([run(), old]), [{ id: 1, name: "ci" }]);
+  assert.equal(healTargets([run({ conclusion: "timed_out" })]).length, 1);
+  for (const over of [{ run_attempt: 2 }, { conclusion: "cancelled" }, { conclusion: "startup_failure" }, { conclusion: "success" }, { status: "in_progress", conclusion: null }]) assert.deepEqual(healTargets([run(over)]), [], JSON.stringify(over));
+  assert.deepEqual(healTargets([]), []);
+});
+
+test("heal: a fresh red main is rerun at 1 minute old, before the 60-minute guard; a dry run only says it would", async () => {
+  const posts = [];
+  const t = new Date(NOW - 60000).toISOString();
+  const base = {
+    get: async () => ({ total_count: 1, workflow_runs: [run({ id: 9, created_at: t, run_started_at: t, updated_at: t })] }),
+    post: async (p) => posts.push(p),
+  };
+  const lines = [];
+  const orig = console.log;
+  console.log = (l) => lines.push(l);
+  try {
+    await main(["--self", "o/r"], NOW, base);
+    assert.deepEqual(posts, []);
+    assert.ok(lines.some((l) => /would rerun its failed jobs once/.test(l)));
+    await main(["--self", "o/r", "--apply"], NOW, base);
+  } finally {
+    console.log = orig;
+  }
+  assert.deepEqual(posts, ["/repos/o/r/actions/runs/9/rerun-failed-jobs"]);
+  await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: base, log() {} });
+  assert.equal(posts.at(-1), "/repos/o/r/actions/runs/4/rerun-failed-jobs");
+});
