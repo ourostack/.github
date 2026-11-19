@@ -160,3 +160,34 @@ test("processQueue dry run changes nothing", () => {
   setTransport(null);
   assert.equal(r.dequeued, 0);
 });
+
+import { orphanRuns, cancelOrphanRuns, setRest } from "./rearm-merges.mjs";
+
+const mkRun = (id, sha, branch = "gh-readonly-queue/main/pr-1-x") => ({ id, name: "App", head_sha: sha, head_branch: branch });
+
+test("orphanRuns keeps live groups and other events, and flags groups that are gone", () => {
+  const entries = [{ headCommit: { oid: "live" } }];
+  const runs = [mkRun(1, "live"), mkRun(2, "old"), mkRun(3, "old", "feature")];
+  assert.deepEqual(orphanRuns(runs, entries).map((r) => r.id), [2]);
+});
+
+test("orphanRuns touches nothing when the queue is empty", () => {
+  assert.deepEqual(orphanRuns([mkRun(1, "old")], []), []);
+});
+
+test("cancelOrphanRuns cancels only orphans, and a dry run cancels nothing", () => {
+  const calls = [];
+  setRest((method, path) => {
+    calls.push(`${method} ${path}`);
+    return method === "GET" && path.includes("status=queued") ? { workflow_runs: [mkRun(1, "live"), mkRun(2, "old")] } : {};
+  });
+  try {
+    const entries = [{ repo: "o/r", headCommit: { oid: "live" } }];
+    assert.equal(cancelOrphanRuns(entries, { dryRun: true, log() {} }).cancelled, 0);
+    assert.equal(calls.some((c) => c.startsWith("POST")), false);
+    assert.equal(cancelOrphanRuns(entries, { log() {} }).cancelled, 1);
+    assert.deepEqual(calls.filter((c) => c.startsWith("POST")), ["POST repos/o/r/actions/runs/2/cancel"]);
+  } finally {
+    setRest(null);
+  }
+});
