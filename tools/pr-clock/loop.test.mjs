@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { firstParents, liveTimes, percentile, render, summarize } from "./loop.mjs";
+import { firstParents, liveTimes, percentile, redStretches, render, summarize, topRedChecks } from "./loop.mjs";
 
 test("percentile is the nearest rank and ignores missing values", () => {
   assert.equal(percentile([5, 1, 3, null], 50), 3);
@@ -56,4 +56,31 @@ test("the report says when a repository has no deployments", () => {
   assert.match(text, /\| PR opened to merged \| 10 min \| 10 min \| 1 \|/);
   assert.match(text, /\| Merged to live \| no deployments \|/);
   assert.match(text, /Default branch red: –\./);
+});
+
+test("red time runs from a red commit to the next green one, and an open stretch runs to now", () => {
+  const at = (minute) => new Date(Date.parse("2026-11-19T10:00:00Z") + minute * 60_000).toISOString();
+  // Newest first, as the history reads.
+  const line = [
+    { state: "FAILURE", at: at(100) },
+    { state: "SUCCESS", at: at(60) },
+    { state: "PENDING", at: at(55) },
+    { state: "FAILURE", at: at(50) },
+    { state: "FAILURE", at: at(45) },
+    { state: "SUCCESS", at: at(10) },
+    { state: "FAILURE", at: at(0) },
+  ];
+  const now = Date.parse(at(120));
+  assert.deepEqual(redStretches(line, now), [10, 15, 20]);
+  const numbers = summarize({ pulls: [], commits: line, hasDeployments: false, windowMinutes: 450, now });
+  assert.equal(numbers.mainRedTime, 0.1);
+  assert.equal(numbers.mainRedStretch, 15);
+  assert.match(render("o/r", 1, numbers), /Default branch red: 10% of the time \(median stretch 15 min\); 67% of settled commits \(4 of 6\)\./);
+});
+
+test("the checks that turn main red are counted once per commit, most frequent first", () => {
+  const failures = [["latency", "latency (1/4)"], ["latency", "latency"], ["deploy"], []];
+  assert.deepEqual(topRedChecks(failures), [["latency", 2], ["deploy", 1], ["latency (1/4)", 1]]);
+  const numbers = { ...summarize({ pulls: [], commits: [], hasDeployments: false }), topRedChecks: [["latency", 2]], redChecksRead: 3 };
+  assert.match(render("o/r", 1, numbers), /What turned it red \(the newest 3 red commits\): latency \(2\)\./);
 });
