@@ -269,8 +269,8 @@ test("main prints the API calls a run spent", async () => {
   assert.equal(lines.at(-1), "auto-revert: 1 API calls (1 read, 0 write)");
 });
 
-test("config: tandem ignores first-run-gate, which gates only the newest commit", () => {
-  assert.deepEqual(CONFIG.repos["teams-microsoft/tandem"].ignoreWorkflows, ["first-run-gate"]);
+test("config: tandem ignores first-run-gate and basics, which gate only the newest commit", () => {
+  assert.deepEqual(CONFIG.repos["teams-microsoft/tandem"].ignoreWorkflows, ["first-run-gate", "basics"]);
 });
 
 // Two commits: the newest has a red gate beside a green CI; the one before is all green.
