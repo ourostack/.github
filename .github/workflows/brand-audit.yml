@@ -69,7 +69,7 @@ jobs:
       - name: Test how upscale.py builds night masters
         run: |
           python3 -m venv /tmp/upscale-venv
-          /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image opencv-python-headless==4.12.0.88
+          /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image
           /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
       # Required with the upscale tests: a night whose sky has a hard straight seam can't merge.
       - name: Test how sky_seams.py tells a build seam from a drawn edge
@@ -77,6 +77,9 @@ jobs:
       - name: Check every light-transfer night's sky for straight seams
         run: /tmp/upscale-venv/bin/python brand/tools/sky_seams.py
       # Required with the upscale tests: a night that moves a figure's outline, or loses a figure into the sky, can't merge.
+      # OpenCV pins numpy below 2.3, so it goes in after the tests above that ran on the newest numpy.
+      - name: Install OpenCV for outline_parity.py
+        run: /tmp/upscale-venv/bin/pip install --quiet opencv-python-headless==4.12.0.88
       - name: Test how outline_parity.py tells a moved or sunk figure from anti-aliasing
         run: /tmp/upscale-venv/bin/python brand/tools/outline_parity_test.py -v
       - name: Check every registered figure keeps its day outline and its value against the sky in the night
