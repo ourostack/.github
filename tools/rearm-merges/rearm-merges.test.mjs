@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable, withRetry, processPrs, setTransport } from "./rearm-merges.mjs";
+import { RULESET, cleanBody, messageFor, needsRearm, needsUpdate, readyWithoutAutoMerge, isUnmergeable, withRetry, processPrs, setTransport, ghArgs } from "./rearm-merges.mjs";
 
 const green = { commits: { nodes: [{ commit: { statusCheckRollup: { state: "SUCCESS" } } }] } };
 
@@ -190,4 +190,11 @@ test("cancelOrphanRuns cancels only orphans, and a dry run cancels nothing", () 
   } finally {
     setRest(null);
   }
+});
+
+test("ghArgs sends a number as a typed -F value and a string as -f (an Int! PR number failed as a string and crashed every pass)", () => {
+  const args = ghArgs("q", { n: 491, id: "PR_1", b: "@body" });
+  assert.ok(args.join(" ").includes("-F n=491"));
+  assert.ok(args.join(" ").includes("-f id=PR_1"));
+  assert.ok(args.join(" ").includes("-f b=@body"));
 });
