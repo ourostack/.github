@@ -327,6 +327,7 @@ export function cancelOrphanRuns(entries, { dryRun = false, log = console.log } 
   const byRepo = Map.groupBy(entries, (e) => e.repo);
   let cancelled = 0;
   let failed = 0;
+  const denied = new Set();
   for (const [repo, list] of byRepo) {
     const runs = ["queued", "in_progress"].flatMap((s) => rest("GET", `repos/${repo}/actions/runs?event=merge_group&status=${s}&per_page=100`).workflow_runs ?? []);
     for (const r of orphanRuns(runs, list)) {
@@ -339,12 +340,21 @@ export function cancelOrphanRuns(entries, { dryRun = false, log = console.log } 
         cancelled++;
         log(`cancelled ${repo} run ${r.id} (${r.name}) for ${r.head_branch}: its merge group is gone`);
       } catch (err) {
-        log(`failed to cancel ${repo} run ${r.id}: ${String(err.stderr ?? err.message).trim().split("\n")[0]}`);
+        const msg = String(err.stderr ?? err.message).trim().split("\n")[0];
+        // A token without Actions write is a setup gap to warn about, not a run to fail; the other writes still ran.
+        if (/Resource not accessible|HTTP 403/.test(msg)) {
+          denied.add(repo);
+          continue;
+        }
+        log(`failed to cancel ${repo} run ${r.id}: ${msg}`);
         failed++;
       }
     }
   }
-  return { cancelled, failed };
+  if (denied.size > 0) {
+    log(`::warning title=REARM_MERGES_TOKEN cannot cancel runs::Orphaned merge-group runs were left running in ${[...denied].join(", ")}: the token needs the "actions: write" permission on those repositories.`);
+  }
+  return { cancelled, failed, denied: [...denied] };
 }
 
 // One comment per PR is enough: a PR that was already told stays quiet.
