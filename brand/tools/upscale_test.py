@@ -253,6 +253,7 @@ class KeepFigureEdges(unittest.TestCase):
         self.assertAlmostEqual(lit.sum() / disc.sum(), 1.0, delta=0.1)
         self.assertLess(np.hypot(*(np.array([y[lit].mean(), x[lit].mean()]) - [100, 100])), 0.5)
         self.assertLess(res[100, 100], 240)  # and it is lit by the night's light, not the day's
+        self.assertAlmostEqual(res[100, 100], out[100, 100, 0], delta=15)  # at the brightness the transfer gave its core, not dragged towards the sky
 
     def test_figure_edge_stays_where_the_day_has_it_and_stays_sharp(self):
         y, x = np.mgrid[0:200, 0:200]

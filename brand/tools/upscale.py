@@ -190,6 +190,8 @@ def ratio_lit(day_up, day, night, r=RATIO_RADIUS, eps=RATIO_EPS):
 EDGE_GROW, EDGE_FEATHER = 6, 8  # px at 4x: the figures' region grows by the first and fades out over the second
 SHRUNK = 0.8  # a thin part is rebuilt only if the transfer left under this fraction of its lit area
 THIN = 12  # px at 3072 wide: a figure no thicker than this (its half-width) is a thin part
+CORE = 1  # header px: the gain's inside side is sampled this far in from the day's edge
+CORE_PX = 4  # px at 4x: a figure's matte is solid this far in from its edge
 EDGE_SIGMAS = (3, 12)  # header px: the gain's fine and coarse smoothing, inside a figure and outside it
 
 
@@ -233,12 +235,14 @@ def shrunk_parts(parts, up, base_up):
 
 
 def soften_masks(union, day_up):
-    from scipy.ndimage import distance_transform_edt
+    from scipy.ndimage import binary_erosion, distance_transform_edt
     h, w = day_up.shape[:2]
     big = np.asarray(Image.fromarray(union.astype(np.uint8) * 255).resize((w, h), Image.BILINEAR), np.float32) >= 127.5
     t = np.clip((distance_transform_edt(~big) - EDGE_GROW) / EDGE_FEATHER, 0, 1)
     region = 1 - t * t * (3 - 2 * t)
     matte = np.clip(guided(np.log(day_up.mean(2) + 4.0), big.astype(np.float32), 16, 1e-2), 0, 1)
+    # the guided matte only reaches 0.7 to 0.8 at a small part's centre, and its gain would be dragged towards the sky's
+    matte[binary_erosion(big, iterations=CORE_PX)] = 1
     return matte, region
 
 
@@ -261,7 +265,9 @@ def figure_gain(base_up, up, matte, e=4.0):
     small = lambda a: np.stack([np.asarray(Image.fromarray(np.asarray(a, np.float32)[..., c] + e).resize((hw, hh), Image.BOX)) for c in range(3)], -1)
     day, night = small(base_up), small(up)
     a = np.asarray(Image.fromarray((matte * 255).round().astype(np.uint8)).resize((hw, hh), Image.BOX), np.float32) / 255
-    inside = binary_erosion(a > 0.99, iterations=1)
+    full = a > 0.99
+    inside = binary_erosion(full, iterations=CORE)
+    inside |= full & ~binary_dilation(inside, iterations=3)  # a part too thin to have a core is sampled whole
     outside = ~binary_dilation(a > 0.01, iterations=2)
     sides = []
     for sel in (inside, outside):
@@ -273,7 +279,7 @@ def figure_gain(base_up, up, matte, e=4.0):
         sides.append(np.log(conf * fine + (1 - conf) * parts[1][0]))
     up_ = lambda g: np.stack([np.asarray(Image.fromarray(g[..., c]).resize((w, h), Image.BILINEAR)) for c in range(3)], -1)
     g_in, g_out = up_(sides[0]), up_(sides[1])
-    return matte[..., None] * g_in + (1 - matte[..., None]) * g_out
+    return np.log(matte[..., None] * np.exp(g_in) + (1 - matte[..., None]) * np.exp(g_out))
 
 
 def keep_figure_edges(up, base_up, parts, e=4.0):
