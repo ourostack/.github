@@ -1,0 +1,56 @@
+name: Branch prune (reusable)
+
+# Deletes a repository's stale remote branches: those fully merged into the default branch, and those whose pull request
+# was closed unmerged long enough ago with no change since. The caller is the whole opt-in: tools/branch-prune/README.md
+# has the caller file. The rule and the CLI: tools/branch-prune/prune.mjs.
+on:
+  workflow_call:
+    inputs:
+      dry-run:
+        description: "List what would be deleted and delete nothing."
+        type: boolean
+        default: false
+      min-age-days:
+        description: "Days a branch must rest unpushed, and a closed pull request must be, before the branch is deleted."
+        type: number
+        default: 3
+
+permissions:
+  contents: read
+
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: read
+    concurrency:
+      group: branch-prune-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ourostack/.github
+          ref: main
+          path: .ouro-tools
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: ""
+      - name: Delete the branches no longer needed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          MIN_AGE_DAYS: ${{ inputs.min-age-days }}
+        run: |
+          flag=""; [ "$DRY_RUN" = "true" ] && flag="--dry-run"
+          log="$RUNNER_TEMP/branch-prune.log"
+          status=0
+          node .ouro-tools/tools/branch-prune/prune.mjs $flag --min-age-days "$MIN_AGE_DAYS" > "$log" 2>&1 || status=$?
+          cat "$log"
+          { echo '```text'; cat "$log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
