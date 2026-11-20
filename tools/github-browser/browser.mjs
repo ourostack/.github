@@ -3,12 +3,12 @@
 // every sign-out, so nothing it does can sign the person out or switch the account their own browser uses. It never
 // signs in and never types a password.
 import { execFileSync, spawn } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
-export const loginOf = async (page) => { await page.goto("https://github.com/"); return page.evaluate(() => document.querySelector('meta[name="user-login"]')?.content ?? ""); };
+export const loginOf = async (page) => { await page.goto("https://github.com/", { waitUntil: "domcontentloaded" }); return page.evaluate(() => document.querySelector('meta[name="user-login"]')?.content ?? ""); };
 
 // Switching accounts is server-side state that every browser holding the session's cookies shares: while another
 // account is active, a private Pages site answers 401 to the person's own account. openAs keeps its profile per account
@@ -25,7 +25,29 @@ export async function restoreAccount(page, original) {
   if ((await loginOf(page).catch(() => original)) !== original) await switchTo(page, original).catch(() => {});
 }
 
-const SIGN_IN_FILES = ["Preferences", "Secure Preferences", "Cookies", "Login Data", "Web Data"];
+// "Device Bound Sessions" holds the keys that GitHub and Entra bind their session cookies to; without it the copied
+// cookies are dropped on first start and the copy reads signed out.
+const SIGN_IN_FILES = ["Preferences", "Secure Preferences", "Cookies", "Login Data", "Web Data", "Device Bound Sessions"];
+
+/** Where an Enterprise Managed User (login ending _<enterprise>) signs in through its identity provider, or undefined for any other account. */
+export const ssoUrlFor = (user) => { const m = /_([a-z0-9][a-z0-9-]*)$/i.exec(user); return m ? `https://github.com/enterprises/${m[1].toLowerCase()}/sso` : undefined; };
+
+/** Signs an enterprise account in through the identity provider's single sign-on, which the copied Edge profile answers without a person. Returns the login, or "" when it did not complete. */
+export async function signInViaSso(page, user, { timeoutMs = 45000 } = {}) {
+  const url = ssoUrlFor(user);
+  if (!url) return "";
+  await page.goto(url);
+  const go = page.getByRole("button", { name: /continue/i }).first();
+  if (!(await go.count())) return loginOf(page);
+  await go.click();
+  const end = Date.now() + timeoutMs;
+  while (Date.now() < end) {
+    await page.waitForTimeout(1000);
+    const here = new URL(page.url());
+    if (here.hostname === "github.com" && !/\/sso\/?$/.test(here.pathname) && !/\/saml\//.test(here.pathname)) break;
+  }
+  return loginOf(page).catch(() => "");
+}
 
 /** Where `user`'s own profile lives: a folder per account, outside the person's Edge profile. */
 export const profileDirFor = (user, env = process.env) => join(env.GITHUB_BROWSER_HOME ?? join(homedir(), ".local/state/github-browser"), "profiles", user);
@@ -41,17 +63,43 @@ export const blockSignOut = (context) => context.route((url) => { try { return i
 
 /**
  * Copies the person's sign-in files into `dest` once (a marker file records it) and returns whether it copied. The copy
- * only ever reads `source`; nothing runs the other way. `reseed` replaces an existing copy.
+ * only ever reads `source`; nothing runs the other way. It never replaces an existing copy: see reseedProfile.
  */
-export function seedProfile({ source, dest, reseed = false }) {
+export function seedProfile({ source, dest }) {
   const marker = join(dest, ".seeded");
   if (resolve(source) === resolve(dest, "Default")) throw new Error("the seed source and the isolated profile are the same folder");
-  if (existsSync(marker) && !reseed) return false;
+  if (existsSync(marker)) return false;
   rmSync(dest, { recursive: true, force: true });
   mkdirSync(join(dest, "Default"), { recursive: true });
   copyFileSync(join(source, "..", "Local State"), join(dest, "Local State"));
   for (const f of SIGN_IN_FILES) if (existsSync(join(source, f))) copyFileSync(join(source, f), join(dest, "Default", f));
   writeFileSync(marker, `${new Date().toISOString()}\n`);
+  return true;
+}
+
+/**
+ * Makes a fresh copy of `source` beside `dest` for one run. Copied sessions are bound to the device and only the first
+ * run on a copy reliably gets them back, so a signed-out profile is replaced by a new copy; the old profile stays
+ * until promoteProfile swaps the new one in, which a run does only once it has signed in.
+ */
+export function stageProfile({ source, dest }) {
+  const staging = `${dest}.reseed`;
+  rmSync(staging, { recursive: true, force: true });
+  seedProfile({ source, dest: staging });
+  return staging;
+}
+
+/** Swaps the staged copy in for `dest` whole when `signedIn`, and otherwise discards it, leaving the profile that was there. Returns whether it swapped. */
+export function promoteProfile({ staging, dest, signedIn }) {
+  if (!signedIn) { rmSync(staging, { recursive: true, force: true }); return false; }
+  const old = `${dest}.old`;
+  rmSync(old, { recursive: true, force: true });
+  const lock = join(dest, ".lock");
+  const held = existsSync(lock) ? readFileSync(lock, "utf8") : undefined;
+  if (existsSync(dest)) renameSync(dest, old);
+  renameSync(staging, dest);
+  if (held !== undefined) writeFileSync(lock, held);
+  rmSync(old, { recursive: true, force: true });
   return true;
 }
 
@@ -94,48 +142,76 @@ async function launch({ chromium, edge, dir, headful }) {
   return { proc };
 }
 
-/** Opens Edge on `user`'s own isolated profile (or on `via`'s, when that profile's switcher already lists `user`: one signed-in profile can serve every account it holds) (seeded once from the person's Edge profile, never written back). {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same profile in a visible window (GitHub's passkey prompt needs one). */
+const stopEdge = async ({ browser, proc }) => { await browser?.close().catch(() => {}); proc.kill(); await new Promise((r) => setTimeout(r, 1000)); };
+
+/** Opens Edge on `user`'s own isolated profile (or on `via`'s, when that profile's switcher already lists `user`), copied from the person's Edge profile and never written back. A profile that reads signed out is replaced for the run by a fresh copy, which becomes the profile once it is signed in; a copy that is no better is discarded and the old profile kept. {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same profile in a visible window (GitHub's passkey prompt needs one). */
 export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { headful = false, via = user } = {}) {
   const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
   const { chromium } = require("playwright");
   const profile = process.env.EDGE_PROFILE ?? join(homedir(), "Library/Application Support/Microsoft Edge/Default");
   const edge = process.env.EDGE_BIN ?? "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge";
-  const dir = profileDirFor(via);
-  const unlock = lockProfile(dir);
-  try { seedProfile({ source: profile, dest: dir, reseed: Boolean(process.env.GITHUB_BROWSER_RESEED) }); } catch (e) { unlock(); throw e; }
-  let { browser, proc } = await launch({ chromium, edge, dir, headful });
+  const home = profileDirFor(via);
+  const unlock = lockProfile(home);
+  let dir = home;
+  let staging;
+  let browser; let proc;
   const session = { page: undefined, close: undefined, relaunchHeadful: undefined };
   let original = "";
-  const stop = async () => { await browser?.close().catch(() => {}); proc.kill(); await new Promise((r) => setTimeout(r, 1000)); };
+  const stop = () => stopEdge({ browser, proc });
+  const finish = async (signedIn) => {
+    await stop().catch(() => {});
+    if (staging) promoteProfile({ staging, dest: home, signedIn });
+    unlock();
+  };
   session.close = async () => {
     await restoreAccount(session.page, original).catch(() => {});
-    await stop();
-    unlock();
+    await finish(true);
   };
   const newPage = async () => {
     const context = browser.contexts()[0] ?? (await browser.newContext());
     await blockSignOut(context);
     return context.newPage();
   };
+  const start = async (headfulNow) => {
+    ({ browser, proc } = await launch({ chromium, edge, dir, headful: headfulNow }));
+    if (!browser) { proc.kill(); throw Object.assign(new Error(`Edge did not start within ${startBudgetMs() / 1000} s; on a loaded machine set EDGE_START_SECONDS higher and rerun`), { exit: 3 }); }
+    session.page = await newPage();
+  };
   session.relaunchHeadful = async () => {
     await stop();
-    ({ browser, proc } = await launch({ chromium, edge, dir, headful: true }));
-    if (!browser) throw Object.assign(new Error("Edge did not reopen in a visible window"), { exit: 3 });
-    session.page = await newPage();
+    await start(true);
     await session.page.bringToFront().catch(() => {});
     // A window opened from a script stays behind the others on macOS until asked to come forward.
     try { execFileSync("osascript", ["-e", 'tell application "Microsoft Edge" to activate']); } catch {}
     return session.page;
   };
-  if (!browser) { await session.close(); throw Object.assign(new Error(`Edge did not start within ${startBudgetMs() / 1000} s; on a loaded machine set EDGE_START_SECONDS higher and rerun`), { exit: 3 }); }
-  session.page = await newPage();
-  let who = await loginOf(session.page);
-  original = who;
-  // Another account may already be signed in alongside: GitHub's switcher lists it with a Select button.
-  if (who !== user) who = await switchTo(session.page, user);
+  const signIn = async () => {
+    let who = await loginOf(session.page);
+    original ||= who;
+    // Another account may already be signed in alongside: GitHub's switcher lists it with a Select button.
+    if (who !== user) who = await switchTo(session.page, user);
+    if (who !== user) who = await signInViaSso(session.page, user).catch(() => "");
+    return who;
+  };
+  const fresh = async () => {
+    staging = stageProfile({ source: profile, dest: home });
+    dir = staging;
+    await start(headful);
+    return signIn();
+  };
+  let who = "";
+  try {
+    if (process.env.GITHUB_BROWSER_RESEED) who = await fresh();
+    else {
+      seedProfile({ source: profile, dest: home });
+      await start(headful);
+      who = await signIn();
+      if (who !== user) { await stop(); who = await fresh(); }
+    }
+  } catch (e) { await finish(false); throw e; }
   if (who !== user) {
-    await session.close();
-    throw Object.assign(new Error(`github.com is ${who ? `signed in as ${who}` : "not signed in"} in ${profile}, and ${user} is not in its account switcher; add ${user} to ${profile} once (Add account), then rerun with GITHUB_BROWSER_RESEED=1.`), { exit: 3 });
+    await finish(false);
+    throw Object.assign(new Error(`${user} is not signed in in the isolated profile ${home}${who ? ` (it is signed in as ${who})` : ""}, and a fresh copy of ${profile} did not sign in either, so the profile was left as it was. Sign ${user} in once in that Edge profile (Add account on github.com, or open https://github.com/enterprises/<enterprise>/sso), then rerun.`), { exit: 3 });
   }
   return session;
 }

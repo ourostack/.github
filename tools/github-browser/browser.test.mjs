@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { blockSignOut, isSignOut, lockProfile, profileDirFor, restoreAccount, seedProfile, startBudgetMs, switchTo, openAs } from "./browser.mjs";
+import { blockSignOut, isSignOut, lockProfile, profileDirFor, promoteProfile, restoreAccount, seedProfile, ssoUrlFor, stageProfile, startBudgetMs, switchTo, openAs } from "./browser.mjs";
 
 // A page whose GitHub is signed in as `active`, with a switcher that lists `saved`.
 const fakePage = (active, saved) => ({
@@ -43,7 +43,7 @@ const makeSource = () => {
   const root = mkdtempSync(join(tmpdir(), "gb-source-"));
   mkdirSync(join(root, "Default"));
   writeFileSync(join(root, "Local State"), "state");
-  for (const f of ["Preferences", "Cookies", "Login Data"]) writeFileSync(join(root, "Default", f), `${f} of the person`);
+  for (const f of ["Preferences", "Cookies", "Login Data", "Device Bound Sessions"]) writeFileSync(join(root, "Default", f), `${f} of the person`);
   return join(root, "Default");
 };
 const hashTree = (dir) => createHash("sha256").update(readdirSync(dir, { recursive: true }).sort().map((f) => { try { return `${f}=${readFileSync(join(dir, f))}`; } catch { return f; } }).join("\n")).digest("hex");
@@ -69,8 +69,42 @@ test("a seeded profile is kept: the second open does not copy again, so it never
   writeFileSync(join(source, "Cookies"), "changed in Edge since");
   assert.equal(seedProfile({ source, dest }), false);
   assert.equal(readFileSync(join(dest, "Default", "Cookies"), "utf8"), "this account's own");
-  assert.equal(seedProfile({ source, dest, reseed: true }), true);
-  assert.equal(readFileSync(join(dest, "Default", "Cookies"), "utf8"), "changed in Edge since");
+});
+
+test("the copy carries the device-bound session keys, without which the copied cookies are dropped", () => {
+  const dest = join(mkdtempSync(join(tmpdir(), "gb-home-")), "p");
+  seedProfile({ source: makeSource(), dest });
+  assert.equal(readFileSync(join(dest, "Default", "Device Bound Sessions"), "utf8"), "Device Bound Sessions of the person");
+});
+
+test("a fresh copy that signed in replaces the profile whole, and keeps the run's lock", () => {
+  const source = makeSource();
+  const dest = join(mkdtempSync(join(tmpdir(), "gb-home-")), "p");
+  seedProfile({ source, dest });
+  writeFileSync(join(dest, ".lock"), "123");
+  writeFileSync(join(source, "Cookies"), "renewed in Edge");
+  const staging = stageProfile({ source, dest });
+  assert.equal(promoteProfile({ staging, dest, signedIn: true }), true);
+  assert.equal(readFileSync(join(dest, "Default", "Cookies"), "utf8"), "renewed in Edge");
+  assert.equal(readFileSync(join(dest, ".lock"), "utf8"), "123");
+  assert.equal(existsSync(`${dest}.reseed`) || existsSync(`${dest}.old`), false);
+});
+
+test("a fresh copy that did not sign in is discarded and the profile that was there is kept", () => {
+  const source = makeSource();
+  const dest = join(mkdtempSync(join(tmpdir(), "gb-home-")), "p");
+  seedProfile({ source, dest });
+  writeFileSync(join(dest, "Default", "Cookies"), "signed in, still");
+  writeFileSync(join(source, "Cookies"), "signed out in Edge");
+  const staging = stageProfile({ source, dest });
+  assert.equal(promoteProfile({ staging, dest, signedIn: false }), false);
+  assert.equal(readFileSync(join(dest, "Default", "Cookies"), "utf8"), "signed in, still");
+  assert.equal(existsSync(`${dest}.reseed`), false);
+});
+
+test("an enterprise account signs in at its enterprise's single sign-on page; other accounts have none", () => {
+  assert.equal(ssoUrlFor("arimendelow_microsoft"), "https://github.com/enterprises/microsoft/sso");
+  assert.equal(ssoUrlFor("arimendelow"), undefined);
 });
 
 test("refuses to use the person's own profile as the isolated one", () => {
