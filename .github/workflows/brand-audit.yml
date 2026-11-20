@@ -63,8 +63,8 @@ jobs:
 
   upscale-tests:
     runs-on: ubuntu-latest
-    # main's runs took 6-8 minutes, mostly pip downloads, and a slow runner doubled them (#416); the cache below removes most of that
-    timeout-minutes: 20
+    # about twice main's median with the pip cache (5m07s over three runs, #416)
+    timeout-minutes: 11
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Read the runner's Python version for the pip cache key
