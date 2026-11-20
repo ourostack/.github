@@ -397,3 +397,39 @@ test("config: Tandem counts only ci, ignores its newest-commit gates, acts at on
   assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/") && r !== "ourostack/gatefold").every(([, c]) => c.enabled));
   for (const r of ["hackamore", "ouro-ui-core", "m365crawl", "ouro-ui", "ouro-ui-apple", "gatefold"]) assert.ok(OWNERS.repos[`ourostack/${r}`], `${r} has an owner`);
 });
+
+test("main: an exhausted rate limit warns, stops the tick and never fails it", async () => {
+  const lines = [];
+  const orig = console.log;
+  console.log = (l) => lines.push(l);
+  const prev = process.exitCode;
+  const gh = fakeGitHub([], {});
+  gh.get = async () => {
+    throw new Error("GET /repos/o/r/actions/runs: gh: API rate limit exceeded for user ID 1.");
+  };
+  try {
+    await main(["--self", "o/r"], NOW, gh, { source: async () => src() });
+    assert.equal(process.exitCode ?? 0, 0);
+  } finally {
+    console.log = orig;
+    process.exitCode = prev;
+  }
+  assert.ok(lines.some((l) => /^::warning::.*rate limit/.test(l)));
+});
+
+test("main: any other failed read still fails the tick", async () => {
+  const orig = console.log;
+  console.log = () => {};
+  const prev = process.exitCode;
+  const gh = fakeGitHub([], {});
+  gh.get = async () => {
+    throw new Error("HTTP 500");
+  };
+  try {
+    await main(["--self", "o/r"], NOW, gh, { source: async () => src() });
+    assert.equal(process.exitCode, 1);
+  } finally {
+    console.log = orig;
+    process.exitCode = prev;
+  }
+});

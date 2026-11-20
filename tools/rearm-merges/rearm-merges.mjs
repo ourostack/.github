@@ -63,6 +63,8 @@ const QUERY = `query($q:String!,$after:String){search(query:$q,type:ISSUE,first:
 
 // A GitHub 5xx or a dropped connection is retried with backoff; anything else (a rejected mutation, a 4xx) fails at once.
 export const TRANSIENT = /Something went wrong while executing your query|secondary rate limit|abuse detection|\bHTTP 50[0234]\b|\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|ETIMEDOUT|ECONNRESET|EAI_AGAIN/i;
+// The quota running out (not the secondary limit, which TRANSIENT retries) says nothing about any PR: the next tick tries again.
+export const QUOTA_OUT = /API rate limit exceeded|rate limit already exceeded/i;
 export const RETRY_DELAYS_MS = [2000, 5000, 15000, 30000];
 const sleepSync = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 
@@ -313,6 +315,7 @@ function main() {
     run();
   } catch (err) {
     const text = `${err.stderr ?? ""}\n${err.message ?? ""}`;
+    if (QUOTA_OUT.test(text)) return console.log("::warning::GitHub's API rate limit is exhausted; nothing was re-armed this tick, the next one tries again.");
     if (!TRANSIENT.test(text)) throw err;
     const id = /\b([0-9A-F]{4}:[0-9A-F:]{6,})\b/.exec(text)?.[1] ?? "unknown";
     console.log(`::error title=infra::GitHub transient failure persisted after retries: ${text.trim().split("\n")[0].slice(0, 200)} (GitHub request id ${id})`);

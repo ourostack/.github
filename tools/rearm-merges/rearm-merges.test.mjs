@@ -167,3 +167,10 @@ test("ghArgs sends a number as a typed -F value and a string as -f (an Int! PR n
   assert.ok(args.join(" ").includes("-f id=PR_1"));
   assert.ok(args.join(" ").includes("-f b=@body"));
 });
+
+import { QUOTA_OUT, TRANSIENT } from "./rearm-merges.mjs";
+test("an exhausted quota is told apart from a transient failure", () => {
+  assert.match("gh: API rate limit exceeded for user ID 1. (HTTP 403)", QUOTA_OUT);
+  assert.doesNotMatch("You have exceeded a secondary rate limit", QUOTA_OUT);
+  assert.match("You have exceeded a secondary rate limit", TRANSIENT);
+});

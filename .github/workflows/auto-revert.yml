@@ -36,6 +36,7 @@ jobs:
         shell: bash
         run: |
           [ -n "$GH_TOKEN" ] || exit 0
+          gh api rate_limit -q '"PAT quota before: \(.resources.core.remaining) of \(.resources.core.limit) left"' | tee -a "$GITHUB_STEP_SUMMARY"
           node tools/red-main/token-check.mjs | tee -a "$GITHUB_STEP_SUMMARY"
       # The blobless clone of each red repository and every finished job's parsed failures, so a tick reads only what is new.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -46,9 +47,20 @@ jobs:
       - name: Revert what keeps main red
         env:
           GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
+          # Every repository here is public, so reads use this workflow's own token (its own quota) and the PAT's quota is
+          # kept for the writes.
+          READ_TOKEN: ${{ github.token }}
           APPLY: ${{ github.event_name != 'workflow_dispatch' || inputs.apply }}
         shell: bash
         run: |
           [ -n "$GH_TOKEN" ] || { echo "::notice::The REARM_MERGES_TOKEN secret is not set; nothing was checked."; exit 0; }
           flag=""; [ "$APPLY" = "true" ] && flag="--apply"
           node tools/red-main/auto-revert.mjs $flag --cache "$RUNNER_TEMP/auto-revert/jobs.json" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: PAT quota left
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
+        shell: bash
+        run: |
+          [ -n "$GH_TOKEN" ] || exit 0
+          gh api rate_limit -q '"PAT quota after: \(.resources.core.remaining) of \(.resources.core.limit) left"' | tee -a "$GITHUB_STEP_SUMMARY"
