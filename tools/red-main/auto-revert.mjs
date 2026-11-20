@@ -18,7 +18,7 @@
 // group, a verdict covers every commit since the run before it, so the culprit is found over a range:
 //   1. Failures: the red run's failed jobs (latest attempt) are read from their logs: each failing test (TAP `not ok`, its
 //      `location:` file and every repository file its failure text names), or, for a job with no test failure, the job and
-//      the files its error lines name. A job with no test failure that is infrastructure (classifyFailure) is dropped.
+//      the files its error lines name and its failing step's `run:` names in the workflow file at that commit. A job with no test failure that is infrastructure (classifyFailure) is dropped.
 //   2. Range: for each failure, the older completed runs are read until one where it didn't fail. The failure was introduced
 //      by a commit after that run and up to the first run where it failed.
 //   3. Attribution: from the failing test file and the files its failure names (distance 0), the code is followed through its
@@ -254,8 +254,28 @@ export function mentions(text, files) {
   return [...out];
 }
 
+// The workflow step a failed job failed in, as the workflow file has it at that commit: the files its `run:` names (the
+// script it runs) are where a job failure with no failing test starts. Steps are matched by name ("Run <command>" when unnamed).
+export function stepBlock(yml, step) {
+  const lines = String(yml ?? "").split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^(\s*)- (?:name: (.+)|run: (.+))$/.exec(lines[i]);
+    if (!m) continue;
+    const name = (m[2] ?? `Run ${m[3]}`).trim().replace(/^(["'])(.*)\1$/, "$2");
+    if (name !== step && !(m[3] && step.startsWith("Run ") && m[3].trim().startsWith(step.slice(4).trim()))) continue;
+    const out = [lines[i]];
+    for (let k = i + 1; k < lines.length; k++) {
+      const ind = /^\s*/.exec(lines[k])[0].length;
+      if (lines[k].trim() && (ind < m[1].length || (ind === m[1].length && lines[k].trim().startsWith("- ")))) break;
+      out.push(lines[k]);
+    }
+    return out.join("\n");
+  }
+  return "";
+}
+
 // A run's failures: [{ key, test, file, roots: [repo files at distance 0], job }], or { infra: reason } when none is the code's.
-export async function runFailures(repo, run, { a, files, cache = null }) {
+export async function runFailures(repo, run, { a, files, cache = null, read = null }) {
   const jobs = run.jobs ?? (await a.get(`/repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
   const failed = jobs.filter((j) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(j.conclusion));
   const out = [];
@@ -290,7 +310,8 @@ export async function runFailures(repo, run, { a, files, cache = null }) {
       continue;
     }
     const step = (j.steps ?? []).find((s) => s.conclusion === "failure")?.name ?? "";
-    out.push({ key: `job ${jobName} :: ${step}`, test: null, file: null, roots: mentions(parsed.errors.join("\n"), files), job: jobName, step });
+    const runs = step && read && run.path ? mentions(stepBlock(await read(run.path.split("@")[0]), step).replace(/^\s*- name: .*$/m, ""), files) : [];
+    out.push({ key: `job ${jobName} :: ${step}`, test: null, file: null, roots: [...new Set([...mentions(parsed.errors.join("\n"), files), ...runs])], job: jobName, step });
   }
   if (!out.length) return { infra: infra[0] ?? (failed.length ? "no failure of the code's" : "no failed job") };
   return { failures: dedupe(out) };
@@ -413,7 +434,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
   const files = await src.files(v.reds[0].head_sha);
   const chain = [];
   for (const run of v.reds.slice(0, maxWalk)) {
-    const r = await runFailures(repo, run, { a, files, cache });
+    const r = await runFailures(repo, run, { a, files, cache, read: (p) => src.read(run.head_sha, p) });
     chain.push({ run, ...r });
     if (chain.length === 1 && r.infra) continue;
     const head = chain.find((c) => c.failures);
@@ -451,7 +472,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
     const firstFiles = first.run.head_sha === v.reds[0].head_sha ? files : await src.files(first.run.head_sha);
     const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read: (p) => src.read(first.run.head_sha, p), files: firstFiles });
     const blame = culprit(commits, dist);
-    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file" });
+    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
   }
   return { newest: newest.run, results };
 }

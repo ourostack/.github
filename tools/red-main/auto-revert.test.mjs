@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
-  markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, verdicts,
+  markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, stepBlock, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -210,6 +210,21 @@ test("an infrastructure-only red is no verdict: the run before it decides", asyn
   const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src() });
   assert.match(r.infra, /ENOTFOUND/);
 });
+test("a job that fails with no failing test starts from the files its failing step runs, in the workflow at that commit", async () => {
+  const yml = `jobs:\n  native:\n    steps:\n      - name: Build\n        run: make\n      - name: The window covers nothing\n        run: node test/x.test.ts --app "$RUNNER_TEMP/a"\n      - name: Upload\n        uses: actions/upload-artifact@v7\n        with:\n          path: src/z.ts\n`;
+  assert.match(stepBlock(yml, "The window covers nothing"), /node test\/x\.test\.ts/);
+  assert.doesNotMatch(stepBlock(yml, "The window covers nothing"), /src\/z\.ts/, "the step ends where the next begins");
+  assert.match(stepBlock("      - run: npm run check -- --strict\n", "Run npm run check -- --strict"), /npm run check/);
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n"), run_attempt: 2 });
+  const gh = fakeGitHub([n, g], { [n.id]: ["2026-11-19T23:13:09.1Z ##[error]Process completed with exit code 1."] });
+  const jobsGet = gh.get;
+  gh.get = async (p) => (/\/jobs\?/.test(p) ? { jobs: [{ id: n.id * 10, name: "native", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "The window covers nothing", conclusion: "failure" }] }] } : jobsGet(p));
+  const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src({ read: async (_, p) => (p === ".github/workflows/ci.yml" ? yml : SRC[p] ?? null) }) });
+  assert.deepEqual(r.results[0].failure.roots, ["test/x.test.ts"]);
+  assert.equal(r.results[0].blame.pr, 11);
+});
+
 const job = (over = {}) => ({ name: "test", conclusion: "failure", runner_id: 3, steps: [{ name: "Run tests", conclusion: "failure" }], log: "AssertionError: 1 !== 2", ...over });
 
 test("guards: a fix or revert that landed since, or one that is open, holds the revert; an unconfirmed culprit waits", () => {
