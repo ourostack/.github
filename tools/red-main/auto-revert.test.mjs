@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
-  markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, stepBlock, verdicts,
+  codeNames, evidence, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -140,6 +140,40 @@ test("references: runtime imports and repository paths, never type-only imports"
   const files = new Set([...FILES, "src/daemon/main.mjs", "test/helpers.ts"]);
   const t = `import type { T } from "../src/z.ts";\nimport { a } from "./helpers.ts";\nexport { b } from "../src/x.js";\nconst args = ["src/daemon/main.mjs"];\nawait import("../src/y.ts");`;
   assert.deepEqual(references("test/x.test.ts", t, files).sort(), ["src/daemon/main.mjs", "src/x.ts", "src/y.ts", "test/helpers.ts"]);
+});
+
+test("a test depends on what it reads as text: a path, path.join's pieces, a quoted name, a non-module's name anywhere (Tandem #4096's rule)", () => {
+  const files = new Set(["src/app/shell.tsx", "src/app/other.tsx", "test/fixtures/day.json", "docs/a.md", "test/hui.test.ts", "src/index.ts"]);
+  const t = `import fs from "node:fs";\nconst read = (p) => fs.readFileSync(p, "utf8");\nconst shell = read("src/app/shell.tsx");\nconst o = fs.readFileSync(path.join(ROOT, "src", "app", "other.tsx"));\nconst day = load(\"fixtures\" + "/day.json");\n// see docs/a.md; index.ts unquoted says too little\n`;
+  assert.deepEqual(references("test/hui.test.ts", t, files).sort(), ["docs/a.md", "src/app/other.tsx", "src/app/shell.tsx", "test/fixtures/day.json"]);
+  assert.deepEqual(textNamed(`x "shell.tsx"`, files), ["src/app/shell.tsx"], "a source's name counts in quotes");
+  assert.deepEqual(textNamed("shell.tsx day.json", files), ["test/fixtures/day.json"], "a non-module's name counts anywhere, a source's doesn't");
+  assert.deepEqual(references("src/app/x.ts", `const a = "shell.tsx";`, files), [], "only a test reads by name");
+});
+
+test("a test that scans a directory depends on every file added under it", async () => {
+  const files = new Set([...FILES, "flows/agent/a.flow.ts", "test/flows.test.ts"]);
+  const t = `const all = fs.readdirSync(path.join(ROOT, "flows", "agent"));`;
+  assert.deepEqual(scannedDirs(t, new Set(["flows", "flows/agent", "src"])), ["flows/agent"]);
+  assert.deepEqual(scannedDirs(`const s = "flows/agent";`, new Set(["flows/agent"])), [], "naming a directory without scanning it is not reading it");
+  const dist = await distances(["test/flows.test.ts"], { read: async (p) => (p === "test/flows.test.ts" ? t : null), files });
+  const commits = [{ sha: sha("m"), subject: "Edit (#21)", pr: 21, files: ["flows/agent/a.flow.ts"], added: [] }, { sha: sha("p"), subject: "Add (#20)", pr: 20, files: ["flows/agent/b.flow.ts"], added: ["flows/agent/b.flow.ts"] }];
+  const c = culprit(commits, dist);
+  assert.equal(c.pr, 20);
+  assert.match(c.how, /added flows\/agent\/b\.flow\.ts under flows\/agent\/, which a test 1 reference from the failure scans/);
+});
+
+test("PRs tied at the closest file: the one whose change touches the names the failing assertion uses wins, not the newest", async () => {
+  const test = `test("rail", () => {\n  assert.match(shell, /railBadge\\(e, \\{ activityNew: railActivityNew/, "Activity's number on the rail is Teams' badge");\n});`;
+  const f = { file: "test/hui.test.ts", text: `  error: "Activity's number on the rail is Teams' badge"\n  code: 'ERR_ASSERTION'` };
+  const ties = [{ pr: 4089, sha: sha("b"), file: "src/app/shell.tsx", how: "changed src/app/shell.tsx, 1 reference from the failure", distance: 1 }, { pr: 4081, sha: sha("c"), file: "src/app/shell.tsx", how: "changed src/app/shell.tsx, 1 reference from the failure", distance: 1 }];
+  const diffs = { [sha("b")]: "+  useEffect(() => (listReady ? markListPaintedAfterFrame() : undefined), [listReady]);", [sha("c")]: "-          count: railBadge(e, { activityNew: railActivityNew, chats: chatCount })\n+          count: railBadge(e, { activityNew: countsHeld ? 0 : railActivityNew })" };
+  const s = { read: async () => test, diff: async (x) => diffs[x] };
+  const won = await evidence({ ...ties[0], ties }, f, { src: s, testSha: sha("n") });
+  assert.equal(won.pr, 4081);
+  assert.match(won.how, /of 2 pull requests that did, its change has 3 of the names the failing assertion uses/);
+  assert.deepEqual([...codeNames("assert.match(shell, /railBadge/); const row_who = 1; plain words here")].sort(), ["railBadge", "row_who"]);
+  assert.equal((await evidence({ ...ties[0], ties }, { ...f, text: "" }, { src: s, testSha: sha("n") })).pr, 4089, "no evidence: the newest still wins");
 });
 
 test("attribution: the PR closest to the failure is the culprit; type-only and unrelated changes are not", async () => {
@@ -335,9 +369,9 @@ test("land: the tool's own revert merges once its head's required checks are gre
 });
 
 test("git log parsing: each first-parent commit's files, and its PR only when it is a squash", () => {
-  const out = `\x1e${sha("n")}\x1f${sha("u")}\x1f2026-11-19T23:00:00Z\x1fNewest (#3877) (#13)\n\nREADME.md\nsrc/x.ts\n\x1e${sha("m")}\x1f${sha("u")} ${sha("v")}\x1f2026-11-19T22:00:00Z\x1fMerge branch (#7)\n\nsrc/y.ts\n`;
+  const out = `\x1e${sha("n")}\x1f${sha("u")}\x1f2026-11-19T23:00:00Z\x1fNewest (#3877) (#13)\n\nM\tREADME.md\nA\tsrc/x.ts\n\x1e${sha("m")}\x1f${sha("u")} ${sha("v")}\x1f2026-11-19T22:00:00Z\x1fMerge branch (#7)\n\nsrc/y.ts\n`;
   const cs = parseLog1e(out);
-  assert.deepEqual(cs.map((c) => [c.pr, c.files]), [[13, ["README.md", "src/x.ts"]], [null, ["src/y.ts"]]]);
+  assert.deepEqual(cs.map((c) => [c.pr, c.files, c.added]), [[13, ["README.md", "src/x.ts"], ["src/x.ts"]], [null, ["src/y.ts"], []]]);
 });
 
 test("main --self checks only that repo; a green ci is one call; --as-of never acts", async () => {
