@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { blockSignOut, isSignOut, lockProfile, profileDirFor, restoreAccount, seedProfile, startBudgetMs, switchTo } from "./browser.mjs";
+import { blockSignOut, isSignOut, lockProfile, profileDirFor, restoreAccount, seedProfile, startBudgetMs, switchTo, openAs } from "./browser.mjs";
 
 // A page whose GitHub is signed in as `active`, with a switcher that lists `saved`.
 const fakePage = (active, saved) => ({
@@ -110,4 +110,17 @@ test("one run per profile at a time; a dead run's lock is cleared", () => {
   const again = lockProfile(dest, { alive: () => false });
   again();
   assert.ok(!existsSync(join(dest, ".lock")));
+});
+
+test("openAs(user, {via}) uses the via profile's folder, so it fails on that profile's lock rather than user's own", async () => {
+  const home = mkdtempSync(join(tmpdir(), "gb-via-"));
+  const env = process.env.GITHUB_BROWSER_HOME;
+  process.env.GITHUB_BROWSER_HOME = home;
+  try {
+    mkdirSync(join(home, "profiles", "a"), { recursive: true });
+    writeFileSync(join(home, "profiles", "a", ".lock"), String(process.pid));
+    await assert.rejects(openAs("b", { via: "a" }), (e) => e.exit === 3 && e.message.includes(join(home, "profiles", "a")));
+  } finally {
+    if (env === undefined) delete process.env.GITHUB_BROWSER_HOME; else process.env.GITHUB_BROWSER_HOME = env;
+  }
 });
