@@ -27,8 +27,10 @@
 //      The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the PR whose change touches
 //      the most code names the failing assertion uses, else the newest. With
 //      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
-//   4. Confirmation (flake guard): a main push run is NEVER re-run or re-attempted: it would go back to pending in main's shared
-//      concurrency group, be replaced by the next push and lose its verdict. Instead the workflow is dispatched (workflow_dispatch,
+//   4. Confirmation (flake guard): the first time a red push run (attempt 1) has a failure not yet confirmed, its failed jobs are
+//      re-run once (rerunFailed), so a flake clears within minutes instead of holding main red until the next push. A re-attempt
+//      goes back to pending in main's shared concurrency group and may be replaced by the next push, losing its verdict (markPartial
+//      keeps the failed jobs of its previous attempt). So the workflow is also dispatched (workflow_dispatch,
 //      its own group) on a throwaway branch `auto-revert/verify-<sha>` at the red run's commit. A failure is confirmed when it
 //      fails again in that run, or in two main runs in a row; one that passes there is a flake and is never reverted. Only
 //      confirmed culprits are reverted. Verify branches are deleted once main has moved past them.
@@ -603,7 +605,7 @@ export async function verification(repo, run, { a, files, cache = null, src = nu
 export async function dispatchVerify(repo, run, { apply, a = api, log = console.log } = {}) {
   const branch = verifyBranch(run.head_sha);
   const file = String(run.path ?? "").split("@")[0].split("/").pop();
-  log(`  ${apply ? "" : "would "}dispatch ${file} on ${branch} (${short(run.head_sha)}) to tell a flake from a break; main's run is never re-run`);
+  log(`  ${apply ? "" : "would "}dispatch ${file} on ${branch} (${short(run.head_sha)}) to tell a flake from a break`);
   if (!apply) return true;
   try {
     await a.post(`/repos/${repo}/git/refs`, { ref: `refs/heads/${branch}`, sha: run.head_sha }).catch((e) => {
@@ -613,6 +615,20 @@ export async function dispatchVerify(repo, run, { apply, a = api, log = console.
     return true;
   } catch (e) {
     log(`  could not dispatch ${file} (${e.message.slice(0, 120)}); two red runs in a row confirm instead`);
+    return false;
+  }
+}
+
+// First red on a push run: re-run its failed jobs once. Attempt 2 is never re-run again; a 403 is logged and the tick goes on.
+export async function rerunFailed(repo, run, { apply, a = api, log = console.log } = {}) {
+  if ((run.run_attempt ?? 1) > 1 || run.status !== "completed" || run.event !== "push" || run.conclusion !== "failure") return false;
+  log(`  ${apply ? "" : "would "}re-run the failed jobs of run ${run.id} once (attempt 1)`);
+  if (!apply) return true;
+  try {
+    await a.post(`/repos/${repo}/actions/runs/${run.id}/rerun-failed-jobs`, {});
+    return true;
+  } catch (e) {
+    log(`  could not re-run run ${run.id} (${e.message.slice(0, 120)})`);
     return false;
   }
 }
@@ -1014,6 +1030,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       log(`${repo}: ${v.workflow} red at ${short(r.newest.head_sha)} (run ${r.newest.id}, finished ${hhmm(r.newest.updated_at)}), red ${minutes}m, ${r.results.length} failure${r.results.length > 1 ? "s" : ""}:`);
       for (const x of r.results) log(describe(x));
       const pending = r.results.some((x) => !x.confirmed && !x.flake);
+      if (pending && !asOf) await rerunFailed(repo, r.newest, { apply, a, log });
       if (pending && r.check.state === "none") await dispatchVerify(repo, r.newest, { apply, a, log });
       if (r.check.state === "running") log(`  verifying at ${short(r.newest.head_sha)}: run ${r.check.run.id} on ${r.check.run.head_branch}`);
       if (pending || r.check.state === "running") keep.add(verifyBranch(r.newest.head_sha));
