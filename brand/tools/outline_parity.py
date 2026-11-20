@@ -22,7 +22,8 @@ of the real edge; the tool finds the edge itself. Format (also the "format" key 
      "figures": [{"name": "robot", "kind": "robot",
                   "polygon": [[x, y], ...],     # 3 or more corners, 3072-scale pixels of the day scene
                   "seeds": [[x, y], ...],       # optional: points known to be inside the figure
-                  "band": 6}]}                  # optional: how far the real edge may sit from the polygon, in px
+                  "band": 6,                    # optional: how far the real edge may sit from the polygon, in px
+                  "glass": true}]}              # optional: a frosted-glass figure, whose soft day edge is held to the crossing reading alone
 
 What is checked, for every figure of a scene that has a night:
 
@@ -433,8 +434,15 @@ def check_figure(day_img, night_img, fig):
         fails.append("edge lost at (%d,%d), %d px of outline: the night keeps %.0f%% of the day's edge; night %s, day %s" % (
             x, y, len(run) * STEP, 100 * ratio[i], tuple(night_img[y, x].tolist()), tuple(day_img[y, x].tolist())))
     loc = locate(day_img, night_img, md)
+    if fig.get("glass") and len(m["pts"]):
+        # a glass figure's day edge is too soft for a gradient locator (EDGE_LOC): hold it to the half-way crossing alone
+        loc = {"pts": m["pts"], "nrm": m["nrm"], "ids": m["ids"], "shift": None}
     if loc is not None:
-        both = agreed(loc["shift"], crossing(day_img, night_img, loc["pts"], loc["nrm"]))
+        if loc["shift"] is None:
+            both = np.nan_to_num(crossing(day_img, night_img, loc["pts"], loc["nrm"]), nan=0.0)
+            both = np.where(np.abs(both) > SHIFT_MAX, both, 0.0)
+        else:
+            both = agreed(loc["shift"], crossing(day_img, night_img, loc["pts"], loc["nrm"]))
         near_s = local_median(both, loc["ids"])
         far = np.nan_to_num(np.abs(near_s), nan=0.0) > SHIFT_MAX
         for run in runs_of(far):
