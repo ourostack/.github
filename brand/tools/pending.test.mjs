@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { afterMergeFor, pendingFor, registrationOf, unregisteredFor, WINDOWS } from "./pending.mjs";
+import { afterMergeFor, needsUploadFor, pendingFor, registrationOf, unregisteredFor, WINDOWS } from "./pending.mjs";
 
 const now = new Date("2026-11-16T23:00:00Z");
 const ago = (min) => new Date(now - min * 60000);
@@ -85,4 +85,14 @@ test("a pull request that changes the repository's registration still fails on i
 test("on main, or when main's registry cannot be read, an unregistered repository fails", () => {
   assert.equal(unregisteredFor({ pr: false, registry: reg(), main: reg(), name: "new" }), "unregistered");
   assert.equal(unregisteredFor({ pr: true, registry: reg(), main: null, name: "new" }), "unregistered");
+});
+
+test("a live social preview with byte lag needs an upload (never red); a website, a pull request or any other problem does not", () => {
+  const social = ["social preview image is not brand/social/x.jpg (sha256 aaaaaaaaaaaa, want bbbbbbbbbbbb)"];
+  const o = { id: "social:x", autoSync: ["social:"], kind: "github-social-preview", problems: social, live: true };
+  assert.equal(needsUploadFor(o), true);
+  assert.equal(needsUploadFor({ ...o, live: false }), false);
+  assert.equal(needsUploadFor({ ...o, kind: "website" }), false);
+  assert.equal(needsUploadFor({ ...o, problems: [...social, "404"] }), false);
+  assert.equal(needsUploadFor({ ...o, autoSync: [] }), false);
 });

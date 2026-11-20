@@ -36,7 +36,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterMergeFor, pendingFor, unregisteredFor } from "./pending.mjs";
+import { afterMergeFor, needsUploadFor, pendingFor, unregisteredFor } from "./pending.mjs";
 import { canonicalUrl } from "./canonical.mjs";
 
 const BRAND = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -593,8 +593,9 @@ async function run(s) {
       afterMerge = afterMergeFor({ id: s.id, autoSync: registry.autoSync, kind: s.kind, problems: r.problems, pr: !originOverride && !!process.env.BRAND_REF });
       if (afterMerge) status = "after-merge";
     }
+    if (status === "stale" && needsUploadFor({ id: s.id, autoSync: registry.autoSync, kind: s.kind, problems: r.problems, live: !originOverride && !process.env.BRAND_REF })) status = "needs-upload";
     if (status === "current" && r.manual) status = "manual";
-    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(r.shipped !== undefined ? { shipped: r.shipped } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "pending" ? { reason: `brand art merged ${pending.ageMinutes} min ago; stale after ${pending.minutes} min if its sync has not landed` } : {}), ...(status === "after-merge" ? { reason: `only the merge can update it: its sync starts after this lands; the post-merge audit files an issue if it has not converged ${afterMerge.minutes} min later` } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
+    results.push({ id: s.id, kind: s.kind, status, problems: r.problems, ...(r.pages ? { pages: r.pages } : {}), ...(r.shipped !== undefined ? { shipped: r.shipped } : {}), ...(status === "held" ? { reason: s.held } : {}), ...(status === "pending" ? { reason: `brand art merged ${pending.ageMinutes} min ago; stale after ${pending.minutes} min if its sync has not landed` } : {}), ...(status === "after-merge" ? { reason: `only the merge can update it: its sync starts after this lands; the post-merge audit files an issue if it has not converged ${afterMerge.minutes} min later` } : {}), ...(status === "needs-upload" ? { reason: "no job uploads social previews: an agent runs node brand/tools/upload-social-previews.mjs (the convergence issue carries it)" } : {}), ...(status === "manual" ? { reason: r.manual } : {}), ...(status === "current" ? {} : { fix: r.fix }) });
   } catch (err) {
     if (!(err instanceof EnvError)) throw err;
     envError ??= err.message;
@@ -608,7 +609,7 @@ if (only === "" || "unregistered:".startsWith(only)) results.push(...(await cove
 results.sort((a, b) => a.id.localeCompare(b.id));
 
 const count = (st) => results.filter((r) => r.status === st).length;
-const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), "unregistered-pending": count("unregistered-pending"), held: count("held"), waiting: count("waiting"), pending: count("pending"), "after-merge": count("after-merge"), manual: count("manual"), unchecked: count("unchecked") };
+const summary = { current: count("current"), stale: count("stale"), unregistered: count("unregistered"), "unregistered-pending": count("unregistered-pending"), held: count("held"), waiting: count("waiting"), pending: count("pending"), "after-merge": count("after-merge"), "needs-upload": count("needs-upload"), manual: count("manual"), unchecked: count("unchecked") };
 const failed = summary.stale + summary.unregistered > 0;
 const exit = failed ? 1 : summary.unchecked ? 3 : 0;
 
@@ -617,7 +618,7 @@ if (format === "json") {
 } else {
   const color = process.stdout.isTTY && !process.env.NO_COLOR;
   const c = (code, t) => (color ? `\x1b[${code}m${t}\x1b[0m` : t);
-  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), "unregistered-pending": c(33, "▲"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), "after-merge": c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
+  const mark = { current: c(32, "●"), stale: c(31, "✖"), unregistered: c(31, "✖"), "unregistered-pending": c(33, "▲"), held: c(33, "▲"), waiting: c(33, "▲"), pending: c(33, "▲"), "after-merge": c(33, "▲"), "needs-upload": c(33, "▲"), manual: c(33, "▲"), unchecked: c(31, "?") };
   process.stdout.write(`BRAND AUDIT  ${registry.surfaces.length} surfaces in brand/surfaces.json\n\n`);
   for (const r of results) {
     const extra = r.pages ? c(2, ` (${r.pages} pages)`) : "";
