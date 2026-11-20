@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail a night whose figures do not keep their day's outline, or whose figures sink into the sky.
+"""Fail a night whose figures do not keep their day's outline, or whose figures, or a part of one, sink into the sky.
 
     python3 brand/tools/outline_parity.py                  # every scene with a brand/figures/<scene>.json and a night
     python3 brand/tools/outline_parity.py workshop ...     # just these scenes (day names)
@@ -53,6 +53,15 @@ What is checked, for every figure of a scene that has a night:
   compared in the night, as a distance in RGB (0 to 441). Wherever they differed by 40 or more in the day,
   the night's must be N = 8 or more. A run of 24 px or more below N fails.
   Reported: the smallest contrast, and for a failing run its coordinates and both colours.
+- Sunk region, region rule. The strip rule reads a ring round the outline, so a part of a figure that is
+  low-contrast over an area (a dome crown 4 to 6 RGB from the night sky on a day that was 120 to 219 apart) can pass
+  it: ouroboros's robot-blue did. So each figure pixel 3 to 12 px inside the snapped mask is compared with the
+  nearest sky pixel 3 px or more outside it (both pictures through a 7x7 median). A connected area where the day
+  differed by DAY_MIN = 40 or more and the night by under REGION_N = 10 fails at REGION_AREA = 150 px, unless a rim
+  holds its edge: a night ridge of RIM_MIN = 14 or more over the sky within 2 px of the edge beside the area.
+  The two together, because under N alone most hits are false (a rim or a seam holds the edge): the real one has
+  365 px, a rim peak of 9; the others have under 40 px at N = 10 (98 to 122 at N = 12, with a rim of 14 or more).
+  Reported: the area's coordinates, size, median night distance, rim peak and day distance.
 
 Calibration is in the pull request that added this file (every shipped night and the playwright re-set
 that failed). A scene that fails is fixed in the night (restore the figure's outline and its value against
@@ -67,7 +76,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 from PIL import Image
-from scipy.ndimage import distance_transform_edt, gaussian_filter, map_coordinates, median_filter
+from scipy.ndimage import distance_transform_edt, gaussian_filter, label, map_coordinates, median_filter
 
 BRAND = Path(__file__).resolve().parent.parent
 SHIFT_MAX = 2.0        # px: the 99th percentile of the edge's shift, day to night
@@ -98,6 +107,13 @@ PART_TOL = 2.0         # px: a small part's diameter may differ from the day's b
 PART_REL = 0.10
 SMOOTH = 9             # contour points (27 px of outline) per median
 PAD = 24               # px of picture kept round the polygon
+REGION_IN = (3, 12)    # px inside the snapped mask: the figure pixels a region is made of
+REGION_OUT = 3         # px outside the mask: the nearest pixel at least this far out stands for the sky
+REGION_MED = 7         # px: side of the median that smooths both pictures before they are compared
+REGION_N = 10          # levels (RGB distance): a figure pixel this close to the sky in the night, where the day was DAY_MIN or more apart, is sunk
+REGION_AREA = 150      # px: the connected area of sunk pixels that fails, with no rim
+RIM_REACH = 2.0        # px either side of the edge: where a rim is looked for
+RIM_MIN = 14           # levels over the sky: a night ridge this high within RIM_REACH of the edge is a rim, and it holds the edge
 
 
 def load(path):
@@ -404,6 +420,59 @@ def contrast(img, pts, nrm, thin):
     return np.linalg.norm(a - b, axis=1), a, b
 
 
+def rim_peaks(night_img, pts, nrm):
+    """Highest distance in RGB from the adjacent sky of the night's colours within RIM_REACH px either side of each contour point."""
+    sky = strip_mean(night_img, pts, nrm, REGION_OUT, OUT[1])
+    t = np.arange(-RIM_REACH, RIM_REACH + 0.01, 0.5)
+    x = pts[:, 0:1] + nrm[:, 0:1] * t[None]
+    y = pts[:, 1:2] + nrm[:, 1:2] * t[None]
+    prof = np.stack([map_coordinates(night_img[..., c].astype(np.float32), [y, x], order=1, mode="nearest") for c in range(3)], 2)
+    return np.linalg.norm(prof - sky[:, None, :], axis=2).max(1)
+
+
+def sunk_regions(day_img, night_img, mask, pts, nrm):
+    """Connected areas of the figure, REGION_IN px inside its mask, that the night lets sink into the sky with no rim to hold the edge.
+
+    Each figure pixel is compared with the nearest sky pixel at least REGION_OUT px outside the mask (both pictures through a
+    REGION_MED median). An area counts where the day differed from the sky by DAY_MIN or more and the night by under REGION_N. It fails when it
+    covers REGION_AREA px and no contour point beside it has a night ridge of RIM_MIN or more over the sky within RIM_REACH px of the edge.
+    Yields (x, y, area, night distance, day distance, rim peak) for each failing area."""
+    ys, xs = np.nonzero(mask)
+    y0, y1 = max(ys.min() - 40, 0), min(ys.max() + 41, mask.shape[0])
+    x0, x1 = max(xs.min() - 40, 0), min(xs.max() + 41, mask.shape[1])
+    m = mask[y0:y1, x0:x1]
+    inside = distance_transform_edt(m)
+    sky = ~m & (distance_transform_edt(~m) >= REGION_OUT)
+    if not sky.any():
+        return
+    _, (iy, ix) = distance_transform_edt(~sky, return_indices=True)
+    far = []
+    for img in (day_img, night_img):
+        c = img[y0:y1, x0:x1].astype(np.float32)
+        c = np.stack([median_filter(c[..., k], size=REGION_MED) for k in range(3)], 2)
+        far.append(np.linalg.norm(c - c[iy, ix], axis=2))
+    day_far, night_far = far
+    sunk = m & (inside >= REGION_IN[0]) & (inside <= REGION_IN[1]) & (day_far >= DAY_MIN) & (night_far < REGION_N)
+    lab, n = label(sunk)
+    rim = rim_peaks(night_img, pts, nrm)
+    for k in range(1, n + 1):
+        area = lab == k
+        if area.sum() < REGION_AREA:
+            continue
+        beside = np.zeros(len(pts), bool)
+        for t in REGION_IN + (7,):
+            q = pts - nrm * t
+            qx, qy = np.round(q[:, 0]).astype(int) - x0, np.round(q[:, 1]).astype(int) - y0
+            ok = (qx >= 0) & (qx < area.shape[1]) & (qy >= 0) & (qy < area.shape[0])
+            beside[ok] |= area[qy[ok], qx[ok]]
+        peak = float(rim[beside].max()) if beside.any() else 0.0
+        if peak >= RIM_MIN:
+            continue
+        ay, ax = np.nonzero(area)
+        i = int(np.argmin((ax - ax.mean()) ** 2 + (ay - ay.mean()) ** 2))
+        yield (int(ax[i] + x0), int(ay[i] + y0), int(area.sum()), float(np.median(night_far[area])), float(np.median(day_far[area])), peak)
+
+
 def runs_of(flag):
     idx = np.nonzero(flag)[0]
     return np.split(idx, np.nonzero(np.diff(idx) > 1)[0] + 1) if len(idx) else []
@@ -470,6 +539,9 @@ def check_figure(day_img, night_img, fig):
         x, y = (int(v) for v in m["pts"][i])
         fails.append("figure sunk into the sky at (%d,%d), %d px of outline: night %s against sky %s, %.1f levels apart (limit %g); day %.0f apart" % (
             x, y, len(run) * STEP, tuple(int(v) for v in np.round(fn[i])), tuple(int(v) for v in np.round(sn[i])), cn[i], N, cd[i]))
+    for x, y, area, near, far, peak in sunk_regions(day_img, night_img, md, m["pts"], m["nrm"]):
+        fails.append("region sinks into the sky at (%d,%d): %d px under %g RGB from the sky with no rim (median %.1f; rim peak %.1f over the sky, limit %g); day distance %.0f" % (
+            x, y, area, REGION_N, near, peak, RIM_MIN, far))
     min_contrast = float(cn[seen].min()) if seen.any() else None
     kept = smooth(ratio, m["ids"])
     low = int(np.argmin(np.where(strong, kept, np.inf)))
