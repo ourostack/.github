@@ -13,6 +13,6 @@
     "ourostack/ouro-ui-apple": { "enabled": true },
     "ourostack/m365crawl": { "enabled": true },
     "ourostack/gatefold": { "enabled": false, "note": "Runs as its own caller (--self, .github/workflows/auto-revert.yml, its own GITHUB_TOKEN): the central PAT gets 403 on its verify branch, so the central cron leaves it alone." },
-    "teams-microsoft/tandem": { "enabled": false, "workflows": ["ci"], "ignoreWorkflows": ["first-run-gate", "basics"], "minRedMinutes": 0, "note": "Runs as its own caller (--self, .github/workflows/auto-revert.yml, AUTO_REVERT_TOKEN), so the central cron leaves it alone. Only ci's verdict counts, and a confirmed culprit is reverted at once." }
+    "teams-microsoft/tandem": { "enabled": false, "workflows": ["ci"], "ignoreWorkflows": ["first-run-gate", "basics"], "minRedMinutes": 0, "rerun": false, "note": "Runs as its own caller (--self, .github/workflows/auto-revert.yml, AUTO_REVERT_TOKEN), so the central cron leaves it alone. Only ci's verdict counts, and a confirmed culprit is reverted at once. Never re-runs a main ci run: a release candidate pins its run's first attempt." }
   }
 }
