@@ -298,17 +298,20 @@ test("check: Tandem acts the moment a culprit is confirmed, one revert per culpr
   assert.deepEqual(writes, ["mutation($id:ID!,$t:", "mutation($id:ID!,$h:", "post /repos/o/r/issues/99/comments"]);
 });
 
-test("check: one red run over the range dispatches its workflow on a verify branch at that commit, never re-runs main's run, and waits", async () => {
+test("check: one red run over the range dispatches its workflow on a verify branch at that commit, re-runs its failed jobs once, and waits", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const n = run({ head_sha: sha("n") });
   const gh = fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") });
   const lines = [];
   await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
   assert.deepEqual(gh.calls.filter((c) => c[0] === "post" || c[0] === "gql").map((c) => [c[1], c[2]]), [
+    [`/repos/o/r/actions/runs/${n.id}/rerun-failed-jobs`, {}],
     ["/repos/o/r/git/refs", { ref: `refs/heads/auto-revert/verify-${"n".repeat(12)}`, sha: sha("n") }],
     ["/repos/o/r/actions/workflows/ci.yml/dispatches", { ref: `auto-revert/verify-${"n".repeat(12)}` }],
   ]);
-  assert.ok(!gh.calls.some((c) => /rerun|\/attempts\//.test(c[1] ?? "") && c[0] === "post"), "main's run is never re-run");
+  const again = fakeGitHub([{ ...n, run_attempt: 2 }, g], { [n.id]: TAP("x works", "test/x.test.ts") });
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: again, now: NOW, apply: true, log() {}, source: async () => src() });
+  assert.ok(!again.calls.some((c) => /rerun-failed-jobs/.test(c[1] ?? "")), "a second attempt is never re-run");
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
 });
 
