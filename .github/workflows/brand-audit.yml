@@ -63,14 +63,23 @@ jobs:
 
   upscale-tests:
     runs-on: ubuntu-latest
-    # main's runs take 6-8 minutes and a slow runner nearly doubles the installs (#416)
+    # main's runs took 6-8 minutes, mostly pip downloads, and a slow runner doubled them (#416); the cache below removes most of that
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Read the runner's Python version for the pip cache key
+        id: py
+        run: echo "version=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')" >> "$GITHUB_OUTPUT"
+      # Caches pip's downloads only: pip still resolves the newest releases on every run, so the tests keep running on them.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: pip-upscale-${{ runner.os }}-py${{ steps.py.outputs.version }}-${{ hashFiles('brand/tools/requirements-upscale.txt', 'brand/tools/requirements-outline.txt') }}
+          restore-keys: pip-upscale-${{ runner.os }}-py${{ steps.py.outputs.version }}-
       - name: Test how upscale.py builds night masters
         run: |
           python3 -m venv /tmp/upscale-venv
-          /tmp/upscale-venv/bin/pip install --quiet pillow numpy scipy scikit-image
+          /tmp/upscale-venv/bin/pip install --quiet -r brand/tools/requirements-upscale.txt
           /tmp/upscale-venv/bin/python brand/tools/upscale_test.py -v
       # Required with the upscale tests: a night whose sky has a hard straight seam can't merge.
       - name: Test how sky_seams.py tells a build seam from a drawn edge
@@ -80,7 +89,7 @@ jobs:
       # Required with the upscale tests: a night that moves a figure's outline, or loses a figure into the sky, can't merge.
       # OpenCV pins numpy below 2.3, so it goes in after the tests above that ran on the newest numpy.
       - name: Install OpenCV for outline_parity.py
-        run: /tmp/upscale-venv/bin/pip install --quiet opencv-python-headless==4.12.0.88
+        run: /tmp/upscale-venv/bin/pip install --quiet -r brand/tools/requirements-outline.txt
       - name: Test how outline_parity.py tells a moved or sunk figure or part from anti-aliasing
         run: /tmp/upscale-venv/bin/python brand/tools/outline_parity_test.py -v
       - name: Check every registered figure keeps its day outline and its value against the sky, in every part, in the night
