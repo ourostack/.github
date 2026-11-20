@@ -182,6 +182,8 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { 
     session.page = await newPage();
   };
   session.relaunchHeadful = async () => {
+    // A visible window in front of Ari is for the morning sitting only (SIGNIN_LIVE=1); any other caller queues with `shepherd signin queue`.
+    if (process.env.SIGNIN_LIVE !== "1") throw Object.assign(new Error("a visible sign-in window is for the morning sitting only: queue it with `shepherd signin queue --what ... --why ... --resume ...`, or set SIGNIN_LIVE=1 in the sitting"), { exit: 5, signinQueued: false });
     await stop();
     await start(true);
     await session.page.bringToFront().catch(() => {});

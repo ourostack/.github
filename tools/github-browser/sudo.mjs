@@ -1,7 +1,9 @@
-// GitHub's sudo mode ("Confirm access") before a sensitive step. Nobody is guaranteed to be watching a headless Edge, so
-// the prompt has to reach the person: GitHub Mobile first (a push to their phone, no window needed; the number GitHub
-// shows goes to the terminal and to Teams), then a passkey in a visible, frontmost Edge window. Granted sudo lasts a few
-// hours for that browser session, so one approval covers every step that follows.
+// GitHub's sudo mode ("Confirm access") before a sensitive step. Nobody is guaranteed to be watching a headless Edge, and Ari
+// is never prompted live outside the morning sitting: the step is queued with `shepherd signin queue` (one batch message each
+// morning) and the call throws `signinQueued` so the flow carries on with other work and is rerun after the sitting. With
+// SIGNIN_LIVE=1 (the sitting itself) the prompt is live: GitHub Mobile first (a push to their phone, no window needed; the
+// number GitHub shows goes to the terminal and to Teams), then a passkey in a visible, frontmost Edge window. Granted sudo
+// lasts a few hours for that browser session, so one approval covers every step that follows.
 import { execFileSync } from "node:child_process";
 
 const CHAT = process.env.SUDO_TEAMS_CHAT ?? "19:e1ac21e4-c653-4dab-848f-2d8edb449c6b_7f3cdd24-4dd3-4278-81f4-cad2711c4b31@unq.gbl.spaces";
@@ -30,16 +32,28 @@ export function teamsLine(text, run = execFileSync) {
   } catch (e) { console.error(`Teams message failed: ${e.message}`); return false; }
 }
 
+/** Queues the sign-in for the morning batch; a failure is reported, never thrown. */
+export function queueSignin({ what, resume }, run = execFileSync) {
+  try {
+    run("shepherd", ["signin", "queue", "--tool", "github-browser", "--what", "GitHub sudo (Confirm access)", "--why", `GitHub is waiting for approval to ${what}`, "--resume", resume], { stdio: "ignore", timeout: 60000 });
+    return true;
+  } catch (e) { console.error(`Could not queue the sign-in: ${e.message}`); return false; }
+}
+
 /**
  * Call right after a step that may hit "Confirm access". Returns "none" when there was no prompt, else the path that
  * granted it ("mobile" or "passkey"). `redo(page)` repeats the step on a new page (the passkey path reopens Edge visibly).
  * `what` is the waiting step, in words, for the Teams line.
  */
-export async function awaitSudo(session, { what, redo, notify = teamsLine, waitMs = 15 * 60_000, probeMs = 10_000, pollMs = 1000, log = console.log } = {}) {
+export async function awaitSudo(session, { what, redo, resume = process.argv.map((a) => JSON.stringify(a)).join(" "), live = process.env.SIGNIN_LIVE === "1", queue = queueSignin, notify = teamsLine, waitMs = 15 * 60_000, probeMs = 10_000, pollMs = 1000, log = console.log } = {}) {
   let page = session.page;
   let seen = false;
   for (let t = 0; t <= probeMs && !seen; t += pollMs) { seen = await onSudoPage(page); if (!seen) await sleep(pollMs); }
   if (!seen) return "none";
+  if (!live) {
+    queue({ what, resume });
+    throw Object.assign(new Error(`GitHub needs approval to ${what}: queued for the morning (shepherd signin); rerun after it is done`), { exit: 5, signinQueued: true });
+  }
   const path = await pickSudoPath(page);
   let line;
   if (path === "mobile") {
