@@ -146,12 +146,16 @@ const stopEdge = async ({ browser, proc }) => { await browser?.close().catch(() 
 
 /** Opens Edge on `user`'s own isolated profile (or on `via`'s, when that profile's switcher already lists `user`), copied from the person's Edge profile and never written back. A profile that reads signed out is replaced for the run by a fresh copy, which becomes the profile once it is signed in; a copy that is no better is discarded and the old profile kept. {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same profile in a visible window (GitHub's passkey prompt needs one). */
 export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { headful = false, via = user } = {}) {
-  const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
-  const { chromium } = require("playwright");
   const profile = process.env.EDGE_PROFILE ?? join(homedir(), "Library/Application Support/Microsoft Edge/Default");
   const edge = process.env.EDGE_BIN ?? "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge";
   const home = profileDirFor(via);
+  // The lock comes first: a busy profile is reported as busy even where Playwright isn't installed.
   const unlock = lockProfile(home);
+  let chromium;
+  try {
+    const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
+    ({ chromium } = require("playwright"));
+  } catch (e) { unlock(); throw e; }
   let dir = home;
   let staging;
   let browser; let proc;
