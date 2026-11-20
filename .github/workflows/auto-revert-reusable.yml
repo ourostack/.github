@@ -6,12 +6,12 @@ on:
   workflow_call:
     inputs:
       apply:
-        description: "Act (rerun and revert). False is a dry run."
+        description: "Act (verify and revert). False is a dry run."
         type: boolean
         default: true
     secrets:
       token:
-        description: "Optional PAT or App token, used only for writes (revert branch, PR, auto-merge, merging its own green revert, rerun); reads, check runs and annotations included, use the caller's GITHUB_TOKEN. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
+        description: "Optional PAT or App token, used only for writes (revert branch, PR, auto-merge, merging its own green revert, the verify branch and its workflow_dispatch); reads, check runs and annotations included, use the caller's GITHUB_TOKEN. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
         required: false
 
 jobs:

@@ -1,7 +1,7 @@
 name: Auto-revert red main
 
 # When main's newest completed run is red, this traces each failure to the pull request that caused it and, once the failure
-# reproduces (a rerun, or two runs in a row), is not infrastructure and main has been red an hour, opens its revert with
+# reproduces (its workflow dispatched at the same commit, or two runs in a row; a main run is never re-run), is not infrastructure and main has been red an hour, opens its revert with
 # auto-merge and wakes the repo's owner. Every guard and the opt-in list
 # (tools/red-main/auto-revert.json) are in tools/red-main/auto-revert.mjs. The tests run with red-main's.
 #
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       apply:
-        description: "Act (rerun and revert). Off is a dry run."
+        description: "Act (verify and revert). Off is a dry run."
         type: boolean
         default: true
 

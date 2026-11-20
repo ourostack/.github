@@ -4,7 +4,7 @@
 // version, which judged only the newest commit and reverted only the last one, kept saying "main is not red".)
 //
 //   node tools/red-main/auto-revert.mjs                 # dry run: say what it would do for every opted-in repo
-//   node tools/red-main/auto-revert.mjs --apply         # rerun, revert and land the revert
+//   node tools/red-main/auto-revert.mjs --apply         # verify, revert and land the revert
 //   node tools/red-main/auto-revert.mjs --repo o/r      # only that repo (it must be listed in auto-revert.json, enabled or not)
 //   node tools/red-main/auto-revert.mjs --self o/r      # caller-workflow mode: that repo, opted in by the caller, with its token
 //   --as-of <ISO time>   replay: judge main as it stood then (runs created later are unseen, runs finishing later still running)
@@ -25,8 +25,11 @@
 //      runtime imports and the repository paths it names as strings (type-only imports don't count), at the commit that
 //      first failed. The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the newest. With
 //      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
-//   4. Confirmation (flake guard): heal first, the newest red run's failed jobs are rerun once (attempt 1 only, any cause).
-//      A failure is confirmed when it failed again on that rerun, or in two runs in a row. Only confirmed culprits are reverted.
+//   4. Confirmation (flake guard): a main push run is NEVER re-run or re-attempted: it would go back to pending in main's shared
+//      concurrency group, be replaced by the next push and lose its verdict. Instead the workflow is dispatched (workflow_dispatch,
+//      its own group) on a throwaway branch `auto-revert/verify-<sha>` at the red run's commit. A failure is confirmed when it
+//      fails again in that run, or in two main runs in a row; one that passes there is a flake and is never reverted. Only
+//      confirmed culprits are reverted. Verify branches are deleted once main has moved past them.
 //   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), with an open fix or
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation).
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
@@ -155,6 +158,13 @@ export async function markPartial(repo, runs, get) {
     const sorted = [...rs].sort((a, b) => (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at));
     for (const r of sorted) {
       if (isGreen(r)) break;
+      // A main run someone re-attempted goes back to pending in main's group and is usually replaced, losing its verdict: its
+      // previous attempt's failed jobs still stand.
+      if ((r.run_attempt ?? 1) > 1 && (r.status !== "completed" || r.conclusion === "cancelled")) {
+        r.jobs = (await get(`/repos/${repo}/actions/runs/${r.id}/attempts/${r.run_attempt - 1}/jobs?per_page=100`)).jobs ?? [];
+        r.partial = r.jobs.some((j) => j.conclusion === "failure");
+        continue;
+      }
       if (r.status !== "completed" || r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
       r.jobs = (await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
       r.partial = r.jobs.some((j) => j.conclusion === "failure");
@@ -164,17 +174,18 @@ export async function markPartial(repo, runs, get) {
 }
 
 // Per workflow, newest first: its verdict is its newest completed run that has one. Returns
-// [{ workflow, state: "green" | "red" | "rerunning" | "none", reds: [newest red, the red before it, ...], green, rerun }].
+// [{ workflow, state: "green" | "red" | "none", reds: [newest red, the red before it, ...], green }].
 export function verdicts(runs) {
   const out = [];
   for (const rs of groupBy(runs, wfKey).values()) {
     const sorted = [...rs].sort((a, b) => (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at));
-    const v = { workflow: sorted[0].name, state: "none", reds: [], green: null, rerun: null };
+    const v = { workflow: sorted[0].name, state: "none", reds: [], green: null };
     for (const r of sorted) {
-      if (r.status !== "completed") {
-        if ((r.run_attempt ?? 1) > 1 && !v.reds.length && !v.rerun) v.rerun = r;
+      if (r.partial) {
+        v.reds.push(r);
         continue;
       }
+      if (r.status !== "completed") continue;
       if (NO_VERDICT.has(r.conclusion) && !r.partial) continue;
       if (r.conclusion === "success") {
         v.green = r;
@@ -182,7 +193,7 @@ export function verdicts(runs) {
       }
       v.reds.push(r);
     }
-    v.state = v.rerun ? "rerunning" : v.reds.length ? "red" : v.green ? "green" : "none";
+    v.state = v.reds.length ? "red" : v.green ? "green" : "none";
     out.push(v);
   }
   return out;
@@ -430,7 +441,7 @@ export function revertOf(subject) {
 
 // Each failure of the newest red run, traced back through the older completed runs to where it began, and attributed.
 // reds: the workflow's red runs, newest first; green: the run before them (or null).
-export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
+export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf = null }) {
   const files = await src.files(v.reds[0].head_sha);
   const chain = [];
   for (const run of v.reds.slice(0, maxWalk)) {
@@ -445,6 +456,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
   const reds = chain.filter((c) => c.failures);
   if (!reds.length) return { infra: chain[0]?.infra ?? "no failure", newest: v.reds[0] };
   const newest = reds[0];
+  const check = await verification(repo, newest.run, { a, files, cache, src, asOf });
   const older = [...chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures), ...(v.green && (chain.length === v.reds.length || chain.length < maxWalk) ? [{ run: v.green, failures: [] }] : [])];
   const results = [];
   for (const f of newest.failures) {
@@ -460,8 +472,10 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
         break;
       }
     }
-    const confirmed = runs >= 2 || (newest.run.run_attempt ?? 1) >= 2;
-    const r = { failure: f, first: first.run, base, runs, confirmed };
+    const again = check.state === "done" && check.keys.has(f.key);
+    const confirmed = runs >= 2 || again;
+    const flake = !confirmed && check.state === "done";
+    const r = { failure: f, first: first.run, base, runs, confirmed, flake, verify: check.run ?? null };
     if (!base) {
       results.push({ ...r, blame: null, why: "where it began is beyond the runs read" });
       continue;
@@ -474,7 +488,61 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8 }) {
     const blame = culprit(commits, dist);
     results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
   }
-  return { newest: newest.run, results };
+  return { newest: newest.run, results, check };
+}
+
+export const VERIFY = "auto-revert/verify-";
+export const verifyBranch = (sha) => `${VERIFY}${sha.slice(0, 12)}`;
+
+// The verification of a red main run: its workflow dispatched on `auto-revert/verify-<sha>` at the same commit. Returns
+// { state: "none" | "running" | "done", run, keys: the failure keys it reproduced }.
+export async function verification(repo, run, { a, files, cache = null, src = null, asOf = null }) {
+  const list = (await a.get(`/repos/${repo}/actions/runs?head_sha=${run.head_sha}&event=workflow_dispatch&per_page=20`)).workflow_runs ?? [];
+  const mine = list
+    .map((r) => replay(r, asOf))
+    .filter((r) => r && (r.workflow_id ?? r.name) === (run.workflow_id ?? run.name) && String(r.head_branch ?? "").startsWith(VERIFY) && !["cancelled", "skipped", "stale"].includes(r.conclusion))
+    .sort((x, y) => ms(y.created_at) - ms(x.created_at));
+  const vr = mine[0];
+  if (!vr) return { state: "none", keys: new Set() };
+  if (vr.status !== "completed") return { state: "running", run: vr, keys: new Set() };
+  if (vr.conclusion === "success") return { state: "done", run: vr, keys: new Set() };
+  const r = await runFailures(repo, vr, { a, files, cache, read: src ? (p) => src.read(vr.head_sha, p) : null });
+  return { state: "done", run: vr, keys: new Set((r.failures ?? []).map((f) => f.key)) };
+}
+
+// Dispatches the red run's workflow on a throwaway branch at its commit: its own concurrency group, so nothing on main waits
+// on it or replaces it. Never re-runs the main run itself.
+export async function dispatchVerify(repo, run, { apply, a = api, log = console.log } = {}) {
+  const branch = verifyBranch(run.head_sha);
+  const file = String(run.path ?? "").split("@")[0].split("/").pop();
+  log(`  ${apply ? "" : "would "}dispatch ${file} on ${branch} (${short(run.head_sha)}) to tell a flake from a break; main's run is never re-run`);
+  if (!apply) return true;
+  try {
+    await a.post(`/repos/${repo}/git/refs`, { ref: `refs/heads/${branch}`, sha: run.head_sha }).catch((e) => {
+      if (!/Reference already exists|422/.test(e.message)) throw e;
+    });
+    await a.post(`/repos/${repo}/actions/workflows/${file}/dispatches`, { ref: branch });
+    return true;
+  } catch (e) {
+    log(`  could not dispatch ${file} (${e.message.slice(0, 120)}); two red runs in a row confirm instead`);
+    return false;
+  }
+}
+
+// Verify branches for commits main no longer needs verified are deleted.
+export async function pruneVerify(repo, keep, { apply, a = api, log = console.log } = {}) {
+  let refs = [];
+  try {
+    refs = await a.get(`/repos/${repo}/git/matching-refs/heads/${VERIFY}`);
+  } catch {
+    return;
+  }
+  for (const r of Array.isArray(refs) ? refs : []) {
+    const name = r.ref.replace(/^refs\/heads\//, "");
+    if (keep.has(name)) continue;
+    log(`${repo}: ${apply ? "" : "would "}delete ${name}, no longer needed`);
+    if (apply) await a.del(`/repos/${repo}/git/${r.ref}`).catch(() => {});
+  }
 }
 
 // Groups the attributed failures by culprit: [{ pr, sha, subject, failures, confirmed }].
@@ -484,6 +552,7 @@ export function culprits(results) {
     const c = m.get(r.blame.pr) ?? { pr: r.blame.pr, sha: r.blame.sha, subject: r.blame.subject, failures: [], confirmed: false, first: r.first };
     c.failures.push(r);
     c.confirmed ||= r.confirmed;
+    c.flake = (c.flake ?? true) && r.flake;
     m.set(r.blame.pr, c);
   }
   return [...m.values()].sort((x, y) => y.pr - x.pr);
@@ -495,13 +564,14 @@ export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes }) 
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };
-  if (!c.confirmed) return { action: "wait", reason: "not yet reproduced: the rerun of its failed jobs decides" };
+  if (!c.confirmed && c.flake) return { action: "skip", reason: "passed when its workflow was dispatched at the same commit: a flake" };
+  if (!c.confirmed) return { action: "wait", reason: "not yet reproduced: the verify run at the same commit decides" };
   if (minutes < minRedMinutes) return { action: "wait", reason: `red for ${minutes}m, under ${minRedMinutes}m` };
   return { action: "revert", reason: "reproduced" };
 }
 
 export function revertBody({ repo, c, run, minutes }) {
-  const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs < 2 ? ", again on the rerun" : " in a row"}.`);
+  const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs < 2 ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : " in a row"}.`);
   return [
     `Automatic revert of #${c.pr} (${c.subject.replace(/\s*\(#\d+\)\s*$/, "")}).`,
     "",
@@ -557,6 +627,7 @@ export const api = {
   get: (path) => http("GET", path),
   post: (path, body) => http("POST", path, body ?? {}),
   put: (path, body) => http("PUT", path, body ?? {}),
+  del: (path) => http("DELETE", path),
   lines,
   async graphql(query, variables) {
     const r = await http("POST", "/graphql", { query, variables });
@@ -574,6 +645,7 @@ export function counted(a = api) {
     lines: (p) => (calls.GET++, a.lines(p)),
     post: (p, b) => (calls.POST++, a.post(p, b)),
     put: (p, b) => (calls.POST++, a.put(p, b)),
+    del: (p) => (calls.POST++, a.del(p)),
     graphql: (q, v) => (calls.graphql++, a.graphql(q, v)),
   };
 }
@@ -768,27 +840,13 @@ export async function landReverts(repo, openPrs, { a, required, apply, log = con
   }
 }
 
-export async function rerunHeal(repo, runs, { apply, a = api, log = console.log } = {}) {
-  let ok = true;
-  for (const r of runs) {
-    log(`  ${apply ? "" : "would "}rerun the failed jobs of run ${r.id} (${short(r.head_sha)}) once, to tell a flake from a break`);
-    if (!apply) continue;
-    try {
-      await a.post(`/repos/${repo}/actions/runs/${r.id}/rerun-failed-jobs`);
-    } catch (e) {
-      log(`  could not rerun run ${r.id} (${e.message}); two red runs in a row confirm instead`);
-      ok = false;
-    }
-  }
-  return ok;
-}
 
 function describe(r) {
   const f = r.failure;
   const what = f.test ? `${f.file ?? "?"} "${f.test}"` : `job "${f.job}"${f.step ? ` step "${f.step}"` : ""}`;
   const where = r.base ? `failing since ${short(r.first.head_sha)} (run ${r.first.id}), passing at ${short(r.base.head_sha)}` : `failing since ${short(r.first.head_sha)}`;
   const who = r.blame ? `#${r.blame.pr} (${r.blame.how}${r.prs ? `; ${r.prs} PRs in range` : ""})` : `unattributed: ${r.why}`;
-  return `  ${what}: ${where}, ${r.runs} run${r.runs > 1 ? "s" : ""}${r.confirmed ? "" : ", unconfirmed"} -> ${who}`;
+  return `  ${what}: ${where}, ${r.runs} run${r.runs > 1 ? "s" : ""}${r.confirmed ? "" : r.flake ? ", passed at the same commit (flake)" : ", unconfirmed"} -> ${who}`;
 }
 
 // One repo, one tick.
@@ -804,31 +862,35 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     openPrs = await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
     if (openPrs.some((p) => String(p.body ?? "").includes(MARKER))) await landReverts(repo, openPrs, { a, required: await (await getSrc()).mergeChecks(), apply, log });
   }
-  for (const v of vs.filter((x) => x.state === "rerunning")) log(`${repo}: ${v.workflow}'s newest verdict is being rerun (run ${v.rerun.id}), waiting for it`);
   if (!red.length) {
     log(`${repo}: main is not red`);
     src?.close?.();
+    if (apply && !asOf) await pruneVerify(repo, new Set(), { apply, a, log });
     return;
   }
+  const keep = new Set();
   try {
     await judge();
   } finally {
     src?.close?.();
   }
+  if (apply && !asOf) await pruneVerify(repo, keep, { apply, a, log });
   async function judge() {
     for (const v of red) {
       const s = await getSrc();
-      const r = await analyse(repo, v, { a, src: s, cache });
+      const r = await analyse(repo, v, { a, src: s, cache, asOf });
       if (r.infra) {
-        log(`${repo}: ${v.workflow} failed at ${short(v.reds[0].head_sha)} on infrastructure only (${r.infra}); not red`);
-        if ((v.reds[0].run_attempt ?? 1) < 2) await rerunHeal(repo, [v.reds[0]], { apply, a, log });
+        log(`${repo}: ${v.workflow} failed at ${short(v.reds[0].head_sha)} on infrastructure only (${r.infra}); not red, the next run decides`);
         continue;
       }
       const since = Math.min(...r.results.map((x) => ms(x.first.updated_at)));
       const minutes = Math.round((now - since) / 60000);
       log(`${repo}: ${v.workflow} red at ${short(r.newest.head_sha)} (run ${r.newest.id}, finished ${hhmm(r.newest.updated_at)}), red ${minutes}m, ${r.results.length} failure${r.results.length > 1 ? "s" : ""}:`);
       for (const x of r.results) log(describe(x));
-      if ((r.newest.run_attempt ?? 1) < 2 && r.results.some((x) => !x.confirmed)) await rerunHeal(repo, [r.newest], { apply, a, log });
+      const pending = r.results.some((x) => !x.confirmed && !x.flake);
+      if (pending && r.check.state === "none") await dispatchVerify(repo, r.newest, { apply, a, log });
+      if (r.check.state === "running") log(`  verifying at ${short(r.newest.head_sha)}: run ${r.check.run.id} on ${r.check.run.head_branch}`);
+      if (pending || r.check.state === "running") keep.add(verifyBranch(r.newest.head_sha));
       const cs = culprits(r.results);
       if (!cs.length) {
         log(`  no culprit to revert; red-main wakes the owner`);
