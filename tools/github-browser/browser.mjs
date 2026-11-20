@@ -94,13 +94,13 @@ async function launch({ chromium, edge, dir, headful }) {
   return { proc };
 }
 
-/** Opens Edge on `user`'s own isolated profile (seeded once from the person's Edge profile, never written back). {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same profile in a visible window (GitHub's passkey prompt needs one). */
-export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { headful = false } = {}) {
+/** Opens Edge on `user`'s own isolated profile (or on `via`'s, when that profile's switcher already lists `user`: one signed-in profile can serve every account it holds) (seeded once from the person's Edge profile, never written back). {page, close, relaunchHeadful}: `page` changes when relaunchHeadful() reopens the same profile in a visible window (GitHub's passkey prompt needs one). */
+export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { headful = false, via = user } = {}) {
   const require = createRequire(join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "/"));
   const { chromium } = require("playwright");
   const profile = process.env.EDGE_PROFILE ?? join(homedir(), "Library/Application Support/Microsoft Edge/Default");
   const edge = process.env.EDGE_BIN ?? "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge";
-  const dir = profileDirFor(user);
+  const dir = profileDirFor(via);
   const unlock = lockProfile(dir);
   try { seedProfile({ source: profile, dest: dir, reseed: Boolean(process.env.GITHUB_BROWSER_RESEED) }); } catch (e) { unlock(); throw e; }
   let { browser, proc } = await launch({ chromium, edge, dir, headful });
