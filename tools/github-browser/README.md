@@ -13,11 +13,11 @@ Needs Edge, `playwright` (`npm i -g playwright`) and `gh` signed in for the repo
 
 ## Another account in a signed-in profile
 
-`openAs("arimendelow_microsoft", { via: "arimendelow" })` opens the `arimendelow` profile (whose switcher lists the work account) and switches to the work account, so `s.page` is signed in as `arimendelow_microsoft`; `close()` switches back. A plain `openAs("arimendelow_microsoft")` looks in its own, never-signed-in profile and exits 3. The profile's GitHub session must still be valid: on 2026-11-19 16:20 PT it was not (`loginOf` returned empty, and a fresh seed from Edge's own profile also came up signed out, even though Edge's Cookies file holds `user_session`), so private work-repo pages answered with the EMU single sign-on page and the one human step was a sign-in in that profile.
+`openAs("arimendelow_microsoft", { via: "arimendelow" })` opens the `arimendelow` profile (whose switcher lists the work account) and switches to the work account, so `s.page` is signed in as `arimendelow_microsoft`; `close()` switches back. A plain `openAs("arimendelow_microsoft")` looks in its own, never-signed-in profile and exits 3. Seeding decrypts the copied `Cookies` into plaintext (macOS keychain key), because an Edge that self-updated past the running one cannot read the old `v10` cookies and drops them (the 2026-11-19 signed-out seed). Reseed with `GITHUB_BROWSER_RESEED=1`.
 
 ## Web-only actions as the personal account `arimendelow`
 
-Never ask Ari to sign in. Use `openAs("arimendelow")` from `browser.mjs` (it is the default user): its own profile under `~/.local/state/github-browser/profiles/arimendelow` is already signed in as `arimendelow` (checked 2026-11-19: `loginOf` returns `arimendelow`, and the switcher also lists `arimendelow_microsoft`). Desk's `browser_context` `mine` is a copy of the Edge Default profile without saved logins, so it cannot do this; Edge has no other profile on this Mac.
+Never ask Ari to sign in. Use `openAs("arimendelow")` from `browser.mjs` (it is the default user): its own profile under `~/.local/state/github-browser/profiles/arimendelow` is already signed in as `arimendelow` (checked 2026-11-19: `loginOf` returns `arimendelow`, and the switcher also lists `arimendelow_microsoft`). Desk's `browser_context` `mine` copies the same profile with the same cookie decryption and is signed in too; Edge has no other profile on this Mac.
 
 ```js
 import { openAs } from "<clone of ourostack/.github>/tools/github-browser/browser.mjs";

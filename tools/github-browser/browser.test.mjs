@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash, pbkdf2Sync } from "node:crypto";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { blockSignOut, isSignOut, lockProfile, profileDirFor, promoteProfile, restoreAccount, seedProfile, ssoUrlFor, stageProfile, startBudgetMs, switchTo, openAs } from "./browser.mjs";
+import { keychainCookieKey, transcodeCookies, blockSignOut, isSignOut, lockProfile, profileDirFor, promoteProfile, restoreAccount, seedProfile, ssoUrlFor, stageProfile, startBudgetMs, switchTo, openAs } from "./browser.mjs";
 
 // A page whose GitHub is signed in as `active`, with a switcher that lists `saved`.
 const fakePage = (active, saved) => ({
@@ -157,4 +157,47 @@ test("openAs(user, {via}) uses the via profile's folder, so it fails on that pro
   } finally {
     if (env === undefined) delete process.env.GITHUB_BROWSER_HOME; else process.env.GITHUB_BROWSER_HOME = env;
   }
+});
+
+test("seeding stores copied cookie values as plain values for a newer Edge and leaves the source alone", async () => {
+  const { DatabaseSync } = await import("node:sqlite");
+  const { createCipheriv, pbkdf2Sync } = await import("node:crypto");
+  const source = makeSource();
+  const key = Buffer.alloc(16, 7);
+  const seal = (host, value) => {
+    const c = createCipheriv("aes-128-cbc", key, Buffer.alloc(16, 0x20));
+    return Buffer.concat([Buffer.from("v10"), c.update(Buffer.concat([createHash("sha256").update(host).digest(), Buffer.from(value)])), c.final()]);
+  };
+  const cookies = join(source, "Cookies");
+  rmSync(cookies);
+  const db = new DatabaseSync(cookies);
+  db.exec("CREATE TABLE cookies (host_key TEXT, name TEXT, value TEXT, encrypted_value BLOB)");
+  const ins = db.prepare("INSERT INTO cookies VALUES (?, ?, ?, ?)");
+  ins.run("github.com", "user_session", "", seal("github.com", "secret-session"));
+  const bare = createCipheriv("aes-128-cbc", key, Buffer.alloc(16, 0x20));
+  ins.run("old.example", "bare", "", Buffer.concat([Buffer.from("v10"), bare.update("plain-no-digest-prefix-padding-xx"), bare.final()]));
+  ins.run("x.example", "broken", "", Buffer.from("v10not-decryptable-bytes"));
+  ins.run("v11.example", "v11", "", Buffer.from("v11-something-longer-than-19"));
+  ins.run("n.example", "none", "", null);
+  db.close();
+  const before = readFileSync(cookies);
+  const dest = join(mkdtempSync(join(tmpdir(), "gb-home-")), "profiles", "arimendelow");
+  assert.equal(seedProfile({ source, dest, cookieKey: key }), true);
+  const copy = new DatabaseSync(join(dest, "Default", "Cookies"));
+  const rows = copy.prepare("SELECT name, value, length(encrypted_value) AS n FROM cookies ORDER BY name").all();
+  copy.close();
+  assert.deepEqual(rows.map((r) => [r.name, r.value, r.n]), [["bare", "plain-no-digest-prefix-padding-xx", 0], ["broken", "", 24], ["none", "", null], ["user_session", "secret-session", 0], ["v11", "", 28]]);
+  assert.deepEqual(readFileSync(cookies), before);
+  writeFileSync(join(dest, "Default", "Cookies"), "not a database");
+  transcodeCookies(join(dest, "Default", "Cookies"), key);
+  assert.equal(readFileSync(join(dest, "Default", "Cookies"), "utf8"), "not a database");
+});
+
+test("keychainCookieKey derives Edge's cookie key on macOS and gives none elsewhere or when the keychain refuses", () => {
+  const seen = [];
+  const run = (...args) => { seen.push(args.slice(0, 2)); return Buffer.from("secret\n"); };
+  assert.deepEqual(keychainCookieKey({ platform: "darwin", run }), pbkdf2Sync("secret", "saltysalt", 1003, 16, "sha1"));
+  assert.equal(seen.length, 1);
+  assert.equal(keychainCookieKey({ platform: "linux", run }), null);
+  assert.equal(keychainCookieKey({ platform: "darwin", run: () => { throw new Error("denied"); } }), null);
 });
