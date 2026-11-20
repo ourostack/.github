@@ -14,8 +14,11 @@
 // Red is a verdict, not a tip. Each workflow that counts (the repo's "workflows" in auto-revert.json, or every push workflow
 // but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main: a pending or running run says nothing, a run
 // cancelled or replaced by concurrency says nothing, and one whose every failure is infrastructure says nothing. Main is red
-// while that verdict is a code failure; a newer completed green run clears it. Because main's runs share a concurrency
-// group, a verdict covers every commit since the run before it, so the culprit is found over a range:
+// while that verdict is a code failure; a newer completed green run clears it. "Newer" is commit order on main (first parent),
+// never finish time: when each push has a run of its own (no shared concurrency group), an older commit's run can finish
+// after a newer one's, and its red then says nothing about main. Runs are ordered by run number (push order) and, once main
+// looks red, by their commits' first-parent order in the clone. A verdict can cover several commits (runs that share a
+// concurrency group test only the newest of a burst), so the culprit is found over a range:
 //   1. Failures: the red run's failed jobs (latest attempt) are read from their logs: each failing test (TAP `not ok`, its
 //      `location:` file and every repository file its failure text names), or, for a job with no test failure, the job and
 //      the files its error lines name and its failing step's `run:` names in the workflow file at that commit. A job with no test failure that is infrastructure (classifyFailure) is dropped.
@@ -138,6 +141,13 @@ export async function readHistory(repo, get, { workflows = null, ignore = [], as
   return all;
 }
 const wfKey = (r) => r.workflow_id ?? r.name;
+// Newest first: by the commits' first-parent order on main when `order` (sha -> position, larger is newer) knows both, else
+// by run number (push order), then creation.
+const newestFirst = (order) => (a, b) => {
+  const pa = order?.get(a.head_sha), pb = order?.get(b.head_sha);
+  if (pa !== undefined && pb !== undefined && pa !== pb) return pb - pa;
+  return (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at);
+};
 const isGreen = (r) => r.status === "completed" && r.conclusion === "success";
 // As of `asOf`: a run created later doesn't exist yet; one that finished later is still running.
 function replay(r, asOf) {
@@ -157,9 +167,9 @@ const NO_VERDICT = new Set(["cancelled", "skipped", "stale", "neutral", "action_
 // A run cancelled after it started (by hand, or by a lane making room) still judged the jobs it finished: when one of them
 // failed it is a red verdict for those jobs (`partial`). Only cancelled runs newer than their workflow's newest green, that
 // ran at least 3 minutes, are looked at (a run replaced while it waited never started).
-export async function markPartial(repo, runs, get) {
+export async function markPartial(repo, runs, get, order = null) {
   for (const rs of groupBy(runs, wfKey).values()) {
-    const sorted = [...rs].sort((a, b) => (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at));
+    const sorted = [...rs].sort(newestFirst(order));
     for (const r of sorted) {
       if (isGreen(r)) break;
       // A main run someone re-attempted goes back to pending in main's group and is usually replaced, losing its verdict: its
@@ -177,12 +187,12 @@ export async function markPartial(repo, runs, get) {
   return runs;
 }
 
-// Per workflow, newest first: its verdict is its newest completed run that has one. Returns
-// [{ workflow, state: "green" | "red" | "none", reds: [newest red, the red before it, ...], green }].
-export function verdicts(runs) {
+// Per workflow, newest first (commit order with `order`, see newestFirst): its verdict is its newest completed run that has
+// one. Returns [{ workflow, state: "green" | "red" | "none", reds: [newest red, the red before it, ...], green }].
+export function verdicts(runs, order = null) {
   const out = [];
   for (const rs of groupBy(runs, wfKey).values()) {
-    const sorted = [...rs].sort((a, b) => (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at));
+    const sorted = [...rs].sort(newestFirst(order));
     const v = { workflow: sorted[0].name, state: "none", reds: [], green: null };
     for (const r of sorted) {
       if (r.partial) {
@@ -898,6 +908,11 @@ export async function gitSource(repo, { dir = null, asOf = null } = {}) {
       const out = await git(at, ["log", "--first-parent", "--no-renames", "--format=%x1e%H%x1f%P%x1f%cI%x1f%s", "--name-status", `${base}..${head}`]);
       return parseLog1e(out);
     },
+    // Main's first-parent commits, newest last: sha -> position, so runs are judged in commit order, not by finish time.
+    async order() {
+      const shas = (await git(at, ["rev-list", "--first-parent", "--max-count=2000", ...until, "refs/remotes/origin/main"])).split("\n").filter(Boolean);
+      return new Map(shas.map((sha, i) => [sha, shas.length - i]));
+    },
     // Commits on main after `sha` (up to asOf), with their messages, to see a fix or revert that already landed.
     async later(sha) {
       const out = await git(at, ["log", "--first-parent", ...until, "--format=%x1e%H%x1f%P%x1f%cI%x1f%s%x1f%b", `${sha}..refs/remotes/origin/main`]);
@@ -995,20 +1010,30 @@ function describe(r) {
 export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = null, cache = null, log = console.log, source = gitSource, rerunOnly = false }) {
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
   const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], asOf });
-  const vs = verdicts(await markPartial(repo, runs, (p) => a.get(p)));
-  const red = vs.filter((v) => v.state === "red");
+  let vs = verdicts(await markPartial(repo, runs, (p) => a.get(p)));
+  let red = vs.filter((v) => v.state === "red");
   // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).
   if (rerunOnly) {
     if (!red.length) log(`${repo}: main is not red`);
     for (const v of red) {
       log(`${repo}: ${v.workflow} red at ${short(v.reds[0].head_sha)} (run ${v.reds[0].id})`);
-      await rerunFailed(repo, v.reds[0], { apply, a, log });
+      if (cfg.rerun !== false) await rerunFailed(repo, v.reds[0], { apply, a, log });
     }
     return;
   }
   let openPrs = null;
   let src = null;
   const getSrc = async () => (src ??= await source(repo, { dir: gitDir, asOf }));
+  // Red by push order: judged again by commit order before anything acts, so an older commit's run that finished after a
+  // newer one's never makes main red.
+  if (red.length) {
+    const order = await (await getSrc()).order?.();
+    if (order?.size) {
+      for (const r of runs) delete r.partial;
+      vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order), order);
+      red = vs.filter((v) => v.state === "red");
+    }
+  }
   if (apply && !asOf) {
     openPrs = await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
     if (openPrs.some((p) => String(p.body ?? "").includes(MARKER))) await landReverts(repo, openPrs, { a, required: await (await getSrc()).mergeChecks(), apply, log });
@@ -1039,7 +1064,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       log(`${repo}: ${v.workflow} red at ${short(r.newest.head_sha)} (run ${r.newest.id}, finished ${hhmm(r.newest.updated_at)}), red ${minutes}m, ${r.results.length} failure${r.results.length > 1 ? "s" : ""}:`);
       for (const x of r.results) log(describe(x));
       const pending = r.results.some((x) => !x.confirmed && !x.flake);
-      if (pending && !asOf) await rerunFailed(repo, r.newest, { apply, a, log });
+      if (pending && !asOf && cfg.rerun !== false) await rerunFailed(repo, r.newest, { apply, a, log });
       if (pending && r.check.state === "none") await dispatchVerify(repo, r.newest, { apply, a, log });
       if (r.check.state === "running") log(`  verifying at ${short(r.newest.head_sha)}: run ${r.check.run.id} on ${r.check.run.head_branch}`);
       if (pending || r.check.state === "running") keep.add(verifyBranch(r.newest.head_sha));

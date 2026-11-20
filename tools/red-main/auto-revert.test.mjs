@@ -101,6 +101,19 @@ test("verdict: main is judged by its newest completed run, not its tip; a newer 
   assert.deepEqual(verdicts([reattempted, green])[0].reds.map((r) => r.id), [reattempted.id], "a re-attempted main run keeps its earlier attempt's red");
 });
 
+test("verdict: newer is commit order, not finish time or run number: an older commit's red finishing later says nothing", () => {
+  const green = run({ conclusion: "success", head_sha: sha("g") });
+  const newer = run({ conclusion: "success", head_sha: sha("n"), updated_at: at(20) });
+  const older = run({ head_sha: sha("b"), updated_at: at(5) });
+  const order = new Map([[sha("g"), 1], [sha("b"), 2], [sha("n"), 3]]);
+  assert.equal(verdicts([older, newer, green], order)[0].state, "green", "b's run numbered after n's, finished after it, still older");
+  assert.equal(verdicts([older, newer, green])[0].state, "red", "by run number alone it would be red");
+  const tip = run({ status: "in_progress", conclusion: null, head_sha: sha("n") });
+  const [v] = verdicts([older, tip, green], order);
+  assert.equal(v.state, "red", "the newest commit still running says nothing; the older commit's red stands");
+  assert.deepEqual(v.reds.map((r) => r.id), [older.id]);
+});
+
 test("verdict: a run cancelled after its failed jobs finished is a red verdict for them", async () => {
   const green = run({ conclusion: "success" });
   const cancelled = run({ conclusion: "cancelled", run_started_at: at(40), updated_at: at(8) });
@@ -313,6 +326,27 @@ test("check: one red run over the range dispatches its workflow on a verify bran
   await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: again, now: NOW, apply: true, log() {}, source: async () => src() });
   assert.ok(!again.calls.some((c) => /rerun-failed-jobs/.test(c[1] ?? "")), "a second attempt is never re-run");
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
+});
+
+test("check: red by run number but green by commit order is not red, and nothing is written", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ conclusion: "success", head_sha: sha("n") });
+  const b = run({ head_sha: sha("b") });
+  const gh = fakeGitHub([b, n, g], { [b.id]: TAP("x works", "test/x.test.ts") });
+  const lines = [];
+  const order = async () => new Map([[sha("g"), 1], [sha("b"), 2], [sha("n"), 3]]);
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ order }) });
+  assert.ok(lines.includes("o/r: main is not red"), lines.join("\n"));
+  assert.ok(!gh.calls.some((c) => c[0] === "post" || c[0] === "gql"));
+});
+
+test("check: a repository with \"rerun\": false never re-runs a main run, and still verifies on a branch", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const gh = fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") });
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0, rerun: false }, { a: gh, now: NOW, apply: true, log() {}, source: async () => src() });
+  assert.ok(!gh.calls.some((c) => /rerun-failed-jobs/.test(c[1] ?? "")));
+  assert.ok(gh.calls.some((c) => c[0] === "post" && /dispatches/.test(c[1])));
 });
 
 test("check: rerunOnly re-runs the failed jobs of a first red and does nothing else", async () => {
