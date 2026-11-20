@@ -315,6 +315,14 @@ test("check: one red run over the range dispatches its workflow on a verify bran
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
 });
 
+test("check: rerunOnly re-runs the failed jobs of a first red and does nothing else", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const gh = fakeGitHub([n, g], {});
+  await check("o/r", { workflows: ["ci"] }, { a: gh, now: NOW, apply: true, log() {}, source: async () => assert.fail("no clone"), rerunOnly: true });
+  assert.deepEqual(gh.calls.filter((c) => c[0] !== "get" && c[0] !== "lines").map((c) => c[1]), [`/repos/o/r/actions/runs/${n.id}/rerun-failed-jobs`]);
+});
+
 test("check: a newer completed green run means main is not red, in one call", async () => {
   const red = run({});
   const gh = fakeGitHub([run({ conclusion: "success" }), red], {});

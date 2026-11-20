@@ -9,6 +9,10 @@ on:
         description: "Act (verify and revert). False is a dry run."
         type: boolean
         default: true
+      rerun-only:
+        description: "Only re-run the failed jobs of a first red push run (needs actions write, nothing else); the revert stays with the central cron."
+        type: boolean
+        default: false
     secrets:
       token:
         description: "Optional PAT or App token, used only for writes (revert branch, PR, auto-merge, merging its own green revert, the verify branch and its workflow_dispatch); reads, check runs and annotations included, use the caller's GITHUB_TOKEN. Without it the caller's GITHUB_TOKEN is used, and a PR it opens does not start the repository's pull_request workflows."
@@ -41,7 +45,8 @@ jobs:
           READ_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           APPLY: ${{ inputs.apply }}
+          RERUN_ONLY: ${{ inputs.rerun-only }}
         shell: bash
         run: |
-          flag=""; [ "$APPLY" = "true" ] && flag="--apply"
+          flag=""; [ "$APPLY" = "true" ] && flag="--apply"; [ "$RERUN_ONLY" = "true" ] && flag="$flag --rerun-only"
           node .ouro-tools/tools/red-main/auto-revert.mjs --self "$REPO" $flag --cache "$RUNNER_TEMP/auto-revert/jobs.json" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"

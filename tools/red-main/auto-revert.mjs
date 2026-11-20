@@ -992,11 +992,20 @@ function describe(r) {
 }
 
 // One repo, one tick.
-export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = null, cache = null, log = console.log, source = gitSource }) {
+export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = null, cache = null, log = console.log, source = gitSource, rerunOnly = false }) {
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
   const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], asOf });
   const vs = verdicts(await markPartial(repo, runs, (p) => a.get(p)));
   const red = vs.filter((v) => v.state === "red");
+  // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).
+  if (rerunOnly) {
+    if (!red.length) log(`${repo}: main is not red`);
+    for (const v of red) {
+      log(`${repo}: ${v.workflow} red at ${short(v.reds[0].head_sha)} (run ${v.reds[0].id})`);
+      await rerunFailed(repo, v.reds[0], { apply, a, log });
+    }
+    return;
+  }
   let openPrs = null;
   let src = null;
   const getSrc = async () => (src ??= await source(repo, { dir: gitDir, asOf }));
@@ -1067,6 +1076,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
   const self = opt("--self");
   const only = self ?? opt("--repo");
   const cachePath = opt("--cache");
+  const rerunOnly = argv.includes("--rerun-only");
   const cache = cachePath ? (existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : {}) : null;
   if (asOf && apply) throw new Error("--as-of replays the past: it never acts (drop --apply)");
   console.log(apply ? "auto-revert: applying" : `auto-revert: dry run${asOf ? ` as of ${asOf}` : ""} (pass --apply to act)`);
@@ -1078,7 +1088,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
       continue;
     }
     try {
-      await check(repo, cfg, { a, now: asOf ? ms(asOf) : now, apply: apply && cfg.enabled, asOf, gitDir: opt("--git"), cache, source });
+      await check(repo, cfg, { a, now: asOf ? ms(asOf) : now, apply: apply && cfg.enabled, asOf, gitDir: opt("--git"), cache, source, rerunOnly });
     } catch (err) {
       console.log(`${repo}: could not check: ${err.message}`);
       if (isRateLimit(err)) {
