@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { OWNERS, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, makeGet, markInfra, QuotaFloor, measure, median, route, table } from "./red-main.mjs";
+import { existsSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { OWNERS, main, commitVerdicts, episodes, fetchMainRuns, fmtMin, infraFailures, makeGet, markInfra, QuotaFloor, measure, median, route, table } from "./red-main.mjs";
 
 const T = (min) => new Date(Date.UTC(2026, 10, 17, 0, 0) + min * 60000).toISOString();
 const at = (min) => Date.UTC(2026, 10, 17, 0, 0) + min * 60000;
@@ -329,5 +332,27 @@ esac
     process.env.PATH = saved.PATH;
     if (saved.token === undefined) delete process.env.GH_TOKEN; else process.env.GH_TOKEN = saved.token;
     globalThis.fetch = saved.fetch;
+  }
+});
+
+test("the default run says what it has read and keeps its cache as each repo finishes, so a stopped run is not lost", async () => {
+  const saved = { token: process.env.GH_TOKEN, fetch: globalThis.fetch, error: console.error, log: console.log };
+  const dir = mkdtempSync(join(tmpdir(), "red-main-"));
+  const file = join(dir, "cache.json");
+  const said = [];
+  let cacheAtFirstProgress = null;
+  process.env.GH_TOKEN = "t";
+  globalThis.fetch = async () => ({ status: 200, ok: true, headers: { get: () => null }, text: async () => JSON.stringify({ total_count: 0, workflow_runs: [] }) });
+  console.error = (m) => { said.push(String(m)); if (cacheAtFirstProgress === null) cacheAtFirstProgress = existsSync(file); };
+  console.log = () => {};
+  try {
+    await main(["--days", "1", "--cache", file], Date.UTC(2026, 10, 17, 12));
+    assert.equal(cacheAtFirstProgress, true);
+    assert.equal(said.filter((l) => /^red-main: \d+\/\d+ /.test(l)).length, Object.keys(OWNERS.repos).length);
+  } finally {
+    if (saved.token === undefined) delete process.env.GH_TOKEN; else process.env.GH_TOKEN = saved.token;
+    globalThis.fetch = saved.fetch;
+    console.error = saved.error;
+    console.log = saved.log;
   }
 });

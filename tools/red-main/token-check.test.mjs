@@ -15,3 +15,11 @@ test("reports write access and warns where the token cannot revert or cannot rea
   assert.match(out[3], /^::warning::o\/gone: .*cannot read/);
   assert.equal(out.length, 4);
 });
+
+test("a token that may push by account but is refused at the ref door is reported as no write", async () => {
+  const get = async () => ({ permissions: { pull: true, push: true } });
+  const out = await check(["o/a", "o/b"], get, async (r) => r === "o/a");
+  assert.match(out[0], /^o\/a: .* yes$/);
+  assert.match(out[1], /^o\/b: .* no$/);
+  assert.match(out[2], /^::warning::o\/b: .*no write access/);
+});
