@@ -24,7 +24,7 @@
 
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -344,28 +344,21 @@ export async function markInfra(repo, runs, get = ghGet, memo = null) {
           const { jobs } = await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`);
           const failed = jobs.filter((j) => j.conclusion === "failure" || j.conclusion === "startup_failure");
           if (!failed.length) return;
-          const reasons = [];
-          for (const j of failed) {
-            if (neverStarted(j)) {
-              reasons.push("job never started (no runner assigned)");
-              continue;
-            }
-            const notes = await get(`/repos/${repo}/check-runs/${j.id}/annotations?per_page=100`);
-            const list = Array.isArray(notes) ? notes : [];
-            const tagged = list.find((n) => String(n.title ?? "").trim().toLowerCase() === "infra");
-            if (tagged) {
-              reasons.push(tagged.message || "infra");
-              continue;
-            }
-            const lost = list.map((n) => infraText(n.message ?? "")).find(Boolean);
-            if (lost) {
-              reasons.push(lost[0]);
-              continue;
-            }
-            const hit = infraText(await get(`/repos/${repo}/actions/jobs/${j.id}/logs`).catch(() => ""));
-            if (!hit) return;
-            reasons.push(hit[0]);
-          }
+          // Each failed job is read at once; the run is infra only when every one is.
+          const reasons = await Promise.all(
+            failed.map(async (j) => {
+              if (neverStarted(j)) return "job never started (no runner assigned)";
+              const notes = await get(`/repos/${repo}/check-runs/${j.id}/annotations?per_page=100`);
+              const list = Array.isArray(notes) ? notes : [];
+              const tagged = list.find((n) => String(n.title ?? "").trim().toLowerCase() === "infra");
+              if (tagged) return tagged.message || "infra";
+              const lost = list.map((n) => infraText(n.message ?? "")).find(Boolean);
+              if (lost) return lost[0];
+              const hit = infraText(await get(`/repos/${repo}/actions/jobs/${j.id}/logs`).catch(() => ""));
+              return hit ? hit[0] : null;
+            }),
+          );
+          if (reasons.some((x) => x === null)) return;
           r.infra = reasons[0];
           })();
           if (memo && r.status === "completed") memo[r.id] = r.infra ?? "";
@@ -392,21 +385,30 @@ export async function main(argv = process.argv.slice(2), now = Date.now()) {
     }
   }
   const get = makeGet(cache);
-  const rows = await Promise.all(
-    Object.keys(OWNERS.repos).map(async (repo) => {
-      try {
-        const memo = cache ? ((cache.infra ??= {})[repo] ??= {}) : null;
-        return { repo, m: measure(await markInfra(repo, await fetchMainRuns(repo, since, get, now, cache), get, memo), { since, now }) };
-      } catch (err) {
-        return { repo, error: err.message };
-      }
-    }),
-  );
-  if (cache) {
+  const save = () => {
+    if (!cache) return;
     get.prune();
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, JSON.stringify(cache));
-  }
+    writeFileSync(`${file}.tmp`, JSON.stringify(cache));
+    renameSync(`${file}.tmp`, file);
+  };
+  // A run that is stopped keeps what it read: the cache is saved as each repo finishes, and the run says so.
+  const repos = Object.keys(OWNERS.repos);
+  let finished = 0;
+  const rows = await Promise.all(
+    repos.map(async (repo) => {
+      let row;
+      try {
+        const memo = cache ? ((cache.infra ??= {})[repo] ??= {}) : null;
+        row = { repo, m: measure(await markInfra(repo, await fetchMainRuns(repo, since, get, now, cache), get, memo), { since, now }) };
+      } catch (err) {
+        row = { repo, error: err.message };
+      }
+      save();
+      console.error(`red-main: ${++finished}/${repos.length} ${repo} ${row.error ? `unreadable (${row.error})` : "read"}, ${get.calls.total} API calls so far`);
+      return row;
+    }),
+  );
   const skipped = rows.filter((r) => r.error?.startsWith("stopped:"));
   if (skipped.length) console.error(`red-main: PARTIAL. Not covered: ${skipped.map((r) => r.repo).join(", ")}. ${skipped[0].error}`);
   console.error(`red-main: ${get.calls.total} API calls (${get.calls.notModified} answered 304, free)${file ? `, cache ${file}` : ", no cache"}`);

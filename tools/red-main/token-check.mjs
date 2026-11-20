@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 
 const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
 
-export async function check(repos, get) {
+export async function check(repos, get, probe) {
   const lines = [];
   for (const repo of repos) {
     let perms = null;
@@ -15,7 +15,10 @@ export async function check(repos, get) {
       lines.push(`::warning::${repo}: the token cannot read the repository (${e.message}), so auto-revert cannot revert there.`);
       continue;
     }
-    const can = { read: !!perms?.pull, write: !!perms?.push };
+    // permissions.push only says the account may push; a fine-grained token without Contents write still gets 403, so ask the write door itself.
+    let write = !!perms?.push;
+    if (write && probe) write = await probe(repo);
+    const can = { read: !!perms?.pull, write };
     lines.push(`${repo}: read ${can.read ? "yes" : "no"}, write (contents and pull requests) ${can.write ? "yes" : "no"}`);
     if (!can.write) lines.push(`::warning::${repo}: the token has no write access, so auto-revert cannot push a revert or open its pull request there.`);
   }
@@ -28,7 +31,17 @@ const api = async (path) => {
   return r.json();
 };
 
+// Creating a ref from an impossible sha is refused with 422 when the token may write and 403/404 when it may not; nothing is created.
+const probeWrite = async (repo) => {
+  const r = await fetch(`https://api.github.com/repos/${repo}/git/refs`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: "application/vnd.github+json" },
+    body: JSON.stringify({ ref: "refs/heads/auto-revert/token-probe", sha: "0".repeat(40) }),
+  });
+  return r.status !== 403 && r.status !== 404;
+};
+
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const enabled = Object.entries(CONFIG.repos).filter(([, c]) => c.enabled).map(([r]) => r);
-  for (const l of await check(enabled, api)) console.log(l);
+  for (const l of await check(enabled, api, probeWrite)) console.log(l);
 }
