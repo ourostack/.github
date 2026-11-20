@@ -17,7 +17,7 @@ const fakePage = ({ offers, number = "42", shown = true }) => {
   };
   return p;
 };
-const fast = { pollMs: 2, probeMs: 20, waitMs: 500, log: () => {} };
+const fast = { pollMs: 2, probeMs: 20, waitMs: 500, log: () => {}, live: true };
 
 test("offers GitHub Mobile first when GitHub lists it, even beside a passkey", async () => {
   assert.equal(await pickSudoPath(fakePage({ offers: ["mobile", "passkey"] })), "mobile");
@@ -66,4 +66,19 @@ test("times out with a clear error when nobody approves", async () => {
 
 test("reads the number off the page", async () => {
   assert.equal(await mobileNumber(fakePage({ offers: [], number: "7" })), "7");
+});
+
+test("outside the morning sitting the prompt is queued, nothing is shown or sent, and the flow is told", async () => {
+  const page = fakePage({ offers: ["mobile", "passkey"] });
+  const queued = [];
+  const said = [];
+  let relaunched = 0;
+  const session = { page, relaunchHeadful: async () => { relaunched++; return page; } };
+  await assert.rejects(
+    awaitSudo(session, { ...fast, live: false, what: "delete a repository", resume: "node run.mjs", queue: (i) => queued.push(i), notify: (t) => said.push(t) }),
+    (e) => e.signinQueued === true && e.exit === 5,
+  );
+  assert.deepEqual(queued, [{ what: "delete a repository", resume: "node run.mjs" }]);
+  assert.deepEqual(said, []);
+  assert.equal(relaunched + page.clicked.length, 0);
 });
