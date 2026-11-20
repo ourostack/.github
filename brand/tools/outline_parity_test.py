@@ -108,6 +108,28 @@ class OutlineParity(unittest.TestCase):
         self.assertEqual(r["fails"], [], r["fails"])
 
 
+class GlassFigures(unittest.TestCase):
+    """A frosted-glass figure's day edge is soft and close to the sky, too weak for the gradient locator."""
+
+    GLASS = {**FIG, "glass": True}
+
+    def pair(self, night_dx):
+        day_img = picture(200, (175, 190, 225), figure_mask(sigma=2.5), noise=1.0, seed=1)
+        night_img = picture(30, (60, 58, 80), figure_mask(dx=night_dx, sigma=2.5), noise=1.0, seed=2)
+        return day_img, night_img
+
+    def test_a_glass_figure_whose_night_is_not_moved_passes(self):
+        r = op.check_figure(*self.pair(0), self.GLASS)
+        self.assertEqual(r["fails"], [], r["fails"])
+
+    def test_a_glass_figure_whose_night_shrinks_fails(self):
+        day_img = picture(200, (175, 190, 225), figure_mask(sigma=2.5), noise=1.0, seed=1)
+        shrunk = cv2.erode(figure_mask()[..., 0], np.ones((7, 7), np.uint8))  # 3 px inward all round
+        night_img = picture(30, (60, 58, 80), cv2.GaussianBlur(shrunk, (0, 0), 2.5)[..., None], noise=1.0, seed=2)
+        r = op.check_figure(day_img, night_img, self.GLASS)
+        self.assertTrue(any("moved" in f for f in r["fails"]), r["fails"])
+
+
 def disc(radius, blur=0.0):
     m = np.zeros((H, W), np.float32)
     cv2.circle(m, (240, 180), radius, 1.0, -1, cv2.LINE_AA)
