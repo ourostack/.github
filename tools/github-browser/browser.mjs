@@ -3,6 +3,8 @@
 // every sign-out, so nothing it does can sign the person out or switch the account their own browser uses. It never
 // signs in and never types a password.
 import { execFileSync, spawn } from "node:child_process";
+import { createDecipheriv, createHash, pbkdf2Sync } from "node:crypto";
+import { DatabaseSync } from "node:sqlite";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
@@ -62,10 +64,47 @@ export const isSignOut = (url, method = "GET") => {
 export const blockSignOut = (context) => context.route((url) => { try { return isSignOut(url.href); } catch { return false; } }, (route) => route.abort("blockedbyclient"));
 
 /**
+ * Edge on macOS stores cookie values encrypted (v10) under a key in the keychain, and a newer Edge than the one that wrote
+ * them (158 reading 157's) cannot read them and drops every one, so the copy reads signed out. Decrypting the copied
+ * cookie file into plain values, which any version reads, keeps the copy signed in. Same approach as Desk's `mine` copy.
+ */
+export function keychainCookieKey({ platform = process.platform, run = execFileSync } = {}) {
+  if (platform !== "darwin") return null;
+  try {
+    const secret = run("security", ["find-generic-password", "-w", "-s", "Microsoft Edge Safe Storage", "-a", "Microsoft Edge"], { timeout: 10000, stdio: ["ignore", "pipe", "ignore"] });
+    return pbkdf2Sync(secret.toString("utf8").trim(), "saltysalt", 1003, 16, "sha1");
+  } catch { return null; }
+}
+
+function decryptCookie(key, host, value) {
+  if (!(value instanceof Uint8Array) || value.length < 19 || Buffer.from(value.subarray(0, 3)).toString("latin1") !== "v10") return null;
+  try {
+    const decipher = createDecipheriv("aes-128-cbc", key, Buffer.alloc(16, 0x20));
+    let plain = Buffer.concat([decipher.update(Buffer.from(value.subarray(3))), decipher.final()]);
+    if (plain.length >= 32 && plain.subarray(0, 32).equals(createHash("sha256").update(host).digest())) plain = plain.subarray(32);
+    return plain.toString("utf8");
+  } catch { return null; }
+}
+
+/** Rewrites the cookie database at `file` in place with plain values; a file that is not a cookie database is left as it was. */
+export function transcodeCookies(file, key) {
+  try {
+    const db = new DatabaseSync(file);
+    try {
+      const rows = db.prepare("SELECT rowid AS id, host_key AS host, encrypted_value AS value FROM cookies WHERE length(encrypted_value) > 0").all();
+      const update = db.prepare("UPDATE cookies SET value = ?, encrypted_value = x'' WHERE rowid = ?");
+      db.exec("BEGIN");
+      for (const row of rows) { const plain = decryptCookie(key, row.host, row.value); if (plain !== null) update.run(plain, row.id); }
+      db.exec("COMMIT");
+    } finally { db.close(); }
+  } catch { /* leave the bytes as copied */ }
+}
+
+/**
  * Copies the person's sign-in files into `dest` once (a marker file records it) and returns whether it copied. The copy
  * only ever reads `source`; nothing runs the other way. It never replaces an existing copy: see reseedProfile.
  */
-export function seedProfile({ source, dest }) {
+export function seedProfile({ source, dest, cookieKey = keychainCookieKey() }) {
   const marker = join(dest, ".seeded");
   if (resolve(source) === resolve(dest, "Default")) throw new Error("the seed source and the isolated profile are the same folder");
   if (existsSync(marker)) return false;
@@ -73,6 +112,7 @@ export function seedProfile({ source, dest }) {
   mkdirSync(join(dest, "Default"), { recursive: true });
   copyFileSync(join(source, "..", "Local State"), join(dest, "Local State"));
   for (const f of SIGN_IN_FILES) if (existsSync(join(source, f))) copyFileSync(join(source, f), join(dest, "Default", f));
+  if (cookieKey && existsSync(join(dest, "Default", "Cookies"))) transcodeCookies(join(dest, "Default", "Cookies"), cookieKey);
   writeFileSync(marker, `${new Date().toISOString()}\n`);
   return true;
 }
@@ -82,10 +122,10 @@ export function seedProfile({ source, dest }) {
  * run on a copy reliably gets them back, so a signed-out profile is replaced by a new copy; the old profile stays
  * until promoteProfile swaps the new one in, which a run does only once it has signed in.
  */
-export function stageProfile({ source, dest }) {
+export function stageProfile({ source, dest, cookieKey }) {
   const staging = `${dest}.reseed`;
   rmSync(staging, { recursive: true, force: true });
-  seedProfile({ source, dest: staging });
+  seedProfile({ source, dest: staging, cookieKey });
   return staging;
 }
 
