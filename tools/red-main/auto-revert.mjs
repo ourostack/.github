@@ -22,8 +22,10 @@
 //   2. Range: for each failure, the older completed runs are read until one where it didn't fail. The failure was introduced
 //      by a commit after that run and up to the first run where it failed.
 //   3. Attribution: from the failing test file and the files its failure names (distance 0), the code is followed through its
-//      runtime imports and the repository paths it names as strings (type-only imports don't count), at the commit that
-//      first failed. The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the newest. With
+//      runtime imports and the repository paths it names as strings (type-only imports don't count), and, from a test, what
+//      it reads as text (Tandem #4096's rule) and every file added under a directory it scans, at the commit that first failed.
+//      The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the PR whose change touches
+//      the most code names the failing assertion uses, else the newest. With
 //      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
 //   4. Confirmation (flake guard): a main push run is NEVER re-run or re-attempted: it would go back to pending in main's shared
 //      concurrency group, be replaced by the next push and lose its verdict. Instead the workflow is dispatched (workflow_dispatch,
@@ -310,7 +312,7 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
         const file = t.location ? mentions(t.location.replace(/:\d+(:\d+)?$/, ""), files)[0] ?? null : null;
         const named = mentions(`${t.name}\n${t.text}`, files);
         const roots = [...new Set([file, ...named].filter(Boolean))];
-        out.push({ key: `${file ?? "?"} :: ${t.name}`, test: t.name, file, roots, job: jobName });
+        out.push({ key: `${file ?? "?"} :: ${t.name}`, test: t.name, file, roots, job: jobName, text: t.text.slice(0, 4000) });
       }
       continue;
     }
@@ -379,19 +381,89 @@ export function references(path, src, files) {
     resolve(m[1]);
     resolve(m[1], true);
   }
+  for (const p of joinedPaths(rest)) {
+    resolve(p);
+    resolve(p, true);
+  }
+  // A test (or a test helper) reads what it names as text, not only what it imports (test/hui-views.test.ts reads
+  // src/app/shell.tsx): Tandem's PR test selection uses the same rule (scripts/affected-tests.ts, textReaders, #4096): a file's
+  // path anywhere, its name in quotes, or, for a file that isn't a module, its name anywhere.
+  // Import specifiers are left out: a type-only import still doesn't count.
+  if (isTestFile(path)) for (const f of textNamed(src.replace(/(?:^|[;\n}])\s*(?:import|export)\s+[^;'"`]*?\bfrom\s*["'][^"']+["']/g, "\n"), files)) out.add(f);
   out.delete(path);
   return [...out];
 }
 
+const SOURCE = /\.(?:ts|tsx|mts|mjs|js)$/;
+export const isTestFile = (p) => /^tests?\//.test(p) || /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(p);
+// The quoted pieces of path.join(...) / path.resolve(...), joined: path.join(root, "src", "app", "shell.tsx") is src/app/shell.tsx.
+function joinedPaths(code) {
+  const out = [];
+  for (const m of code.matchAll(/\bpath\.(?:posix\.)?(?:join|resolve)\(([^()]*)\)/g)) {
+    const parts = [...m[1].matchAll(/["'`]([^"'`\n]+)["'`]/g)].map((x) => x[1]);
+    if (parts.length) out.push(parts.join("/").replace(/\/+/g, "/"));
+  }
+  return out;
+}
+const bases = new WeakMap();
+function baseIndex(files) {
+  if (!bases.has(files)) {
+    const m = new Map();
+    for (const f of files) {
+      const b = posix.basename(f);
+      m.set(b, [...(m.get(b) ?? []), f]);
+    }
+    bases.set(files, m);
+  }
+  return bases.get(files);
+}
+// The repository files a text names, by #4096's rule (Tandem scripts/affected-tests.ts `names`).
+export function textNamed(text, files) {
+  const out = new Set();
+  const index = baseIndex(files);
+  for (const t of text.match(/[\w@.+\-\/]+/g) ?? []) {
+    const p = t.replace(/^(?:\.{1,2}\/)+/, "");
+    if (files.has(p)) out.add(p);
+  }
+  for (const m of text.matchAll(/["'`]([\w@.+\-]+\.[A-Za-z0-9]{1,6})["'`]/g)) for (const f of index.get(m[1]) ?? []) out.add(f);
+  for (const t of new Set(text.match(/[\w@+\-]+\.[A-Za-z0-9]{1,6}\b/g) ?? [])) for (const f of index.get(t) ?? []) if (!SOURCE.test(f)) out.add(f);
+  return [...out];
+}
+
+// The repository directories a file scans (readdirSync and the like over a path it names): it depends on every file added there.
+export function scannedDirs(src, dirs) {
+  if (!/\b(?:readdirSync|readdir|opendirSync|opendir|globSync|glob|walk|walkSync)\s*\(/.test(src)) return [];
+  const out = new Set();
+  const outside = src.replace(/\bpath\.(?:posix\.)?(?:join|resolve)\([^()]*\)/g, " ");
+  const cands = [...joinedPaths(src), ...[...outside.matchAll(/["'`]([\w@.\-]+(?:\/[\w@.\-]+)*)\/?["'`]/g)].map((m) => m[1])];
+  for (const c of cands) {
+    const d = c.replace(/^(?:\.{1,2}\/)+/, "").replace(/\/$/, "");
+    if (d && dirs.has(d)) out.add(d);
+  }
+  return [...out];
+}
+const dirsOf = new WeakMap();
+function dirSet(files) {
+  if (!dirsOf.has(files)) {
+    const s = new Set();
+    for (const f of files) for (let d = posix.dirname(f); d !== "."; d = posix.dirname(d)) s.add(d);
+    dirsOf.set(files, s);
+  }
+  return dirsOf.get(files);
+}
+
 // Distance from the failure's roots to every file it reaches through references(), at one commit.
+// Directories a file scans are kept in `dist.dirs` (directory -> distance): a file added under one is that far.
 export async function distances(roots, { read, files, maxDepth = 12, maxFiles = 6000 }) {
   const dist = new Map(roots.map((r) => [r, 0]));
+  dist.dirs = new Map();
   let frontier = [...roots];
   for (let d = 1; d <= maxDepth && frontier.length && dist.size < maxFiles; d++) {
     const next = [];
     const srcs = await pool(frontier.filter((f) => CODE.test(f)), 16, async (f) => [f, await read(f)]);
     for (const [f, src] of srcs) {
       if (src == null) continue;
+      if (isTestFile(f)) for (const dir of scannedDirs(src, dirSet(files))) if (!dist.dirs.has(dir)) dist.dirs.set(dir, d);
       for (const r of references(f, src, files)) {
         if (dist.has(r)) continue;
         dist.set(r, d);
@@ -417,17 +489,32 @@ async function pool(items, n, fn) {
 
 // commits: the range's first-parent commits on main, newest first: { sha, subject, at, files, pr }.
 // Returns { pr, sha, subject, distance, file, how } or null.
+// `ties`: every PR at the best distance (newest first), for a tie-break on what the failure says (evidence()).
 export function culprit(commits, dist) {
   let best = null;
+  const at = new Map();
   for (const c of commits) {
     if (!c.pr) continue;
     for (const f of c.files) {
-      const d = dist.get(f);
+      let d = dist.get(f);
+      let file = f;
+      let how = null;
+      if (d === undefined && (c.added ?? []).includes(f)) {
+        for (let dir = posix.dirname(f); dir !== "."; dir = posix.dirname(dir)) {
+          const dd = dist.dirs?.get(dir);
+          if (dd !== undefined && (d === undefined || dd < d)) {
+            d = dd;
+            how = `added ${f} under ${dir}/, which a test ${dd} reference${dd > 1 ? "s" : ""} from the failure scans`;
+          }
+        }
+      }
       if (d === undefined) continue;
-      if (!best || d < best.distance) best = { pr: c.pr, sha: c.sha, subject: c.subject, distance: d, file: f, how: d === 0 ? `changed ${f}, which the failure names` : `changed ${f}, ${d} reference${d > 1 ? "s" : ""} from the failure` };
+      how ??= d === 0 ? `changed ${f}, which the failure names` : `changed ${file}, ${d} reference${d > 1 ? "s" : ""} from the failure`;
+      if (!at.has(c.pr) || d < at.get(c.pr).distance) at.set(c.pr, { pr: c.pr, sha: c.sha, subject: c.subject, distance: d, file, how });
+      if (!best || d < best.distance) best = at.get(c.pr);
     }
   }
-  if (best) return best;
+  if (best) return { ...best, ties: [...at.values()].filter((x) => x.distance === best.distance) };
   const prs = commits.filter((c) => c.pr);
   if (prs.length === 1) return { pr: prs[0].pr, sha: prs[0].sha, subject: prs[0].subject, distance: Infinity, file: null, how: "the only pull request in the range" };
   return null;
@@ -485,7 +572,8 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const commits = (await src.commits(base.head_sha, first.run.head_sha)).filter((c) => !reverted.has(c.pr));
     const firstFiles = first.run.head_sha === v.reds[0].head_sha ? files : await src.files(first.run.head_sha);
     const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read: (p) => src.read(first.run.head_sha, p), files: firstFiles });
-    const blame = culprit(commits, dist);
+    let blame = culprit(commits, dist);
+    if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
     results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
   }
   return { newest: newest.run, results, check };
@@ -543,6 +631,34 @@ export async function pruneVerify(repo, keep, { apply, a = api, log = console.lo
     log(`${repo}: ${apply ? "" : "would "}delete ${name}, no longer needed`);
     if (apply) await a.del(`/repos/${repo}/git/${r.ref}`).catch(() => {});
   }
+}
+
+// Names in code (camelCase, snake_case, $-names) a failure's assertion uses: the line of the test that carries the failure's
+// message, and the failure text itself.
+const KEYWORDS = new Set(["assert", "match", "equal", "deepEqual", "strictEqual", "const", "true", "false", "null", "undefined", "await", "async", "return", "function", "length", "expected", "actual", "operator", "failureType", "testCodeFailure", "duration_ms", "AssertionError", "ERR_ASSERTION"]);
+export function codeNames(text) {
+  return new Set([...String(text).matchAll(/[A-Za-z_$][\w$]{3,}/g)].map((m) => m[0]).filter((w) => !KEYWORDS.has(w) && (/[a-z][A-Z]|_|\$/.test(w))));
+}
+// PRs tied at the closest distance: the one whose change to that file touches the most names the failing assertion uses wins
+// (#4081 changed `railBadge(e, { activityNew: ...` that hui-views asserts; #4089, newer, only moved another line of the same file).
+export async function evidence(blame, f, { src, testSha }) {
+  // The assertion's message, as node:test prints it (`error: "..."`, or `error: |-` and the lines under it).
+  const err = /^\s*error: (?:[|>][-+]?\s*\n\s*)?["']?(.+?)["']?\s*$/m.exec(f.text ?? "")?.[1] ?? "";
+  const pieces = err.split(/["'`\\]/).filter((x) => x.trim().length >= 12).map((x) => x.slice(0, 50));
+  let assertion = "";
+  if (f.file && pieces.length) {
+    const test = (await src.read(testSha, f.file)) ?? "";
+    assertion = test.split("\n").filter((l) => pieces.some((m) => l.includes(m))).join("\n");
+  }
+  const names = codeNames(`${assertion}\n${(f.text ?? "").split("\n").slice(0, 12).join("\n")}`);
+  if (!names.size) return blame;
+  const scored = await Promise.all(blame.ties.map(async (t) => {
+    const changed = (await src.diff(t.sha, t.file)) ?? "";
+    return { ...t, score: [...names].filter((n) => changed.includes(n)).length };
+  }));
+  const top = scored.reduce((a, b) => (b.score > a.score ? b : a));
+  if (!top.score || scored.filter((x) => x.score === top.score).length > 1) return blame;
+  return { ...top, ties: blame.ties, how: `${top.how}; of ${blame.ties.length} pull requests that did, its change has ${top.score} of the names the failing assertion uses` };
 }
 
 // Groups the attributed failures by culprit: [{ pr, sha, subject, failures, confirmed }].
@@ -763,7 +879,7 @@ export async function gitSource(repo, { dir = null, asOf = null } = {}) {
     },
     // First-parent commits in (base, head], newest first, with the files each changed and its squash-merged PR.
     async commits(base, head) {
-      const out = await git(at, ["log", "--first-parent", "--no-renames", "--format=%x1e%H%x1f%P%x1f%cI%x1f%s", "--name-only", `${base}..${head}`]);
+      const out = await git(at, ["log", "--first-parent", "--no-renames", "--format=%x1e%H%x1f%P%x1f%cI%x1f%s", "--name-status", `${base}..${head}`]);
       return parseLog1e(out);
     },
     // Commits on main after `sha` (up to asOf), with their messages, to see a fix or revert that already landed.
@@ -774,6 +890,14 @@ export async function gitSource(repo, { dir = null, asOf = null } = {}) {
         return { sha, at, subject, body };
       });
     },
+    // The lines a commit changed in one file (its +/- lines), for evidence().
+    async diff(sha, path) {
+      try {
+        return (await git(at, ["show", "--format=", "--no-ext-diff", "-U0", sha, "--", path])).split("\n").filter((l) => /^[-+](?![-+]{2})/.test(l)).join("\n");
+      } catch {
+        return null;
+      }
+    },
     async mergeChecks() {
       try {
         return JSON.parse(await git(at, ["cat-file", "blob", "refs/remotes/origin/main:.github/merge-checks.json"])).required ?? null;
@@ -783,12 +907,14 @@ export async function gitSource(repo, { dir = null, asOf = null } = {}) {
     },
   };
 }
+// `git log --name-status` records: each line is "<status>\t<path>" (a bare path, from --name-only, counts as modified).
 export function parseLog1e(out) {
   return out.split("\x1e").filter((s) => s.trim()).map((rec) => {
     const [head, ...rest] = rec.split("\n");
     const [sha, parents, at, subject] = head.split("\x1f");
     const pr = parents.trim().split(" ").length === 1 ? Number(/\(#(\d+)\)\s*$/.exec(subject)?.[1]) || null : null;
-    return { sha, at, subject, pr, files: rest.map((l) => l.trim()).filter(Boolean) };
+    const entries = rest.map((l) => l.trim()).filter(Boolean).map((l) => (/^[ACDMRTUX]\d*\t/.test(l) ? l.split("\t") : ["M", l]));
+    return { sha, at, subject, pr, files: entries.map((e) => e.at(-1)), added: entries.filter((e) => e[0] === "A").map((e) => e.at(-1)) };
   });
 }
 
