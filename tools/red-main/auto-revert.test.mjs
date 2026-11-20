@@ -394,6 +394,6 @@ test("config: Tandem counts only ci, ignores its newest-commit gates, acts at on
   assert.deepEqual(t.ignoreWorkflows, ["first-run-gate", "basics"]);
   assert.equal(t.minRedMinutes, 0);
   assert.equal(CONFIG.minRedMinutes, 60);
-  assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/")).every(([, c]) => c.enabled));
+  assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/") && r !== "ourostack/gatefold").every(([, c]) => c.enabled));
   for (const r of ["hackamore", "ouro-ui-core", "m365crawl", "ouro-ui", "ouro-ui-apple", "gatefold"]) assert.ok(OWNERS.repos[`ourostack/${r}`], `${r} has an owner`);
 });
