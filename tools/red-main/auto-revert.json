@@ -13,6 +13,6 @@
     "ourostack/ouro-ui-apple": { "enabled": true },
     "ourostack/m365crawl": { "enabled": true },
     "ourostack/gatefold": { "enabled": true },
-    "teams-microsoft/tandem": { "enabled": false, "ignoreWorkflows": ["first-run-gate", "basics"], "note": "Opt-in pending: needs a token with contents and pull-request write on the repo; flip to true when Tandem agrees." }
+    "teams-microsoft/tandem": { "enabled": false, "workflows": ["ci"], "ignoreWorkflows": ["first-run-gate", "basics"], "minRedMinutes": 0, "note": "Runs as its own caller (--self, .github/workflows/auto-revert.yml, AUTO_REVERT_TOKEN), so the central cron leaves it alone. Only ci's verdict counts, and a confirmed culprit is reverted at once." }
   }
 }
