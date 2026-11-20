@@ -1,7 +1,8 @@
 name: Auto-revert red main
 
-# When main has stayed red for an hour because of one squash-merged PR, and the failure reproduces on a rerun and is not
-# infrastructure, this opens a revert PR with auto-merge and wakes the repo's owner. Every guard and the opt-in list
+# When main's newest completed run is red, this traces each failure to the pull request that caused it and, once the failure
+# reproduces (a rerun, or two runs in a row), is not infrastructure and main has been red an hour, opens its revert with
+# auto-merge and wakes the repo's owner. Every guard and the opt-in list
 # (tools/red-main/auto-revert.json) are in tools/red-main/auto-revert.mjs. The tests run with red-main's.
 #
 # Needs the REARM_MERGES_TOKEN secret with contents and pull-request write on the opted-in repositories. Without it the
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   auto-revert:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check what the token can do
@@ -36,6 +37,12 @@ jobs:
         run: |
           [ -n "$GH_TOKEN" ] || exit 0
           node tools/red-main/token-check.mjs | tee -a "$GITHUB_STEP_SUMMARY"
+      # The blobless clone of each red repository and every finished job's parsed failures, so a tick reads only what is new.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/auto-revert
+          key: auto-revert-${{ github.run_id }}
+          restore-keys: auto-revert-
       - name: Revert what keeps main red
         env:
           GH_TOKEN: ${{ secrets.REARM_MERGES_TOKEN }}
@@ -44,4 +51,4 @@ jobs:
         run: |
           [ -n "$GH_TOKEN" ] || { echo "::notice::The REARM_MERGES_TOKEN secret is not set; nothing was checked."; exit 0; }
           flag=""; [ "$APPLY" = "true" ] && flag="--apply"
-          node tools/red-main/auto-revert.mjs $flag 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          node tools/red-main/auto-revert.mjs $flag --cache "$RUNNER_TEMP/auto-revert/jobs.json" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"

@@ -1,359 +1,338 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
-import { CONFIG, act, healTargets, rerunHeal, ignored, main, classifyFailure, evaluate, fixPrOpen, gather, readRedStretch, revertBody } from "./auto-revert.mjs";
+import {
+  CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
+  markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, verdicts,
+} from "./auto-revert.mjs";
 
-const NOW = Date.UTC(2026, 10, 17, 12, 0);
-const SHA = "a".repeat(40);
-const PR = { number: 7, title: "Add thing", merged_at: "2026-11-17T09:00:00Z", merge_commit_sha: SHA };
-const job = (over = {}) => ({ name: "test", conclusion: "failure", steps: [{ name: "Run tests", conclusion: "failure" }], log: "AssertionError: 1 !== 2", ...over });
-const facts = (over = {}) => ({
-  repo: "ourostack/desk",
-  sha: SHA,
-  minutes: 90,
-  since: NOW - 90 * 60000,
-  laterCommits: 0,
-  pulls: [PR],
-  parents: 1,
-  openPrs: [],
-  failedJobs: [job()],
-  run: { id: 5, status: "completed", conclusion: "failure", attempt: 2, name: "CI", url: "https://x/run/5" },
+const NOW = Date.UTC(2026, 10, 20, 0, 40);
+const at = (m) => new Date(NOW - m * 60000).toISOString();
+const sha = (c) => c.repeat(40);
+let ids = 100;
+const run = (over = {}) => {
+  const id = ids++;
+  return { id, run_number: id, workflow_id: 1, name: "ci", path: ".github/workflows/ci.yml", event: "push", status: "completed", conclusion: "failure", run_attempt: 1, head_sha: sha("a"), created_at: at(60), run_started_at: at(60), updated_at: at(30), html_url: `https://x/run/${id}`, ...over };
+};
+
+// A main of four commits, oldest first: g (green ci), b1 (PR #11 breaks x.test.ts), u (PR #12, unrelated), n (PR #13, newest).
+// ci ran on g (green), b1 (red, x), n (red, x): b1..n share the red. Files: x.test.ts imports src/x.ts; src/x.ts imports src/y.ts.
+const FILES = new Set(["test/x.test.ts", "src/x.ts", "src/y.ts", "src/z.ts", "README.md"]);
+const SRC = {
+  "test/x.test.ts": `import { test } from "node:test";\nimport type { T } from "../src/z.ts";\nimport { x } from "../src/x.ts";\n`,
+  "src/x.ts": `import { y } from "./y.js";\nexport const x = y;\n`,
+  "src/y.ts": `export const y = 1;\n`,
+  "src/z.ts": `export type T = 1;\n`,
+};
+const COMMITS = [
+  { sha: sha("n"), subject: "Newest (#13)", pr: 13, files: ["README.md"] },
+  { sha: sha("u"), subject: "Unrelated (#12)", pr: 12, files: ["src/z.ts"] },
+  { sha: sha("b"), subject: "Breaks y (#11)", pr: 11, files: ["src/y.ts"] },
+];
+const src = (over = {}) => ({
+  files: async () => FILES,
+  read: async (_, p) => SRC[p] ?? null,
+  commits: async (base, head) => {
+    const order = COMMITS.map((c) => c.sha);
+    const from = order.indexOf(head);
+    const to = base === sha("g") ? order.length : order.indexOf(base);
+    return COMMITS.slice(from, to);
+  },
+  later: async () => [],
+  mergeChecks: async () => ["ci checks"],
   ...over,
 });
-
-test("reverts a reproduced, deterministic failure from a single squash-merged PR after 60 minutes", () => {
-  const v = evaluate(facts());
-  assert.equal(v.action, "revert");
-  assert.equal(v.pr.number, 7);
-  assert.deepEqual(v.jobs, ["test"]);
-});
-
-test("guard: never before main has been red for 60 minutes", () => {
-  assert.match(evaluate(facts({ minutes: 59 })).reason, /under 60m/);
-  assert.equal(evaluate(facts({ minutes: 60 })).action, "revert");
-});
-
-test("guard: never when another commit merged since", () => {
-  const v = evaluate(facts({ laterCommits: 1 }));
-  assert.equal(v.action, "skip");
-  assert.match(v.reason, /merged since/);
-});
-
-test("guard: the red commit must be exactly one merged PR and a squash", () => {
-  assert.match(evaluate(facts({ pulls: [] })).reason, /not one/);
-  assert.match(evaluate(facts({ pulls: [PR, { ...PR, number: 8 }] })).reason, /not one/);
-  assert.match(evaluate(facts({ pulls: [{ ...PR, merge_commit_sha: "b".repeat(40) }] })).reason, /not one/);
-  assert.match(evaluate(facts({ parents: 2 })).reason, /not a squash/);
-});
-
-test("guard: never when a fix or revert PR is already open, this tool's own included", () => {
-  const open = (o) => evaluate(facts({ openPrs: [o] }));
-  assert.match(open({ number: 9, title: "Fix the build from #7", body: "", head: { ref: "fix-build" } }).reason, /#9/);
-  assert.match(open({ number: 9, title: 'Revert "Add thing"', body: "Reverts #7", head: { ref: "x" } }).reason, /#9/);
-  assert.match(open({ number: 9, title: "anything", body: "", head: { ref: "revert-7-add-thing" } }).reason, /#9/);
-  assert.equal(open({ number: 9, title: "Fix typo in #70", body: "", head: { ref: "typo" } }).action, "revert");
-  assert.equal(open({ number: 9, title: "Add feature", body: "", head: { ref: "feat" } }).action, "revert");
-  assert.equal(fixPrOpen([{ number: 3, title: "Fix", body: `after ${SHA.slice(0, 7)}`, head: { ref: "f" } }], PR, SHA).number, 3);
-});
-
-test("guard: never reverts an infrastructure failure", () => {
-  const infra = [
-    job({ steps: [] }),
-    job({ steps: [{ name: "Set up job", conclusion: "failure" }] }),
-    job({ steps: [{ name: "Run actions/checkout@v7", conclusion: "failure" }] }),
-    job({ log: "getaddrinfo ENOTFOUND registry.npmjs.org" }),
-    job({ log: "System.IO.IOException: No space left on device" }),
-    job({ log: "The runner has received a shutdown signal." }),
-    job({ log: "fatal: could not read Username for 'https://github.com'" }),
-    job({ conclusion: "cancelled" }),
-  ];
-  for (const j of infra) assert.equal(evaluate(facts({ failedJobs: [j] })).action, "skip", JSON.stringify(j));
-  for (const conclusion of ["startup_failure", "timed_out", "cancelled", "action_required"]) {
-    assert.match(evaluate(facts({ run: { ...facts().run, conclusion } })).reason, /infrastructure/);
-  }
-  assert.equal(classifyFailure({ conclusion: "failure" }, [job()]).infra, false);
-});
-
-test("a failure not yet reproduced asks for a rerun first; a rerun in progress waits", () => {
-  const first = { ...facts().run, attempt: 1 };
-  assert.equal(evaluate(facts({ run: first })).action, "rerun");
-  assert.match(evaluate(facts({ run: { ...first, status: "in_progress" } })).reason, /in progress/);
-});
-
-test("the revert body names the PR, the failing job and the run", () => {
-  const b = revertBody({ repo: "o/r", pr: PR, sha: SHA, run: facts().run, jobs: ["test"], minutes: 90 });
-  assert.match(b, /#7 \(Add thing\)/);
-  assert.match(b, /`test`.*https:\/\/x\/run\/5/);
-});
-
-test("config: disabled by default for tandem, enabled for ourostack repos", () => {
-  assert.equal(CONFIG.repos["teams-microsoft/tandem"].enabled, false);
-  assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/")).every(([, c]) => c.enabled));
-  for (const r of ["hackamore", "ouro-ui-core", "m365crawl", "ouro-ui", "ouro-ui-apple", "gatefold"]) {
-    assert.equal(CONFIG.repos[`ourostack/${r}`].enabled, true, r);
-    assert.equal(CONFIG.repos[`ourostack/${r}`].ignoreWorkflows, undefined, r);
-    assert.ok(OWNERS.repos[`ourostack/${r}`], `${r} has an owner`);
-  }
-  assert.equal(CONFIG.minRedMinutes, 60);
-});
-
-test("act: a dry run changes nothing; apply reverts, arms a clean merge and comments the owner", async () => {
+const TAP = (name, file, extra = "") => [
+  `2026-11-19T23:13:09.1Z # Subtest: ${name}`,
+  `2026-11-19T23:13:12.2Z not ok 4 - ${name}`,
+  "2026-11-19T23:13:12.4Z   ---",
+  "2026-11-19T23:13:12.4Z   duration_ms: 15.8",
+  `2026-11-19T23:13:12.4Z   location: '/home/runner/work/r/r/${file}:42:3'`,
+  "2026-11-19T23:13:12.4Z   error: |-",
+  "2026-11-19T23:13:12.4Z     Expected values to be strictly equal:",
+  "2026-11-19T23:13:12.4Z     ...",
+  `2026-11-19T23:13:12.4Z     ${extra}`,
+  "2026-11-19T23:13:12.4Z   ...",
+  "2026-11-19T23:13:12.5Z ok 5 - next",
+];
+// A fake GitHub for runs, jobs and logs: logs[runId] is the failing job's log lines (none: the run is green).
+function fakeGitHub(runs, logs, { open = [], checks = {} } = {}) {
   const calls = [];
-  const a = {
-    get: async (p) => (calls.push(["get", p]), { node_id: "PR_node" }),
-    post: async (p, b) => (calls.push(["post", p, b])),
-    graphql: async (q) => (calls.push(["gql", q.slice(0, 30)]), q.includes("revertPullRequest") ? { revertPullRequest: { revertPullRequest: { id: "N", number: 12, url: "https://x/pull/12" } } } : {}),
-  };
-  const v = { action: "revert", pr: PR, jobs: ["test"] };
-  const logs = [];
-  await act("ourostack/desk", facts(), v, { apply: false, now: NOW, a, log: (l) => logs.push(l) });
-  assert.equal(calls.length, 0);
-  assert.match(logs[0], /would open revert PR/);
-  await act("ourostack/desk", facts(), v, { apply: true, now: NOW, a, log: (l) => logs.push(l) });
-  assert.deepEqual(calls.map((c) => c[0]), ["get", "gql", "gql", "post"]);
-  assert.match(calls[3][2].body, /Owner: tooling coordinator \(session 4deb13bb\)/);
-});
-
-test("act: a rerun posts rerun-failed-jobs only when applying", async () => {
-  const calls = [];
-  const a = { post: async (p) => calls.push(p) };
-  const v = { action: "rerun", pr: PR };
-  await act("o/r", facts(), v, { apply: false, now: NOW, a, log() {} });
-  await act("o/r", facts(), v, { apply: true, now: NOW, a, log() {} });
-  assert.deepEqual(calls, ["/repos/o/r/actions/runs/5/rerun-failed-jobs"]);
-});
-
-test("gather: reads the open red, the commits since and the failed job's log", async () => {
-  const day = (m) => new Date(NOW - m * 60000).toISOString();
-  const runs = [{ id: 5, name: "CI", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 2, run_started_at: day(100), created_at: day(100), updated_at: day(90), html_url: "https://x/run/5" }];
-  const a = {
+  return {
+    calls,
     get: async (p) => {
-      if (p.includes("/actions/runs?")) return { workflow_runs: runs };
-      if (p.includes("/compare/")) return { ahead_by: 0 };
-      if (p.endsWith("/pulls")) return [PR];
-      if (p.endsWith(`/commits/${SHA}`)) return { parents: [{}] };
-      if (p.includes("/pulls?state=open")) return [];
-      if (p.endsWith("/jobs?filter=latest&per_page=100")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", steps: [{ name: "Run tests", conclusion: "failure" }] }] };
+      calls.push(["get", p]);
+      if (/\/actions\/(workflows\/[^/]+\/)?runs\?/.test(p)) return { workflow_runs: runs.filter((r) => !/created=/.test(p) || true) };
+      const jobs = /\/runs\/(\d+)\/jobs/.exec(p);
+      if (jobs) return { jobs: logs[jobs[1]] ? [{ id: Number(jobs[1]) * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] }] : [] };
       if (p.includes("/annotations")) return [];
-      if (p.endsWith("/logs")) return "boom";
-      if (p.endsWith("/runs/5")) return { id: 5, status: "completed", conclusion: "failure", run_attempt: 2, name: "CI", html_url: "https://x/run/5" };
+      if (p.includes("/pulls?state=open")) return open;
+      const cr = /\/commits\/(\w+)\/check-runs/.exec(p);
+      if (cr) return checks[cr[1]] ?? { check_runs: [] };
+      if (/\/pulls\/\d+$/.test(p)) return { node_id: "PR_node" };
       throw new Error(p);
     },
+    lines: (p) => {
+      calls.push(["lines", p]);
+      return (async function* () {
+        yield* logs[Number(/jobs\/(\d+)\//.exec(p)[1]) / 10] ?? [];
+      })();
+    },
+    post: async (p, b) => calls.push(["post", p, b]),
+    put: async (p, b) => calls.push(["put", p, b]),
+    graphql: async (q) => (calls.push(["gql", q.slice(0, 40)]), q.includes("revertPullRequest") ? { revertPullRequest: { revertPullRequest: { id: "N", number: 99, url: "https://x/pull/99" } } } : {}),
   };
-  const f = await gather("o/r", NOW, a);
-  assert.equal(f.minutes, 90);
-  assert.equal(evaluate(f).action, "revert");
-  assert.equal(await gather("o/r", NOW, { get: async () => ({ workflow_runs: [{ ...runs[0], conclusion: "success" }] }) }), null);
+}
+
+test("verdict: main is judged by its newest completed run, not its tip; a newer green clears it", () => {
+  const green = run({ conclusion: "success", head_sha: sha("g") });
+  const red = run({ head_sha: sha("b") });
+  const tip = run({ status: "in_progress", conclusion: null, head_sha: sha("n") });
+  const [v] = verdicts([tip, red, green]);
+  assert.equal(v.state, "red");
+  assert.deepEqual(v.reds.map((r) => r.id), [red.id]);
+  assert.equal(v.green.id, green.id);
+  assert.equal(verdicts([run({ conclusion: "success" }), tip, red, green])[0].state, "green");
+  const replaced = run({ conclusion: "cancelled", head_sha: sha("u") });
+  assert.equal(verdicts([replaced, red, green])[0].state, "red", "a run replaced by concurrency says nothing");
+  assert.equal(verdicts([run({ status: "in_progress", conclusion: null, run_attempt: 2 }), green])[0].state, "rerunning");
 });
 
-test("main --self checks only that repo, opted in by the caller", async () => {
+test("verdict: a run cancelled after its failed jobs finished is a red verdict for them", async () => {
+  const green = run({ conclusion: "success" });
+  const cancelled = run({ conclusion: "cancelled", run_started_at: at(40), updated_at: at(8) });
+  const quick = run({ conclusion: "cancelled", run_started_at: at(9), updated_at: at(8) });
+  const get = async () => ({ jobs: [{ name: "t", conclusion: "failure" }, { name: "u", conclusion: "cancelled" }] });
+  await markPartial("o/r", [quick, cancelled, green], get);
+  assert.equal(quick.partial, undefined, "a run that never really started isn't read");
+  assert.equal(cancelled.partial, true);
+  assert.deepEqual(verdicts([quick, cancelled, green])[0].reds.map((r) => r.id), [cancelled.id]);
+});
+
+test("readHistory: as of a past time, later runs are unseen and runs finishing later are still running", async () => {
+  const pages = [];
+  const runs = [run({ created_at: at(5) }), run({ created_at: at(50), updated_at: at(10) }), run({ conclusion: "success", created_at: at(90), updated_at: at(60) })];
+  const got = await readHistory("o/r", async (p) => (pages.push(p), { workflow_runs: runs }), { workflows: ["ci"], asOf: at(20) });
+  assert.match(pages[0], /\/actions\/workflows\/ci\.yml\/runs\?branch=main&event=push&per_page=50&page=1&created=%3C%3D/);
+  assert.equal(got.length, 2);
+  assert.equal(got[0].status, "in_progress");
+  assert.equal(pages.length, 1, "a green run on the first page ends the read");
+  assert.equal(ignored({ path: ".github/workflows/first-run-gate.yml@refs/heads/main" }, ["first-run-gate"]), true);
+});
+
+test("parseLog: node:test's failing tests with their location and error, the YAML's own '...' ending the block", async () => {
+  const p = await parseLog([...TAP("migrates", "test/x.test.ts", "see src/y.ts:3"), "\u001b[31m##[error]Process completed with exit code 1.\u001b[0m"]);
+  assert.equal(p.tests.length, 1);
+  assert.equal(p.tests[0].name, "migrates");
+  assert.equal(p.tests[0].location, "/home/runner/work/r/r/test/x.test.ts:42:3");
+  assert.match(p.tests[0].text, /src\/y\.ts:3/, "a '...' inside the error doesn't end the block");
+  assert.deepEqual(p.errors, ["##[error]Process completed with exit code 1."]);
+});
+
+test("mentions: repository files a failure names, by their longest suffix in the tree", () => {
+  assert.deepEqual(mentions("at /home/runner/work/r/r/src/x.ts:3 and D:\\a\\r\\r\\src\\y.ts, not node_modules/src/z.ts nor /tmp/q.ts", FILES), ["src/x.ts", "src/y.ts"]);
+});
+
+test("references: runtime imports and repository paths, never type-only imports", () => {
+  const files = new Set([...FILES, "src/daemon/main.mjs", "test/helpers.ts"]);
+  const t = `import type { T } from "../src/z.ts";\nimport { a } from "./helpers.ts";\nexport { b } from "../src/x.js";\nconst args = ["src/daemon/main.mjs"];\nawait import("../src/y.ts");`;
+  assert.deepEqual(references("test/x.test.ts", t, files).sort(), ["src/daemon/main.mjs", "src/x.ts", "src/y.ts", "test/helpers.ts"]);
+});
+
+test("attribution: the PR closest to the failure is the culprit; type-only and unrelated changes are not", async () => {
+  const dist = await distances(["test/x.test.ts"], { read: async (p) => SRC[p], files: FILES });
+  assert.deepEqual(Object.fromEntries(dist), { "test/x.test.ts": 0, "src/x.ts": 1, "src/y.ts": 2 });
+  assert.equal(culprit(COMMITS, dist).pr, 11);
+  const tie = [{ sha: sha("m"), subject: "Also y (#14)", pr: 14, files: ["src/y.ts"] }, ...COMMITS];
+  assert.equal(culprit(tie, dist).pr, 14, "a tie goes to the newest");
+  assert.equal(culprit([{ sha: sha("q"), subject: "Only (#5)", pr: 5, files: ["docs/a.md"] }], dist).how, "the only pull request in the range");
+  assert.equal(culprit(COMMITS.slice(0, 2), dist), null, "nothing reachable and more than one PR: unattributed");
+});
+
+test("analyse: a red verdict covering a range of commits names the PR that broke it, and two red runs in a row confirm it", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const n = run({ head_sha: sha("n") });
+  const gh = fakeGitHub([n, b, g], { [n.id]: TAP("x works", "test/x.test.ts"), [b.id]: TAP("x works", "test/x.test.ts") });
+  const [v] = verdicts([n, b, g]);
+  const r = await analyse("o/r", v, { a: gh, src: src() });
+  assert.equal(r.results.length, 1);
+  const [x] = r.results;
+  assert.equal(x.first.id, b.id);
+  assert.equal(x.base.id, g.id);
+  assert.equal(x.runs, 2);
+  assert.equal(x.confirmed, true);
+  assert.equal(x.blame.pr, 11);
+  const only = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }), src: src() });
+  assert.equal(only.results[0].blame.pr, 11, "one red run over the whole range still finds #11");
+  assert.equal(only.results[0].confirmed, false, "one run of attempt 1 is not confirmed: the rerun decides");
+  const reran = await analyse("o/r", verdicts([{ ...n, run_attempt: 2 }, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }), src: src() });
+  assert.equal(reran.results[0].confirmed, true, "it failed again on the rerun");
+});
+
+test("analyse: a failure that began in the newer run is blamed on the commits after the older red run only", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const n = run({ head_sha: sha("n") });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: [...TAP("x works", "test/x.test.ts"), ...TAP("readme", "README.md")] };
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src() });
+  const readme = r.results.find((x) => x.failure.test === "readme");
+  assert.equal(readme.first.id, n.id);
+  assert.equal(readme.base.id, b.id);
+  assert.equal(readme.blame.pr, 13);
+  assert.deepEqual(culprits(r.results).map((c) => c.pr), [13, 11], "two breaks in one range: both culprits, reverted in one cycle");
+});
+
+test("analyse: a PR already reverted while the failure stayed is not blamed again; the next closest is", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const n = run({ head_sha: sha("n") });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const s = src({
+    commits: async (base, head) => {
+      if (base === sha("b")) return [{ sha: sha("r"), subject: 'Revert "Breaks y (#11)" (#11) (#20)', pr: 20, files: ["src/y.ts"] }];
+      return [...COMMITS.slice(2), { sha: sha("o"), subject: "Also x (#10)", pr: 10, files: ["src/x.ts"] }];
+    },
+  });
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: s });
+  assert.equal(r.results[0].blame.pr, 10);
+  assert.equal(revertOf('Revert "First run (#3877)" (#3969) (#4050)'), 3969);
+  assert.equal(revertOf("Fix the build (#4050)"), null);
+});
+
+test("an infrastructure-only red is no verdict: the run before it decides", async () => {
+  const infra = [job({ steps: [] }), job({ log: "getaddrinfo ENOTFOUND registry.npmjs.org" }), job({ log: "The runner has received a shutdown signal." }), job({ conclusion: "cancelled" }), job({ steps: [{ name: "Run actions/checkout@v7", conclusion: "failure" }] }), job({ unreadable: true }), job({ infra: "pool down" })];
+  for (const j of infra) assert.equal(classifyFailure({ conclusion: "failure" }, [j]).infra, true, JSON.stringify(j));
+  assert.equal(classifyFailure({ conclusion: "failure" }, [job()]).infra, false);
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const gh = fakeGitHub([n, g], { [n.id]: ["2026-11-19T23:13:09.1Z ##[error]getaddrinfo ENOTFOUND registry.npmjs.org"] });
+  const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src() });
+  assert.match(r.infra, /ENOTFOUND/);
+});
+const job = (over = {}) => ({ name: "test", conclusion: "failure", runner_id: 3, steps: [{ name: "Run tests", conclusion: "failure" }], log: "AssertionError: 1 !== 2", ...over });
+
+test("guards: a fix or revert that landed since, or one that is open, holds the revert; an unconfirmed culprit waits", () => {
+  const c = { pr: 11, sha: sha("b"), subject: "Breaks y (#11)", confirmed: true };
+  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0 }).action, "revert");
+  assert.match(decide(c, { later: [{ sha: sha("f"), subject: "Fix y (main red since #11) (#21)" }], minutes: 0, minRedMinutes: 0 }).reason, /names #11/);
+  assert.equal(fixLanded([{ sha: sha("f"), subject: "Fix z (#110)" }], 11), undefined);
+  assert.match(decide(c, { openPrs: [{ number: 9, title: "anything", head: { ref: "revert-11-breaks" } }], minutes: 0, minRedMinutes: 0 }).reason, /#9/);
+  assert.equal(fixPrOpen([{ number: 3, title: "Fix", body: `after ${sha("b").slice(0, 7)}`, head: { ref: "f" } }], { number: 11 }, sha("b")).number, 3);
+  assert.equal(decide({ ...c, confirmed: false }, { minutes: 90, minRedMinutes: 0 }).action, "wait");
+  assert.match(decide(c, { minutes: 59, minRedMinutes: 60 }).reason, /under 60m/);
+});
+
+test("check: Tandem acts the moment a culprit is confirmed, one revert per culprit, and a dry run changes nothing", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b"), updated_at: at(35) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const cfg = { workflows: ["ci"], minRedMinutes: 0 };
+  const dry = fakeGitHub([n, b, g], logs);
+  const lines = [];
+  await check("o/r", cfg, { a: dry, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /would open revert PR "Revert "Breaks y" \(#11\)"/.test(l)), lines.join("\n"));
+  assert.ok(!lines.some((l) => /rerun/.test(l)), "a culprit confirmed by two red runs in a row needs no rerun");
+  assert.equal(dry.calls.filter((c) => c[0] !== "get" && c[0] !== "lines").length, 0);
+  const live = fakeGitHub([n, b, g], logs);
+  await check("o/r", cfg, { a: live, now: NOW, apply: true, log() {}, source: async () => src() });
+  const writes = live.calls.filter((c) => c[0] !== "get" && c[0] !== "lines").map((c) => (c[0] === "gql" ? c[1].slice(0, 20) : `${c[0]} ${c[1]}`));
+  assert.deepEqual(writes, ["mutation($id:ID!,$t:", "mutation($id:ID!,$h:", "post /repos/o/r/issues/99/comments"]);
+});
+
+test("check: one red run over the range reruns its failed jobs and waits; nothing is reverted before it reproduces", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const gh = fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") });
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.deepEqual(gh.calls.filter((c) => c[0] === "post" || c[0] === "gql").map((c) => c[1]), [`/repos/o/r/actions/runs/${n.id}/rerun-failed-jobs`]);
+  assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
+});
+
+test("check: a newer completed green run means main is not red, in one call", async () => {
+  const red = run({});
+  const gh = fakeGitHub([run({ conclusion: "success" }), red], {});
+  const lines = [];
+  await check("o/r", { workflows: ["ci"] }, { a: gh, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src() });
+  assert.deepEqual(lines, ["o/r: main is not red"]);
+  assert.equal(gh.calls.length, 1);
+});
+
+test("the revert body names each failure, where it began and why the PR", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n"), run_attempt: 2 });
+  const r = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }), src: src() });
+  const [c] = culprits(r.results);
+  const body = revertBody({ repo: "o/r", c, run: n, minutes: 12 });
+  assert.match(body, /Automatic revert of #11 \(Breaks y\)/);
+  assert.match(body, /`x works` \(test\/x\.test\.ts\): first failed in https:\/\/x\/run\/\d+ \(nnnnnnnnn\), passed in https:\/\/x\/run\/\d+ \(ggggggggg\); of the 3 pull requests between, #11 changed src\/y\.ts, 2 references from the failure/);
+  assert.ok(body.endsWith(MARKER));
+});
+
+test("revert: apply opens it, tries auto-merge without failing when the repo has none, and comments the owner", async () => {
+  const c = { pr: 11, subject: "Breaks y (#11)", failures: [] };
+  const calls = [];
+  const a = {
+    get: async () => ({ node_id: "PR_node" }),
+    post: async (p, b) => calls.push(["post", p, b]),
+    graphql: async (q) => {
+      calls.push(["gql", q.slice(0, 30)]);
+      if (q.includes("enablePullRequestAutoMerge")) throw new Error("Pull request Auto merge is not allowed for this repository");
+      return { revertPullRequest: { revertPullRequest: { id: "N", number: 99, url: "https://x/pull/99" } } };
+    },
+  };
+  const logs = [];
+  assert.equal(await revert("ourostack/desk", c, { run: run(), minutes: 3, apply: false, a, log: (l) => logs.push(l) }), null);
+  assert.equal(calls.length, 0);
+  const made = await revert("ourostack/desk", c, { run: run(), minutes: 3, apply: true, a, log: (l) => logs.push(l) });
+  assert.equal(made.number, 99);
+  assert.ok(logs.some((l) => /a later tick merges it once its checks are green/.test(l)));
+  assert.match(calls.at(-1)[2].body, /Owner: tooling coordinator \(session 4deb13bb\)/);
+});
+
+test("land: the tool's own revert merges once its head's required checks are green, never with a failed check", async () => {
+  assert.equal(landable({ check_runs: [{ name: "ci checks", status: "completed", conclusion: "success" }] }, ["ci checks"]).ok, true);
+  assert.match(landable({ check_runs: [] }, ["ci checks"]).why, /waiting for ci checks/);
+  assert.match(landable({ check_runs: [{ name: "ci checks", status: "completed", conclusion: "success" }, { name: "x", status: "completed", conclusion: "failure" }] }, ["ci checks"]).why, /failed/);
+  assert.equal(landable({ check_runs: [{ name: "a", status: "in_progress" }] }, null).ok, false);
+  const mine = { number: 99, title: 'Revert "Breaks y" (#11)', body: `x\n${MARKER}`, head: { ref: "revert-11-breaks", sha: sha("h") } };
+  const other = { number: 98, title: "Revert something", body: "by hand", head: { ref: "revert-5-x", sha: sha("i") } };
+  const gh = fakeGitHub([], {}, { checks: { [sha("h")]: { check_runs: [{ name: "ci checks", status: "completed", conclusion: "success" }] } } });
+  await landReverts("o/r", [mine, other], { a: gh, required: ["ci checks"], apply: true, log() {} });
+  const put = gh.calls.find((c) => c[0] === "put");
+  assert.equal(put[1], "/repos/o/r/pulls/99/merge");
+  assert.deepEqual({ ...put[2], commit_message: undefined }, { merge_method: "squash", sha: sha("h"), commit_title: 'Revert "Breaks y" (#11) (#99)', commit_message: undefined });
+  assert.equal(gh.calls.filter((c) => c[0] === "put").length, 1, "a revert someone else opened is theirs to merge");
+});
+
+test("git log parsing: each first-parent commit's files, and its PR only when it is a squash", () => {
+  const out = `\x1e${sha("n")}\x1f${sha("u")}\x1f2026-11-19T23:00:00Z\x1fNewest (#3877) (#13)\n\nREADME.md\nsrc/x.ts\n\x1e${sha("m")}\x1f${sha("u")} ${sha("v")}\x1f2026-11-19T22:00:00Z\x1fMerge branch (#7)\n\nsrc/y.ts\n`;
+  const cs = parseLog1e(out);
+  assert.deepEqual(cs.map((c) => [c.pr, c.files]), [[13, ["README.md", "src/x.ts"]], [null, ["src/y.ts"]]]);
+});
+
+test("main --self checks only that repo; a green ci is one call; --as-of never acts", async () => {
   const lines = [];
   const orig = console.log;
   console.log = (l) => lines.push(l);
   try {
-    await main(["--self", "teams-microsoft/tandem"], NOW, { get: async () => ({ workflow_runs: [] }) });
+    await main(["--self", "teams-microsoft/tandem"], NOW, fakeGitHub([run({ conclusion: "success" })], {}), { source: async () => src() });
   } finally {
     console.log = orig;
   }
   assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red", "auto-revert: 1 API calls (1 read, 0 write)"]);
+  await assert.rejects(main(["--self", "o/r", "--apply", "--as-of", at(5)], NOW, fakeGitHub([], {})), /never acts/);
 });
 
-test("a job annotated title=infra is never reverted, and gather reads the annotation", async () => {
-  assert.equal(classifyFailure({ conclusion: "failure" }, [{ name: "t", conclusion: "failure", infra: "pool down", steps: [{ name: "Run tests", conclusion: "failure" }] }]).infra, true);
-  const day = (m) => new Date(NOW - m * 60000).toISOString();
-  const runs = [{ id: 5, name: "CI", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 1, run_started_at: day(100), created_at: day(100), updated_at: day(90), html_url: "https://x/run/5" }];
-  const a = {
-    get: async (p) => {
-      if (p.includes("/actions/runs?")) return { workflow_runs: runs };
-      if (p.includes("/jobs?")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", steps: [{ name: "Run tests", conclusion: "failure" }] }] };
-      if (p.includes("/annotations")) return [{ title: "infra", message: "pool down" }];
-      throw new Error(p);
-    },
-  };
-  const f = await gather("o/r", NOW, a);
-  assert.equal(f.sha, undefined, "an unreran red run is rerun first, before any guard is read");
-  assert.deepEqual(f.heal, [{ id: 5, name: "CI" }]);
-});
-
-test("runner lost, never started, system cancel and annotation text are infra, never reverted", () => {
-  const infra = [
-    job({ runner_id: 0, steps: [{ name: "Run tests", conclusion: "failure" }] }),
-    job({ runner_id: null }),
-    job({ log: "The job was not acquired by Runner of type hosted even after multiple attempts" }),
-    job({ log: "The operation was canceled." }),
-    job({ log: "Runner lost communication with the server" }),
-    job({ notes: "The runner has received a shutdown signal. This can happen when the runner service is stopped" }),
-    job({ conclusion: "startup_failure" }),
-  ];
-  for (const j of infra) assert.equal(evaluate(facts({ failedJobs: [j] })).action, "skip", JSON.stringify(j));
-  assert.equal(classifyFailure({ conclusion: "failure" }, [job({ runner_id: 42 })]).infra, false);
-});
-
-test("annotations that cannot be read mean can't tell: gather flags it and evaluate does not revert", async () => {
-  const day = (m) => new Date(NOW - m * 60000).toISOString();
-  const runs = [{ id: 5, name: "CI", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 2, run_started_at: day(100), created_at: day(100), updated_at: day(90), html_url: "https://x/run/5" }];
-  const get = (annotations) => async (p) => {
-    if (p.includes("/actions/runs?")) return { workflow_runs: runs };
-    if (p.includes("/annotations")) return annotations(p);
-    if (p.includes("/compare/")) return { ahead_by: 0 };
-    if (p.endsWith("/pulls")) return [PR];
-    if (p.endsWith(`/commits/${SHA}`)) return { parents: [{}] };
-    if (p.includes("/pulls?state=open")) return [];
-    if (p.endsWith("/jobs?filter=latest&per_page=100")) return { jobs: [{ id: 1, name: "test", conclusion: "failure", runner_id: 3, steps: [{ name: "Run tests", conclusion: "failure" }] }] };
-    if (p.endsWith("/logs")) return "boom";
-    if (p.endsWith("/runs/5")) return { id: 5, status: "completed", conclusion: "failure", run_attempt: 2, name: "CI", html_url: "https://x/run/5" };
-    throw new Error(p);
-  };
-  const forbidden = () => Promise.reject(new Error("GET: 403 Resource not accessible by personal access token"));
-  const blind = await gather("o/r", NOW, { get: get(forbidden) });
-  assert.equal(blind.failedJobs[0].unreadable, true);
-  const v = evaluate(blind);
-  assert.equal(v.action, "skip");
-  assert.match(v.reason, /annotations unreadable, can't tell/);
-  assert.equal(evaluate(await gather("o/r", NOW, { get: get(async () => []) })).action, "revert");
-});
-
-// A fake main: `shas` newest first, each with one run (a state of "red" or "green"), served by the real list endpoint's paging.
-function fakeMain(states, { perRun = 1 } = {}) {
-  const runs = [];
-  states.forEach((st, i) => {
-    for (let k = 0; k < perRun; k++) {
-      const t = new Date(NOW - (i * 10 + k) * 60000).toISOString();
-      runs.push({ id: 1000 + i * 10 + k, name: `W${k}`, event: "push", head_sha: String(i).padStart(40, "0"), status: "completed", conclusion: st === "red" ? "failure" : "success", run_attempt: 1, run_started_at: t, created_at: t, updated_at: t, html_url: "https://x" });
-    }
-  });
-  const paths = [];
-  const get = async (p) => {
-    paths.push(p);
-    const per = Number(/per_page=(\d+)/.exec(p)[1]);
-    const page = Number(/[?&]page=(\d+)/.exec(p)[1]);
-    return { total_count: runs.length, workflow_runs: runs.slice((page - 1) * per, page * per) };
-  };
-  return { get, paths };
-}
-
-test("reading a green main costs one call, never a time window", async () => {
-  const m = fakeMain(["green", ...Array(60).fill("green")]);
-  const r = await readRedStretch("o/r", m.get);
-  assert.equal(m.paths.length, 1);
-  assert.match(m.paths[0], /per_page=25/);
-  assert.ok(!m.paths[0].includes("created="));
-  assert.equal(commitsOf(r.runs), 1);
-  assert.equal(await gather("o/r", NOW, { get: m.get }), null);
-});
-
-for (const n of [1, 3, 12, 40]) {
-  test(`a red stretch of ${n} commits reads ceil((${n}+1)/page) pages and stops at the last green commit`, async () => {
-    const m = fakeMain([...Array(n).fill("red"), "green", ...Array(80).fill("green")]);
-    const r = await readRedStretch("o/r", m.get);
-    assert.equal(r.complete, true);
-    assert.equal(commitsOf(r.runs), n + 1);
-    assert.equal(m.paths.length, Math.floor(n / 25) + 1 + (n % 25 === 24 ? 1 : 0));
-  });
-}
-
-test("a commit split across two pages is judged whole, and a stretch longer than the cap is reported incomplete", async () => {
-  const split = fakeMain(["red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "red", "green", "green"], { perRun: 5 });
-  const r = await readRedStretch("o/r", split.get, { perPage: 8 });
-  assert.equal(commitsOf(r.runs), 13);
-  const endless = fakeMain(Array(100).fill("red"));
-  const capped = await readRedStretch("o/r", endless.get, { perPage: 10, maxPages: 3 });
-  assert.equal(capped.complete, false);
-  assert.equal(endless.paths.length, 3);
-});
-
-test("main prints the API calls a run spent", async () => {
-  const m = fakeMain(["green", "green"]);
-  const lines = [];
-  const orig = console.log;
-  console.log = (l) => lines.push(l);
-  try {
-    await main(["--self", "o/r"], NOW, { get: m.get });
-  } finally {
-    console.log = orig;
-  }
-  assert.equal(lines.at(-1), "auto-revert: 1 API calls (1 read, 0 write)");
-});
-
-test("config: tandem ignores first-run-gate and basics, which gate only the newest commit", () => {
-  assert.deepEqual(CONFIG.repos["teams-microsoft/tandem"].ignoreWorkflows, ["first-run-gate", "basics"]);
-});
-
-// Two commits: the newest has a red gate beside a green CI; the one before is all green.
-const gateRun = (sha, name, path, conclusion, i) => ({ id: i, name, path, event: "push", head_sha: sha, status: "completed", conclusion, run_attempt: 1, run_started_at: new Date(NOW - i * 60000).toISOString(), created_at: new Date(NOW - i * 60000).toISOString(), html_url: "https://x" });
-const gateMain = (gatePath = ".github/workflows/first-run-gate.yml") => ({
-  get: async () => ({ total_count: 3, workflow_runs: [gateRun("a".repeat(40), "First run gate", gatePath, "failure", 1), gateRun("a".repeat(40), "CI", ".github/workflows/ci.yml", "success", 2), gateRun("b".repeat(40), "CI", ".github/workflows/ci.yml", "success", 3)] }),
-});
-
-test("an ignored workflow's red does not open a red stretch, so nothing is reverted", async () => {
-  assert.equal(await gather("o/r", NOW, gateMain(), { ignore: ["first-run-gate"] }), null);
-  const byName = await gather("o/r", NOW, gateMain(".github/workflows/x.yml"), { ignore: ["First run gate"] });
-  assert.equal(byName, null);
-});
-
-test("without the exclusion, the same red gate is a red stretch; another workflow's red still counts", async () => {
-  const r = await readRedStretch("o/r", gateMain().get);
-  assert.equal(r.runs.length, 3);
-  const other = await readRedStretch("o/r", gateMain(".github/workflows/other.yml").get, { ignore: ["first-run-gate"] });
-  assert.equal(other.runs.length, 3);
-  assert.ok(other.runs.some((r) => r.conclusion === "failure"));
-  assert.ok(!(await readRedStretch("o/r", gateMain().get, { ignore: ["first-run-gate"] })).runs.some((r) => r.conclusion === "failure"));
-  assert.equal(ignored({ path: ".github/workflows/first-run-gate.yml@refs/heads/main" }, ["first-run-gate"]), true);
-});
-
-test("main --self reads the repo's ignoreWorkflows row: a red first-run-gate is not a red main", async () => {
-  const lines = [];
-  const orig = console.log;
-  console.log = (l) => lines.push(l);
-  try {
-    await main(["--self", "teams-microsoft/tandem"], NOW, gateMain());
-  } finally {
-    console.log = orig;
-  }
-  assert.equal(lines[1], "teams-microsoft/tandem: main is not red");
-});
-
-function commitsOf(runs) {
-  return new Set(runs.map((r) => r.head_sha)).size;
-}
-
-const run = (over = {}) => ({ id: 1, name: "ci", event: "push", head_sha: SHA, status: "completed", conclusion: "failure", run_attempt: 1, created_at: "2026-11-17T11:00:00Z", ...over });
-
-test("heal: main's newest commit's unreran failed runs are rerun once; reran, cancelled, running and older-commit runs are not", () => {
-  const old = run({ id: 2, head_sha: "b".repeat(40), created_at: "2026-11-17T10:00:00Z" });
-  assert.deepEqual(healTargets([run(), old]), [{ id: 1, name: "ci" }]);
-  assert.equal(healTargets([run({ conclusion: "timed_out" })]).length, 1);
-  for (const over of [{ run_attempt: 2 }, { conclusion: "cancelled" }, { conclusion: "startup_failure" }, { conclusion: "success" }, { status: "in_progress", conclusion: null }]) assert.deepEqual(healTargets([run(over)]), [], JSON.stringify(over));
-  assert.deepEqual(healTargets([]), []);
-});
-
-test("heal: a fresh red main is rerun at 1 minute old, before the 60-minute guard; a dry run only says it would", async () => {
-  const posts = [];
-  const t = new Date(NOW - 60000).toISOString();
-  const base = {
-    get: async () => ({ total_count: 1, workflow_runs: [run({ id: 9, created_at: t, run_started_at: t, updated_at: t })] }),
-    post: async (p) => posts.push(p),
-  };
-  const lines = [];
-  const orig = console.log;
-  console.log = (l) => lines.push(l);
-  try {
-    await main(["--self", "o/r"], NOW, base);
-    assert.deepEqual(posts, []);
-    assert.ok(lines.some((l) => /would rerun its failed jobs once/.test(l)));
-    await main(["--self", "o/r", "--apply"], NOW, base);
-  } finally {
-    console.log = orig;
-  }
-  assert.deepEqual(posts, ["/repos/o/r/actions/runs/9/rerun-failed-jobs"]);
-  await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: base, log() {} });
-  assert.equal(posts.at(-1), "/repos/o/r/actions/runs/4/rerun-failed-jobs");
-});
-
-test("heal: a rejected rerun is reported and lets the revert guards decide instead of blocking them", async () => {
-  const lines = [];
-  const ok = await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: { post: async () => { throw new Error("403 run too old"); } }, log: (l) => lines.push(l) });
-  assert.equal(ok, false);
-  assert.ok(lines.some((l) => /could not rerun run 4/.test(l)));
-  assert.equal(await rerunHeal("o/r", [{ id: 4, name: "ci" }], { apply: true, a: { post: async () => ({}) }, log() {} }), true);
+test("config: Tandem counts only ci, ignores its newest-commit gates, acts at once and runs as its own caller; ourostack repos keep the hour", () => {
+  const t = CONFIG.repos["teams-microsoft/tandem"];
+  assert.equal(t.enabled, false);
+  assert.deepEqual(t.workflows, ["ci"]);
+  assert.deepEqual(t.ignoreWorkflows, ["first-run-gate", "basics"]);
+  assert.equal(t.minRedMinutes, 0);
+  assert.equal(CONFIG.minRedMinutes, 60);
+  assert.ok(Object.entries(CONFIG.repos).filter(([r]) => r.startsWith("ourostack/")).every(([, c]) => c.enabled));
+  for (const r of ["hackamore", "ouro-ui-core", "m365crawl", "ouro-ui", "ouro-ui-apple", "gatefold"]) assert.ok(OWNERS.repos[`ourostack/${r}`], `${r} has an owner`);
 });
