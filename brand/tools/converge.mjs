@@ -30,7 +30,7 @@ export function decide({ staleIds, issue, lastKey }) {
 
 export function render(items, key) {
   const lines = items.map((i) => `- \`${i.id}\`: ${i.problems?.[0] ?? "stale"}${i.problems?.length > 1 ? ` (+${i.problems.length - 1} more)` : ""}`);
-  return `These surfaces are still stale on main, past the time their automatic sync is allowed (the audit run: ${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY ?? "ourostack/.github"}/actions/runs/${process.env.GITHUB_RUN_ID ?? ""}).\n\n${lines.join("\n")}\n\nRun \`node brand/tools/audit.mjs --format text\` for each fix. This issue closes itself when the audit is green.\n\n<!-- brand-converge: ${key} -->`;
+  return `These surfaces are still stale on main, past the time their automatic sync is allowed (the audit run: ${process.env.GITHUB_SERVER_URL ?? "https://github.com"}/${process.env.GITHUB_REPOSITORY ?? "ourostack/.github"}/actions/runs/${process.env.GITHUB_RUN_ID ?? ""}).\n\n${lines.join("\n")}\n\nRun \`node brand/tools/audit.mjs --format text\` for each fix; a \`social:\` one is \`node brand/tools/upload-social-previews.mjs\` from a machine with a signed-in browser (tools/github-browser). This issue closes itself when the audit is green.\n\n<!-- brand-converge: ${key} -->`;
 }
 
 export async function gh(path, { method = "GET", body, token, doFetch = fetch, sleep } = {}) {
@@ -66,7 +66,7 @@ async function main() {
     console.error("some surfaces could not be checked; leaving the issue as it is");
     return;
   }
-  const items = report.items.filter((i) => i.status === "stale" || i.status === "unregistered");
+  const items = report.items.filter((i) => i.status === "stale" || i.status === "unregistered" || i.status === "needs-upload");
   const found = await gh(`/repos/${repo}/issues?labels=${LABEL}&state=open&per_page=10`, { token });
   const issue = found.find((i) => !i.pull_request) ?? null;
   let lastKey;
