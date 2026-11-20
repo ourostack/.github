@@ -130,6 +130,49 @@ class GlassFigures(unittest.TestCase):
         self.assertTrue(any("moved" in f for f in r["fails"]), r["fails"])
 
 
+class RegionRule(unittest.TestCase):
+    """A part of the figure that sinks into the sky fails unless a rim holds its edge."""
+
+    def night(self, crown_offset=4, rim=0):
+        m = figure_mask()
+        img = picture(30, (110, 100, 120), m, noise=1.0, seed=2).astype(np.float32)
+        crown = np.zeros((H, W, 1), np.float32)
+        crown[:140] = m[:140]  # the head: the figure's top 60 px of height, painted at the sky's value
+        img = img * (1 - crown) + (sky(30) + crown_offset) * crown
+        if rim:
+            inner = cv2.erode(m[..., 0], np.ones((5, 5), np.uint8))[..., None]
+            img = img + np.clip(m - inner, 0, 1) * crown * rim
+        return np.clip(np.round(img), 0, 255).astype(np.uint8)
+
+    def regions(self, night, day_img=None):
+        r = op.check_figure(day() if day_img is None else day_img, night, FIG)
+        return [f for f in r["fails"] if f.startswith("region sinks into the sky")]
+
+    def test_a_part_at_the_skys_value_with_no_rim_fails_and_names_the_region(self):
+        found = self.regions(self.night())
+        self.assertEqual(len(found), 1, found)
+        self.assertRegex(found[0], r"region sinks into the sky at \(2\d\d,\d{2,3}\): \d+ px under 10 RGB from the sky with no rim .*day distance \d+")
+
+    def test_the_same_part_held_by_a_rim_passes(self):
+        for rim in (40, 90):
+            self.assertEqual(self.regions(self.night(rim=rim)), [], rim)
+
+    def test_a_part_a_little_apart_from_the_sky_passes(self):
+        self.assertEqual(self.regions(self.night(crown_offset=22)), [])
+
+    def test_a_day_that_already_blends_is_not_blamed(self):
+        flat_day = picture(200, (200, 215, 245), figure_mask(), noise=1.0, seed=1)
+        self.assertEqual(self.regions(self.night(), flat_day), [])
+
+    def test_a_small_sunk_patch_passes(self):
+        m = figure_mask()
+        patch = np.zeros((H, W, 1), np.float32)
+        patch[150:166, 190:230] = m[150:166, 190:230]
+        img = picture(30, (110, 100, 120), m, noise=1.0, seed=2).astype(np.float32)
+        img = np.clip(img * (1 - patch) + (sky(30) + 4) * patch, 0, 255).astype(np.uint8)
+        self.assertEqual(self.regions(img), [])
+
+
 def disc(radius, blur=0.0):
     m = np.zeros((H, W), np.float32)
     cv2.circle(m, (240, 180), radius, 1.0, -1, cv2.LINE_AA)
