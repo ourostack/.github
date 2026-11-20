@@ -56,12 +56,14 @@ const TAP = (name, file, extra = "") => [
   "2026-11-19T23:13:12.5Z ok 5 - next",
 ];
 // A fake GitHub for runs, jobs and logs: logs[runId] is the failing job's log lines (none: the run is green).
-function fakeGitHub(runs, logs, { open = [], checks = {} } = {}) {
+function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [] } = {}) {
   const calls = [];
   return {
     calls,
     get: async (p) => {
       calls.push(["get", p]);
+      if (p.includes("event=workflow_dispatch")) return { workflow_runs: dispatched };
+      if (p.includes("/git/matching-refs/")) return [];
       if (/\/actions\/(workflows\/[^/]+\/)?runs\?/.test(p)) return { workflow_runs: runs.filter((r) => !/created=/.test(p) || true) };
       const jobs = /\/runs\/(\d+)\/jobs/.exec(p);
       if (jobs) return { jobs: logs[jobs[1]] ? [{ id: Number(jobs[1]) * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] }] : [] };
@@ -95,7 +97,8 @@ test("verdict: main is judged by its newest completed run, not its tip; a newer 
   assert.equal(verdicts([run({ conclusion: "success" }), tip, red, green])[0].state, "green");
   const replaced = run({ conclusion: "cancelled", head_sha: sha("u") });
   assert.equal(verdicts([replaced, red, green])[0].state, "red", "a run replaced by concurrency says nothing");
-  assert.equal(verdicts([run({ status: "in_progress", conclusion: null, run_attempt: 2 }), green])[0].state, "rerunning");
+  const reattempted = run({ status: "in_progress", conclusion: null, run_attempt: 2, partial: true });
+  assert.deepEqual(verdicts([reattempted, green])[0].reds.map((r) => r.id), [reattempted.id], "a re-attempted main run keeps its earlier attempt's red");
 });
 
 test("verdict: a run cancelled after its failed jobs finished is a red verdict for them", async () => {
@@ -166,8 +169,13 @@ test("analyse: a red verdict covering a range of commits names the PR that broke
   const only = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }), src: src() });
   assert.equal(only.results[0].blame.pr, 11, "one red run over the whole range still finds #11");
   assert.equal(only.results[0].confirmed, false, "one run of attempt 1 is not confirmed: the rerun decides");
-  const reran = await analyse("o/r", verdicts([{ ...n, run_attempt: 2 }, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }), src: src() });
-  assert.equal(reran.results[0].confirmed, true, "it failed again on the rerun");
+  const verify = (conclusion) => run({ event: "workflow_dispatch", head_branch: `auto-revert/verify-${"n".repeat(12)}`, head_sha: sha("n"), conclusion });
+  const again = verify("failure");
+  const reproduced = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts"), [again.id]: TAP("x works", "test/x.test.ts") }, { dispatched: [again] }), src: src() });
+  assert.equal(reproduced.results[0].confirmed, true, "it failed again in the verify run at the same commit");
+  const passed = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }, { dispatched: [verify("success")] }), src: src() });
+  assert.equal(passed.results[0].flake, true, "it passed there: a flake");
+  assert.equal(decide({ ...culprits(passed.results)[0] }, { minutes: 9, minRedMinutes: 0 }).action, "skip");
 });
 
 test("analyse: a failure that began in the newer run is blamed on the commits after the older red run only", async () => {
@@ -256,13 +264,17 @@ test("check: Tandem acts the moment a culprit is confirmed, one revert per culpr
   assert.deepEqual(writes, ["mutation($id:ID!,$t:", "mutation($id:ID!,$h:", "post /repos/o/r/issues/99/comments"]);
 });
 
-test("check: one red run over the range reruns its failed jobs and waits; nothing is reverted before it reproduces", async () => {
+test("check: one red run over the range dispatches its workflow on a verify branch at that commit, never re-runs main's run, and waits", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const n = run({ head_sha: sha("n") });
   const gh = fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") });
   const lines = [];
   await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
-  assert.deepEqual(gh.calls.filter((c) => c[0] === "post" || c[0] === "gql").map((c) => c[1]), [`/repos/o/r/actions/runs/${n.id}/rerun-failed-jobs`]);
+  assert.deepEqual(gh.calls.filter((c) => c[0] === "post" || c[0] === "gql").map((c) => [c[1], c[2]]), [
+    ["/repos/o/r/git/refs", { ref: `refs/heads/auto-revert/verify-${"n".repeat(12)}`, sha: sha("n") }],
+    ["/repos/o/r/actions/workflows/ci.yml/dispatches", { ref: `auto-revert/verify-${"n".repeat(12)}` }],
+  ]);
+  assert.ok(!gh.calls.some((c) => /rerun|\/attempts\//.test(c[1] ?? "") && c[0] === "post"), "main's run is never re-run");
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
 });
 
