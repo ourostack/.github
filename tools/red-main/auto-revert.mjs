@@ -1032,12 +1032,15 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           await revert(repo, c, { run: r.newest, minutes, apply, log, a });
         } catch (e) {
           log(`  could not revert #${c.pr}: ${e.message}`);
-          process.exitCode = 1;
+          if (!isRateLimit(e)) process.exitCode = 1;
         }
       }
     }
   }
 }
+
+// GitHub's quota running out says nothing about main: a tick that hits it waits for the next one, with a warning, and never fails.
+export const isRateLimit = (e) => /rate limit exceeded|secondary rate limit/i.test(e?.message ?? "");
 
 export async function main(argv = process.argv.slice(2), now = Date.now(), base = api, { source = gitSource } = {}) {
   const a = counted(base);
@@ -1061,6 +1064,10 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
       await check(repo, cfg, { a, now: asOf ? ms(asOf) : now, apply: apply && cfg.enabled, asOf, gitDir: opt("--git"), cache, source });
     } catch (err) {
       console.log(`${repo}: could not check: ${err.message}`);
+      if (isRateLimit(err)) {
+        console.log(`::warning::GitHub's API rate limit is exhausted; the remaining repositories wait for the next tick.`);
+        break;
+      }
       process.exitCode = 1;
     }
   }
