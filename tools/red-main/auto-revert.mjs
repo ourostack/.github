@@ -21,9 +21,11 @@
 // concurrency group test only the newest of a burst), so the culprit is found over a range:
 //   1. Failures: the red run's failed jobs (latest attempt) are read from their logs: each failing test (TAP `not ok`, its
 //      `location:` file and every repository file its failure text names), or, for a job with no test failure, the job and
-//      the files its error lines name and its failing step's `run:` names in the workflow file at that commit. A job with no test failure that is infrastructure (classifyFailure) is dropped.
+//      the files its error lines name and its failing step's `run:` names in the workflow file at that commit. A job with no test failure that is infrastructure (classifyFailure) is dropped, and so is a
+//      job the workflow lets fail (job-level `continue-on-error: true`, or named report-only: softJobs).
 //   2. Range: for each failure, the older completed runs are read until one where it didn't fail. The failure was introduced
-//      by a commit after that run and up to the first run where it failed.
+//      by a commit after that run and up to the first run where it failed. The newest green run is read like the reds: a job
+//      already red there did not begin in the range.
 //   3. Attribution: from the failing test file and the files its failure names (distance 0), the code is followed through its
 //      runtime imports and the repository paths it names as strings (type-only imports don't count), and, from a test, what
 //      it reads as text (Tandem #4096's rule) and every file added under a directory it scans, at the commit that first failed.
@@ -305,9 +307,48 @@ export function stepBlock(yml, step) {
 // jobs a later run passed.
 export const jobKey = (name) => name.replace(/,?\s*\d+\s*\/\s*\d+\)/, ")").replace(/\s*\(\)$/, "");
 
+// Jobs whose failure never fails the run: those the workflow marks `continue-on-error: true` at job level, by id and by
+// name. A report-only job (a hitch probe on a hosted VM) is red on most runs, so its red says nothing about a change
+// (ouro-ui-apple #257 reverted a README change for one).
+export function softJobs(yml) {
+  const out = new Set();
+  const lines = String(yml ?? "").split("\n");
+  const start = lines.findIndex((l) => /^jobs:\s*$/.test(l));
+  if (start < 0) return out;
+  let jobIndent = null;
+  let cur = null;
+  const flush = () => cur?.soft && [cur.id, cur.name].filter(Boolean).forEach((n) => out.add(n));
+  for (const line of lines.slice(start + 1)) {
+    if (!line.trim() || /^\s*#/.test(line)) continue;
+    const indent = /^ */.exec(line)[0].length;
+    if (indent === 0) break;
+    jobIndent ??= indent;
+    if (indent === jobIndent) {
+      flush();
+      cur = { id: /^\s*([\w-]+):/.exec(line)?.[1] ?? null, name: null, soft: false, keyIndent: null };
+      continue;
+    }
+    if (!cur) continue;
+    cur.keyIndent ??= indent;
+    if (indent !== cur.keyIndent) continue;
+    const name = /^\s*name:\s*(.+?)\s*$/.exec(line);
+    if (name) cur.name = name[1].replace(/^(["'])(.*)\1$/, "$2");
+    if (/^\s*continue-on-error:\s*true\s*$/.test(line)) cur.soft = true;
+  }
+  flush();
+  return out;
+}
+
+// A job whose red does not fail its run: named report-only, or listed by softJobs (a matrix job's name adds " (…)").
+export const softJob = (name, soft = new Set()) =>
+  /\breport[ -]only\b/i.test(name) || [...soft].some((n) => name === n || name.startsWith(`${n} (`));
+
 export async function runFailures(repo, run, { a, files, cache = null, read = null }) {
   const jobs = run.jobs ?? (await a.get(`/repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
-  const failed = jobs.filter((j) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(j.conclusion));
+  const red = jobs.filter((j) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(j.conclusion));
+  const soft = red.length && read && run.path ? softJobs(await read(run.path.split("@")[0])) : new Set();
+  const failed = red.filter((j) => !softJob(j.name, soft));
+  if (red.length && !failed.length) return { infra: `only report-only jobs failed (${red.map((j) => j.name).join(", ")})` };
   const out = [];
   const infra = [];
   for (const j of failed) {
@@ -561,7 +602,12 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
   if (!reds.length) return { infra: chain[0]?.infra ?? "no failure", newest: v.reds[0] };
   const newest = reds[0];
   const check = await verification(repo, newest.run, { a, files, cache, src, asOf });
-  const older = [...chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures), ...(v.green && (chain.length === v.reds.length || chain.length < maxWalk) ? [{ run: v.green, failures: [] }] : [])];
+  // The green run that bounds the range is read too: a job red there (one the workflow lets fail) was already failing
+  // before the range, so the range did not start it.
+  const green = v.green && (chain.length === v.reds.length || chain.length < maxWalk)
+    ? { run: v.green, failures: (await runFailures(repo, v.green, { a, files, cache, read: (p) => src.read(v.green.head_sha, p) })).failures ?? [] }
+    : null;
+  const older = [...chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures), ...(green ? [green] : [])];
   const results = [];
   for (const f of newest.failures) {
     let first = newest;
