@@ -159,7 +159,7 @@ const newestFirst = (order) => (a, b) => {
   if (pa !== undefined && pb !== undefined && pa !== pb) return pb - pa;
   return (b.run_number ?? 0) - (a.run_number ?? 0) || ms(b.created_at) - ms(a.created_at);
 };
-const isGreen = (r) => r.status === "completed" && r.conclusion === "success";
+const isGreen = (r) => r.status === "completed" && (r.conclusion === "success" || r.recovered === true);
 // As of `asOf`: a run created later doesn't exist yet; one that finished later is still running.
 function replay(r, asOf) {
   if (!asOf) return r;
@@ -174,6 +174,9 @@ function groupBy(xs, key) {
   return m;
 }
 
+// A job that stands for its whole workflow: it passes only when every required job of the run passed, an in-run retry of a
+// cancelled shard included (gatefold#557, #563). GitHub still ends such a run `cancelled`, because one job it retried was.
+const GATE_JOB = /^(Real unfold$|Full suite passed on tree )/;
 const NO_VERDICT = new Set(["cancelled", "skipped", "stale", "neutral", "action_required", "startup_failure"]);
 // A run cancelled after it started (by hand, or by a lane making room) still judged the jobs it finished: when one of them
 // failed it is a red verdict for those jobs (`partial`). Only cancelled runs newer than their workflow's newest green, that
@@ -193,6 +196,8 @@ export async function markPartial(repo, runs, get, order = null) {
       if (r.status !== "completed" || r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
       r.jobs = (await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
       r.partial = r.jobs.some((j) => j.conclusion === "failure");
+      // Cancelled, yet its gate job passed and no job failed: the retry covered the cancelled job, so the run is green.
+      r.recovered = !r.partial && r.jobs.some((j) => GATE_JOB.test(j.name) && j.conclusion === "success");
     }
   }
   return runs;
@@ -211,8 +216,8 @@ export function verdicts(runs, order = null) {
         continue;
       }
       if (r.status !== "completed") continue;
-      if (NO_VERDICT.has(r.conclusion) && !r.partial) continue;
-      if (r.conclusion === "success") {
+      if (NO_VERDICT.has(r.conclusion) && !r.partial && !r.recovered) continue;
+      if (r.conclusion === "success" || r.recovered) {
         v.green = r;
         break;
       }

@@ -126,6 +126,18 @@ test("verdict: a run cancelled after its failed jobs finished is a red verdict f
   assert.deepEqual(verdicts([quick, cancelled, green])[0].reds.map((r) => r.id), [cancelled.id]);
 });
 
+test("verdict: a run cancelled only in a job its retry covered, with its gate job passed, is green", async () => {
+  const old = run({ conclusion: "failure", head_sha: sha("o"), updated_at: at(60) });
+  const cancelled = run({ conclusion: "cancelled", head_sha: sha("n"), run_started_at: at(40), updated_at: at(8) });
+  const jobs = [{ name: "Retry / Tests", conclusion: "success" }, { name: "Tests", conclusion: "cancelled" }, { name: "Real unfold", conclusion: "success" }];
+  await markPartial("o/r", [cancelled, old], async () => ({ jobs }));
+  assert.equal(cancelled.recovered, true);
+  assert.equal(verdicts([cancelled, old])[0].state, "green");
+  const bare = run({ conclusion: "cancelled", head_sha: sha("m"), run_started_at: at(40), updated_at: at(8) });
+  await markPartial("o/r", [bare, old], async () => ({ jobs: jobs.slice(0, 2) }));
+  assert.equal(bare.recovered, false, "no gate job passed, so it stays without a verdict");
+});
+
 test("readHistory: as of a past time, later runs are unseen and runs finishing later are still running", async () => {
   const pages = [];
   const runs = [run({ created_at: at(5) }), run({ created_at: at(50), updated_at: at(10) }), run({ conclusion: "success", created_at: at(90), updated_at: at(60) })];
