@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
-  codeNames, evidence, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, stepBlock, textNamed, verdicts,
+  codeNames, evidence, jobKey, laterGreen, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -56,7 +56,7 @@ const TAP = (name, file, extra = "") => [
   "2026-11-19T23:13:12.5Z ok 5 - next",
 ];
 // A fake GitHub for runs, jobs and logs: logs[runId] is the failing job's log lines (none: the run is green).
-function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [] } = {}) {
+function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsOf = {} } = {}) {
   const calls = [];
   return {
     calls,
@@ -66,6 +66,7 @@ function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [] } = {}
       if (p.includes("/git/matching-refs/")) return [];
       if (/\/actions\/(workflows\/[^/]+\/)?runs\?/.test(p)) return { workflow_runs: runs.filter((r) => !/created=/.test(p) || true) };
       const jobs = /\/runs\/(\d+)\/jobs/.exec(p);
+      if (jobs && jobsOf[jobs[1]]) return { jobs: jobsOf[jobs[1]] };
       if (jobs) return { jobs: logs[jobs[1]] ? [{ id: Number(jobs[1]) * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] }] : [] };
       if (p.includes("/annotations")) return [];
       if (p.includes("/pulls?state=open")) return open;
@@ -309,6 +310,55 @@ test("check: Tandem acts the moment a culprit is confirmed, one revert per culpr
   await check("o/r", cfg, { a: live, now: NOW, apply: true, log() {}, source: async () => src() });
   const writes = live.calls.filter((c) => c[0] !== "get" && c[0] !== "lines").map((c) => (c[0] === "gql" ? c[1].slice(0, 20) : `${c[0]} ${c[1]}`));
   assert.deepEqual(writes, ["mutation($id:ID!,$t:", "mutation($id:ID!,$h:", "post /repos/o/r/issues/99/comments"]);
+});
+
+test("settled: a failure whose job passed whole on main since, or whose test a later commit changed, reverts nothing", async () => {
+  assert.equal(jobKey("npm test (ubuntu-latest, 3/14)"), "npm test (ubuntu-latest)");
+  assert.equal(jobKey("devbox npm (4/7)"), "devbox npm");
+  const red = run({ head_sha: sha("b"), run_number: 10 });
+  const later = run({ head_sha: sha("f"), run_number: 12, status: "in_progress", conclusion: null });
+  const mid = run({ head_sha: sha("m"), run_number: 11, status: "in_progress", conclusion: null });
+  const shard = (n, conclusion, status = "completed") => ({ name: `npm test (ubuntu-latest, ${n}/3)`, status, conclusion });
+  const gh = fakeGitHub([], {}, {
+    jobsOf: {
+      [later.id]: [shard(1, "success"), shard(2, "success"), shard(3, "success"), { name: "lint", status: "completed", conclusion: "failure" }],
+      [mid.id]: [shard(1, "success"), shard(2, null, "in_progress"), shard(3, "success"), { name: "lint", status: "completed", conclusion: "success" }],
+    },
+  });
+  const green = await laterGreen("o/r", [later, mid, red, run({ head_sha: sha("o"), run_number: 9 })], red, { a: gh });
+  assert.equal(green.get("npm test (ubuntu-latest)"), sha("f"), "every shard green, in a run still going");
+  assert.equal(green.get("lint"), sha("m"), "the newest run where the job passed");
+  const replay = fakeGitHub([], {}, { jobsOf: { [later.id]: [{ ...shard(1, "success"), completed_at: at(1) }] } });
+  const asOf = await laterGreen("o/r", [later], red, { a: replay, asOf: at(5) });
+  assert.equal(asOf.size, 0, "a replay doesn't see jobs that finished after it");
+  const f = { job: "npm test (ubuntu-latest)", file: "test/x.test.ts", roots: ["test/x.test.ts"] };
+  assert.match(settledBy(f, { greenLater: green }), /passed at ffffffffff? on main since/);
+  assert.match(settledBy({ ...f, job: "other" }, { changedLater: [{ sha: sha("f"), pr: 21, files: ["test/x.test.ts"] }] }), /#21 \(fffffffff\) changed test\/x\.test\.ts/);
+  assert.equal(settledBy({ ...f, job: "other" }, { greenLater: green, changedLater: [{ sha: sha("f"), pr: 21, files: ["src/y.ts"] }] }), null);
+  const c = { pr: 11, sha: sha("b"), subject: "Breaks y (#11)", confirmed: true, failures: [{ failure: f }, { failure: { ...f, job: "other", roots: ["test/w.test.ts"] } }] };
+  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "revert", "one failure not settled still reverts");
+  assert.equal(decide({ ...c, failures: c.failures.slice(0, 1) }, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "skip");
+});
+
+test("check: Tandem, #4262: a red run at an older commit reverts nothing once a newer main run passed the job, or a newer PR changed the test", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b"), updated_at: at(35) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const f = run({ head_sha: sha("f"), status: "in_progress", conclusion: null });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const cfg = { workflows: ["ci"], minRedMinutes: 0 };
+  const fix = [{ sha: sha("f"), at: at(1), subject: "Fake the clock (#21)", body: "" }];
+  const passed = fakeGitHub([f, n, b, g], logs, { jobsOf: { [f.id]: [{ name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "success" }] } });
+  const lines = [];
+  await check("o/r", cfg, { a: passed, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ later: async () => fix }) });
+  assert.ok(lines.some((l) => /culprit #11 .*not reverting: npm test \(ubuntu-latest\) passed at f{9} on main since/.test(l)), lines.join("\n"));
+  assert.ok(!passed.calls.some((c) => c[0] === "gql"), "no revert");
+  const changed = fakeGitHub([f, n, b, g], logs);
+  const commits = async (base, head) => (head === "refs/remotes/origin/main" ? [{ sha: sha("f"), pr: 21, files: ["test/x.test.ts"] }] : src().commits(base, head));
+  lines.length = 0;
+  await check("o/r", cfg, { a: changed, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ later: async () => fix, commits }) });
+  assert.ok(lines.some((l) => /culprit #11 .*not reverting: #21 \(f{9}\) changed test\/x\.test\.ts on main since/.test(l)), lines.join("\n"));
+  assert.ok(!changed.calls.some((c) => c[0] === "gql"), "no revert");
 });
 
 test("check: one red run over the range dispatches its workflow on a verify branch at that commit, re-runs its failed jobs once, and waits", async () => {

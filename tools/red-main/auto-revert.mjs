@@ -37,7 +37,8 @@
 //      its own group) on a throwaway branch `auto-revert/verify-<sha>` at the red run's commit. A failure is confirmed when it
 //      fails again in that run, or in two main runs in a row; one that passes there is a flake and is never reverted. Only
 //      confirmed culprits are reverted. Verify branches are deleted once main has moved past them.
-//   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), with an open fix or
+//   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), whose every failure
+//      is settled since (its job passed whole in a newer run of the workflow, or a newer commit changed its test), with an open fix or
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation).
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
@@ -300,6 +301,10 @@ export function stepBlock(yml, step) {
 }
 
 // A run's failures: [{ key, test, file, roots: [repo files at distance 0], job }], or { infra: reason } when none is the code's.
+// A job's name without its shard ("npm test (ubuntu-latest, 3/7)" -> "npm test (ubuntu-latest)"): a failure's job, and the
+// jobs a later run passed.
+export const jobKey = (name) => name.replace(/,?\s*\d+\s*\/\s*\d+\)/, ")").replace(/\s*\(\)$/, "");
+
 export async function runFailures(repo, run, { a, files, cache = null, read = null }) {
   const jobs = run.jobs ?? (await a.get(`/repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
   const failed = jobs.filter((j) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(j.conclusion));
@@ -318,7 +323,7 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
       }
       if (cache && j.status === "completed") (cache.jobs ??= {})[j.id] = parsed;
     }
-    const jobName = j.name.replace(/,?\s*\d+\s*\/\s*\d+\)/, ")").replace(/\s*\(\)$/, "");
+    const jobName = jobKey(j.name);
     if (parsed.tests.length) {
       for (const t of parsed.tests) {
         const file = t.location ? mentions(t.location.replace(/:\d+(:\d+)?$/, ""), files)[0] ?? null : null;
@@ -700,10 +705,51 @@ export function culprits(results) {
   return [...m.values()].sort((x, y) => y.pr - x.pr);
 }
 
+// The jobs that passed whole on main after a red run: for each job (by jobKey), the newest commit after `newest` whose run
+// of the same workflow has every one of its shards done and green (skipped ones aside, one at least green). Reads the jobs
+// of up to `max` newer runs, newest first, running or done: a run still going counts for the jobs it finished.
+export async function laterGreen(repo, runs, newest, { a, order = null, max = 3, asOf = null }) {
+  const newer = runs
+    .filter((r) => wfKey(r) === wfKey(newest) && r.id !== newest.id && r.head_sha !== newest.head_sha && newestFirst(order)(r, newest) < 0)
+    .sort(newestFirst(order))
+    .slice(0, max);
+  const green = new Map();
+  for (const r of newer) {
+    // Always the latest attempt's jobs: markPartial may have left a run's previous attempt in r.jobs.
+    let jobs = [];
+    for (let page = 1; page <= 3; page++) {
+      const got = (await a.get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100&page=${page}`)).jobs ?? [];
+      jobs.push(...got);
+      if (got.length < 100) break;
+    }
+    if (asOf) jobs = jobs.map((j) => (j.completed_at && ms(j.completed_at) > ms(asOf) ? { ...j, status: "in_progress", conclusion: null } : j));
+    for (const [name, js] of groupBy(jobs, (j) => jobKey(j.name))) {
+      const done = js.every((j) => j.status === "completed" && ["success", "skipped"].includes(j.conclusion)) && js.some((j) => j.conclusion === "success");
+      if (done && !green.has(name)) green.set(name, r.head_sha);
+    }
+  }
+  return green;
+}
+
+// Why a failure no longer needs its culprit reverted, or null: its job passed whole on main since (greenLater), or a commit
+// on main since changed the test or a file its failure names (changedLater, first-parent commits after the red run with
+// their files). Tandem, 2026-11-20: two reverts of #4243 were opened over a test #4252 had already fixed, judged from a run
+// at an older commit that was still main's newest finished one while the runs after it waited for runners.
+export function settledBy(f, { greenLater = new Map(), changedLater = [] } = {}) {
+  const passed = greenLater.get(f.job);
+  if (passed) return `${f.job} passed at ${short(passed)} on main since`;
+  const named = new Set(f.roots ?? (f.file ? [f.file] : []));
+  const changed = named.size ? changedLater.find((c) => c.files?.some((x) => named.has(x))) : null;
+  if (changed) return `${changed.pr ? `#${changed.pr}` : short(changed.sha)} (${short(changed.sha)}) changed ${changed.files.find((x) => named.has(x))} on main since`;
+  return null;
+}
+
 // Per culprit: { action: "revert" | "wait" | "skip", reason }.
-export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes }) {
+export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [] }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
+  const settled = (c.failures ?? []).map((x) => settledBy(x.failure, { greenLater, changedLater }));
+  if (settled.length && settled.every(Boolean)) return { action: "skip", reason: settled.join("; ") };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };
   if (!c.confirmed && c.flake) return { action: "skip", reason: "passed when its workflow was dispatched at the same commit: a flake" };
@@ -1023,11 +1069,12 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   }
   let openPrs = null;
   let src = null;
+  let order = null;
   const getSrc = async () => (src ??= await source(repo, { dir: gitDir, asOf }));
   // Red by push order: judged again by commit order before anything acts, so an older commit's run that finished after a
   // newer one's never makes main red.
   if (red.length) {
-    const order = await (await getSrc()).order?.();
+    order = (await (await getSrc()).order?.()) ?? null;
     if (order?.size) {
       for (const r of runs) delete r.partial;
       vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order), order);
@@ -1075,8 +1122,11 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       }
       openPrs ??= asOf ? [] : await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
       const later = await s.later(r.newest.head_sha);
+      const after = new Set(later.map((c) => c.sha));
+      const changedLater = later.length && s.commits ? (await s.commits(r.newest.head_sha, "refs/remotes/origin/main")).filter((c) => after.has(c.sha)) : [];
+      const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf }) : new Map();
       for (const c of cs.slice(0, 5)) {
-        const d = decide(c, { later, openPrs, minutes, minRedMinutes });
+        const d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater });
         log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : "not reverting"}: ${d.reason}`}`);
         if (d.action !== "revert") continue;
         try {
