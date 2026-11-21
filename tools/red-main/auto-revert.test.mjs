@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
-  codeNames, evidence, jobKey, laterGreen, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  codeNames, evidence, jobKey, laterGreen, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -275,10 +275,52 @@ test("a job that fails with no failing test starts from the files its failing st
   const n = run({ head_sha: sha("n"), run_attempt: 2 });
   const gh = fakeGitHub([n, g], { [n.id]: ["2026-11-19T23:13:09.1Z ##[error]Process completed with exit code 1."] });
   const jobsGet = gh.get;
-  gh.get = async (p) => (/\/jobs\?/.test(p) ? { jobs: [{ id: n.id * 10, name: "native", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "The window covers nothing", conclusion: "failure" }] }] } : jobsGet(p));
+  gh.get = async (p) => (p.includes(`/runs/${n.id}/jobs?`) ? { jobs: [{ id: n.id * 10, name: "native", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "The window covers nothing", conclusion: "failure" }] }] } : jobsGet(p));
   const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src({ read: async (_, p) => (p === ".github/workflows/ci.yml" ? yml : SRC[p] ?? null) }) });
   assert.deepEqual(r.results[0].failure.roots, ["test/x.test.ts"]);
   assert.equal(r.results[0].blame.pr, 11);
+});
+
+test("#257: a report-only or continue-on-error job's red, or one already red on the green run before, blames no one", async () => {
+  const yml = [
+    "on: push", "jobs:", "  build:", "    runs-on: ubuntu-latest", "    steps:", "      - run: make",
+    "  probe:", "    name: Hitch probe", "    continue-on-error: true", "    steps:", "      - name: Build for Release", "        run: make release",
+    "  matrix:", "    name: \"Lint\"", "    continue-on-error: true", "    strategy:", "      matrix:", "        continue-on-error: false",
+  ].join("\n");
+  assert.deepEqual([...softJobs(yml)].sort(), ["Hitch probe", "Lint", "matrix", "probe"]);
+  assert.equal(softJob("Lint (ubuntu-latest)", softJobs(yml)), true);
+  assert.equal(softJob("Gallery hitch probe (main and releases, report only)"), true);
+  assert.equal(softJob("build", softJobs(yml)), false);
+  const read = async (_, p) => (p === ".github/workflows/ci.yml" ? yml : SRC[p] ?? null);
+  const failing = (r, name, step = "Build for Release") => ({ id: r.id * 10, name, status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: step, conclusion: "failure" }] });
+  const errorLog = ["2026-11-21T03:20:00.0Z src/y.ts:1:1: error: sending 'node' risks causing data races"];
+  // Only the continue-on-error job failed: nothing of the code's.
+  {
+    const g = run({ conclusion: "success", head_sha: sha("g") });
+    const n = run({ head_sha: sha("n") });
+    const gh = fakeGitHub([n, g], { [n.id]: errorLog }, { jobsOf: { [n.id]: [failing(n, "Hitch probe")] } });
+    const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src({ read }) });
+    assert.match(r.infra, /report-only/);
+    assert.equal(r.results, undefined);
+  }
+  // Main is red for another job (a flake) and the probe failed too: the probe is not a failure, so only the other is judged.
+  {
+    const g = run({ conclusion: "success", head_sha: sha("g") });
+    const n = run({ head_sha: sha("n") });
+    const jobs = [failing(n, "Gallery hitch probe (main and releases, report only)"), { ...failing(n, "build", "Run make"), id: n.id * 10 + 1 }];
+    const gh = fakeGitHub([n, g], { [n.id]: errorLog }, { jobsOf: { [n.id]: jobs } });
+    const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src({ read }) });
+    assert.deepEqual(r.results.map((x) => x.failure.job), ["build"]);
+  }
+  // A job the workflow does not mark, red on the green run before the range too: it did not begin in the range.
+  {
+    const g = run({ conclusion: "success", head_sha: sha("g") });
+    const n = run({ head_sha: sha("n") });
+    const gh = fakeGitHub([n, g], { [n.id]: errorLog, [g.id]: errorLog }, { jobsOf: { [n.id]: [failing(n, "build")], [g.id]: [failing(g, "build")] } });
+    const r = await analyse("o/r", verdicts([n, g])[0], { a: gh, src: src({ read: async (_, p) => (p === ".github/workflows/ci.yml" ? "jobs:\n  build:\n    steps:\n      - name: Build for Release\n        run: make\n" : SRC[p] ?? null) }) });
+    assert.equal(r.results[0].blame, null);
+    assert.equal(r.results[0].base, null);
+  }
 });
 
 const job = (over = {}) => ({ name: "test", conclusion: "failure", runner_id: 3, steps: [{ name: "Run tests", conclusion: "failure" }], log: "AssertionError: 1 !== 2", ...over });
