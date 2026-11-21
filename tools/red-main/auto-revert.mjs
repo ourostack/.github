@@ -12,7 +12,8 @@
 //   --cache <file>       keep each finished job's parsed failures, so a later tick doesn't read its log again
 //
 // Red is a verdict, not a tip. Each workflow that counts (the repo's "workflows" in auto-revert.json, or every push workflow
-// but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main: a pending or running run says nothing, a run
+// but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main (for a workflow in the repo's "tagRuns", its
+// newest completed run dispatched on a release tag of a commit on main): a pending or running run says nothing, a run
 // cancelled or replaced by concurrency says nothing, and one whose every failure is infrastructure says nothing. Main is red
 // while that verdict is a code failure; a newer completed green run clears it. "Newer" is commit order on main (first parent),
 // never finish time: when each push has a run of its own (no shared concurrency group), an older commit's run can finish
@@ -125,16 +126,23 @@ const stem = (run) => String(run.path ?? "").split("@")[0].split("/").pop().repl
 export const PAGE = 50;
 export const MAX_PAGES = 6;
 
+// A release tag, vX.Y.Z: the ref a `tagRuns` workflow's main runs are dispatched on.
+export const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
+
 // Main's push runs of the workflows that count, newest first, back to each one's newest completed green run (or MAX_PAGES).
-// With `workflows`, each is read from its own list; otherwise every push run, less `ignore`.
-export async function readHistory(repo, get, { workflows = null, ignore = [], asOf = null, perPage = PAGE, maxPages = MAX_PAGES } = {}) {
+// With `workflows`, each is read from its own list; otherwise every push run, less `ignore`. A workflow in `tagRuns` (also
+// listed in `workflows`) has no push runs: its main runs are dispatched on the release tag of a commit on main (Tandem's
+// Mac guards, started on each promoted release), so its workflow_dispatch runs on a release tag are read instead, each
+// judging its tag's commit like a push run.
+export async function readHistory(repo, get, { workflows = null, ignore = [], tagRuns = [], asOf = null, perPage = PAGE, maxPages = MAX_PAGES } = {}) {
   const created = asOf ? `&created=${encodeURIComponent(`<=${new Date(asOf).toISOString()}`)}` : "";
-  const lists = workflows?.length ? workflows.map((w) => `/repos/${repo}/actions/workflows/${/\.ya?ml$/.test(w) ? w : `${w}.yml`}/runs`) : [`/repos/${repo}/actions/runs`];
+  const stemOf = (w) => w.replace(/\.ya?ml$/, "");
+  const lists = workflows?.length ? workflows.map((w) => ({ base: `/repos/${repo}/actions/workflows/${/\.ya?ml$/.test(w) ? w : `${w}.yml`}/runs`, tags: tagRuns.includes(stemOf(w)) })) : [{ base: `/repos/${repo}/actions/runs`, tags: false }];
   const all = [];
-  for (const base of lists) {
+  for (const { base, tags } of lists) {
     for (let page = 1; page <= maxPages; page++) {
-      const body = await get(`${base}?branch=main&event=push&per_page=${perPage}&page=${page}${created}`);
-      const got = (body.workflow_runs ?? []).map((r) => replay(r, asOf)).filter((r) => r && !ignored(r, ignore));
+      const body = await get(`${base}?${tags ? "event=workflow_dispatch" : "branch=main&event=push"}&per_page=${perPage}&page=${page}${created}`);
+      const got = (body.workflow_runs ?? []).filter((r) => !tags || RELEASE_TAG.test(String(r.head_branch ?? ""))).map((r) => replay(r, asOf)).filter((r) => r && !ignored(r, ignore));
       all.push(...got);
       const byWf = groupBy(all, wfKey);
       const done = byWf.size > 0 && [...byWf.values()].every((rs) => rs.some(isGreen));
@@ -1101,7 +1109,7 @@ function describe(r) {
 // One repo, one tick.
 export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = null, cache = null, log = console.log, source = gitSource, rerunOnly = false }) {
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
-  const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], asOf });
+  const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], tagRuns: cfg.tagRuns ?? [], asOf });
   let vs = verdicts(await markPartial(repo, runs, (p) => a.get(p)));
   let red = vs.filter((v) => v.state === "red");
   // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).

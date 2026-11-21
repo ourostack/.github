@@ -137,6 +137,17 @@ test("readHistory: as of a past time, later runs are unseen and runs finishing l
   assert.equal(ignored({ path: ".github/workflows/first-run-gate.yml@refs/heads/main" }, ["first-run-gate"]), true);
 });
 
+test("readHistory: a tagRuns workflow's main runs are its runs dispatched on a release tag, never a verify branch or a hand-run on a branch", async () => {
+  const pages = [];
+  const tagged = (tag, extra = {}) => run({ event: "workflow_dispatch", head_branch: tag, ...extra });
+  const runs = [tagged("v0.2.40", { run_number: 9 }), tagged("auto-revert/verify-abc"), tagged("main"), tagged("v0.3.0-alpha.1"), tagged("v0.2.39", { conclusion: "success", run_number: 8 })];
+  const got = await readHistory("o/r", async (p) => (pages.push(p), { workflow_runs: p.includes("/mac-guards.yml/") ? runs : [run({ conclusion: "success" })] }), { workflows: ["ci", "mac-guards"], tagRuns: ["mac-guards"] });
+  assert.match(pages[0], /\/actions\/workflows\/ci\.yml\/runs\?branch=main&event=push&/, "ci stays push runs on main");
+  assert.match(pages[1], /\/actions\/workflows\/mac-guards\.yml\/runs\?event=workflow_dispatch&per_page=50&page=1$/);
+  assert.deepEqual(got.filter((r) => r.event === "workflow_dispatch").map((r) => r.head_branch), ["v0.2.40", "v0.2.39"]);
+  assert.deepEqual(verdicts(got.filter((r) => r.event === "workflow_dispatch")).map((v) => v.state), ["red"], "a red guard on the newest promoted release is red main");
+});
+
 test("parseLog: node:test's failing tests with their location and error, the YAML's own '...' ending the block", async () => {
   const p = await parseLog([...TAP("migrates", "test/x.test.ts", "see src/y.ts:3"), "\u001b[31m##[error]Process completed with exit code 1.\u001b[0m"]);
   assert.equal(p.tests.length, 1);
@@ -511,7 +522,7 @@ test("git log parsing: each first-parent commit's files, and its PR only when it
   assert.deepEqual(cs.map((c) => [c.pr, c.files, c.added]), [[13, ["README.md", "src/x.ts"], ["src/x.ts"]], [null, ["src/y.ts"], []]]);
 });
 
-test("main --self checks only that repo; a green ci is one call; --as-of never acts", async () => {
+test("main --self checks only that repo; a green ci and green Mac guards are one call each; --as-of never acts", async () => {
   const lines = [];
   const orig = console.log;
   console.log = (l) => lines.push(l);
@@ -520,14 +531,15 @@ test("main --self checks only that repo; a green ci is one call; --as-of never a
   } finally {
     console.log = orig;
   }
-  assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red", "auto-revert: 1 API calls (1 read, 0 write)"]);
+  assert.deepEqual(lines, ["auto-revert: dry run (pass --apply to act)", "teams-microsoft/tandem: main is not red", "auto-revert: 2 API calls (2 read, 0 write)"]);
   await assert.rejects(main(["--self", "o/r", "--apply", "--as-of", at(5)], NOW, fakeGitHub([], {})), /never acts/);
 });
 
-test("config: Tandem counts only ci, ignores its newest-commit gates, acts at once and runs as its own caller; ourostack repos keep the hour", () => {
+test("config: Tandem counts ci and its Mac guards' tag runs, ignores its newest-commit gates, acts at once and runs as its own caller; ourostack repos keep the hour", () => {
   const t = CONFIG.repos["teams-microsoft/tandem"];
   assert.equal(t.enabled, false);
-  assert.deepEqual(t.workflows, ["ci"]);
+  assert.deepEqual(t.workflows, ["ci", "mac-guards"]);
+  assert.deepEqual(t.tagRuns, ["mac-guards"], "main's Mac guards run on each promoted release's tag, not on a push");
   assert.deepEqual(t.ignoreWorkflows, ["first-run-gate", "basics"]);
   assert.equal(t.minRedMinutes, 0);
   assert.equal(CONFIG.minRedMinutes, 60);
