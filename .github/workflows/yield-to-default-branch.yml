@@ -1,0 +1,47 @@
+name: Yield to the default branch (reusable)
+
+# A pull request's fan-out waits here, in one cheap Linux job, while default-branch CI in the org's busy repositories
+# has a job queued without a runner. It may delay, never skip or fail, and proceeds at once on any API error.
+# Callers add `needs:` on it for pull_request events only: tools/yield-to-default-branch/README.md.
+on:
+  workflow_call:
+    inputs:
+      repos:
+        description: "Comma-separated repository names (or owner/name) whose default-branch CI to yield to."
+        type: string
+        default: "ouroboros,ouro-ui,desk,.github,ouroboros-website"
+      cap-minutes:
+        description: "Longest wait before the pull request proceeds anyway."
+        type: number
+        default: 20
+
+permissions:
+  contents: read
+
+jobs:
+  yield:
+    name: yield to default branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ourostack/.github
+          ref: main
+          path: .ouro-tools
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: ""
+      - name: Wait while default-branch jobs have no runner
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          YIELD_REPOS: ${{ inputs.repos }}
+          YIELD_CAP_MINUTES: ${{ inputs.cap-minutes }}
+        run: node .ouro-tools/tools/yield-to-default-branch/yield.mjs
