@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { repoList, run, waitingOn } from "./yield.mjs";
+import { repoList, run, runnerFamily, waitingOn } from "./yield.mjs";
 
 const NOW = Date.parse("2026-11-22T20:00:00Z");
 const old = "2026-11-22T19:50:00Z";
@@ -86,4 +86,14 @@ test("any API error, 403 or 429 proceeds at once", async () => {
     assert.equal(r.outcome, "api-error");
     assert.equal(slept, 0);
   }
+});
+
+test("a queued macOS or Windows main job does not make an ubuntu caller wait, and its own pool does", () => {
+  const jobs = (labels) => ({ 1: [{ name: "build", status: "queued", created_at: old, labels }] });
+  const w = (labels, runner) => waitingOn({ repos: ["o/b"], call: fake(base("o/b", mainRun, jobs(labels))), now: NOW, runner });
+  assert.deepEqual(w(["macos-14"]), []);
+  assert.deepEqual(w(["windows-latest"]), []);
+  assert.equal(w(["ubuntu-24.04"]).length, 1);
+  assert.equal(w(["macos-14"], "macos-latest").length, 1);
+  assert.equal(runnerFamily("ubuntu-latest"), "linux");
 });

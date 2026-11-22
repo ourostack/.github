@@ -2,12 +2,21 @@
 // Pull-request fan-out yields to the default branch: waits while a default-branch run (push to the default branch,
 // merge_group, release) in a busy repository has a job queued without a runner. It may delay, never skip or fail:
 // any API error, 403 or 429 proceeds at once, and the cap proceeds too.
-// Usage: GH_TOKEN=... GITHUB_REPOSITORY=owner/name [YIELD_REPOS="a,b"] [YIELD_CAP_MINUTES=20] node yield.mjs
+// Usage: GH_TOKEN=... GITHUB_REPOSITORY=owner/name [YIELD_REPOS="a,b"] [YIELD_CAP_MINUTES=20] [YIELD_RUNNER=ubuntu-latest] node yield.mjs
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
 
 export const DEFAULT_REPOS = ["ouroboros", "ouro-ui", "desk", ".github", "ouroboros-website"];
 const MIN_QUEUED_AGE_MS = 30_000;
+
+// Runner pools are separate (macOS and Windows have their own caps), so a job only waits on its own family.
+export function runnerFamily(label) {
+  const l = String(label).toLowerCase();
+  if (l.startsWith("ubuntu") || l.includes("linux")) return "linux";
+  if (l.startsWith("macos")) return "macos";
+  if (l.startsWith("windows")) return "windows";
+  return l;
+}
 
 export function repoList(own, owner, names) {
   const full = names.map((n) => (n.includes("/") ? n : `${owner}/${n}`));
@@ -16,7 +25,8 @@ export function repoList(own, owner, names) {
 
 // Returns the jobs that make a pull request wait, [] when it may go. Throws on any API failure; the caller treats
 // a throw as "go".
-export function waitingOn({ repos, call, now = Date.now() }) {
+export function waitingOn({ repos, call, now = Date.now(), runner = "ubuntu-latest" }) {
+  const family = runnerFamily(runner);
   const found = [];
   for (const repo of repos) {
     const def = call(`repos/${repo}`).default_branch;
@@ -27,7 +37,8 @@ export function waitingOn({ repos, call, now = Date.now() }) {
     for (const r of runs) {
       const jobs = call(`repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`).jobs ?? [];
       for (const j of jobs) {
-        if (j.status === "queued" && now - Date.parse(j.created_at) >= MIN_QUEUED_AGE_MS) {
+        const sharesPool = !j.labels?.length || j.labels.some((l) => runnerFamily(l) === family);
+        if (j.status === "queued" && sharesPool && now - Date.parse(j.created_at) >= MIN_QUEUED_AGE_MS) {
           found.push({ repo, run: r.id, job: j.name, event: r.event, since: j.created_at });
         }
       }
@@ -39,6 +50,7 @@ export function waitingOn({ repos, call, now = Date.now() }) {
 export async function run({
   repo,
   repos = DEFAULT_REPOS,
+  runner = "ubuntu-latest",
   capMs = 20 * 60_000,
   pollMs = 60_000,
   call,
@@ -52,7 +64,7 @@ export async function run({
   for (;;) {
     let found;
     try {
-      found = waitingOn({ repos: list, call, now: clock() });
+      found = waitingOn({ repos: list, call, now: clock(), runner });
     } catch (err) {
       log(`Go: the API said "${String(err.message).split("\n")[0]}", so nothing waits.`);
       return { outcome: "api-error", waitedMs: clock() - start, polls };
@@ -90,6 +102,7 @@ if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).
   const result = await run({
     repo,
     repos: repos.length ? repos : DEFAULT_REPOS,
+    runner: process.env.YIELD_RUNNER || "ubuntu-latest",
     capMs: Number(process.env.YIELD_CAP_MINUTES || 20) * 60_000,
     call: gh,
     log,
