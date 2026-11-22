@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { awaitSudo, mobileNumber, pickSudoPath } from "./sudo.mjs";
+import { a2aLine, awaitSudo, isWorkAccount, mobileNumber, pickSudoPath, queueSignin, routeLine, sudoIntake } from "./sudo.mjs";
 
 // A page that shows "Confirm access" with the given offers until `grant()` is called.
 const fakePage = ({ offers, number = "42", shown = true }) => {
@@ -75,10 +75,61 @@ test("outside the morning sitting the prompt is queued, nothing is shown or sent
   let relaunched = 0;
   const session = { page, relaunchHeadful: async () => { relaunched++; return page; } };
   await assert.rejects(
-    awaitSudo(session, { ...fast, live: false, what: "delete a repository", resume: "node run.mjs", queue: (i) => queued.push(i), notify: (t) => said.push(t) }),
+    awaitSudo(session, { ...fast, live: false, account: "someone", what: "delete a repository", resume: "node run.mjs", queue: (i) => queued.push(i), notify: (t) => said.push(t) }),
     (e) => e.signinQueued === true && e.exit === 5,
   );
-  assert.deepEqual(queued, [{ what: "delete a repository", resume: "node run.mjs" }]);
+  assert.deepEqual(queued, [{ what: "delete a repository", resume: "node run.mjs", account: "someone" }]);
   assert.deepEqual(said, []);
   assert.equal(relaunched + page.clicked.length, 0);
+});
+
+const NOW = new Date(2026, 10, 22, 9, 0);
+
+test("an Enterprise Managed User or a listed account is work; every other account is personal", () => {
+  assert.equal(isWorkAccount("someone_corp", {}), true);
+  assert.equal(isWorkAccount("someone", {}), false);
+  assert.equal(isWorkAccount("some-org", {}), false);
+  assert.equal(isWorkAccount("Someone", { SUDO_WORK_ACCOUNTS: "other, someone" }), true);
+});
+
+test("a personal account's live line goes to the personal agent as one intake item, deduped per account per day", () => {
+  const sent = [];
+  const teams = [];
+  const r = routeLine({ account: "someone", line: "tap Approve on your phone", waitMs: 15 * 60_000 }, { personal: (t) => { sent.push(t); return true; }, teams: (t) => teams.push(t), now: NOW });
+  assert.equal(r, "personal");
+  assert.deepEqual(teams, []);
+  assert.equal(sent.length, 1);
+  for (const line of [/^from: the GitHub browser tool on .+, signed in as someone$/m, /^urgency: now$/m, /^ask: tap Approve on your phone$/m, /^why only Ari: /m, /^steps:$/m, /^deadline: 09:15 local today/m, /^dedupe key: github-sudo-someone-2026-11-22$/m]) assert.match(sent[0], line);
+});
+
+test("an unreachable personal agent falls back to Teams and says so; a work account goes to Teams only", () => {
+  const teams = [];
+  let tried = 0;
+  assert.equal(routeLine({ account: "someone", line: "use your passkey" }, { personal: () => { tried++; return false; }, teams: (t) => teams.push(t), name: "Pip", now: NOW }), "fallback");
+  assert.deepEqual(teams, ["Pip unreachable, so this came here. use your passkey"]);
+  assert.equal(routeLine({ account: "someone_corp", line: "use your passkey" }, { personal: () => { tried++; return true; }, teams: (t) => teams.push(t), now: NOW }), "work");
+  assert.equal(tried, 1);
+  assert.equal(teams[1], "use your passkey");
+});
+
+test("a2aLine runs ouro a2a message with the card, --json and --why, and treats a refusal or a crash as not sent", () => {
+  const calls = [];
+  const quiet = console.error;
+  console.error = () => {};
+  try {
+    assert.equal(a2aLine("hi", (cmd, args) => { calls.push([cmd, args]); return '{"peerName":"pip","text":"ok"}\n'; }, "http://127.0.0.1:1/card"), true);
+    assert.equal(calls[0][0], "ouro");
+    assert.deepEqual(calls[0][1].slice(0, 7), ["a2a", "message", "--to", "http://127.0.0.1:1/card", "--text", "hi", "--json"]);
+    assert.equal(calls[0][1][7], "--why");
+    assert.equal(a2aLine("hi", () => '{"ok":false,"reason":"not-a-friend"}', "http://x"), false);
+    assert.equal(a2aLine("hi", () => { throw new Error("fetch failed"); }, "http://x"), false);
+  } finally { console.error = quiet; }
+});
+
+test("the queued item names the account, so the morning batch can tell work from personal", () => {
+  const calls = [];
+  queueSignin({ what: "rename it", resume: "node r.mjs", account: "someone_corp" }, (cmd, args) => calls.push(args));
+  queueSignin({ what: "rename it", resume: "node r.mjs", account: "someone" }, (cmd, args) => calls.push(args));
+  assert.match(calls[0][calls[0].indexOf("--why") + 1], /\(work GitHub account someone_corp\)$/);
+  assert.match(calls[1][calls[1].indexOf("--why") + 1], /\(GitHub account someone\)$/);
 });

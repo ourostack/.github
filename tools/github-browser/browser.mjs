@@ -199,7 +199,7 @@ export async function openAs(user = process.env.GITHUB_USER ?? "arimendelow", { 
   let dir = home;
   let staging;
   let browser; let proc;
-  const session = { page: undefined, close: undefined, relaunchHeadful: undefined };
+  const session = { user, page: undefined, close: undefined, relaunchHeadful: undefined };
   let original = "";
   const stop = () => stopEdge({ browser, proc });
   const finish = async (signedIn) => {
