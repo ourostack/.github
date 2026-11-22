@@ -130,7 +130,7 @@ test("a2aLine runs ouro a2a message with the card, --json and --why; a refusal o
   console.error = () => {};
   const fake = (out) => (cmd, args, opts, cb) => { calls.push([cmd, args]); out(cb); };
   try {
-    assert.equal(await a2aLine("hi", AGENT, fake((cb) => cb(null, '{"peerName":"pip","text":"ok"}\n', ""))), true);
+    assert.equal(await a2aLine("hi", AGENT, fake((cb) => cb(null, '{"peerName":"pip","text":"ok"}\n', "")), "ouro"), true);
     assert.equal(calls[0][0], "ouro");
     assert.deepEqual(calls[0][1].slice(0, 7), ["a2a", "message", "--to", "http://127.0.0.1:1/card", "--text", "hi", "--json"]);
     assert.equal(calls[0][1][7], "--why");
@@ -149,4 +149,12 @@ test("the queued item names the account, so the morning batch can tell work from
   queueSignin({ what: "rename it", resume: "node r.mjs", account: "someone" }, (cmd, args) => calls.push(args));
   assert.match(calls[0][calls[0].indexOf("--why") + 1], /\(work GitHub account someone_corp\)$/);
   assert.match(calls[1][calls[1].indexOf("--why") + 1], /\(GitHub account someone\)$/);
+});
+
+test("awaitSudo waits for the line to finish sending before it returns", async () => {
+  const page = fakePage({ offers: ["mobile"] });
+  let finished = false;
+  const notify = () => new Promise((r) => setTimeout(() => { finished = true; r(); }, 60));
+  assert.equal(await awaitSudo({ page, relaunchHeadful: async () => page }, { ...fast, what: "x", redo: async () => {}, notify }), "mobile");
+  assert.equal(finished, true);
 });

@@ -6,7 +6,7 @@
 // lasts a few hours for that browser session, so one approval covers every step that follows. When a personal agent is configured, a
 // personal account's live line goes to it over A2A (falling back to Teams, saying so); a work account's line always goes to Teams.
 import { execFile, execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { homedir, hostname } from "node:os";
 import { join } from "node:path";
 import { ssoUrlFor } from "./browser.mjs";
@@ -76,11 +76,14 @@ export function sudoIntake({ account, line, waitMs = 15 * 60_000, now = new Date
  * agent's reply. Resolves true when sent, false on a definite non-delivery (no connection, a refusal); never throws. A timeout counts as
  * sent: the agent may still be answering, and a fallback would put the same prompt in the work chat too.
  */
-export function a2aLine(text, agent, run = execFile) {
+// The Ouro CLI: on PATH, else where its installer puts it (a launchd job's PATH is short).
+const ouroBin = () => { const own = join(homedir(), ".ouro-cli", "bin", "ouro"); return (process.env.PATH ?? "").split(":").some((d) => d && existsSync(join(d, "ouro"))) || !existsSync(own) ? "ouro" : own; };
+
+export function a2aLine(text, agent, run = execFile, bin = ouroBin()) {
   return new Promise((resolve) => {
     const args = ["a2a", "message", "--to", agent.card, "--text", text, "--json", "--why", "GitHub sudo is waiting on Ari, who asked that personal prompts reach him only through his personal agent"];
     if (agent.identityFile) args.push("--identity-file", agent.identityFile);
-    run("ouro", args, { timeout: 60000, maxBuffer: 1 << 20 }, (err, stdout, stderr) => {
+    run(bin, args, { timeout: 60000, maxBuffer: 1 << 20 }, (err, stdout, stderr) => {
       let reply = null;
       try { reply = JSON.parse(String(stdout ?? "").trim().split("\n").pop()); } catch {}
       const failed = reply?.ok === false ? (reply.reason ?? "refused") : err && !err.killed ? (String(stderr ?? "").trim().split("\n").pop() || err.message) : null;
@@ -139,12 +142,14 @@ export async function awaitSudo(session, { what, redo, account = session.user ??
     line = `GitHub is waiting for your approval to ${what}: use your passkey in the Edge window that just opened.`;
   }
   log(line);
-  // Not awaited: the approval can land while the message is still on its way.
-  Promise.resolve(notify(line)).catch((e) => console.error(`Could not send the line: ${e.message}`));
+  // Not awaited here: the approval can land while the message is still on its way. It is awaited before returning, so a caller that
+  // exits right after never cuts off the send or its Teams fallback.
+  const sending = Promise.resolve(notify(line)).catch((e) => console.error(`Could not send the line: ${e.message}`));
   const end = Date.now() + waitMs;
   while (Date.now() < end) {
-    if (!(await onSudoPage(page))) return path;
+    if (!(await onSudoPage(page))) { await sending; return path; }
     await sleep(pollMs);
   }
+  await sending;
   throw Object.assign(new Error(`No approval within ${waitMs / 60000} minutes for: ${what}`), { exit: 4, sudoTimeout: true });
 }
