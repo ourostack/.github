@@ -45,7 +45,8 @@
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation).
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
-// .github/merge-checks.json `required` list when it has one; never with a failed check), with a squash merge.
+// .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
+// and its culprit isn't the revert's), with a squash merge.
 // It prints the API calls it spent. Reads use READ_TOKEN when set (the caller's GITHUB_TOKEN, which can read Checks); writes use
 // GH_TOKEN (contents, pull-requests and actions write).
 
@@ -1079,25 +1080,57 @@ export async function revert(repo, c, { run, minutes, apply, log = console.log, 
 }
 
 // The tool's own open revert PRs whose head checks are green merge now (squash), the way any pull request lands.
-export function landable(checks, required) {
+// `over`: its failed checks carry only main's known failures (onlyKnown), so a failed check doesn't hold it, and a required
+// check that ended counts as reported.
+export function landable(checks, required, over = false) {
   const runs = checks.check_runs ?? [];
-  if (runs.some((r) => ["failure", "timed_out", "cancelled", "action_required", "startup_failure"].includes(r.conclusion))) return { ok: false, why: "a check failed" };
+  if (!over && runs.some((r) => FAILED.includes(r.conclusion))) return { ok: false, why: "a check failed" };
+  if (over && runs.some((r) => r.status !== "completed")) return { ok: false, why: "checks still running" };
   if (required?.length) {
-    const missing = required.filter((n) => !runs.some((r) => r.name === n && r.status === "completed" && r.conclusion === "success"));
+    const missing = required.filter((n) => !runs.some((r) => r.name === n && r.status === "completed" && (r.conclusion === "success" || (over && FAILED.includes(r.conclusion)))));
     return missing.length ? { ok: false, why: `waiting for ${missing.join(", ")}` } : { ok: true };
   }
   if (!runs.length || runs.some((r) => r.status !== "completed")) return { ok: false, why: "checks still running" };
   return { ok: true };
 }
-export async function landReverts(repo, openPrs, { a, required, apply, log = console.log }) {
+const FAILED = ["failure", "timed_out", "cancelled", "action_required", "startup_failure"];
+
+// Main's red now, failure by failure: each failure's key and the pull request blamed for it (null: a flake, or not
+// attributed). A revert may carry these and still land (onlyKnown).
+export function knownOnMain(analyses) {
+  const m = new Map();
+  for (const r of analyses) for (const x of r?.results ?? []) m.set(x.failure.key, x.blame?.pr ?? null);
+  return m;
+}
+
+// Whether a revert's own failures are all main's already and none is its culprit's: it adds no red and takes its culprit's
+// out, so it lands over them (Tandem's #4641 waited 33 minutes behind #4640's failure in its own gate). A required check's
+// own job, which only adds the others up, is left out.
+export function onlyKnown(failures, known, culpritPr, required = []) {
+  const own = (failures ?? []).filter((f) => !(f.test == null && (required ?? []).some((n) => f.job === n)));
+  return own.length > 0 && own.every((f) => known.has(f.key) && known.get(f.key) !== culpritPr);
+}
+
+export async function landReverts(repo, openPrs, { a, required, apply, log = console.log, known = new Map(), failuresOf = null }) {
   // Where auto-merge took, GitHub merges it; this lands only the reverts in repositories without auto-merge.
   for (const pr of openPrs.filter((p) => /^revert-\d+-/.test(p.head?.ref ?? "") && String(p.body ?? "").includes(MARKER) && !p.draft && !p.auto_merge)) {
-    const v = landable(await a.get(`/repos/${repo}/commits/${pr.head.sha}/check-runs?per_page=100`), required);
+    const checks = await a.get(`/repos/${repo}/commits/${pr.head.sha}/check-runs?per_page=100`);
+    let v = landable(checks, required);
+    let over = null;
+    if (!v.ok && v.why === "a check failed" && known.size && failuresOf) {
+      const target = Number(/^revert-(\d+)-/.exec(pr.head.ref)[1]);
+      const fs = await failuresOf(checks).catch(() => null);
+      if (fs && onlyKnown(fs, known, target, required)) {
+        const w = landable(checks, required, true);
+        if (w.ok) { v = w; over = [...new Set(fs.filter((f) => known.has(f.key)).map((f) => f.test ?? f.key))]; }
+        else v = w;
+      }
+    }
     if (!v.ok) {
       log(`${repo}: revert #${pr.number} not merged yet: ${v.why}`);
       continue;
     }
-    log(`${repo}: revert #${pr.number} is green; ${apply ? "" : "would "}merge it`);
+    log(over ? `${repo}: revert #${pr.number} fails only what main already fails without it (${over.slice(0, 3).join("; ")}); ${apply ? "" : "would "}merge it` : `${repo}: revert #${pr.number} is green; ${apply ? "" : "would "}merge it`);
     if (apply) await a.put(`/repos/${repo}/pulls/${pr.number}/merge`, { merge_method: "squash", sha: pr.head.sha, commit_title: `${pr.title} (#${pr.number})`, commit_message: cleanBody(pr.body) });
   }
 }
@@ -1140,10 +1173,9 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       red = vs.filter((v) => v.state === "red");
     }
   }
-  if (apply && !asOf) {
-    openPrs = await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
-    if (openPrs.some((p) => String(p.body ?? "").includes(MARKER))) await landReverts(repo, openPrs, { a, required: await (await getSrc()).mergeChecks(), apply, log });
-  }
+  if (apply && !asOf) openPrs = await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
+  const mine = () => apply && !asOf && openPrs.some((p) => String(p.body ?? "").includes(MARKER));
+  if (!red.length && mine()) await landReverts(repo, openPrs, { a, required: await (await getSrc()).mergeChecks(), apply, log });
   if (!red.length) {
     log(`${repo}: main is not red`);
     src?.close?.();
@@ -1151,8 +1183,28 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     return;
   }
   const keep = new Set();
+  const analyses = [];
   try {
     await judge();
+    // Main is red: a revert may land over what main already fails without it, but never over its own culprit's failure.
+    if (red.length && mine()) {
+      const s = await getSrc();
+      const head = red[0].reds[0].head_sha;
+      const files = await s.files(head);
+      const failuresOf = async (checks) => {
+        const ids = [...new Set((checks.check_runs ?? []).filter((r) => FAILED.includes(r.conclusion)).map((r) => /\/actions\/runs\/(\d+)\//.exec(r.details_url ?? "")?.[1]).filter(Boolean))];
+        if (!ids.length) return null;
+        const out = [];
+        for (const id of ids) {
+          const run = await a.get(`/repos/${repo}/actions/runs/${id}`);
+          const r = await runFailures(repo, run, { a, files, cache, read: (p) => s.read(head, p) });
+          if (!r.failures) return null;
+          out.push(...r.failures);
+        }
+        return out;
+      };
+      await landReverts(repo, openPrs, { a, required: await s.mergeChecks(), apply, log, known: knownOnMain(analyses), failuresOf });
+    }
   } finally {
     src?.close?.();
   }
@@ -1161,6 +1213,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     for (const v of red) {
       const s = await getSrc();
       const r = await analyse(repo, v, { a, src: s, cache, asOf });
+      analyses.push(r);
       if (r.infra) {
         log(`${repo}: ${v.workflow} failed at ${short(v.reds[0].head_sha)} on infrastructure only (${r.infra}); not red, the next run decides`);
         continue;

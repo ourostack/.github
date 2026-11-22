@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
-  CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, landReverts, landable, main,
+  CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
   codeNames, evidence, jobKey, laterGreen, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
@@ -526,6 +526,37 @@ test("land: the tool's own revert merges once its head's required checks are gre
   assert.equal(put[1], "/repos/o/r/pulls/99/merge");
   assert.deepEqual({ ...put[2], commit_message: undefined }, { merge_method: "squash", sha: sha("h"), commit_title: 'Revert "Breaks y" (#11) (#99)', commit_message: undefined });
   assert.equal(gh.calls.filter((c) => c[0] === "put").length, 1, "a revert someone else opened is theirs to merge");
+});
+
+test("land: a revert whose own checks fail only with main's known failures, none its culprit's, lands over them", async () => {
+  // Tandem's #4641 (reverting #4635) waited 33 minutes: its gate failed on #4640's clock test, red on main without it.
+  const known = knownOnMain([{ results: [
+    { failure: { key: "test/compose.test.ts :: the @ picker offers the chat's members" }, blame: { pr: 4635 } },
+    { failure: { key: "site/browser.test.mjs :: every use of the real clock is pinned" }, blame: { pr: 4640 } },
+    { failure: { key: "test/x.test.ts :: a flake" }, blame: null },
+  ] }]);
+  const gate = { key: "job pr gate :: Every pull request job", test: null, job: "pr gate" };
+  const clock = { key: "site/browser.test.mjs :: every use of the real clock is pinned", test: "every use of the real clock is pinned", job: "npm test" };
+  assert.equal(onlyKnown([clock, gate], known, 4635, ["pr gate"]), true, "the gate's own job only adds the others up");
+  assert.equal(onlyKnown([clock, { key: "test/compose.test.ts :: the @ picker offers the chat's members", test: "x" }], known, 4635, ["pr gate"]), false, "never over its own culprit's failure: then it doesn't fix main");
+  assert.equal(onlyKnown([{ key: "test/new.test.ts :: something else", test: "y" }], known, 4635, ["pr gate"]), false, "never over a failure main doesn't have");
+  assert.equal(onlyKnown([gate], known, 4635, ["pr gate"]), false, "nothing of its own to judge");
+  assert.equal(onlyKnown([{ key: "test/x.test.ts :: a flake", test: "a flake" }], known, 4635, ["pr gate"]), true, "a known flake on main");
+  // landReverts: a failed gate, still nothing running, merges only with failuresOf saying so.
+  const mine = { number: 4641, title: 'Revert "Everyone in @" (#4635)', body: `x\n${MARKER}`, head: { ref: "revert-4635-everyone", sha: sha("h") } };
+  const checks = { check_runs: [
+    { name: "pr gate", status: "completed", conclusion: "failure", details_url: "https://github.com/o/r/actions/runs/7/job/70" },
+    { name: "npm test (ubuntu-latest, 2/5)", status: "completed", conclusion: "failure", details_url: "https://github.com/o/r/actions/runs/7/job/71" },
+  ] };
+  const gh = fakeGitHub([], {}, { checks: { [sha("h")]: checks } });
+  await landReverts("o/r", [mine], { a: gh, required: ["pr gate"], apply: true, log() {}, known, failuresOf: async () => [clock, gate] });
+  assert.equal(gh.calls.filter((c) => c[0] === "put").length, 1);
+  const held = fakeGitHub([], {}, { checks: { [sha("h")]: checks } });
+  await landReverts("o/r", [mine], { a: held, required: ["pr gate"], apply: true, log() {}, known, failuresOf: async () => [{ key: "test/new.test.ts :: y", test: "y" }] });
+  assert.equal(held.calls.filter((c) => c[0] === "put").length, 0);
+  const running = fakeGitHub([], {}, { checks: { [sha("h")]: { check_runs: [...checks.check_runs, { name: "x", status: "in_progress" }] } } });
+  await landReverts("o/r", [mine], { a: running, required: ["pr gate"], apply: true, log() {}, known, failuresOf: async () => [clock] });
+  assert.equal(running.calls.filter((c) => c[0] === "put").length, 0, "not while a check still runs");
 });
 
 test("git log parsing: each first-parent commit's files, and its PR only when it is a squash", () => {
