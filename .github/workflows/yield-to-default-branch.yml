@@ -10,6 +10,10 @@ on:
         description: "Comma-separated repository names (or owner/name) whose default-branch CI to yield to."
         type: string
         default: "ouroboros,ouro-ui,desk,.github,ouroboros-website"
+      runner:
+        description: "Runner label of the jobs that wait; only default-branch jobs in the same pool count."
+        type: string
+        default: "ubuntu-latest"
       cap-minutes:
         description: "Longest wait before the pull request proceeds anyway."
         type: number
@@ -43,5 +47,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           YIELD_REPOS: ${{ inputs.repos }}
+          YIELD_RUNNER: ${{ inputs.runner }}
           YIELD_CAP_MINUTES: ${{ inputs.cap-minutes }}
         run: node .ouro-tools/tools/yield-to-default-branch/yield.mjs
