@@ -29,7 +29,8 @@ Generated at 1536x1024 and shipped as a 3:1 strip, so the crop band is rows 256 
 - Height: the smallest figure; his coil is about as tall as the person's head.
 - Outfit: none; he is the pet, not a mascot.
 - Expression: content, nose into the wind, eyes half-closed with pleasure.
-- Pose: coiled in one round "O" on the rail cap beside the person's far mitten, one short tail tip rising beside his head, belly on the inner curve, casting a soft shadow on the brass.
+- Body: an open "C" curl, never a closed ring, donut or torus. The head and the short tail tip are the two ends of one body, with a visible gap between them where the body never meets itself.
+- Pose: curled in an open "C" on the rail cap beside the person's far mitten, his head at one end and his short tail tip rising at the other, a gap of sky between them, belly on the inner curve, casting a soft shadow on the brass.
 - Limbs: none: one head, one continuous body, one short tail tip.
 - Hands: none.
 - Facing: head in three-quarter view toward the horizon, so the camera sees one eye and his smile in profile.
@@ -93,6 +94,7 @@ Sunrise peach and blue sky, cloud white, brass gold and warm oak; emerald for Ou
 - No two agents alike in colour, outfit or expression.
 - No figure facing the camera full on.
 - No image fades or vignettes.
+- No closed ring, donut or torus for Ouro's body, and no head or tail growing out of a ring: his two ends never join.
 - Nothing important in the top or bottom quarter of the frame.
 
 ## Output

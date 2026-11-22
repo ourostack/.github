@@ -86,6 +86,11 @@ jobs:
         run: /tmp/upscale-venv/bin/python brand/tools/sky_seams_test.py -v
       - name: Check every light-transfer night's sky for straight seams
         run: /tmp/upscale-venv/bin/python brand/tools/sky_seams.py
+      # Required: Ouro is an open C. A body mask that closes into a ring (a donut with a head and a tail tip) can't merge.
+      - name: Test how ouro_gap.py tells an open C from a closed ring
+        run: /tmp/upscale-venv/bin/python brand/tools/ouro_gap_test.py -v
+      - name: Check every transparent Ouro mark is an open C
+        run: /tmp/upscale-venv/bin/python brand/tools/ouro_gap.py --marks
       # Required with the upscale tests: a night that moves a figure's outline, or loses a figure into the sky, can't merge.
       # OpenCV pins numpy below 2.3, so it goes in after the tests above that ran on the newest numpy.
       - name: Install OpenCV for outline_parity.py

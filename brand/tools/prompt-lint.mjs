@@ -58,6 +58,29 @@ const RISKS = [
 
 const NEGATION = /^\s*(no|never|not|nothing|without|don't|do not)\b/i;
 
+// Ouro's anatomy (agents/art-one-universe.md, "Ouro's body is an open C"). Every prompt that draws Ouro
+// carries this sentence, or its three parts, in Ouro's cast block. Without it, and with "round O", "ring"
+// or "coil" alone, the model closes the body into a donut with a head and a tail tip sprouting from it
+// (garden-line, 2026-11-16; Ari, 2026-11-22: "happens often when drawing ouroboros' character but we need
+// to fix it and put a stop to it").
+export const OURO_ANATOMY =
+  'Body: an open "C" curl, never a closed ring, donut or torus. The head and the short tail tip are the two ends of one body, with a visible gap between them where the body never meets itself.';
+// "Ouro" the snake, not Ouro UI, Ouro HX, Ouro MD and the other product names.
+const OURO = /\bOuro\b(?![\s-]*(UI|HX|MD|Labs|Teams|apps?|work|Work|stack|Stack|bot|Bot|app|App)\b)|\bsnakes?\b/;
+const isOuro = (what) => OURO.test(what);
+const OURO_OPEN_C = /\bopen\b[^.;]{0,12}["“]?C["”]?[^.;]{0,12}\bcurl\b/i;
+const OURO_GAP = /\bgap\b/i;
+const OURO_TWO_ENDS = /\btwo ends\b/i;
+// Words that draw a closed body. "loop" is matched lowercase only, so the agent called Loop isn't one.
+const OURO_CLOSED_WORDS = /\b(rings?|ringed|donuts?|doughnuts?|torus|tori|hoops?|O-shaped)\b|\bround ["“]?O["”]?(?=\W|$)|["“]O["”] (shape|curl|coil)/i;
+const OURO_LOOP = /\bloop(s|ed|ing)?\b/;
+const closedBody = (s) => {
+  const m = OURO_CLOSED_WORDS.exec(s) ?? OURO_LOOP.exec(s);
+  return m ? m[0] : null;
+};
+// Drop each clause from a ban word ("never a closed ring, donut or torus") to the end of its clause.
+const dropBans = (s) => s.replace(/\b(no|never|not|nor|without|don't|do not)\b[^.;:]*/gi, " ");
+
 // A figure block for one of the shared universe's people (not an agent, robot or pet).
 const isPerson = (what) => /\b(person|people|man|woman|human|captain|ari)\b/i.test(what) && !/\b(robot|agent|snake|pet|stoker)\b/i.test(what);
 // Neck length, not just width: "a natural neck about four tenths of the head's width" still drew stalks (ourostack).
@@ -163,6 +186,38 @@ export function lint(text) {
       if (WRAP.test(kept) && !EDGE.test(block)) {
         warn(where, "a blanket or throw worn over clothes with no edge named faded into the jumper and coat under it (ourostack meadow, 2026-11-18). Name its edge where it meets the clothes: \"a folded-over hem with a thin shadow line where it sits on the jumper\", or a fringe", "garment-edge");
         break;
+      }
+    }
+  }
+
+  // Ouro's anatomy: an open C, never a closed ring. Bans, references and the frame's size don't draw him.
+  const drawing = [...sections].filter(([name]) => !["Must not", "References", "Composition", "Output"].includes(name));
+  const ouroBlocks = figures.filter((f) => isOuro(f.fields.get("what") ?? f.name));
+  const mentionsOuro = drawing.some(([, lines]) => OURO.test(lines.join("\n")));
+  if (mentionsOuro || ouroBlocks.length) {
+    const fix = `put this line in Ouro's cast block: "- ${OURO_ANATOMY}"`;
+    if (!ouroBlocks.length) err("Cast", `Ouro is drawn but has no "### Ouro" cast block carrying his anatomy; ${fix}`);
+    for (const f of ouroBlocks) {
+      const block = f.lines.join("\n");
+      const missing = [
+        !OURO_OPEN_C.test(block) && "an open \"C\" curl",
+        !OURO_TWO_ENDS.test(block) && "head and tail tip as the two ends of one body",
+        !OURO_GAP.test(block) && "a visible gap between them",
+      ].filter(Boolean);
+      if (missing.length) err(`Cast: ${f.name}`, `Ouro's body must be described as ${missing.join(", ")}; without it the model closes him into a donut with a head and a tail tip growing out of it (garden-line, 2026-11-16). ${fix}`);
+    }
+    const ouroLines = new Set(ouroBlocks.flatMap((f) => f.lines));
+    const flagged = new Set();
+    for (const [name, lines] of drawing) {
+      for (const s of sentences(lines.join("\n").replace(/^\s*[-*]\s*/gm, ""))) {
+        const inBlock = lines.some((l) => ouroLines.has(l) && l.replace(/^\s*[-*]\s*/, "").includes(s));
+        if (!inBlock && !OURO.test(s)) continue;
+        const word = closedBody(dropBans(s));
+        const where = inBlock ? `Cast: ${ouroBlocks.find((f) => f.lines.some((l) => l.replace(/^\s*[-*]\s*/, "").includes(s)))?.name ?? "Ouro"}` : name;
+        if (word && !flagged.has(where + word)) {
+          flagged.add(where + word);
+          err(where, `"${word}" describes Ouro's body as closed; he is an open "C" curl whose two ends never join (Ari, 2026-11-22). Say "open C curl" and put "ring", "donut", "torus" and "loop" only in a ban. Found: "${s.trim().slice(0, 100)}"`);
+        }
       }
     }
   }
