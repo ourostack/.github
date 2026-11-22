@@ -40,7 +40,8 @@ Generated at 1536x1024 and shipped whole as a 3:2 picture; the crop band is rows
 - Height: about the size of a curled-up house cat; his whole coil is about as tall as the bellows agent's head and less than a fifth of the captain's height.
 - Outfit: none; he is the pet, not a mascot.
 - Expression: delighted and expectant, eyes wide.
-- Pose: one continuous tube coiled into a single round "O" resting on the flat top of the organ's carved case at its left end, the ring open at the top right: his head lifted over the top of the ring toward the captain and his one short tail tip rising just to the right of his head; a soft shadow under him on the wood.
+- Body: an open "C" curl, never a closed ring, donut or torus. The head and the short tail tip are the two ends of one body, with a visible gap between them where the body never meets itself.
+- Pose: one continuous tube curled into an open "C" resting on the flat top of the organ's carved case at its left end, the curl open at the top right: his head lifted at one end toward the captain and his one short tail tip rising at the other end, just to the right of his head, with a gap between them; a soft shadow under him on the wood.
 - Limbs: none: one head, one continuous body, one short tail tip.
 - Hands: none.
 - Facing: head in three-quarter view toward the captain, so the camera sees one eye and the curve of his smile.
