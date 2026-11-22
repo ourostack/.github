@@ -3,15 +3,27 @@
 // morning) and the call throws `signinQueued` so the flow carries on with other work and is rerun after the sitting. With
 // SIGNIN_LIVE=1 (the sitting itself) the prompt is live: GitHub Mobile first (a push to their phone, no window needed; the
 // number GitHub shows goes to the terminal and to Ari), then a passkey in a visible, frontmost Edge window. Granted sudo
-// lasts a few hours for that browser session, so one approval covers every step that follows. The live line for a personal account
-// goes to Ari's personal agent over A2A (falling back to Teams, saying so); a work account's line goes to Teams.
-import { execFileSync } from "node:child_process";
-import { hostname } from "node:os";
+// lasts a few hours for that browser session, so one approval covers every step that follows. When a personal agent is configured, a
+// personal account's live line goes to it over A2A (falling back to Teams, saying so); a work account's line always goes to Teams.
+import { execFile, execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { homedir, hostname } from "node:os";
+import { join } from "node:path";
 import { ssoUrlFor } from "./browser.mjs";
 
 const CHAT = process.env.SUDO_TEAMS_CHAT ?? "19:e1ac21e4-c653-4dab-848f-2d8edb449c6b_7f3cdd24-4dd3-4278-81f4-cad2711c4b31@unq.gbl.spaces";
-const PERSONAL_CARD = process.env.SUDO_PERSONAL_CARD ?? "http://100.99.143.43:18921/.well-known/agent-card.json";
-const PERSONAL_NAME = process.env.SUDO_PERSONAL_NAME ?? "Slugger";
+
+/**
+ * The personal agent: { card, name, identityFile } from SUDO_PERSONAL_CARD, SUDO_PERSONAL_NAME and SUDO_A2A_IDENTITY_FILE, else from the
+ * `personal` block of Shepherd's signin.json (the same agent the morning batch uses). Null when no card is set: every line goes to Teams.
+ */
+export function personalAgent(env = process.env, read = (f) => readFileSync(f, "utf8")) {
+  let p = {};
+  try { p = JSON.parse(read(env.SHEPHERD_SIGNIN_CONFIG ?? join(homedir(), ".config", "shepherd", "signin.json"))).personal ?? {}; } catch {}
+  const pick = (a, b) => (typeof a === "string" && a.trim() ? a.trim() : typeof b === "string" && b.trim() ? b.trim() : null);
+  const card = pick(env.SUDO_PERSONAL_CARD, p.card);
+  return card ? { card, name: pick(env.SUDO_PERSONAL_NAME, p.name) ?? "The personal agent", identityFile: pick(env.SUDO_A2A_IDENTITY_FILE, p.identityFile) } : null;
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export const onSudoPage = async (page) => (await page.locator("text=Confirm access >> visible=true").count()) > 0;
@@ -59,25 +71,34 @@ export function sudoIntake({ account, line, waitMs = 15 * 60_000, now = new Date
   ].join("\n");
 }
 
-/** Sends `text` to the personal agent with `ouro a2a message` (sealed and signed with this machine's A2A identity); a failure is reported, never thrown. */
-export function a2aLine(text, run = execFileSync, card = PERSONAL_CARD, identityFile = process.env.SUDO_A2A_IDENTITY_FILE) {
-  try {
-    const args = ["a2a", "message", "--to", card, "--text", text, "--json", "--why", "GitHub sudo is waiting on Ari, who asked that personal prompts reach him only through his personal agent"];
-    if (identityFile) args.push("--identity-file", identityFile);
-    const out = String(run("ouro", args, { stdio: ["ignore", "pipe", "pipe"], timeout: 20000 }) ?? "");
-    const last = out.trim().split("\n").pop();
-    let reply = null;
-    try { reply = JSON.parse(last); } catch {}
-    if (reply?.ok === false) throw new Error(reply.reason ?? "refused");
-    return true;
-  } catch (e) { console.error(`${PERSONAL_NAME} message failed: ${String(e.stderr ?? "").trim().split("\n").pop() || e.message}`); return false; }
+/**
+ * Sends `text` to the personal agent with `ouro a2a message` (sealed and signed with this machine's A2A identity), which waits for the
+ * agent's reply. Resolves true when sent, false on a definite non-delivery (no connection, a refusal); never throws. A timeout counts as
+ * sent: the agent may still be answering, and a fallback would put the same prompt in the work chat too.
+ */
+export function a2aLine(text, agent, run = execFile) {
+  return new Promise((resolve) => {
+    const args = ["a2a", "message", "--to", agent.card, "--text", text, "--json", "--why", "GitHub sudo is waiting on Ari, who asked that personal prompts reach him only through his personal agent"];
+    if (agent.identityFile) args.push("--identity-file", agent.identityFile);
+    run("ouro", args, { timeout: 60000, maxBuffer: 1 << 20 }, (err, stdout, stderr) => {
+      let reply = null;
+      try { reply = JSON.parse(String(stdout ?? "").trim().split("\n").pop()); } catch {}
+      const failed = reply?.ok === false ? (reply.reason ?? "refused") : err && !err.killed ? (String(stderr ?? "").trim().split("\n").pop() || err.message) : null;
+      if (failed) console.error(`${agent.name} message failed: ${failed}`);
+      resolve(!failed);
+    });
+  });
 }
 
-/** Routes the live line: a personal account's goes to the personal agent, else (or when it can't be reached) to Teams. Returns "personal", "fallback" or "work". */
-export function routeLine({ account, line, waitMs }, { personal = a2aLine, teams = teamsLine, name = PERSONAL_NAME, now = new Date() } = {}) {
-  if (isWorkAccount(account)) { teams(line); return "work"; }
-  if (personal(sudoIntake({ account, line, waitMs, now }))) return "personal";
-  teams(`${name} unreachable, so this came here. ${line}`);
+/**
+ * Routes the live line: with a personal agent configured, a personal account's goes to it, and to Teams (saying so) when it can't be
+ * reached; a work account's, or any line with no personal agent, goes to Teams. Resolves "personal", "fallback" or "work".
+ * Only the account decides: a personal account doing sudo on a work organization counts as personal.
+ */
+export async function routeLine({ account, line, waitMs }, { agent = personalAgent(), personal = a2aLine, teams = teamsLine, now = new Date() } = {}) {
+  if (!agent || isWorkAccount(account)) { teams(line); return "work"; }
+  if (await personal(sudoIntake({ account, line, waitMs, now }), agent)) return "personal";
+  teams(`${agent.name} unreachable, so this came here. ${line}`);
   return "fallback";
 }
 
@@ -118,7 +139,8 @@ export async function awaitSudo(session, { what, redo, account = session.user ??
     line = `GitHub is waiting for your approval to ${what}: use your passkey in the Edge window that just opened.`;
   }
   log(line);
-  notify(line);
+  // Not awaited: the approval can land while the message is still on its way.
+  Promise.resolve(notify(line)).catch((e) => console.error(`Could not send the line: ${e.message}`));
   const end = Date.now() + waitMs;
   while (Date.now() < end) {
     if (!(await onSudoPage(page))) return path;
