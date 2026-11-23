@@ -160,6 +160,32 @@ test("readHistory: a tagRuns workflow's main runs are its runs dispatched on a r
   assert.deepEqual(verdicts(got.filter((r) => r.event === "workflow_dispatch")).map((v) => v.state), ["red"], "a red guard on the newest promoted release is red main");
 });
 
+test("readHistory: a bisectRuns workflow's runs dispatched on a bisect branch are read beside its push runs, marked bisect", async () => {
+  const pages = [];
+  const dispatched = (branch, extra = {}) => run({ event: "workflow_dispatch", head_branch: branch, ...extra });
+  const runs = [dispatched("auto-revert/bisect-bbbb"), dispatched("auto-revert/verify-cccc"), dispatched("main")];
+  const got = await readHistory("o/r", async (p) => (pages.push(p), { workflow_runs: p.includes("event=workflow_dispatch") ? runs : [run({ conclusion: "success" })] }), { workflows: ["ci", "burst"], bisectRuns: ["burst"] });
+  assert.match(pages.at(-1), /\/actions\/workflows\/burst\.yml\/runs\?event=workflow_dispatch&per_page=50&page=1$/);
+  assert.equal(pages.filter((p) => p.includes("event=workflow_dispatch")).length, 1, "one page");
+  assert.deepEqual(got.filter((r) => r.bisect).map((r) => r.head_branch), ["auto-revert/bisect-bbbb"], "never a verify run or a hand-run");
+});
+
+test("check: a bisect run narrows a red range by commit order, and a green one never clears main by its newer run number", async () => {
+  // Main g, b (#11), u (#12), n (#13). The workflow ran on g (green) and n (red) only; it bisected the range itself: green at b,
+  // red at u, both run after n. The failure names nothing a pull request changed, so only the range can name a culprit.
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const bisect = (c, extra) => run({ event: "workflow_dispatch", head_branch: `auto-revert/bisect-${c}`, head_sha: sha(c), ...extra });
+  const u = bisect("u", { updated_at: at(1) });
+  const b = bisect("b", { conclusion: "success", updated_at: at(1) });
+  const logs = { [n.id]: TAP("w works", "test/w.test.ts"), [u.id]: TAP("w works", "test/w.test.ts") };
+  const order = new Map([sha("g"), sha("b"), sha("u"), sha("n")].map((x, i) => [x, i + 1]));
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], bisectRuns: ["ci"], minRedMinutes: 0 }, { a: fakeGitHub([n, g], logs, { dispatched: [b, u] }), now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src({ order: async () => order }) });
+  assert.ok(lines.some((l) => /failing since u+ \(run \d+\), passing at b+, 2 runs -> #12/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /would open revert PR "Revert "Unrelated" \(#12\)"/.test(l)), lines.join("\n"));
+});
+
 test("parseLog: node:test's failing tests with their location and error, the YAML's own '...' ending the block", async () => {
   const p = await parseLog([...TAP("migrates", "test/x.test.ts", "see src/y.ts:3"), "\u001b[31m##[error]Process completed with exit code 1.\u001b[0m"]);
   assert.equal(p.tests.length, 1);

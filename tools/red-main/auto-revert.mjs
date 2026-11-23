@@ -13,7 +13,8 @@
 //
 // Red is a verdict, not a tip. Each workflow that counts (the repo's "workflows" in auto-revert.json, or every push workflow
 // but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main (for a workflow in the repo's "tagRuns", its
-// newest completed run dispatched on a release tag of a commit on main): a pending or running run says nothing, a run
+// newest completed run dispatched on a release tag of a commit on main; for one in "bisectRuns", its runs dispatched on an
+// `auto-revert/bisect-<sha>` branch inside a red range count too, by commit order): a pending or running run says nothing, a run
 // cancelled or replaced by concurrency says nothing, and one whose every failure is infrastructure says nothing. Main is red
 // while that verdict is a code failure; a newer completed green run clears it. "Newer" is commit order on main (first parent),
 // never finish time: when each push has a run of its own (no shared concurrency group), an older commit's run can finish
@@ -129,13 +130,19 @@ export const MAX_PAGES = 6;
 
 // A release tag, vX.Y.Z: the ref a `tagRuns` workflow's main runs are dispatched on.
 export const RELEASE_TAG = /^v\d+\.\d+\.\d+$/;
+// The branch a `bisectRuns` workflow dispatches itself on, at a commit on main inside a red range, to find the commit that
+// broke it: `auto-revert/bisect-<sha>`.
+export const BISECT = "auto-revert/bisect-";
 
 // Main's push runs of the workflows that count, newest first, back to each one's newest completed green run (or MAX_PAGES).
 // With `workflows`, each is read from its own list; otherwise every push run, less `ignore`. A workflow in `tagRuns` (also
 // listed in `workflows`) has no push runs: its main runs are dispatched on the release tag of a commit on main (Tandem's
 // Mac guards, started on each promoted release), so its workflow_dispatch runs on a release tag are read instead, each
-// judging its tag's commit like a push run.
-export async function readHistory(repo, get, { workflows = null, ignore = [], tagRuns = [], asOf = null, perPage = PAGE, maxPages = MAX_PAGES } = {}) {
+// judging its tag's commit like a push run. A workflow in `bisectRuns` (also in `workflows`) runs on some of main's commits
+// only (a shared concurrency group: a burst of merges, one run), and bisects a red range itself: its workflow_dispatch runs
+// on a `BISECT` branch at a commit inside the range are read too, one page, marked `bisect`. They judge their commits like
+// push runs once runs are in commit order (check), so a red range narrows to the one commit that broke it.
+export async function readHistory(repo, get, { workflows = null, ignore = [], tagRuns = [], bisectRuns = [], asOf = null, perPage = PAGE, maxPages = MAX_PAGES } = {}) {
   const created = asOf ? `&created=${encodeURIComponent(`<=${new Date(asOf).toISOString()}`)}` : "";
   const stemOf = (w) => w.replace(/\.ya?ml$/, "");
   const lists = workflows?.length ? workflows.map((w) => ({ base: `/repos/${repo}/actions/workflows/${/\.ya?ml$/.test(w) ? w : `${w}.yml`}/runs`, tags: tagRuns.includes(stemOf(w)) })) : [{ base: `/repos/${repo}/actions/runs`, tags: false }];
@@ -149,6 +156,10 @@ export async function readHistory(repo, get, { workflows = null, ignore = [], ta
       const done = byWf.size > 0 && [...byWf.values()].every((rs) => rs.some(isGreen));
       if (done || (body.workflow_runs ?? []).length < perPage) break;
     }
+  }
+  for (const w of (workflows ?? []).filter((x) => bisectRuns.includes(stemOf(x)))) {
+    const body = await get(`/repos/${repo}/actions/workflows/${/\.ya?ml$/.test(w) ? w : `${w}.yml`}/runs?event=workflow_dispatch&per_page=${perPage}&page=1${created}`);
+    all.push(...(body.workflow_runs ?? []).filter((r) => String(r.head_branch ?? "").startsWith(BISECT)).map((r) => replay(r, asOf)).filter(Boolean).map((r) => ({ ...r, bisect: true })));
   }
   return all;
 }
@@ -1147,8 +1158,9 @@ function describe(r) {
 // One repo, one tick.
 export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = null, cache = null, log = console.log, source = gitSource, rerunOnly = false }) {
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
-  const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], tagRuns: cfg.tagRuns ?? [], asOf });
-  let vs = verdicts(await markPartial(repo, runs, (p) => a.get(p)));
+  const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], tagRuns: cfg.tagRuns ?? [], bisectRuns: cfg.bisectRuns ?? [], asOf });
+  // A bisect run is at an older commit than the push run it narrows, but newer by run number: by push order it says nothing.
+  let vs = verdicts(await markPartial(repo, runs.filter((r) => !r.bisect), (p) => a.get(p)));
   let red = vs.filter((v) => v.state === "red");
   // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).
   if (rerunOnly) {
