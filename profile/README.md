@@ -14,6 +14,16 @@
 
 ## Start with one
 
+### [Ouro UI](https://github.com/ourostack/ouro-ui)
+
+<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="On a mountain cabin's deck, a faceless glass person stands at the table beside a glowing glass push button he has just pressed, while a small robot on a crate reads the gauge, and Ouro smiles from a folded towel on the table"></a>
+
+About to build an interface, for people or for agents, on any platform? Pick Ouro UI and never think about it again: screens people enjoy and doors other agents can use, on the web, Apple, Windows and Android.
+
+**Start:** give your coding agent [ui.ouroboros.bot/llms.txt](https://ui.ouroboros.bot/llms.txt) and say "build this app's interface with Ouro UI".
+
+<br clear="left">
+
 ### [Desk](https://github.com/ourostack/desk)
 
 <a href="https://github.com/ourostack/desk"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/desk.webp" alt="A small periwinkle glass robot in a slate apron rests its mittens on an open box of blank index cards at a low oak desk in a bright studio of oak drawers, while Ouro, a small green snake, naps on a stack of grey folders under a white desk lamp beside a window over a calm harbour."></a>
@@ -21,16 +31,6 @@
 Where coding agents keep their work, so it survives the session.
 
 **Start:** give your agent [SETUP.md](https://github.com/ourostack/desk/blob/main/SETUP.md) and say "set this up".
-
-<br clear="left">
-
-### [Ouro UI](https://github.com/ourostack/ouro-ui)
-
-<a href="https://github.com/ourostack/ouro-ui"><img align="left" width="360" src="https://raw.githubusercontent.com/ourostack/.github/main/brand/headers/ouro-hx.webp" alt="On a mountain cabin's deck, a faceless glass person stands at the table beside a glowing glass push button he has just pressed, while a small robot on a crate reads the gauge, and Ouro smiles from a folded towel on the table"></a>
-
-Interfaces in two halves: Ouro HX, components that feel right to people, and Ouro AX, tools that read clearly to agents.
-
-**Start:** see both live at [ui.ouroboros.bot](https://ui.ouroboros.bot/).
 
 <br clear="left">
 
@@ -58,9 +58,9 @@ The agent harness where it all started: agents with memory and real tools.
 
 - **Ouroboros**, agents that live with you: [ouroboros](https://github.com/ourostack/ouroboros) · [friends](https://github.com/ourostack/friends) · [friends-relay](https://github.com/ourostack/friends-relay) · [ouroboros-skills](https://github.com/ourostack/ouroboros-skills) · [ouro-work-substrate](https://github.com/ourostack/ouro-work-substrate)
 - **Desk**, work that outlives the session: [desk](https://github.com/ourostack/desk) · [factory](https://github.com/ourostack/factory)
-- **Ouro UI**, interfaces for people (HX) and agents (AX): [ouro-ui](https://github.com/ourostack/ouro-ui) · [ouro-ui-apple](https://github.com/ourostack/ouro-ui-apple) · [ouro-ui-core](https://github.com/ourostack/ouro-ui-core) · [ouro-ui-android](https://github.com/ourostack/ouro-ui-android) · [ouro-ui-windows](https://github.com/ourostack/ouro-ui-windows)
+- **Ouro UI**, screens for people (Ouro HX) and doors for agents (Ouro AX): [ouro-ui](https://github.com/ourostack/ouro-ui) · [ouro-ui-core](https://github.com/ourostack/ouro-ui-core) · [ouro-ui-apple](https://github.com/ourostack/ouro-ui-apple) · [ouro-ui-windows](https://github.com/ourostack/ouro-ui-windows) · [ouro-ui-android](https://github.com/ourostack/ouro-ui-android) · [hackamore](https://github.com/ourostack/hackamore)
 - **Apps**, for reading and writing: [ouro-md](https://github.com/ourostack/ouro-md) · [gatefold](https://github.com/ourostack/gatefold) (in TestFlight)
-- **Tools**, for building and shipping: [flow-review](https://github.com/ourostack/flow-review) · [m365crawl](https://github.com/ourostack/m365crawl) · [shepherd](https://github.com/ourostack/shepherd) · [housesitter](https://github.com/ourostack/housesitter) · [hackamore](https://github.com/ourostack/hackamore) · [apple-distribution-kit](https://github.com/ourostack/apple-distribution-kit) · [ouro-native-apple-app-shell](https://github.com/ourostack/ouro-native-apple-app-shell) · [homebrew-tap](https://github.com/ourostack/homebrew-tap) · [my-agent](https://github.com/ourostack/my-agent) (the agent from [Just give the model a keyboard](https://ouroboros.bot/blog/build-ai-agent-from-scratch/))
+- **Tools**, for building and shipping: [flow-review](https://github.com/ourostack/flow-review) · [m365crawl](https://github.com/ourostack/m365crawl) · [shepherd](https://github.com/ourostack/shepherd) · [housesitter](https://github.com/ourostack/housesitter) · [apple-distribution-kit](https://github.com/ourostack/apple-distribution-kit) · [ouro-native-apple-app-shell](https://github.com/ourostack/ouro-native-apple-app-shell) · [homebrew-tap](https://github.com/ourostack/homebrew-tap) · [my-agent](https://github.com/ourostack/my-agent) (the agent from [Just give the model a keyboard](https://ouroboros.bot/blog/build-ai-agent-from-scratch/))
 - **Home**, this front door and our sites: [.github](https://github.com/ourostack/.github) · [ouroboros-website](https://github.com/ourostack/ouroboros-website) · [ouro-apps-site](https://github.com/ourostack/ouro-apps-site)
 
 ## Labs 🧪
