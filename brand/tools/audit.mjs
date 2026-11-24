@@ -37,7 +37,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchWithRetry } from "./fetch-retry.mjs";
-import { afterMergeFor, needsUploadFor, pendingFor, unregisteredFor } from "./pending.mjs";
+import { NEW_REPO_WINDOW_HOURS, afterMergeFor, needsUploadFor, pendingFor, unregisteredFor } from "./pending.mjs";
 import { canonicalUrl } from "./canonical.mjs";
 
 const BRAND = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -407,12 +407,18 @@ async function coverage() {
   const abouts = new Set(registry.surfaces.filter((s) => s.kind === "github-about").map((s) => s.repo.split("/")[1]));
   const pr = !originOverride && !!process.env.BRAND_REF;
   const main = pr ? await get(canonicalUrl(registry.canonicalRaw, "surfaces.json", process.env.BRAND_BASE)).then((res) => (res.status === 200 ? JSON.parse(res.body.toString("utf8")) : null), () => null) : null;
-  const status = (name) => unregisteredFor({ pr, registry, main, name });
-  const pendingNote = (name) => (status(name) === "unregistered-pending" ? { reason: "an organization-wide gap this pull request does not touch: the post-merge audit files an issue for it" } : {});
+  const created = new Map(repos.map((r) => [r.name, r.created_at]));
+  const status = (name) => unregisteredFor({ pr, registry, main, name, createdAt: created.get(name) });
+  const creatorOf = async (name) => {
+    const commits = await ghJson(`/repos/${registry.org}/${name}/commits?per_page=100`).catch(() => []);
+    const first = commits.at(-1);
+    return first?.author?.login ?? first?.commit?.author?.name ?? "unknown";
+  };
+  const pendingNote = (name) => (status(name) === "unregistered-pending" ? { reason: pr ? "an organization-wide gap this pull request does not touch: the post-merge audit files an issue for it" : `created ${created.get(name)}, inside its ${NEW_REPO_WINDOW_HOURS} hour grace window: red after it`, createdAt: created.get(name) } : {});
   const out = [];
   for (const r of repos) {
     if (r.archived || abouts.has(r.name)) continue;
-    out.push({ id: `unregistered:about:${r.name}`, status: status(r.name), ...pendingNote(r.name), problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
+    out.push({ id: `unregistered:about:${r.name}`, status: status(r.name), ...pendingNote(r.name), ...(status(r.name) === "unregistered-pending" && !pr ? { creator: await creatorOf(r.name) } : {}), problems: [`ourostack/${r.name} has no github-about entry in brand/surfaces.json`], fix: "Add an about:<repo> entry with its family (home, ouroboros, desk, ouro-ui, apps, tools or labs) and homepage." });
   }
   for (const r of repos) {
     if (r.name in (registry.excluded ?? {}) || r.archived) continue;
@@ -422,6 +428,7 @@ async function coverage() {
         id: `unregistered:${r.name}`,
         status: status(r.name),
         ...pendingNote(r.name),
+        ...(status(r.name) === "unregistered-pending" && !pr ? { creator: await creatorOf(r.name) } : {}),
         problems: [`ourostack/${r.name} has no ${missing.join(" or ")} entry in brand/surfaces.json`],
         fix: "Add it to brand/surfaces.json (draw its header with the prompt chain in brand/provenance.json), or list it under excluded with the reason.",
       });

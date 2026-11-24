@@ -53,12 +53,23 @@ export function registrationOf(registry, name) {
   return JSON.stringify([has("github-about"), has("github-readme"), has("github-social-preview"), name in (registry.excluded ?? {})]);
 }
 
+// A repository created just now cannot be registered yet: creating it, drawing or excluding its README and social preview, and
+// merging that take time, and main's audit went red within minutes for every new repository (2026-11-23 and 2026-11-24, four
+// times). So on main a repository younger than this is "unregistered-pending" (listed, counted, exit 0) and the convergence
+// issue names it, its creator and what to add; past the window it is red. 24 hours covers a working day's overnight gap.
+export const NEW_REPO_WINDOW_HOURS = 24;
+
 // A repository missing from brand/surfaces.json is a fact about the organization, not about any one pull request, so a pull
 // request's audit must not go red for one it does not touch: it is "unregistered-pending" (listed, counted, exit 0) and the
 // post-merge audit (brand/tools/converge.mjs) files the one issue for it. A pull request that changes how the repository is
 // registered (its entries or its exclusion differ from the base it was built on) still fails on its own mistake.
 // pr: true only for a pull request's audit (BRAND_REF set, no --origin). main: the PR's base registry (audit.mjs reads it at BRAND_BASE), or null when unreadable (then it fails).
-export function unregisteredFor({ pr, registry, main, name }) {
+// createdAt: when the repository was created (a Date or ISO string); on main (and when main is unreadable) a repository younger than NEW_REPO_WINDOW_HOURS is pending.
+export function unregisteredFor({ pr, registry, main, name, createdAt, now = new Date() }) {
+  if (createdAt) {
+    const hours = (now - new Date(createdAt)) / 3600000;
+    if (hours >= 0 && hours < NEW_REPO_WINDOW_HOURS) return "unregistered-pending";
+  }
   if (!pr || !main) return "unregistered";
   return registrationOf(registry, name) === registrationOf(main, name) ? "unregistered-pending" : "unregistered";
 }
