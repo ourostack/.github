@@ -43,7 +43,11 @@
 //      confirmed culprits are reverted. Verify branches are deleted once main has moved past them.
 //   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), whose every failure
 //      is settled since (its job passed whole in a newer run of the workflow, or a newer commit changed its test), with an open fix or
-//      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation).
+//      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation). And a failure main
+//      already had is never blamed on the range (knownBefore): one its runs of the workflow failed the same way in the 24 hours
+//      before the range began, or whose test the repo's flake table (its "knownFlakes" file, under "Open known flakes") names,
+//      unless the culprit changed the failing test or a file its failure names. A culprit left with no failure is not
+//      reverted, and the evidence is posted on its pull request instead.
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
 // .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
@@ -662,7 +666,9 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read: (p) => src.read(first.run.head_sha, p), files: firstFiles });
     let blame = culprit(commits, dist);
     if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
-    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
+    // Its PR changed the failing test or a file its failure names: a failure seen on main before still counts against it.
+    const touched = blame?.distance === 0;
+    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
   }
   return { newest: newest.run, results, check };
 }
@@ -827,6 +833,83 @@ export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, gr
   if (!c.confirmed) return { action: "wait", reason: "not yet reproduced: the verify run at the same commit decides" };
   if (minutes < minRedMinutes) return { action: "wait", reason: `red for ${minutes}m, under ${minRedMinutes}m` };
   return { action: "revert", reason: "reproduced" };
+}
+
+// --- Failures main already had: never blamed on the range -----------------------------------------------------------
+// A failure that main's runs of the workflow already had in the KNOWN_HOURS before the range began (its base run), or whose
+// test the repository's flake table names as an open known flake, did not begin in the range, so no pull request there is
+// its culprit, unless that pull request changed the failing test or a file its failure names. Tandem, 2026-11-24: #5252
+// reverted #5241 (types only, in test/organization.test.ts) for sent-echo-window.test.ts's mention test, which had failed
+// the same way on main at d6e0dd53 and e2da1c5b before it (Windows runners' stalls and a reply-box bug, B172).
+export const KNOWN_HOURS = 24;
+/** The newest red runs before a range that are read for its failures (each a jobs list, and its failed jobs' logs once: --cache). */
+export const KNOWN_RUNS = 12;
+export const KNOWN_MARKER = "Not reverted by tools/red-main/auto-revert.mjs in ourostack/.github:";
+
+// The open known flakes a repository's flake table names: under a heading "Open known flakes", each list item or table row
+// naming a file in backticks. Returns Map(file -> that line).
+export function openFlakes(md) {
+  const out = new Map();
+  let level = 0;
+  for (const line of String(md ?? "").split("\n")) {
+    const h = /^(#{1,6})\s+(.*)$/.exec(line);
+    if (h) {
+      if (level && h[1].length <= level) level = 0;
+      if (/\bopen known flakes\b/i.test(h[2])) level = h[1].length;
+      continue;
+    }
+    if (!level || !/^\s*(?:[-*]|\|)/.test(line) || /^\s*\|\s*-/.test(line)) continue;
+    for (const m of line.matchAll(/`([^`\s]+\.[A-Za-z]+)(?::\d+)?`/g)) if (!out.has(m[1])) out.set(m[1], line.trim().replace(/^[-*|]\s*/, "").slice(0, 300));
+  }
+  return out;
+}
+
+// Main's red runs of the run's workflow (push runs only) in the `hours` before `before`, newest first, at most `max`, with
+// their failures' keys: [{ run, keys }].
+export async function earlierReds(repo, run, before, { a, files, cache = null, src = null, hours = KNOWN_HOURS, max = KNOWN_RUNS }) {
+  if (run.event && run.event !== "push") return [];
+  const to = ms(before);
+  const from = to - hours * 3600000;
+  const range = encodeURIComponent(`${new Date(from).toISOString()}..${new Date(to).toISOString()}`);
+  const list = (await a.get(`/repos/${repo}/actions/workflows/${run.workflow_id}/runs?branch=main&event=push&per_page=100&created=${range}`)).workflow_runs ?? [];
+  const reds = list
+    .filter((r) => r.status === "completed" && ["failure", "cancelled"].includes(r.conclusion) && ms(r.created_at) < to && ms(r.created_at) >= from && r.id !== run.id)
+    .sort((x, y) => ms(y.created_at) - ms(x.created_at))
+    .slice(0, max);
+  const out = [];
+  for (const r of reds) {
+    const got = await runFailures(repo, r, { a, files, cache, read: src ? (p) => src.read(r.head_sha, p) : null });
+    if (got.failures) out.push({ run: r, keys: new Set(got.failures.map((f) => f.key)) });
+  }
+  return out;
+}
+
+// Why one attributed failure (an analyse result) is not its culprit's, or null: main already had it (`earlier`, from
+// earlierReds), or its test is an open known flake (`flakes`, from openFlakes). Never when the culprit touched it.
+export function knownBefore(x, { pr, earlier = [], flakes = new Map(), flakeDoc = "the flake table" }) {
+  if (x.touched) return null;
+  const f = x.failure;
+  const flake = f.file ? flakes.get(f.file) : null;
+  if (flake) return `${f.file} is an open known flake in ${flakeDoc}: ${flake}`;
+  const seen = earlier.find((e) => e.keys.has(f.key));
+  if (seen) return `it failed the same way on main before #${pr}: ${seen.run.html_url} (${short(seen.run.head_sha)}, ${hhmm(seen.run.created_at)})`;
+  return null;
+}
+
+// Posts the evidence on the pull request it didn't revert, once per pull request.
+export async function postKnown(repo, c, reasons, { run, apply, a = api, log = console.log }) {
+  const body = [
+    `${KNOWN_MARKER} main's \`${run.name}\` went red (${run.html_url}) in a range whose only suspect was #${c.pr}, but each failure was already failing on main before it:`,
+    "",
+    ...c.failures.map((x, i) => `- ${x.failure.test ? `\`${x.failure.test}\` (${x.failure.file ?? x.failure.jobs.join(", ")})` : `job \`${x.failure.job}\`${x.failure.step ? `, step "${x.failure.step}"` : ""}`}: ${reasons[i]}.`),
+    "",
+    "So #" + c.pr + " stays. A failure it changed, or one main never had before, is still reverted.",
+  ].join("\n");
+  log(`  ${apply ? "" : "would "}post the evidence on #${c.pr}`);
+  if (!apply) return;
+  const had = (await a.get(`/repos/${repo}/issues/${c.pr}/comments?per_page=100`)) ?? [];
+  if (had.some((m) => String(m.body ?? "").includes(KNOWN_MARKER))) return log(`  #${c.pr} already has it`);
+  await a.post(`/repos/${repo}/issues/${c.pr}/comments`, { body });
 }
 
 export function revertBody({ repo, c, run, minutes }) {
@@ -1196,6 +1279,10 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   }
   const keep = new Set();
   const analyses = [];
+  // Failures main had before a range (earlierReds), by the range's start, and the flake table's open flakes, read once a tick.
+  const earlier = new Map();
+  let flakes = null;
+  const flakesNow = async (sha) => (flakes ??= cfg.knownFlakes ? openFlakes((await (await getSrc()).read(sha, cfg.knownFlakes)) ?? "") : new Map());
   try {
     await judge();
     // Main is red: a revert may land over what main already fails without it, but never over its own culprit's failure.
@@ -1250,11 +1337,30 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       const changedLater = later.length && s.commits ? (await s.commits(r.newest.head_sha, "refs/remotes/origin/main")).filter((c) => after.has(c.sha)) : [];
       const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf }) : new Map();
       for (const c of cs.slice(0, 5)) {
-        const d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater });
+        let d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater });
+        let culpritNow = c;
+        if (d.action === "revert") {
+          const reasons = [];
+          for (const x of c.failures) {
+            const before = x.base?.created_at ?? x.first.created_at;
+            if (!earlier.has(before) && !x.touched) earlier.set(before, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s }).catch(() => []));
+            reasons.push(knownBefore(x, { pr: c.pr, earlier: earlier.get(before) ?? [], flakes: await flakesNow(r.newest.head_sha), flakeDoc: cfg.knownFlakes }));
+          }
+          if (reasons.every(Boolean)) {
+            d = { action: "known", reason: reasons.join("; ") };
+          } else if (reasons.some(Boolean)) {
+            for (const [i, x] of c.failures.entries()) if (reasons[i]) log(`  not blaming #${c.pr} for ${x.failure.key}: ${reasons[i]}`);
+            culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
+          }
+        }
         log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : "not reverting"}: ${d.reason}`}`);
+        if (d.action === "known") {
+          await postKnown(repo, c, c.failures.map((x) => knownBefore(x, { pr: c.pr, earlier: earlier.get(x.base?.created_at ?? x.first.created_at) ?? [], flakes: flakes ?? new Map(), flakeDoc: cfg.knownFlakes })), { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not post the evidence on #${c.pr}: ${e.message}`));
+          continue;
+        }
         if (d.action !== "revert") continue;
         try {
-          await revert(repo, c, { run: r.newest, minutes, apply, log, a });
+          await revert(repo, culpritNow, { run: r.newest, minutes, apply, log, a });
         } catch (e) {
           log(`  could not revert #${c.pr}: ${e.message}`);
           if (!isRateLimit(e)) process.exitCode = 1;

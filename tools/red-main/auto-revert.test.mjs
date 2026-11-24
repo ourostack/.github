@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  codeNames, evidence, jobKey, laterGreen, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -56,7 +56,7 @@ const TAP = (name, file, extra = "") => [
   "2026-11-19T23:13:12.5Z ok 5 - next",
 ];
 // A fake GitHub for runs, jobs and logs: logs[runId] is the failing job's log lines (none: the run is green).
-function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsOf = {} } = {}) {
+function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsOf = {}, comments = [] } = {}) {
   const calls = [];
   return {
     calls,
@@ -69,6 +69,7 @@ function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsO
       if (jobs && jobsOf[jobs[1]]) return { jobs: jobsOf[jobs[1]] };
       if (jobs) return { jobs: logs[jobs[1]] ? [{ id: Number(jobs[1]) * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] }] : [] };
       if (p.includes("/annotations")) return [];
+      if (/\/issues\/\d+\/comments/.test(p)) return comments;
       if (p.includes("/pulls?state=open")) return open;
       const cr = /\/commits\/(\w+)\/check-runs/.exec(p);
       if (cr) return checks[cr[1]] ?? { check_runs: [] };
@@ -650,4 +651,88 @@ test("main: any other failed read still fails the tick", async () => {
     console.log = orig;
     process.exitCode = prev;
   }
+});
+
+test("known: a failure main already had, or an open known flake, is not the culprit's, unless the culprit changed what failed", () => {
+  const md = [
+    "# Main's flakes",
+    "| Cause | Fix |",
+    "| `test/old.test.ts` | fixed by #1 |",
+    "## Open known flakes",
+    "",
+    "Auto-revert never blames a pull request for these.",
+    "- `test/sent-echo-window.test.ts:348`: Windows runners' stalls and the reply box's B172 (#5243, #5247)",
+    "| `test/b.test.ts` | watched |",
+    "## Fixed",
+    "- `test/fixed.test.ts`: fixed by #2",
+  ].join("\n");
+  const flakes = openFlakes(md);
+  assert.deepEqual([...flakes.keys()], ["test/sent-echo-window.test.ts", "test/b.test.ts"], "only under the open heading, a line ref dropped");
+  const x = (over = {}) => ({ failure: { key: "test/x.test.ts :: x works", file: "test/x.test.ts", test: "x works" }, touched: false, ...over });
+  const seen = [{ run: run({ head_sha: sha("e"), created_at: at(300) }), keys: new Set(["test/x.test.ts :: x works"]) }];
+  assert.match(knownBefore(x(), { pr: 11, earlier: seen }), /failed the same way on main before #11: https:\/\/x\/run\/\d+ \(eeeeeeeee, /);
+  assert.equal(knownBefore(x({ touched: true }), { pr: 11, earlier: seen }), null, "the culprit changed the test or what its failure names");
+  assert.equal(knownBefore(x(), { pr: 11, earlier: [{ ...seen[0], keys: new Set(["test/x.test.ts :: another test"]) }] }), null, "never failed this way before");
+  const sent = x({ failure: { key: "test/sent-echo-window.test.ts :: a name picked with @", file: "test/sent-echo-window.test.ts", test: "a name picked with @" } });
+  assert.match(knownBefore(sent, { pr: 5241, flakes, flakeDoc: "docs/main-flake-table.md" }), /open known flake in docs\/main-flake-table\.md: .*B172/);
+  assert.equal(knownBefore({ ...sent, touched: true }, { pr: 5241, flakes }), null);
+});
+
+test("check: Tandem, #5252: a failure main had on a run in the 24 hours before the range reverts nothing and posts the evidence; one the PR changed still reverts", async () => {
+  // e: an earlier red of the same test, 5 hours before the green g; then #11 lands and b, n fail it again.
+  const e = run({ head_sha: sha("e"), created_at: at(300), updated_at: at(290) });
+  const old = run({ head_sha: sha("o"), created_at: at(60 * 30), updated_at: at(60 * 30) });
+  const g = run({ conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const b = run({ head_sha: sha("b"), updated_at: at(35) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const logs = { [e.id]: TAP("x works", "test/x.test.ts"), [old.id]: TAP("w works", "test/w.test.ts"), [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const cfg = { workflows: ["ci"], minRedMinutes: 0 };
+  const gh = fakeGitHub([n, b, g, e, old], logs);
+  const lines = [];
+  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /culprit #11 .*not reverting: it failed the same way on main before #11: https:\/\/x\/run\/\d+ \(eeeeeeeee/.test(l)), lines.join("\n"));
+  assert.ok(!gh.calls.some((c) => c[0] === "gql"), "no revert");
+  const posted = gh.calls.filter((c) => c[0] === "post");
+  assert.equal(posted.length, 1);
+  assert.equal(posted[0][1], "/repos/o/r/issues/11/comments");
+  assert.ok(posted[0][2].body.startsWith(KNOWN_MARKER) && /`x works` \(test\/x\.test\.ts\): it failed the same way on main before #11/.test(posted[0][2].body), posted[0][2].body);
+  const again = fakeGitHub([n, b, g, e, old], logs, { comments: [{ body: `${KNOWN_MARKER} ...` }] });
+  await check("o/r", cfg, { a: again, now: NOW, apply: true, log() {}, source: async () => src() });
+  assert.ok(!again.calls.some((c) => c[0] === "post"), "the evidence is posted once per pull request");
+  // #11 changed the failing test itself: main having failed it before doesn't clear it.
+  const touching = COMMITS.map((c) => (c.pr === 11 ? { ...c, files: ["src/y.ts", "test/x.test.ts"] } : c));
+  const commits = async (base, head) => {
+    const order = touching.map((c) => c.sha);
+    return touching.slice(order.indexOf(head), base === sha("g") ? order.length : order.indexOf(base));
+  };
+  const live = fakeGitHub([n, b, g, e, old], logs);
+  lines.length = 0;
+  await check("o/r", cfg, { a: live, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits }) });
+  assert.ok(lines.some((l) => /culprit #11 .*: revert$/.test(l)), lines.join("\n"));
+  assert.ok(live.calls.some((c) => c[0] === "gql"), "revert opened");
+  // A range with a known failure and a new one: reverted for the new one only.
+  const both = { ...logs, [b.id]: [...TAP("x works", "test/x.test.ts"), ...TAP("y works", "test/x.test.ts", "src/y.ts")], [n.id]: [...TAP("x works", "test/x.test.ts"), ...TAP("y works", "test/x.test.ts", "src/y.ts")] };
+  const mixed = fakeGitHub([n, b, g, e, old], both);
+  lines.length = 0;
+  await check("o/r", cfg, { a: mixed, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /not blaming #11 for test\/x\.test\.ts :: x works: it failed the same way/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /would open revert PR "Revert "Breaks y" \(#11\)"/.test(l)), "y works never failed before: still reverted");
+  // A red run more than 24 hours before the range, of another test, clears nothing: a new failure still reverts (the tests above).
+  const reds = await earlierReds("o/r", n, g.created_at, { a: fakeGitHub([n, b, g, e, old], logs), files: FILES });
+  assert.deepEqual(reds.map((x) => x.run.id), [e.id], "only the 24 hours before the range, and never the range's own runs");
+});
+
+test("check: a failure in a test the flake table names as an open known flake reverts nothing", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const b = run({ head_sha: sha("b"), updated_at: at(35) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const doc = "## Open known flakes\n- `test/x.test.ts`: the runner stalls (#40)\n";
+  const read = async (_, p) => (p === "docs/flakes.md" ? doc : SRC[p] ?? null);
+  const gh = fakeGitHub([n, b, g], logs);
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0, knownFlakes: "docs/flakes.md" }, { a: gh, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src({ read }) });
+  assert.ok(lines.some((l) => /culprit #11 .*not reverting: test\/x\.test\.ts is an open known flake in docs\/flakes\.md: `test\/x\.test\.ts`: the runner stalls \(#40\)/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /would post the evidence on #11/.test(l)));
+  assert.ok(!lines.some((l) => /would open revert PR/.test(l)));
 });
