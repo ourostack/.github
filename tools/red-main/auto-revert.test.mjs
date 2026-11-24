@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -590,6 +590,8 @@ test("git log parsing: each first-parent commit's files, and its PR only when it
   const out = `\x1e${sha("n")}\x1f${sha("u")}\x1f2026-11-19T23:00:00Z\x1fNewest (#3877) (#13)\n\nM\tREADME.md\nA\tsrc/x.ts\n\x1e${sha("m")}\x1f${sha("u")} ${sha("v")}\x1f2026-11-19T22:00:00Z\x1fMerge branch (#7)\n\nsrc/y.ts\n`;
   const cs = parseLog1e(out);
   assert.deepEqual(cs.map((c) => [c.pr, c.files, c.added]), [[13, ["README.md", "src/x.ts"], ["src/x.ts"]], [null, ["src/y.ts"], []]]);
+  const moved = parseLog1e(`\x1e${sha("r")}\x1f${sha("n")}\x1f2026-11-19T23:30:00Z\x1fMove a test (#14)\n\nR100\ttest/a.test.ts\ttest/b.test.ts\nD\ttest/c.test.ts\n`)[0];
+  assert.deepEqual([moved.files, moved.added, moved.deleted], [["test/b.test.ts", "test/c.test.ts"], ["test/b.test.ts"], ["test/a.test.ts", "test/c.test.ts"]], "a rename adds its new path and removes its old one");
 });
 
 test("main --self checks only that repo; a green ci and green Mac guards are one call each; --as-of never acts", async () => {
@@ -735,4 +737,39 @@ test("check: a failure in a test the flake table names as an open known flake re
   assert.ok(lines.some((l) => /culprit #11 .*not reverting: test\/x\.test\.ts is an open known flake in docs\/flakes\.md: `test\/x\.test\.ts`: the runner stalls \(#40\)/.test(l)), lines.join("\n"));
   assert.ok(lines.some((l) => /would post the evidence on #11/.test(l)));
   assert.ok(!lines.some((l) => /would open revert PR/.test(l)));
+});
+
+test("lone: a range's one pull request is cleared only when it changed existing test files and documents, none the failure is or reaches", () => {
+  const f = { key: "test/x.test.ts :: x works", file: "test/x.test.ts" };
+  const pr = (files, over = {}) => ({ pr: 5241, sha: sha("t"), files, added: [], deleted: [], ...over });
+  assert.match(loneCleared(pr(["test/organization.test.ts"]), f), /#5241 was blamed only as the range's one pull request, and it changed only test files and documents \(test\/organization\.test\.ts\)/, "a test's types only");
+  assert.ok(loneCleared(pr(["test/organization.test.ts", "docs/notes.md"]), f), "and a document");
+  assert.equal(loneCleared(pr(["test/new.test.ts"], { added: ["test/new.test.ts"] }), f), null, "an added test file moves the shards' files");
+  assert.equal(loneCleared(pr(["test/b.test.ts"], { added: ["test/b.test.ts"], deleted: ["test/a.test.ts"] }), f), null, "a rename too");
+  assert.equal(loneCleared(pr(["test/old.test.ts"], { deleted: ["test/old.test.ts"] }), f), null, "a removed one too");
+  for (const x of ["src/x.ts", "test/helpers/window.ts", "test/fixtures/a.json", "scripts/test-shard.ts", ".github/workflows/ci.yml", "package.json", "package-lock.json", ".github/README.md"])
+    assert.equal(loneCleared(pr(["test/organization.test.ts", x]), f), null, x);
+  assert.equal(loneCleared(pr(["test/x.test.ts"]), f), null, "the failing test itself");
+});
+
+test("check: Tandem, #5252: the range's one pull request, a test's types only, isn't reverted and gets the evidence; one that added a test file is reverted", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const b = run({ head_sha: sha("b"), updated_at: at(35) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
+  const cfg = { workflows: ["ci"], minRedMinutes: 0 };
+  const lone = (c) => async () => [{ sha: sha("n"), subject: "Type the organization test (#5241)", pr: 5241, ...c }];
+  const gh = fakeGitHub([n, b, g], logs);
+  const lines = [];
+  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits: lone({ files: ["test/organization.test.ts"], added: [], deleted: [] }) }) });
+  assert.ok(lines.some((l) => /culprit #5241 .*not reverting: #5241 was blamed only as the range's one pull request/.test(l)), lines.join("\n"));
+  assert.ok(!gh.calls.some((c) => c[0] === "gql"), "no revert");
+  const posted = gh.calls.filter((c) => c[0] === "post");
+  assert.deepEqual(posted.map((c) => c[1]), ["/repos/o/r/issues/5241/comments"]);
+  assert.match(posted[0][2].body, /none of its failures is #5241's/);
+  const added = fakeGitHub([n, b, g], logs);
+  lines.length = 0;
+  await check("o/r", cfg, { a: added, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits: lone({ files: ["test/organization.test.ts"], added: ["test/organization.test.ts"], deleted: [] }) }) });
+  assert.ok(lines.some((l) => /culprit #5241 .*: revert$/.test(l)), lines.join("\n"));
+  assert.ok(added.calls.some((c) => c[0] === "gql"), "reverted: an added test file can shift what each shard runs");
 });
