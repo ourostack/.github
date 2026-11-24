@@ -46,8 +46,9 @@
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation). And a failure main
 //      already had is never blamed on the range (knownBefore): one its runs of the workflow failed the same way in the 24 hours
 //      before the range began, or whose test the repo's flake table (its "knownFlakes" file, under "Open known flakes") names,
-//      unless the culprit changed the failing test or a file its failure names. A culprit left with no failure is not
-//      reverted, and the evidence is posted on its pull request instead.
+//      unless the culprit changed the failing test or a file its failure names. Nor is a failure blamed on the range's one
+//      pull request when nothing it changed reaches the failure and it changed only existing test files and documents
+//      (loneCleared). A culprit left with no failure is not reverted, and the evidence is posted on its pull request instead.
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
 // .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
@@ -668,7 +669,8 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
     // Its PR changed the failing test or a file its failure names: a failure seen on main before still counts against it.
     const touched = blame?.distance === 0;
-    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
+    const cleared = blame?.distance === Infinity ? loneCleared(commits.find((c) => c.pr === blame.pr), f) : null;
+    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
   }
   return { newest: newest.run, results, check };
 }
@@ -846,6 +848,24 @@ export const KNOWN_HOURS = 24;
 export const KNOWN_RUNS = 12;
 export const KNOWN_MARKER = "Not reverted by tools/red-main/auto-revert.mjs in ourostack/.github:";
 
+// A test file of its own (not a helper, fixture or harness under a test directory), and a document.
+const TEST_FILE = /(^|\/)[^/]+\.(test|spec)\.[cm]?[jt]sx?$/;
+const NOT_A_TEST = /(^|\/)(helpers?|fixtures?|harness|support|__mocks__|__fixtures__)\//;
+const DOC = /\.md$/;
+// Why a pull request blamed only as the range's one pull request (nothing it changed reaches the failure) didn't cause it,
+// or null (coordinator ruling, Tandem 2026-11-24, after #5252 reverted #5241, which typed one test file's readers): it
+// changed only existing test files of its own and documents, so no product code, test helper or harness, workflow, CI
+// config, package or lock file; it added, removed or renamed no test file, so no shard's files moved; and the failing test
+// is none of its files (nor imports one: its distance to all of them is none).
+export function loneCleared(c, f) {
+  if (!c?.files?.length) return null;
+  const changed = [...c.files, ...(c.deleted ?? [])];
+  if (changed.some((x) => x.startsWith(".github/") || !((TEST_FILE.test(x) && !NOT_A_TEST.test(x)) || DOC.test(x)))) return null;
+  if ([...(c.added ?? []), ...(c.deleted ?? [])].some((x) => TEST_FILE.test(x))) return null;
+  if (f.file && changed.includes(f.file)) return null;
+  return `#${c.pr} was blamed only as the range's one pull request, and it changed only test files and documents (${c.files.slice(0, 4).join(", ")}${c.files.length > 4 ? ", ..." : ""}), none that the failing test is or reaches, and added or removed no test file`;
+}
+
 // The open known flakes a repository's flake table names: under a heading "Open known flakes", each list item or table row
 // naming a file in backticks. Returns Map(file -> that line).
 export function openFlakes(md) {
@@ -888,6 +908,7 @@ export async function earlierReds(repo, run, before, { a, files, cache = null, s
 // earlierReds), or its test is an open known flake (`flakes`, from openFlakes). Never when the culprit touched it.
 export function knownBefore(x, { pr, earlier = [], flakes = new Map(), flakeDoc = "the flake table" }) {
   if (x.touched) return null;
+  if (x.cleared) return x.cleared;
   const f = x.failure;
   const flake = f.file ? flakes.get(f.file) : null;
   if (flake) return `${f.file} is an open known flake in ${flakeDoc}: ${flake}`;
@@ -899,11 +920,11 @@ export function knownBefore(x, { pr, earlier = [], flakes = new Map(), flakeDoc 
 // Posts the evidence on the pull request it didn't revert, once per pull request.
 export async function postKnown(repo, c, reasons, { run, apply, a = api, log = console.log }) {
   const body = [
-    `${KNOWN_MARKER} main's \`${run.name}\` went red (${run.html_url}) in a range whose only suspect was #${c.pr}, but each failure was already failing on main before it:`,
+    `${KNOWN_MARKER} main's \`${run.name}\` went red (${run.html_url}) and blamed #${c.pr}, but none of its failures is #${c.pr}'s:`,
     "",
     ...c.failures.map((x, i) => `- ${x.failure.test ? `\`${x.failure.test}\` (${x.failure.file ?? x.failure.jobs.join(", ")})` : `job \`${x.failure.job}\`${x.failure.step ? `, step "${x.failure.step}"` : ""}`}: ${reasons[i]}.`),
     "",
-    "So #" + c.pr + " stays. A failure it changed, or one main never had before, is still reverted.",
+    "So #" + c.pr + " stays. A failure in what it changed, or one main never had before, is still reverted.",
   ].join("\n");
   log(`  ${apply ? "" : "would "}post the evidence on #${c.pr}`);
   if (!apply) return;
@@ -1145,7 +1166,8 @@ export function parseLog1e(out) {
     const [sha, parents, at, subject] = head.split("\x1f");
     const pr = parents.trim().split(" ").length === 1 ? Number(/\(#(\d+)\)\s*$/.exec(subject)?.[1]) || null : null;
     const entries = rest.map((l) => l.trim()).filter(Boolean).map((l) => (/^[ACDMRTUX]\d*\t/.test(l) ? l.split("\t") : ["M", l]));
-    return { sha, at, subject, pr, files: entries.map((e) => e.at(-1)), added: entries.filter((e) => e[0] === "A").map((e) => e.at(-1)) };
+    // A rename adds its new path and removes its old one; a copy adds.
+    return { sha, at, subject, pr, files: entries.map((e) => e.at(-1)), added: entries.filter((e) => /^[ACR]/.test(e[0])).map((e) => e.at(-1)), deleted: entries.filter((e) => /^[DR]/.test(e[0])).map((e) => e[1]) };
   });
 }
 
@@ -1343,11 +1365,11 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           const reasons = [];
           for (const x of c.failures) {
             const before = x.base?.created_at ?? x.first.created_at;
-            if (!earlier.has(before) && !x.touched) earlier.set(before, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s }).catch(() => []));
+            if (!earlier.has(before) && !x.touched && !x.cleared) earlier.set(before, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s }).catch(() => []));
             reasons.push(knownBefore(x, { pr: c.pr, earlier: earlier.get(before) ?? [], flakes: await flakesNow(r.newest.head_sha), flakeDoc: cfg.knownFlakes }));
           }
           if (reasons.every(Boolean)) {
-            d = { action: "known", reason: reasons.join("; ") };
+            d = { action: "known", reason: [...new Set(reasons)].join("; ") };
           } else if (reasons.some(Boolean)) {
             for (const [i, x] of c.failures.entries()) if (reasons[i]) log(`  not blaming #${c.pr} for ${x.failure.key}: ${reasons[i]}`);
             culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
