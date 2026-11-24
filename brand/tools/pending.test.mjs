@@ -96,3 +96,10 @@ test("a live social preview with byte lag needs an upload (never red); a website
   assert.equal(needsUploadFor({ ...o, problems: [...social, "404"] }), false);
   assert.equal(needsUploadFor({ ...o, autoSync: [] }), false);
 });
+
+test("on main, a repository created under 24 hours ago with no registration is pending; at 25 hours it is red", () => {
+  const hoursAgo = (h) => new Date(now - h * 3600000);
+  assert.equal(unregisteredFor({ pr: false, registry: reg(), main: null, name: "new", createdAt: hoursAgo(2), now }), "unregistered-pending");
+  assert.equal(unregisteredFor({ pr: false, registry: reg(), main: null, name: "new", createdAt: hoursAgo(25), now }), "unregistered");
+  assert.equal(unregisteredFor({ pr: false, registry: reg(), main: null, name: "new", now }), "unregistered");
+});

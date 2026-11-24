@@ -26,3 +26,9 @@ test("an unregistered repository on main opens the one issue, like a stale surfa
   assert.deepEqual(decide({ staleIds: ids, issue: null }), { action: "open", key: keyOf(ids) });
   assert.match(render([{ id: ids[0], status: "unregistered", problems: ["ourostack/my-agent has no README or social preview entry in brand/surfaces.json"] }], keyOf(ids)), /unregistered:my-agent/);
 });
+
+test("a new repository inside its grace window is listed with its creator and what to add", () => {
+  const text = render([{ id: "unregistered:chime-in", status: "unregistered-pending", createdAt: "2026-11-24T16:10:00Z", creator: "arimendelow", problems: ["ourostack/chime-in has no README or social preview entry in brand/surfaces.json"], fix: "Add it to brand/surfaces.json" }], "k");
+  assert.match(text, /created 2026-11-24T16:10:00Z by arimendelow/);
+  assert.match(text, /To add: Add it/);
+});
