@@ -36,6 +36,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { fetchWithRetry } from "./fetch-retry.mjs";
 import { afterMergeFor, needsUploadFor, pendingFor, unregisteredFor } from "./pending.mjs";
 import { canonicalUrl } from "./canonical.mjs";
 
@@ -98,23 +99,7 @@ function get(url, headers = {}) {
   if (!cache.has(key)) {
     cache.set(
       key,
-      slot(async () => {
-        for (let attempt = 0; ; attempt++) {
-          try {
-            const res = await fetch(url, { headers: { "user-agent": "ourostack-brand-audit", ...headers }, redirect: "follow" });
-            const body = Buffer.from(await res.arrayBuffer());
-            // A CDN edge sometimes answers one page of a large crawl with a transient 5xx; retry it like a network error.
-            if ([429, 502, 503, 504].includes(res.status) && attempt < 2) {
-              await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
-              continue;
-            }
-            return { status: res.status, url: res.url, type: res.headers.get("content-type") ?? "", body };
-          } catch (err) {
-            if (attempt >= 2) return { status: 0, url, type: "", body: Buffer.alloc(0), error: String(err.cause?.code ?? err.message) };
-            await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
-          }
-        }
-      }),
+      slot(() => fetchWithRetry(url, { headers: { "user-agent": "ourostack-brand-audit", ...headers }, redirect: "follow" })),
     );
   }
   return cache.get(key);
