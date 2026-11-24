@@ -10,7 +10,9 @@
     "hyperellipse": "Fork of mikhailmogilnikov/hyperellipse, the corner-shape polyfill Ouro UI's squircles use where a browser has no native corner-shape (ourostack/ouro-ui-core docs/decisions/2026-11-13-squircles-switch-avatars.md). Its main mirrors upstream exactly until we need to tweak it, so it keeps upstream's README; its About line (labs) says why we fork it.",
     "image-gen-mcp": "Archived.",
     "npm:ouro.bot": "The ouro.bot npm wrapper ships no README; its page says so. If it ever ships one, add it here.",
-    "my-agent": "The companion to the blog post \"Just give the model a keyboard\" (https://ouroboros.bot/blog/build-ai-agent-from-scratch/): a tiny agent a reader studies line by line. Its own AGENTS.md allows no extra files, so it has no README and no header; its social preview carries the brand (social:my-agent)."
+    "my-agent": "The companion to the blog post \"Just give the model a keyboard\" (https://ouroboros.bot/blog/build-ai-agent-from-scratch/): a tiny agent a reader studies line by line. Its own AGENTS.md allows no extra files, so it has no README and no header; its social preview carries the brand (social:my-agent).",
+    "ouro-current-fixture-android": "Test repository for Ouro Current: it pins Ouro UI for Android at an old release so Ouro Current has something to update. It carries no README header or social preview on purpose; its About line says what it is.",
+    "ouro-current-fixture-windows": "Test repository for Ouro Current: it pins Ouro UI for Windows at an old release so Ouro Current has something to update. It carries no README header or social preview on purpose; its About line says what it is."
   },
   "outOfScope": "App icons (Ouro MD's icon, the Apple apps' icons) are product identity, not brand surfaces; they are not changed by a brand update. GitHub organization avatar is the approved rich Ouro render (2026-10-14); the Ouro Labs enterprise shows the same render and is registered below as enterprise:avatar so the audit notices if they drift apart.",
   "surfaces": [
@@ -226,6 +228,18 @@
       "repo": "ourostack/cmux",
       "family": "labs",
       "homepage": "https://cmux.com"
+    },
+    {
+      "id": "about:ouro-current-fixture-android",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-current-fixture-android",
+      "family": "ouro-ui"
+    },
+    {
+      "id": "about:ouro-current-fixture-windows",
+      "kind": "github-about",
+      "repo": "ourostack/ouro-current-fixture-windows",
+      "family": "ouro-ui"
     },
     {
       "id": "about:playwright",
