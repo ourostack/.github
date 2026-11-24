@@ -383,6 +383,12 @@ test("guards: a fix or revert that landed since, or one that is open, holds the 
   assert.match(decide(c, { openPrs: [{ number: 9, title: "anything", head: { ref: "revert-11-breaks" } }], minutes: 0, minRedMinutes: 0 }).reason, /#9/);
   assert.equal(fixPrOpen([{ number: 3, title: "Fix", body: `after ${sha("b").slice(0, 7)}`, head: { ref: "f" } }], { number: 11 }, sha("b")).number, 3);
   assert.equal(decide({ ...c, confirmed: false }, { minutes: 90, minRedMinutes: 0 }).action, "wait");
+  // revertOnlyNamed: one picked from several pull requests in its range gets an issue; one named alone is reverted.
+  const several = { ...c, failures: [{ prs: 4, failure: {} }] };
+  assert.equal(decide(several, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue");
+  assert.match(decide(several, { minutes: 0, minRedMinutes: 0, namedOnly: true }).reason, /picked from 4 pull requests/);
+  assert.equal(decide({ ...c, failures: [{ prs: 1, failure: {} }] }, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "revert");
+  assert.equal(decide(several, { minutes: 0, minRedMinutes: 0 }).action, "revert", "off by default");
   assert.match(decide(c, { minutes: 59, minRedMinutes: 60 }).reason, /under 60m/);
 });
 

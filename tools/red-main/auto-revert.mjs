@@ -824,7 +824,7 @@ export function settledBy(f, { greenLater = new Map(), changedLater = [] } = {})
 }
 
 // Per culprit: { action: "revert" | "wait" | "skip", reason }.
-export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [] }) {
+export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [], namedOnly = false }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
   const settled = (c.failures ?? []).map((x) => settledBy(x.failure, { greenLater, changedLater }));
@@ -834,6 +834,11 @@ export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, gr
   if (!c.confirmed && c.flake) return { action: "skip", reason: "passed when its workflow was dispatched at the same commit: a flake" };
   if (!c.confirmed) return { action: "wait", reason: "not yet reproduced: the verify run at the same commit decides" };
   if (minutes < minRedMinutes) return { action: "wait", reason: `red for ${minutes}m, under ${minRedMinutes}m` };
+  // namedOnly (a repository's revertOnlyNamed): reverted only when its range is that one pull request (a bisect or a single
+  // merge named it); one picked among several by what it changed gets an issue for its lane instead. Tandem, 2026-11-24:
+  // #5333 reverted #5289 over Windows failures #5289 didn't cause, picked from a range of several.
+  const shared = (c.failures ?? []).find((x) => (x.prs ?? 1) > 1);
+  if (namedOnly && shared) return { action: "issue", reason: `#${c.pr} was picked from ${shared.prs} pull requests in the range (${shared.blame?.how ?? "by what it changed"}), not named alone` };
   return { action: "revert", reason: "reproduced" };
 }
 
@@ -931,6 +936,21 @@ export async function postKnown(repo, c, reasons, { run, apply, a = api, log = c
   const had = (await a.get(`/repos/${repo}/issues/${c.pr}/comments?per_page=100`)) ?? [];
   if (had.some((m) => String(m.body ?? "").includes(KNOWN_MARKER))) return log(`  #${c.pr} already has it`);
   await a.post(`/repos/${repo}/issues/${c.pr}/comments`, { body });
+}
+
+export const SUSPECT_MARKER = "Opened by tools/red-main/auto-revert.mjs in ourostack/.github instead of a revert:";
+// One open issue per suspect pull request, for its lane: what failed, the range, and why it wasn't reverted.
+export async function suspectIssue(repo, c, reason, { run, apply, log = console.log, a = api }) {
+  const title = `Main red: #${c.pr} is one suspect of several for main's ${run.name}`;
+  log(`  ${apply ? "" : "would "}open issue "${title}"`);
+  if (!apply) return null;
+  const open = (await a.get(`/repos/${repo}/issues?state=open&per_page=100`)) ?? [];
+  if (open.some((i) => String(i.body ?? "").includes(SUSPECT_MARKER) && i.title === title)) return log(`  already open`);
+  const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\``}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); ${r.prs} pull requests between.`);
+  const body = [`Main's \`${run.name}\` is red (${run.html_url}). ${reason}, so it is not reverted.`, "", ...lines, "", `#${c.pr}'s lane: check whether it's yours; fix forward, or revert it yourself. ${SUSPECT_MARKER}`].join("\n");
+  const made = await a.post(`/repos/${repo}/issues`, { title, body });
+  log(`  opened ${made?.html_url ?? "the issue"}`);
+  return made;
 }
 
 export function revertBody({ repo, c, run, minutes }) {
@@ -1359,7 +1379,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       const changedLater = later.length && s.commits ? (await s.commits(r.newest.head_sha, "refs/remotes/origin/main")).filter((c) => after.has(c.sha)) : [];
       const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf }) : new Map();
       for (const c of cs.slice(0, 5)) {
-        let d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater });
+        let d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater, namedOnly: cfg.revertOnlyNamed === true });
         let culpritNow = c;
         if (d.action === "revert") {
           const reasons = [];
@@ -1375,9 +1395,13 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
             culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
           }
         }
-        log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : "not reverting"}: ${d.reason}`}`);
+        log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : d.action === "issue" ? "an issue, not a revert" : "not reverting"}: ${d.reason}`}`);
         if (d.action === "known") {
           await postKnown(repo, c, c.failures.map((x) => knownBefore(x, { pr: c.pr, earlier: earlier.get(x.base?.created_at ?? x.first.created_at) ?? [], flakes: flakes ?? new Map(), flakeDoc: cfg.knownFlakes })), { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not post the evidence on #${c.pr}: ${e.message}`));
+          continue;
+        }
+        if (d.action === "issue") {
+          await suspectIssue(repo, c, d.reason, { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not open the issue for #${c.pr}: ${e.message}`));
           continue;
         }
         if (d.action !== "revert") continue;
