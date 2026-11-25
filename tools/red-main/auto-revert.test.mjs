@@ -419,6 +419,12 @@ test("guards: a fix or revert that landed since, or one that is open, holds the 
   assert.match(decide(several, { minutes: 0, minRedMinutes: 0, namedOnly: true }).reason, /picked from 4 pull requests/);
   assert.equal(decide({ ...c, failures: [{ prs: 1, failure: {} }] }, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "revert");
   assert.equal(decide(several, { minutes: 0, minRedMinutes: 0 }).action, "revert", "off by default");
+  // Named alone by the failure (Tandem, #5789, 2026-11-25): it names a file only this pull request in the range changed, so
+  // it's reverted, the job that only adds the others up riding along; a file two changed, or one a reference away, isn't.
+  const names = (distance, ties = [{ pr: 11 }]) => ({ prs: 2, failure: {}, blame: { pr: 11, distance, ties } });
+  assert.equal(decide({ ...c, failures: [names(0), names(1)] }, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "revert");
+  assert.equal(decide({ ...c, failures: [names(1)] }, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue", "a reference away is a pick among several");
+  assert.equal(decide({ ...c, failures: [names(0, [{ pr: 11 }, { pr: 12 }])] }, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue", "two changed a file it names");
   assert.match(decide(c, { minutes: 59, minRedMinutes: 60 }).reason, /under 60m/);
 });
 
