@@ -284,6 +284,16 @@ export async function parseLog(lines) {
       cur = { name: nok[1].trim(), location: null, text: "", lines: 0, indent: null };
       continue;
     }
+    // A known-failing list's judge (Tandem's scripts/window-engine-tests.ts --block-unlisted, main's WebKit burst): each
+    // case it fails is its own error line, "<engine> failed <file>[:<case>], which <list> doesn't list: <message>", in a job
+    // with no TAP of its own. Each is a failing test, so a burst that stays red over several merges' breaks traces each case
+    // to the merge that began it. Keyed by the job's step, they were one failure "beyond the runs read", and #5684's two
+    // cases were never reverted (Tandem, 2026-11-25).
+    const listed = /##\[error\](\w+) failed (\S+?\.(?:test|spec)\.[cm]?[jt]sx?)(?::(.+?))?, which \S+ doesn't list: ?(.*)$/.exec(line);
+    if (listed) {
+      tests.push({ name: (listed[3] ?? listed[2]).trim(), location: listed[2], text: `${listed[1]}: ${listed[4]}`.slice(0, 1000) });
+      continue;
+    }
     if (/##\[error\]|\berror\b|\bfail(ed|ure)?\b|✖|AssertionError/i.test(line)) {
       tail.push(line.slice(0, 1000));
       if (tail.length > 200) tail.shift();
