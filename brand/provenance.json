@@ -56010,5 +56010,62 @@
   "height": 630,
   "bytes": 145957,
   "sha256": "2c60576bdd154102472e740e7cbcf7ff7fa124effce4d100023798ea9d22807c"
+ },
+ {
+  "file": "spot/empty-week.webp",
+  "for": "Ouro UI empty-state Moments (the calendar demo's empty week)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt_file": "brand/art/prompts/empty-week.prompt.md",
+  "crop": "the keyed sprite, day, golden light, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds; blind defect hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the glass week and Ouro alone on key magenta, first as a flat slab (rejected: too wide for a square), then as an upright desk-calendar panel (chosen)",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "Ouro lies curled in the open middle of a calm frosted-glass week with nothing booked, looking up at us, content and unhurried."
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its dark twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 22100,
+  "sha256": "641be9c2970ef92655c5da3a93f0f907ae77aa3175ad6c635997bf93d004ded2"
+ },
+ {
+  "file": "spot/empty-week-dark.webp",
+  "for": "Ouro UI empty-state Moments (the calendar demo's empty week)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt_file": "brand/art/prompts/empty-week.prompt.md",
+  "crop": "the keyed sprite, night, moonlight and emerald glow, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds; blind defect hunt: no physical blocker",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the glass week and Ouro alone on key magenta, first as a flat slab (rejected: too wide for a square), then as an upright desk-calendar panel (chosen)",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024",
+    "prompt": "Ouro lies curled in the open middle of a calm frosted-glass week with nothing booked, looking up at us, content and unhurried."
+   },
+   {
+    "step": "edit",
+    "what": "the chosen day picture edited to moonlight: same place, shape and Ouro, glass glowing emerald from within",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its day twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 25546,
+  "sha256": "5477b5eeca8879c3ee56b312ae660aa90e3392ea865cd956195a26b51a79813c"
  }
 ]
