@@ -1,12 +1,17 @@
 {
-  "about": "The public Ouro family: every site's family bar and footer list these links in this order. Sites keep a byte-for-byte copy and test it against this file.",
+  "about": "The public Ouro family: every site's family bar and footer list `links` (whole sites only) in this order. `products` are pages that live inside a site (`parent` is that site's id); a site's own Tools menu lists its products, and the bar never does. Sites keep a byte-for-byte copy and test it against this file.",
   "links": [
     { "id": "ouro", "label": "Ouro", "href": "https://ouroboros.bot/" },
     { "id": "ouro-ui", "label": "Ouro UI", "href": "https://ui.ouroboros.bot/" },
-    { "id": "ouro-md", "label": "Ouro MD", "href": "https://ouroboros.bot/ouro-md/" },
-    { "id": "desk", "label": "Desk", "href": "https://ouroboros.bot/desk/" },
-    { "id": "apps", "label": "Apps", "href": "https://ouroboros.bot/apps/" },
+    { "id": "spoonjoy", "label": "Spoonjoy", "href": "https://spoonjoy.app/" },
     { "id": "ari", "label": "Ari Mendelow", "href": "https://mendelow.me/" },
     { "id": "github", "label": "GitHub (ourostack)", "href": "https://github.com/ourostack" }
+  ],
+  "products": [
+    { "id": "ouro-md", "label": "Ouro MD", "href": "https://ouroboros.bot/ouro-md/", "parent": "ouro" },
+    { "id": "desk", "label": "Desk", "href": "https://ouroboros.bot/desk/", "parent": "ouro" },
+    { "id": "shepherd", "label": "Shepherd", "href": "https://ouroboros.bot/shepherd/", "parent": "ouro" },
+    { "id": "apps", "label": "All apps", "href": "https://ouroboros.bot/apps/", "parent": "ouro" },
+    { "id": "hackamore", "label": "Hackamore", "href": "https://github.com/ourostack/hackamore", "parent": "ouro-ui" }
   ]
 }
