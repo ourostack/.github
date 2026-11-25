@@ -852,8 +852,12 @@ export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, gr
   // namedOnly (a repository's revertOnlyNamed): reverted only when its range is that one pull request (a bisect or a single
   // merge named it); one picked among several by what it changed gets an issue for its lane instead. Tandem, 2026-11-24:
   // #5333 reverted #5289 over Windows failures #5289 didn't cause, picked from a range of several.
+  // Named alone, too: a failure that names a file only this pull request in the range changed (coordinator ruling, Tandem,
+  // 2026-11-25: #5789 added a product name to engine/crates/agents/tests/rules.rs, which test/product-names.test.ts names,
+  // in a range of two, and got an issue rather than a revert).
+  const alone = (x) => (x.prs ?? 1) <= 1 || (x.blame?.distance === 0 && x.blame?.pr === c.pr && (x.blame?.ties?.length ?? 1) === 1);
   const shared = (c.failures ?? []).find((x) => (x.prs ?? 1) > 1);
-  if (namedOnly && shared) return { action: "issue", reason: `#${c.pr} was picked from ${shared.prs} pull requests in the range (${shared.blame?.how ?? "by what it changed"}), not named alone` };
+  if (namedOnly && shared && !(c.failures ?? []).some(alone)) return { action: "issue", reason: `#${c.pr} was picked from ${shared.prs} pull requests in the range (${shared.blame?.how ?? "by what it changed"}), not named alone` };
   return { action: "revert", reason: "reproduced" };
 }
 
