@@ -289,6 +289,23 @@ test("analyse: a failure that began in the newer run is blamed on the commits af
   assert.deepEqual(culprits(r.results).map((c) => c.pr), [13, 11], "two breaks in one range: both culprits, reverted in one cycle");
 });
 
+test("analyse: a list judge's red (Tandem's WebKit burst) is a failure per case, each traced to the merge that began it", async () => {
+  const judged = (cs) => cs.map(([c, why]) => `2026-11-25T10:33:20.1Z ##[error]webkit failed test/x.test.ts:${c}, which test/webkit-known-failing.json doesn't list: ${why}`);
+  const p = await parseLog([...judged([["x works", "Expected values to be strictly equal"]]), "##[error]webkit failed test/x.test.ts, which test/webkit-known-failing.json doesn't list: 2 subtests failed", "##[error]Process completed with exit code 1."]);
+  assert.deepEqual(p.tests.map((t) => [t.name, t.location]), [["x works", "test/x.test.ts"], ["test/x.test.ts", "test/x.test.ts"]], "a case, and a file listed whole");
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const n = run({ head_sha: sha("n") });
+  // The burst stayed red from b on one case; n's run fails a new one as well. Keyed by the judge's step, both were one failure.
+  const logs = { [b.id]: judged([["x works", "Expected values to be strictly equal"]]), [n.id]: judged([["x works", "Expected values to be strictly equal"], ["readme", "see README.md"]]) };
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src() });
+  const readme = r.results.find((x) => x.failure.test === "readme");
+  assert.equal(readme.first.id, n.id);
+  assert.equal(readme.base.id, b.id);
+  assert.equal(readme.blame.pr, 13);
+  assert.deepEqual(culprits(r.results).map((c) => c.pr), [13, 11], "each case's own break, both reverted in one cycle");
+});
+
 test("analyse: a PR already reverted while the failure stayed is not blamed again; the next closest is", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const b = run({ head_sha: sha("b") });
