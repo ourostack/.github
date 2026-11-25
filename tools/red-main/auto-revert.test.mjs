@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -304,6 +304,19 @@ test("analyse: a list judge's red (Tandem's WebKit burst) is a failure per case,
   assert.equal(readme.base.id, b.id);
   assert.equal(readme.blame.pr, 13);
   assert.deepEqual(culprits(r.results).map((c) => c.pr), [13, 11], "each case's own break, both reverted in one cycle");
+});
+
+test("analyse: a cached parse from an older parseLog is read again, so a burst red before #482 shows the cases it failed", async () => {
+  const judged = (c) => [`##[error]webkit failed test/x.test.ts:${c}, which test/webkit-known-failing.json doesn't list: see README.md`];
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const n = run({ head_sha: sha("n") });
+  // b's job was cached by the old parser: no tests. Read as such, the case began at n and #13 took the blame.
+  const stale = { jobs: { [b.id * 10]: { tests: [], errors: ["##[error]Process completed with exit code 1."] } } };
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], { [b.id]: judged("readme"), [n.id]: judged("readme") }), src: src(), cache: stale });
+  const [x] = r.results;
+  assert.equal(x.first.id, b.id, "the stale entry is parsed again: the case failed at b already");
+  assert.equal(stale.jobs[b.id * 10].v, PARSE_VERSION, "and cached again at this version");
 });
 
 test("analyse: a PR already reverted while the failure stayed is not blamed again; the next closest is", async () => {

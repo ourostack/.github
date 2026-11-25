@@ -253,6 +253,9 @@ const ANSI = /\x1b\[[0-9;]*[A-Za-z]/g;
 const PATHISH = /(?:[A-Za-z]:)?[\w@.+~\-\/\\]*[\w\-]\.(?:[cm]?[jt]sx?|json|swift|cs|ps1|psm1|sh|ya?ml|css|html|md|py|go|rs|kt|java|c|cc|cpp|h|m|mm|xml|plist|txt|toml|sql)\b/g;
 const BLOCK_LINES = 400;
 
+/** What parseLog reads; a cached parse from another version is read again (2: a list judge's cases, #482). */
+export const PARSE_VERSION = 2;
+
 // One job's log lines -> { tests: [{ name, location, text }], errors: [line] }: node:test's TAP `not ok` blocks with their
 // YAML (location, error), and, for jobs without them, the error lines near the end.
 export async function parseLog(lines) {
@@ -392,7 +395,9 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
   const out = [];
   const infra = [];
   for (const j of failed) {
-    let parsed = cache?.jobs?.[j.id];
+    // A job's parsed log as an older parseLog read it is read again: #482's list-judge cases weren't in the cache's older
+    // entries, so a WebKit burst red before it looked as if it hadn't failed those cases, and the range started at the wrong run.
+    let parsed = cache?.jobs?.[j.id]?.v === PARSE_VERSION ? cache.jobs[j.id] : undefined;
     if (!parsed) {
       parsed = { tests: [], errors: [] };
       if (!neverStarted(j) && j.conclusion === "failure") {
@@ -402,7 +407,7 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
           parsed = { tests: [], errors: [], unreadableLog: true };
         }
       }
-      if (cache && j.status === "completed") (cache.jobs ??= {})[j.id] = parsed;
+      if (cache && j.status === "completed") (cache.jobs ??= {})[j.id] = { ...parsed, v: PARSE_VERSION };
     }
     const jobName = jobKey(j.name);
     if (parsed.tests.length) {
