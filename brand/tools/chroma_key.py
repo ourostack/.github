@@ -4,6 +4,7 @@
     python3 brand/tools/chroma_key.py raw.png out.png --cool       # a blue creature: no green left in it at all
     python3 brand/tools/chroma_key.py raw.png out.png --with lit.png out-lit.png   # a pair, trimmed to one box
     python3 brand/tools/chroma_key.py raw.png out.png --mirror     # turned to face the other way
+    python3 brand/tools/chroma_key.py raw.png out.png --magenta    # painted on #FF00FF instead, for a green creature
 
 Image generation can't paint transparency (asked for it, it paints a checkerboard), so a sprite is painted on key
 green and keyed here. Alpha ramps from the subject (no green spill) to the key (full spill), so fins and tentacles
@@ -20,13 +21,22 @@ LOW, HIGH = 0.08, 0.40
 PAD = 8
 
 
-def key(path, cool=False):
+def key(path, cool=False, magenta=False):
     im = np.asarray(Image.open(path).convert("RGB")).astype(np.float32) / 255
-    spill = im[..., 1] - np.maximum(im[..., 0], im[..., 2])
+    if magenta:
+        spill = np.minimum(im[..., 0], im[..., 2]) - im[..., 1]
+    else:
+        spill = im[..., 1] - np.maximum(im[..., 0], im[..., 2])
     alpha = np.clip(1 - (spill - LOW) / (HIGH - LOW), 0, 1)
     a = np.maximum(alpha, 1e-3)[..., None]
-    rgb = np.clip((im - (1 - a) * np.array([0.0, 1.0, 0.0], np.float32)) / a, 0, 1)
-    rgb[..., 1] = np.minimum(rgb[..., 1], np.maximum(rgb[..., 0], rgb[..., 2]))
+    k = np.array([1.0, 0.0, 1.0] if magenta else [0.0, 1.0, 0.0], np.float32)
+    rgb = np.clip((im - (1 - a) * k) / a, 0, 1)
+    if magenta:
+        excess = np.maximum(np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1], 0)
+        rgb[..., 0] -= excess
+        rgb[..., 2] -= excess
+    else:
+        rgb[..., 1] = np.minimum(rgb[..., 1], np.maximum(rgb[..., 0], rgb[..., 2]))
     if cool:
         rgb[..., 1] = np.minimum(rgb[..., 1], rgb[..., 2] * 0.88)
     rgba = np.concatenate([rgb, alpha[..., None]], -1)
@@ -39,13 +49,13 @@ def box(img):
 
 
 def main(args):
-    cool, mirror = "--cool" in args, "--mirror" in args
-    args = [a for a in args if a not in ("--cool", "--mirror")]
+    cool, mirror, magenta = "--cool" in args, "--mirror" in args, "--magenta" in args
+    args = [a for a in args if a not in ("--cool", "--mirror", "--magenta")]
     pairs = [(args[0], args[1])]
     if "--with" in args:
         i = args.index("--with")
         pairs.append((args[i + 1], args[i + 2]))
-    keyed = [(key(src, cool), out) for src, out in pairs]
+    keyed = [(key(src, cool, magenta), out) for src, out in pairs]
     boxes = [box(img) for img, _ in keyed]
     union = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
     for img, out in keyed:
