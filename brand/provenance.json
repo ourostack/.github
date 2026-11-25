@@ -56067,5 +56067,115 @@
   "height": 440,
   "bytes": 25546,
   "sha256": "5477b5eeca8879c3ee56b312ae660aa90e3392ea865cd956195a26b51a79813c"
+ },
+ {
+  "file": "spot/empty-chat.webp",
+  "for": "Ouro UI empty-state Moments (the chat demo's no messages)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt": "A blank frosted-glass speech bubble standing on a small brass foot, with Ouro curled in front of it looking up at us, content; key magenta background; no text or symbols.",
+  "crop": "the keyed sprite, day, golden light, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds; no text or symbols in the glass",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the blank glass bubble and Ouro alone on key magenta (first try returned a white background, redone on magenta)",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its dark twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 20994,
+  "sha256": "645b2a93efed1370900739c64958012d8c244a8e7d2f635d7ecb9ac2987ec016"
+ },
+ {
+  "file": "spot/empty-chat-dark.webp",
+  "for": "Ouro UI empty-state Moments (the chat demo's no messages)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt": "A blank frosted-glass speech bubble standing on a small brass foot, with Ouro curled in front of it looking up at us, content; key magenta background; no text or symbols.",
+  "crop": "the keyed sprite, night, moonlight and emerald glow, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds; no text or symbols in the glass",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the blank glass bubble and Ouro alone on key magenta",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "edit",
+    "what": "the day picture edited to moonlight: same place, shape and Ouro, glass glowing emerald from within",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its day twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 24142,
+  "sha256": "7c345734c3d633407f7be061d9bf5e1661f3a366ab2ea34591c8ad6b22560f0c"
+ },
+ {
+  "file": "spot/empty-call.webp",
+  "for": "Ouro UI empty-state Moments (the call demo's waiting for others)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt": "A frosted-glass bench with three seats on brass legs; Ouro is curled on the leftmost seat, looking up at us, content, with two empty seats beside him; key magenta background; no text or symbols.",
+  "crop": "the keyed sprite, day, golden light, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the glass bench and Ouro alone on key magenta (a first four-seat bench was too wide for a square, redone with three seats)",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its dark twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 18198,
+  "sha256": "25d015d0d5d91698ea44e6806c44f9ee69ec315043a74858e2f7637cc473d79a"
+ },
+ {
+  "file": "spot/empty-call-dark.webp",
+  "for": "Ouro UI empty-state Moments (the call demo's waiting for others)",
+  "model": "GitHub Copilot app image_generation, quality high",
+  "generated": "2026-11-25",
+  "approval": "ourostack/.github#483 (Ouro UI, 2026-11-25): \"brand spot art for empty states ... Frosted-glass universe. Ouro on-model. Words beside the art, never over it.\" Square, shown 140 to 220 px tall, so a 440 px source for 2x.",
+  "prompt": "A frosted-glass bench with three seats on brass legs; Ouro is curled on the leftmost seat, looking up at us, content, with two empty seats beside him; key magenta background; no text or symbols.",
+  "crop": "the keyed sprite, night, moonlight and emerald glow, centred in a square with 4% margin, premultiplied Lanczos to 440x440, WebP q90 method 6 alpha 100 (Pillow); transparent",
+  "checked": "compared with brand/ouro.png at 2x (one round open C, short tail tip, same big glass eyes, snout and smile); on white and on dark grounds",
+  "generation": [
+   {
+    "step": "candidate",
+    "what": "the glass bench and Ouro alone on key magenta",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "edit",
+    "what": "the day picture edited to moonlight: same place, shape and Ouro, glass glowing emerald from within",
+    "tool": "GitHub Copilot app image_generation, quality high, 1024x1024"
+   },
+   {
+    "step": "key",
+    "what": "keyed off magenta with brand/tools/chroma_key.py --magenta, as a pair with its day twin"
+   }
+  ],
+  "width": 440,
+  "height": 440,
+  "bytes": 20992,
+  "sha256": "0a997b8d4a176b89838638273741cb4bca829999c81c587e5a9aec2fc64e6aa9"
  }
 ]
