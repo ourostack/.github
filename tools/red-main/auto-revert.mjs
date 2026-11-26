@@ -24,7 +24,8 @@
 // concurrency group test only the newest of a burst), so the culprit is found over a range:
 //   1. Failures: the red run's failed jobs (latest attempt) are read from their logs: each failing test (TAP `not ok`, its
 //      `location:` file and every repository file its failure text names), or, for a job with no test failure, the job and
-//      the files its error lines name and its failing step's `run:` names in the workflow file at that commit. A job with no test failure that is infrastructure (classifyFailure) is dropped, and so is a
+//      the files its error lines name and its failing step's `run:` names in the workflow file at that commit (a reusable
+//      workflow's job in the file its caller's job uses), with the local actions its earlier steps ran as its setup. A job with no test failure that is infrastructure (classifyFailure) is dropped, and so is a
 //      job the workflow lets fail (job-level `continue-on-error: true`, or named report-only: softJobs).
 //   2. Range: for each failure, the older completed runs are read until one where it didn't fail. The failure was introduced
 //      by a commit after that run and up to the first run where it failed. The newest green run is read like the reds: a job
@@ -35,6 +36,7 @@
 //      it reads as text (Tandem #4096's rule) and every file added under a directory it scans, at the commit that first failed.
 //      The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the PR whose change touches
 //      the most code names the failing assertion uses, else the newest. With
+//      nothing reachable from a job's failing step, its setup is followed the same way. With
 //      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
 //      When the failure is a test file's own, only a PR that changes that file's import graph (the file, what it imports, reads
 //      or scans) is blamed; one that changed only a file the failure text names is cleared, with a line saying so.
@@ -352,20 +354,82 @@ export function mentions(text, files) {
 // script it runs) are where a job failure with no failing test starts. Steps are matched by name ("Run <command>" when unnamed).
 export function stepBlock(yml, step) {
   const lines = String(yml ?? "").split("\n");
+  const at = stepAt(lines, step);
+  if (!at) return "";
+  const out = [lines[at.i]];
+  for (let k = at.i + 1; k < lines.length; k++) {
+    const ind = /^\s*/.exec(lines[k])[0].length;
+    if (lines[k].trim() && (ind < at.indent || (ind === at.indent && lines[k].trim().startsWith("- ")))) break;
+    out.push(lines[k]);
+  }
+  return out.join("\n");
+}
+function stepAt(lines, step) {
   for (let i = 0; i < lines.length; i++) {
     const m = /^(\s*)- (?:name: (.+)|run: (.+))$/.exec(lines[i]);
     if (!m) continue;
     const name = (m[2] ?? `Run ${m[3]}`).trim().replace(/^(["'])(.*)\1$/, "$2");
-    if (name !== step && !(m[3] && step.startsWith("Run ") && m[3].trim().startsWith(step.slice(4).trim()))) continue;
-    const out = [lines[i]];
-    for (let k = i + 1; k < lines.length; k++) {
-      const ind = /^\s*/.exec(lines[k])[0].length;
-      if (lines[k].trim() && (ind < m[1].length || (ind === m[1].length && lines[k].trim().startsWith("- ")))) break;
-      out.push(lines[k]);
-    }
-    return out.join("\n");
+    if (name === step || (m[3] && step.startsWith("Run ") && m[3].trim().startsWith(step.slice(4).trim()))) return { i, indent: m[1].length };
   }
-  return "";
+  return null;
+}
+
+// Each job of a workflow: its id, its `name:` and its lines.
+export function jobBlocks(yml) {
+  const lines = String(yml ?? "").split("\n");
+  const start = lines.findIndex((l) => /^jobs:\s*$/.test(l));
+  const out = [];
+  if (start < 0) return out;
+  let jobIndent = null;
+  for (const line of lines.slice(start + 1)) {
+    const indent = /^ */.exec(line)[0].length;
+    if (line.trim() && !/^\s*#/.test(line)) {
+      if (indent === 0) break;
+      jobIndent ??= indent;
+      if (indent === jobIndent) {
+        out.push({ id: /^\s*([\w-]+):/.exec(line)?.[1] ?? null, name: null, keyIndent: null, lines: [line] });
+        continue;
+      }
+      const job = out.at(-1);
+      if (job) {
+        job.keyIndent ??= indent;
+        const name = indent === job.keyIndent && /^\s*name:\s*(.+?)\s*$/.exec(line);
+        if (name) job.name = name[1].replace(/^(["'])(.*)\1$/, "$2");
+      }
+    }
+    out.at(-1)?.lines.push(line);
+  }
+  return out;
+}
+
+// The lines of the job a run's job name names, in the workflow file at that commit, or null. A reusable workflow's job
+// ("stage / build-and-sign") is read from the file its caller's job (`stage`) uses: its steps aren't in the caller's file.
+export async function jobSource(read, path, name, depth = 0) {
+  const jobs = jobBlocks(await read(path));
+  const is = (n) => (j) => [j.id, j.name].some((x) => x && (n === x || n.startsWith(`${x} (`)));
+  const own = jobs.find(is(name));
+  if (own) return own.lines.join("\n");
+  const cut = name.indexOf(" / ");
+  if (cut < 0 || depth > 3) return null;
+  const caller = jobs.find(is(name.slice(0, cut)));
+  const used = caller && /^\s*uses:\s*\.\/(\.github\/workflows\/[^\s@#'"]+\.ya?ml)/m.exec(caller.lines.join("\n"))?.[1];
+  return used ? jobSource(read, used, name.slice(cut + 3), depth + 1) : null;
+}
+
+// The repository files of the local actions (`uses: ./<dir>`) a piece of workflow uses.
+export function actionFiles(text, files) {
+  const dirs = [...String(text ?? "").matchAll(/^\s*(?:- )?uses:\s*\.\/([^\s@#'"]+?)\/?\s*(?:#.*)?$/gm)].map((m) => m[1]).filter((d) => !/\.ya?ml$/.test(d));
+  return dirs.length ? [...files].filter((f) => dirs.some((d) => f.startsWith(`${d}/`))) : [];
+}
+
+// The job's setup before its failing step: the files of the local actions its earlier steps ran. Each changes what every later
+// step runs (a shim on PATH, an environment variable), so a failing step nothing else explains is theirs. Tandem, 2026-11-26:
+// a gh shim's action, added before every job's steps, made two shims on PATH call each other, and the release's engine build
+// failed on every run with "Resource temporarily unavailable (os error 35)", a step that names no file; it was never blamed.
+export function setupBefore(block, step, files) {
+  const lines = String(block ?? "").split("\n");
+  const at = stepAt(lines, step);
+  return at ? actionFiles(lines.slice(0, at.i).join("\n"), files) : [];
 }
 
 // A run's failures: [{ key, test, file, roots: [repo files at distance 0], job }], or { infra: reason } when none is the code's.
@@ -449,8 +513,12 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
       continue;
     }
     const step = (j.steps ?? []).find((s) => s.conclusion === "failure")?.name ?? "";
-    const runs = step && read && run.path ? mentions(stepBlock(await read(run.path.split("@")[0]), step).replace(/^\s*- name: .*$/m, ""), files) : [];
-    out.push({ key: `job ${jobName} :: ${step}`, test: null, file: null, roots: [...new Set([...mentions(parsed.errors.join("\n"), files), ...runs])], job: jobName, step });
+    const wf = step && read && run.path ? run.path.split("@")[0] : null;
+    const block = wf ? await jobSource(read, wf, j.name) : null;
+    const own = wf ? stepBlock(block ?? (await read(wf)), step) : "";
+    const runs = [...mentions(own.replace(/^\s*- name: .*$/m, ""), files), ...actionFiles(own, files)];
+    const setup = block ? setupBefore(block, step, files) : [];
+    out.push({ key: `job ${jobName} :: ${step}`, test: null, file: null, roots: [...new Set([...mentions(parsed.errors.join("\n"), files), ...runs])], setup, job: jobName, step });
   }
   if (!out.length) return { infra: infra[0] ?? (failed.length ? "no failure of the code's" : "no failed job") };
   return { failures: dedupe(out) };
@@ -463,6 +531,7 @@ function dedupe(fs) {
     else {
       had.jobs = [...new Set([...had.jobs, f.job])];
       had.roots = [...new Set([...had.roots, ...f.roots])];
+      if (f.setup) had.setup = [...new Set([...(had.setup ?? []), ...f.setup])];
     }
   }
   return [...m.values()];
@@ -754,6 +823,12 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
       const wide = blame;
       blame = narrow && narrow.distance !== Infinity ? narrow : null;
       if (wide.pr !== blame?.pr) outside = `#${wide.pr} ${wide.file ? `changed ${wide.file}` : "was the range's only pull request"}, which ${f.file} does not import or read (its import graph is ${own.size} files), so it is cleared`;
+    }
+    // Nothing the failing step names or runs changed in the range: the job's setup before it (setupBefore) is read next.
+    if ((!blame || blame.distance === Infinity) && f.setup?.length) {
+      const set = culprit(commits, await distances(f.setup.filter((x) => firstFiles.has(x)), { read, files: firstFiles }));
+      const how = (x) => ({ ...x, how: `changed ${x.file}, ${x.distance ? `${x.distance} reference${x.distance > 1 ? "s" : ""} from ` : ""}the setup the job ran before its failing step` });
+      if (set && set.distance !== Infinity) blame = { ...how(set), ties: set.ties.map(how) };
     }
     if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
     // Its PR changed the failing test or a file its failure names: a failure seen on main before still counts against it.

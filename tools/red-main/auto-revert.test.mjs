@@ -439,6 +439,48 @@ test("a job that fails with no failing test starts from the files its failing st
   assert.equal(r.results[0].blame.pr, 11);
 });
 
+// Tandem, 2026-11-26, replayed: the release's engine build is a job of a reusable workflow ci.yml calls ("stage / build-and-sign"),
+// and it failed on every run from the merge that added a gh shim's action before its steps, with a line that names no file.
+test("a job's failing step that nothing explains is blamed on the setup its earlier steps ran, read from its reusable workflow", async () => {
+  const files = new Set([...FILES, ".github/workflows/ci.yml", ".github/workflows/release-stage.yml", ".github/actions/api-count/action.yml", ".github/actions/api-count/gh", ".github/actions/gh-retry/gh", ".github/actions/sign/action.yml", "engine/crates/tandem/src/main.rs", "engine/crates/tandem/tests/mock_serve.rs", "release/engine.ts"]);
+  const ci = "on: push\njobs:\n  plan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: node release/plan.ts\n  stage:\n    needs: plan\n    uses: ./.github/workflows/release-stage.yml\n";
+  const stage = (cmd) => `on: workflow_call\njobs:\n  build-and-sign:\n    runs-on: macos-latest\n    steps:\n      - uses: actions/checkout@v7\n      - uses: ./.github/actions/api-count\n        continue-on-error: true\n      - uses: ./.github/actions/gh-retry\n      - name: Build the Mac engine on an exact cache miss\n        run: ${cmd}\n      - name: Sign\n        uses: ./.github/actions/sign\n`;
+  const log = [
+    "2026-11-26T18:33:30.1Z error: could not compile `tandem` (bin \"tandem\")",
+    "2026-11-26T18:33:30.2Z   could not execute process `rustc --crate-name tandem --edition=2021 crates/tandem/src/main.rs --error-format=json` (never executed)",
+    "2026-11-26T18:33:30.3Z   Resource temporarily unavailable (os error 35)",
+    "2026-11-26T18:33:30.4Z ##[error]Process completed with exit code 101.",
+  ];
+  const shim = { sha: sha("b"), subject: "ci: count each step's GitHub API calls (#6981)", pr: 6981, files: [".github/actions/api-count/action.yml", ".github/actions/api-count/gh", ".github/workflows/ci.yml", ".github/workflows/release-stage.yml"] };
+  const range = [
+    { sha: sha("n"), subject: "The draft guard's test times one request (#7137)", pr: 7137, files: ["engine/crates/tandem/tests/mock_serve.rs", "release/engine.ts"] },
+    { sha: sha("u"), subject: "Unrelated (#7139)", pr: 7139, files: ["src/z.ts"] },
+    shim,
+  ];
+  const replay = async (cmd, commits = range) => {
+    const g = run({ conclusion: "success", head_sha: sha("g") });
+    const b = run({ head_sha: sha("b") });
+    const n = run({ head_sha: sha("n") });
+    const jobsOf = Object.fromEntries([b, n].map((r) => [r.id, [{ id: r.id * 10, name: "stage / build-and-sign", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "Build the Mac engine on an exact cache miss", conclusion: "failure" }] }]]));
+    const read = async (_, p) => ({ ".github/workflows/ci.yml": ci, ".github/workflows/release-stage.yml": stage(cmd) })[p] ?? SRC[p] ?? null;
+    return (await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], { [b.id]: log, [n.id]: log }, { jobsOf }), src: src({ files: async () => files, read, commits: async () => commits }) })).results[0];
+  };
+  const r = await replay("(cd engine && cargo build --release --locked -p tandem)");
+  assert.deepEqual(r.failure.roots, [], "the failing line and the cargo step name no file of the tree");
+  assert.deepEqual(r.failure.setup, [".github/actions/api-count/action.yml", ".github/actions/api-count/gh", ".github/actions/gh-retry/gh"], "the local actions run before it, not the one after");
+  assert.equal(r.blame.pr, 6981);
+  assert.equal(r.blame.distance, 0);
+  assert.match(r.why, /changed \.github\/actions\/api-count\/action\.yml, the setup the job ran before its failing step/);
+  assert.equal(r.confirmed, true, "red the same way on both runs");
+  const [c] = culprits([r]);
+  assert.equal(decide(c, { minutes: 30, minRedMinutes: 0, namedOnly: true }).action, "revert", "named alone among three pull requests: reverted, not an issue");
+  const script = await replay("node release/engine.ts");
+  assert.equal(script.blame.pr, 7137, "a pull request that changed what the failing step runs is blamed before the setup");
+  const none = await replay("(cd engine && cargo build --release --locked -p tandem)", range.slice(0, 2));
+  assert.equal(none.blame, null, "no pull request changed the setup either");
+  assert.equal(none.why, "its failure names no file and its step runs none");
+});
+
 test("#257: a report-only or continue-on-error job's red, or one already red on the green run before, blames no one", async () => {
   const yml = [
     "on: push", "jobs:", "  build:", "    runs-on: ubuntu-latest", "    steps:", "      - run: make",
