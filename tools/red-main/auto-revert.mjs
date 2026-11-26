@@ -9,7 +9,8 @@
 //   node tools/red-main/auto-revert.mjs --self o/r      # caller-workflow mode: that repo, opted in by the caller, with its token
 //   --as-of <ISO time>   replay: judge main as it stood then (runs created later are unseen, runs finishing later still running)
 //   --git <dir>          read commits and files from this clone of the repo (default: a blobless clone of its own)
-//   --cache <file>       keep each finished job's parsed failures, so a later tick doesn't read its log again
+//   --cache <file>       keep each finished job's parsed failures, each completed run's jobs and each failed job's annotations, so a
+//                        later tick reads none of them again (they never change once the run is done)
 //
 // Red is a verdict, not a tip. Each workflow that counts (the repo's "workflows" in auto-revert.json, or every push workflow
 // but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main (for a workflow in the repo's "tagRuns", its
@@ -202,7 +203,25 @@ const NO_VERDICT = new Set(["cancelled", "skipped", "stale", "neutral", "action_
 // A run cancelled after it started (by hand, or by a lane making room) still judged the jobs it finished: when one of them
 // failed it is a red verdict for those jobs (`partial`). Only cancelled runs newer than their workflow's newest green, that
 // ran at least 3 minutes, are looked at (a run replaced while it waited never started).
-export async function markPartial(repo, runs, get, order = null) {
+// A completed run's jobs list (every job completed) and a failed job's annotations never change, so --cache keeps them: a tick
+// every few minutes while main is red read the same ones each time, a fifth of the repository's hourly quota (2026-11-26).
+const NOISE = ["url", "html_url", "node_id", "run_url", "check_run_url", "labels"];
+export async function runJobs(get, cache, repo, run, { attempt = run.run_attempt ?? 1, page = 1 } = {}) {
+  const key = `${run.id}/${attempt}/${page}`;
+  const kept = cache?.runJobs?.[key] ?? cache?.live?.get(key);
+  if (kept) return kept;
+  const path = attempt === (run.run_attempt ?? 1) ? `filter=latest&per_page=100&page=${page}` : `per_page=100&page=${page}`;
+  const jobs = (await get(`/repos/${repo}/actions/runs/${run.id}/${attempt === (run.run_attempt ?? 1) ? "" : `attempts/${attempt}/`}jobs?${path}`)).jobs ?? [];
+  cache?.live?.set(key, jobs);
+  if (cache && jobs.length && jobs.every((j) => j.status === "completed")) {
+    (cache.runJobs ??= {})[key] = jobs.map((j) => Object.fromEntries(Object.entries(j).filter(([k]) => !NOISE.includes(k))));
+  }
+  return jobs;
+}
+const RUN_JOBS_KEPT = 100;
+const NOTES_KEPT = 400;
+
+export async function markPartial(repo, runs, get, order = null, cache = null) {
   for (const rs of groupBy(runs, wfKey).values()) {
     const sorted = [...rs].sort(newestFirst(order));
     for (const r of sorted) {
@@ -210,12 +229,12 @@ export async function markPartial(repo, runs, get, order = null) {
       // A main run someone re-attempted goes back to pending in main's group and is usually replaced, losing its verdict: its
       // previous attempt's failed jobs still stand.
       if ((r.run_attempt ?? 1) > 1 && (r.status !== "completed" || r.conclusion === "cancelled")) {
-        r.jobs = (await get(`/repos/${repo}/actions/runs/${r.id}/attempts/${r.run_attempt - 1}/jobs?per_page=100`)).jobs ?? [];
+        r.jobs = await runJobs(get, cache, repo, r, { attempt: r.run_attempt - 1 });
         r.partial = r.jobs.some((j) => j.conclusion === "failure");
         continue;
       }
       if (r.status !== "completed" || r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
-      r.jobs = (await get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
+      r.jobs = await runJobs(get, cache, repo, r);
       r.partial = r.jobs.some((j) => j.conclusion === "failure");
       // Cancelled, yet its gate job passed and no job failed: the retry covered the cancelled job, so the run is green.
       r.recovered = !r.partial && r.jobs.some((j) => GATE_JOB.test(j.name) && j.conclusion === "success");
@@ -391,7 +410,7 @@ export const softJob = (name, soft = new Set()) =>
   /\breport[ -]only\b/i.test(name) || [...soft].some((n) => name === n || name.startsWith(`${n} (`));
 
 export async function runFailures(repo, run, { a, files, cache = null, read = null }) {
-  const jobs = run.jobs ?? (await a.get(`/repos/${repo}/actions/runs/${run.id}/jobs?filter=latest&per_page=100`)).jobs ?? [];
+  const jobs = run.jobs ?? (await runJobs((p) => a.get(p), cache, repo, run));
   const red = jobs.filter((j) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(j.conclusion));
   const soft = red.length && read && run.path ? softJobs(await read(run.path.split("@")[0])) : new Set();
   const failed = red.filter((j) => !softJob(j.name, soft));
@@ -423,7 +442,7 @@ export async function runFailures(repo, run, { a, files, cache = null, read = nu
       }
       continue;
     }
-    const notes = await readNotes(a, repo, j.id);
+    const notes = await readNotes(a, repo, j.id, cache);
     const verdict = classifyFailure({ conclusion: "failure" }, [{ ...notes, name: j.name, conclusion: j.conclusion, runner_id: j.runner_id, steps: j.steps ?? [], log: parsed.errors.join("\n") }]);
     if (verdict.infra) {
       infra.push(verdict.reason);
@@ -450,12 +469,16 @@ function dedupe(fs) {
 }
 
 // Annotations need Checks read, which a fine-grained write token lacks: unreadable means "can't tell", never "code".
-async function readNotes(a, repo, id) {
+async function readNotes(a, repo, id, cache = null) {
+  const kept = cache?.notes?.[id];
+  if (kept) return kept;
   try {
     const notes = await a.get(`/repos/${repo}/check-runs/${id}/annotations?per_page=100`);
     if (!Array.isArray(notes)) return { unreadable: true };
     const n = notes.find((x) => String(x.title ?? "").trim().toLowerCase() === "infra");
-    return { infra: n ? n.message || "infra" : undefined, notes: notes.map((x) => x.message ?? "").join("\n") };
+    const read = { infra: n ? n.message || "infra" : undefined, notes: notes.map((x) => x.message ?? "").join("\n") };
+    if (cache) (cache.notes ??= {})[id] = read;
+    return read;
   } catch {
     return { unreadable: true };
   }
@@ -850,7 +873,7 @@ export function culprits(results) {
 // The jobs that passed whole on main after a red run: for each job (by jobKey), the newest commit after `newest` whose run
 // of the same workflow has every one of its shards done and green (skipped ones aside, one at least green). Reads the jobs
 // of up to `max` newer runs, newest first, running or done: a run still going counts for the jobs it finished.
-export async function laterGreen(repo, runs, newest, { a, order = null, max = 3, asOf = null }) {
+export async function laterGreen(repo, runs, newest, { a, order = null, max = 3, asOf = null, cache = null }) {
   const newer = runs
     .filter((r) => wfKey(r) === wfKey(newest) && r.id !== newest.id && r.head_sha !== newest.head_sha && newestFirst(order)(r, newest) < 0)
     .sort(newestFirst(order))
@@ -860,7 +883,7 @@ export async function laterGreen(repo, runs, newest, { a, order = null, max = 3,
     // Always the latest attempt's jobs: markPartial may have left a run's previous attempt in r.jobs.
     let jobs = [];
     for (let page = 1; page <= 3; page++) {
-      const got = (await a.get(`/repos/${repo}/actions/runs/${r.id}/jobs?filter=latest&per_page=100&page=${page}`)).jobs ?? [];
+      const got = await runJobs((p) => a.get(p), cache, repo, r, { page });
       jobs.push(...got);
       if (got.length < 100) break;
     }
@@ -1361,7 +1384,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
   const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], tagRuns: cfg.tagRuns ?? [], bisectRuns: cfg.bisectRuns ?? [], asOf });
   // A bisect run is at an older commit than the push run it narrows, but newer by run number: by push order it says nothing.
-  let vs = verdicts(await markPartial(repo, runs.filter((r) => !r.bisect), (p) => a.get(p)));
+  let vs = verdicts(await markPartial(repo, runs.filter((r) => !r.bisect), (p) => a.get(p), null, cache));
   let red = vs.filter((v) => v.state === "red");
   // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).
   if (rerunOnly) {
@@ -1382,7 +1405,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     order = (await (await getSrc()).order?.()) ?? null;
     if (order?.size) {
       for (const r of runs) delete r.partial;
-      vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order), order);
+      vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order, cache), order);
       red = vs.filter((v) => v.state === "red");
     }
   }
@@ -1453,7 +1476,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       const later = await s.later(r.newest.head_sha);
       const after = new Set(later.map((c) => c.sha));
       const changedLater = later.length && s.commits ? (await s.commits(r.newest.head_sha, "refs/remotes/origin/main")).filter((c) => after.has(c.sha)) : [];
-      const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf }) : new Map();
+      const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf, cache }) : new Map();
       for (const c of cs.slice(0, 5)) {
         let d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater, namedOnly: cfg.revertOnlyNamed === true });
         let culpritNow = c;
@@ -1505,6 +1528,8 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
   const cachePath = opt("--cache");
   const rerunOnly = argv.includes("--rerun-only");
   const cache = cachePath ? (existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : {}) : null;
+  // This run's own reads of a run still going, so none is sent twice (not saved: the run's jobs change).
+  if (cache) Object.defineProperty(cache, "live", { value: new Map() });
   if (asOf && apply) throw new Error("--as-of replays the past: it never acts (drop --apply)");
   console.log(apply ? "auto-revert: applying" : `auto-revert: dry run${asOf ? ` as of ${asOf}` : ""} (pass --apply to act)`);
   const repos = self ? { [self]: { ...CONFIG.repos[self], enabled: true } } : CONFIG.repos;
@@ -1528,6 +1553,11 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
   if (cachePath) {
     const ids = Object.keys(cache.jobs ?? {}).sort((x, y) => Number(y) - Number(x));
     for (const id of ids.slice(400)) delete cache.jobs[id];
+    const newest = (o, n) => {
+      for (const k of Object.keys(o ?? {}).sort((x, y) => Number(y.split("/")[0]) - Number(x.split("/")[0])).slice(n)) delete o[k];
+    };
+    newest(cache.runJobs, RUN_JOBS_KEPT);
+    newest(cache.notes, NOTES_KEPT);
     mkdirSync(dirname(cachePath), { recursive: true });
     writeFileSync(cachePath, JSON.stringify(cache));
   }
