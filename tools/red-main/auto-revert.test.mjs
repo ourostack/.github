@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -343,6 +343,26 @@ test("analyse: a cached parse from an older parseLog is read again, so a burst r
   const [x] = r.results;
   assert.equal(x.first.id, b.id, "the stale entry is parsed again: the case failed at b already");
   assert.equal(stale.jobs[b.id * 10].v, PARSE_VERSION, "and cached again at this version");
+});
+
+test("cache: a completed run's jobs and a failed job's annotations are read once, and again only for an unfinished run", async () => {
+  const jobsOf = (id, status) => [{ id: id * 10, name: "build", status, conclusion: status === "completed" ? "failure" : null, runner_id: 1, steps: [], html_url: "x" }];
+  const cache = {};
+  const done = run({ head_sha: sha("b") });
+  const going = run({ status: "in_progress", conclusion: null, head_sha: sha("n") });
+  const gh = () => fakeGitHub([going, done], {}, { jobsOf: { [done.id]: jobsOf(done.id, "completed"), [going.id]: jobsOf(going.id, "in_progress") } });
+  const reads = (a, re) => a.calls.filter(([k, p]) => k === "get" && re.test(p)).length;
+  const first = gh();
+  const [a] = [first];
+  for (const r of [done, going]) await runFailures("o/r", r, { a, files: new Set(), cache });
+  const second = gh();
+  for (const r of [done, going]) await runFailures("o/r", r, { a: second, files: new Set(), cache });
+  assert.equal(reads(first, /\/jobs\?/), 2);
+  assert.equal(reads(first, /annotations/), 1, "only the finished job has annotations to read");
+  assert.equal(reads(second, /\/jobs\?/), 1, "the unfinished run's jobs are read again, the completed run's are not");
+  assert.equal(reads(second, /annotations/), 0);
+  assert.equal(cache.runJobs[`${done.id}/1/1`][0].html_url, undefined);
+  assert.equal(await runJobs((p) => second.get(p), cache, "o/r", done).then((j) => j.length), 1);
 });
 
 test("analyse: a PR already reverted while the failure stayed is not blamed again; the next closest is", async () => {
