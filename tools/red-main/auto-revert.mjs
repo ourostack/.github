@@ -595,7 +595,10 @@ export async function distances(roots, { read, files, maxDepth = 12, maxFiles = 
       if (src == null) continue;
       if (isTestFile(f)) for (const dir of scannedDirs(src, dirSet(files))) if (!dist.dirs.has(dir)) dist.dirs.set(dir, d);
       for (const r of references(f, src, files)) {
-        if (dist.has(r)) continue;
+        // Another test file a source names (a test list, a shard plan) isn't code this one runs: following it reached the
+        // whole repository (Tandem's places-motion-window.test.ts reached Windows' C# and the engine's Rust through its
+        // planner's lists, 1,645 files, and a flake was blamed on a Windows change, 2026-11-26).
+        if (dist.has(r) || (TEST_FILE.test(r) && !roots.includes(r))) continue;
         dist.set(r, d);
         next.push(r);
       }

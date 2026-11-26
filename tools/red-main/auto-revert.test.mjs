@@ -240,6 +240,22 @@ test("PRs tied at the closest file: the one whose change touches the names the f
   assert.equal((await evidence({ ...ties[0], ties }, { ...f, text: "" }, { src: s, testSha: sha("n") })).pr, 4089, "no evidence: the newest still wins");
 });
 
+test("a test's graph doesn't follow another test file its sources name: a planner's list of tests isn't code the test runs", async () => {
+  // Tandem, 2026-11-26: places-motion-window.test.ts -> its helper -> the WebKit planner -> the test planner, which names
+  // native-auth.test.ts in a list -> that test names Windows' EngineHost.cs: a flake was blamed on a Windows change.
+  const src = {
+    "test/a.test.ts": 'import { h } from "./helpers/h.ts";',
+    "test/helpers/h.ts": 'import { plan } from "../../scripts/plan.ts";',
+    "scripts/plan.ts": 'export const SLOW = ["test/b.test.ts"];',
+    "test/b.test.ts": 'const host = "app/Host.cs";',
+    "app/Host.cs": "class Host {}",
+  };
+  const files = new Set(Object.keys(src));
+  const dist = await distances(["test/a.test.ts"], { read: async (p) => src[p] ?? null, files });
+  assert.deepEqual(Object.fromEntries(dist), { "test/a.test.ts": 0, "test/helpers/h.ts": 1, "scripts/plan.ts": 2 });
+  assert.equal((await distances(["test/b.test.ts"], { read: async (p) => src[p] ?? null, files })).get("app/Host.cs"), 1, "a failing test's own references still count");
+});
+
 test("attribution: the PR closest to the failure is the culprit; type-only and unrelated changes are not", async () => {
   const dist = await distances(["test/x.test.ts"], { read: async (p) => SRC[p], files: FILES });
   assert.deepEqual(Object.fromEntries(dist), { "test/x.test.ts": 0, "src/x.ts": 1, "src/y.ts": 2 });
