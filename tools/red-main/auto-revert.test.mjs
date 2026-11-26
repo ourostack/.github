@@ -250,6 +250,30 @@ test("attribution: the PR closest to the failure is the culprit; type-only and u
   assert.equal(culprit(COMMITS.slice(0, 2), dist), null, "nothing reachable and more than one PR: unattributed");
 });
 
+test("analyse: a failure open past the walk is bisected among the older reds down to the green run, not left beyond the runs read", async () => {
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const b = run({ head_sha: sha("b") });
+  const u = run({ head_sha: sha("u") });
+  const n = run({ head_sha: sha("n") });
+  const logs = { [n.id]: TAP("x works", "test/x.test.ts"), [u.id]: TAP("x works", "test/x.test.ts"), [b.id]: TAP("x works", "test/x.test.ts") };
+  const [v] = verdicts([n, u, b, g]);
+  const r = await analyse("o/r", v, { a: fakeGitHub([n, u, b, g], logs), src: src(), maxWalk: 1 });
+  const [x] = r.results;
+  assert.equal(x.first.id, b.id, "it began at b, two runs past the walk");
+  assert.equal(x.base.id, g.id);
+  assert.equal(x.runs, 3);
+  assert.equal(x.blame.pr, 11);
+  // Began at u: b, older, passes it.
+  const later = await analyse("o/r", v, { a: fakeGitHub([n, u, b, g], { ...logs, [b.id]: TAP("y works", "test/y.test.ts") }), src: src(), maxWalk: 1 });
+  const y = later.results.find((z) => z.failure.key === x.failure.key);
+  assert.equal(y.first.id, u.id);
+  assert.equal(y.base.id, b.id);
+  assert.equal(y.blame.pr, 12, "the only pull request between b and u");
+  // Failing at the green run too: it began before the range, as before.
+  const before = await analyse("o/r", verdicts([n, u, b, g])[0], { a: fakeGitHub([n, u, b, g], { ...logs, [g.id]: TAP("x works", "test/x.test.ts") }), src: src(), maxWalk: 1 });
+  assert.equal(before.results[0].why, "where it began is beyond the runs read");
+});
+
 test("analyse: a red verdict covering a range of commits names the PR that broke it, and two red runs in a row confirm it", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const b = run({ head_sha: sha("b") });
@@ -834,11 +858,11 @@ test("check: Tandem, #5252: the range's one pull request, a test's types only, i
   assert.ok(added.calls.some((c) => c[0] === "gql"), "reverted: an added test file can shift what each shard runs");
 });
 
-test("issues and their comments are written with ISSUE_TOKEN when it is set; reads with READ_TOKEN; other writes with GH_TOKEN", () => {
+test("a new issue is written with ISSUE_TOKEN when it is set; reads with READ_TOKEN; other writes, pull request comments too, with GH_TOKEN", () => {
   const env = { GH_TOKEN: "pat", READ_TOKEN: "read", ISSUE_TOKEN: "issue" };
   assert.equal(envFor("GET", "/repos/o/r/issues?state=open", env).GH_TOKEN, "read");
   assert.equal(envFor("POST", "/repos/o/r/issues", env).GH_TOKEN, "issue", "an issue for a suspect: the PAT was refused with 403");
-  assert.equal(envFor("POST", "/repos/o/r/issues/42/comments", env).GH_TOKEN, "issue");
+  assert.equal(envFor("POST", "/repos/o/r/issues/42/comments", env).GH_TOKEN, "pat", "a comment is on a pull request: the caller's token, pull-requests: read, was refused with 403");
   assert.equal(envFor("POST", "/repos/o/r/pulls", env).GH_TOKEN, "pat", "a revert pull request stays the PAT's, so its checks run");
   assert.equal(envFor("PUT", "/repos/o/r/pulls/7/merge", env).GH_TOKEN, "pat");
   assert.equal(envFor("POST", "/repos/o/r/issues", { GH_TOKEN: "pat" }).GH_TOKEN, "pat", "no ISSUE_TOKEN: as before");

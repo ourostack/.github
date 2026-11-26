@@ -27,7 +27,8 @@
 //      job the workflow lets fail (job-level `continue-on-error: true`, or named report-only: softJobs).
 //   2. Range: for each failure, the older completed runs are read until one where it didn't fail. The failure was introduced
 //      by a commit after that run and up to the first run where it failed. The newest green run is read like the reds: a job
-//      already red there did not begin in the range.
+//      already red there did not begin in the range. Past the newest 8 reds (maxWalk), a failure still open is bisected
+//      among the older reds down to the newest green run, a run read per halving, not "beyond the runs read".
 //   3. Attribution: from the failing test file and the files its failure names (distance 0), the code is followed through its
 //      runtime imports and the repository paths it names as strings (type-only imports don't count), and, from a test, what
 //      it reads as text (Tandem #4096's rule) and every file added under a directory it scans, at the commit that first failed.
@@ -55,9 +56,9 @@
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
 // .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
 // and its culprit isn't the revert's), with a squash merge.
-// It prints the API calls it spent. Reads use READ_TOKEN when set (the caller's GITHUB_TOKEN, which can read Checks); issues and
-// their comments use ISSUE_TOKEN when set (the caller's GITHUB_TOKEN with issues: write); other writes use GH_TOKEN
-// (contents, pull-requests and actions write).
+// It prints the API calls it spent. Reads use READ_TOKEN when set (the caller's GITHUB_TOKEN, which can read Checks); a new issue
+// uses ISSUE_TOKEN when set (the caller's GITHUB_TOKEN with issues: write); other writes, comments on pull requests among
+// them, use GH_TOKEN (contents, pull-requests and actions write).
 
 import { execFile, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -652,23 +653,55 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
   const check = await verification(repo, newest.run, { a, files, cache, src, asOf });
   // The green run that bounds the range is read too: a job red there (one the workflow lets fail) was already failing
   // before the range, so the range did not start it.
-  const green = v.green && (chain.length === v.reds.length || chain.length < maxWalk)
-    ? { run: v.green, failures: (await runFailures(repo, v.green, { a, files, cache, read: (p) => src.read(v.green.head_sha, p) })).failures ?? [] }
-    : null;
-  const older = [...chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures), ...(green ? [green] : [])];
+  const failuresAt = async (run) => (await runFailures(repo, run, { a, files, cache, read: (p) => src.read(run.head_sha, p) })).failures ?? null;
+  const green = v.green ? { run: v.green, failures: (await failuresAt(v.green)) ?? [] } : null;
+  // The red runs older than the walk, newest first: a failure open through the whole walk is bisected among them, down to
+  // the run where it began (main soaks, red 22 runs from #6174 on 2026-11-26: each failure was "beyond the runs read", and
+  // one was blamed on a later merge).
+  const unwalked = v.reds.slice(chain.length);
+  const seen = new Map();
+  const atRun = async (run) => {
+    if (!seen.has(run.id)) seen.set(run.id, await failuresAt(run));
+    return seen.get(run.id);
+  };
+  const walked = chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures);
+  const older = [...walked, ...(green && !unwalked.length ? [green] : [])];
   const results = [];
   for (const f of newest.failures) {
     let first = newest;
     let base = null;
     let runs = 1;
+    let open = true;
     for (const c of older) {
       if (c.failures.some((g) => g.key === f.key)) {
         first = c;
         runs++;
       } else {
         base = c.run;
+        open = false;
         break;
       }
+    }
+    // Open through the walk, with red runs older than it and a green run that doesn't fail it: bisected. A run with no
+    // verdict of its own (infra) is left out; the failure began just after the oldest run found failing it.
+    if (open && unwalked.length && green && !green.failures.some((g) => g.key === f.key)) {
+      const among = [...unwalked];
+      let lo = -1;
+      let hi = among.length;
+      while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1;
+        const at = await atRun(among[mid]);
+        if (at === null) {
+          among.splice(mid, 1);
+          hi--;
+          continue;
+        }
+        if (at.some((g) => g.key === f.key)) lo = mid;
+        else hi = mid;
+      }
+      if (lo >= 0) first = { run: among[lo], failures: seen.get(among[lo].id) };
+      runs += lo + 1;
+      base = hi < among.length ? among[hi] : green.run;
     }
     const again = check.state === "done" && check.keys.has(f.key);
     const confirmed = runs >= 2 || again;
@@ -1003,10 +1036,12 @@ export function revertBody({ repo, c, run, minutes }) {
 // --- GitHub ----------------------------------------------------------------------------------------------------------
 
 const run = promisify(execFile);
-// Issues and their comments (an issue for a suspect picked from several, the evidence on a pull request that stays) use
-// ISSUE_TOKEN when set: the caller's own GITHUB_TOKEN with issues: write. A fine-grained GH_TOKEN without Issues was refused
-// with HTTP 403 ("Resource not accessible by personal access token", Tandem, 2026-11-26), and no issue was opened.
-export const ISSUE_WRITE = /^\/repos\/[^/]+\/[^/]+\/issues(?:\/\d+\/comments)?$/;
+// A new issue (for a suspect picked from several) uses ISSUE_TOKEN when set: the caller's own GITHUB_TOKEN with issues: write.
+// A fine-grained GH_TOKEN without Issues was refused with HTTP 403 ("Resource not accessible by personal access token",
+// Tandem, 2026-11-26), and no issue was opened. Comments stay GH_TOKEN's: each is on a pull request (the evidence on one
+// that stays, the owner on a revert), which the caller's token, with pull-requests: read, was refused with HTTP 403
+// ("Resource not accessible by integration", #6869's evidence, 2026-11-26), and GH_TOKEN's pull-requests: write allows.
+export const ISSUE_WRITE = /^\/repos\/[^/]+\/[^/]+\/issues$/;
 export const envFor = (method, path, env = process.env) =>
   method === "GET" && env.READ_TOKEN ? { ...env, GH_TOKEN: env.READ_TOKEN }
   : method !== "GET" && env.ISSUE_TOKEN && ISSUE_WRITE.test(path) ? { ...env, GH_TOKEN: env.ISSUE_TOKEN }
