@@ -160,10 +160,14 @@ export function mergeNow(pr, { dryRun = false, log = console.log } = {}) {
   log(`merged ${label(pr)} as "${headline}"`);
 }
 
+// The bot's token has no `workflow` scope, so it cannot update a branch that changes a workflow file.
+export const NO_WORKFLOW_SCOPE = /without .?workflow.? scope/i;
+
 export function processPrs(prs, args, opts = {}) {
   let acted = 0;
   let failed = 0;
   const unmergeable = [];
+  const skipped = [];
   for (const pr of prs) {
     try {
       if (isUnmergeable(pr)) {
@@ -188,6 +192,9 @@ export function processPrs(prs, args, opts = {}) {
       // Only fail on actual errors, not on unmergeable PRs
       if (/not mergeable|CONFLICTING/i.test(msg)) {
         unmergeable.push(`${label(pr)} (${msg})`);
+      } else if (NO_WORKFLOW_SCOPE.test(msg)) {
+        skipped.push(`${label(pr)} (behind its base and changes a workflow file; the token lacks the workflow scope)`);
+        if (!opts.dryRun) comment(pr, "This PR is behind its base and changes a workflow file, which this bot's token may not update. Merge the base branch into it (your token has the `workflow` scope); auto-merge then continues once green.", opts.log ?? console.log);
       } else if (!opts.dryRun && settledAfterFailure(pr)) {
         console.log(`${label(pr)} changed under us (${msg}); on re-read it is merged, closed or already armed, so nothing to do`);
       } else {
@@ -196,7 +203,7 @@ export function processPrs(prs, args, opts = {}) {
       }
     }
   }
-  return { acted, failed, unmergeable };
+  return { acted, failed, unmergeable, skipped };
 }
 
 // ---- Merge queues: an entry whose head cannot merge blocks every entry behind it, so it is taken out. ----
@@ -266,6 +273,7 @@ const COMMENT = `mutation($id:ID!,$b:String!){addComment(input:{subjectId:$id,bo
 export function processQueue(entries, { dryRun = false, now = Date.now(), log = console.log } = {}) {
   let dequeued = 0;
   let failed = 0;
+  const skipped = [];
   for (const entry of entries) {
     const pr = entry.pullRequest;
     const why = stuckReason(entry, now);
@@ -294,13 +302,16 @@ export function processQueue(entries, { dryRun = false, now = Date.now(), log = 
       const msg = String(err.stderr ?? err.message).trim().split("\n")[0];
       if (/conflict|not mergeable/i.test(msg)) {
         comment(pr, `Taken out of the merge queue: it cannot be updated from \`${entry.base}\` (${msg}). Resolve the conflict and push.`, log);
+      } else if (NO_WORKFLOW_SCOPE.test(msg)) {
+        skipped.push(`${name} (behind ${entry.base} and changes a workflow file; the token lacks the workflow scope)`);
+        comment(pr, `Taken out of the merge queue: it is behind \`${entry.base}\` and changes a workflow file, which this bot's token may not update. Merge \`${entry.base}\` into the branch (your token has the \`workflow\` scope); auto-merge re-queues it once green.`, log);
       } else {
         log(`failed on ${name}: ${msg}`);
         failed++;
       }
     }
   }
-  return { dequeued, failed };
+  return { dequeued, failed, skipped };
 }
 
 // One comment per PR is enough: a PR that was already told stays quiet.
@@ -323,6 +334,12 @@ function main() {
   }
 }
 
+function printSkipped(skipped) {
+  if (!skipped?.length) return;
+  console.log(`\nSkipped ${skipped.length} PR(s) the token may not update:`);
+  for (const pr of skipped) console.log(`  - ${pr}`);
+}
+
 function run() {
   const args = new Set(process.argv.slice(2));
   const opts = { dryRun: args.has("--dry-run") };
@@ -330,11 +347,13 @@ function run() {
   const queued = processQueue(entries, opts);
   if (queued.failed > 0) process.exitCode = 1;
   // Orphaned merge-group runs are cancelled by each repository with its own token (tools/orphan-runs).
+  printSkipped(queued.skipped);
   console.log(`${queued.dequeued} stuck merge-queue entr${queued.dequeued === 1 ? "y" : "ies"} dequeued.`);
   const prs = openPrs();
-  const { acted, failed, unmergeable } = processPrs(prs, args, opts);
+  const { acted, failed, unmergeable, skipped } = processPrs(prs, args, opts);
   if (failed > 0) process.exitCode = 1;
   console.log(`${prs.length} open PRs checked, ${acted} needed action.`);
+  printSkipped(skipped);
   if (unmergeable.length > 0) {
     console.log(`\nSkipped ${unmergeable.length} unmergeable PR(s):`);
     for (const pr of unmergeable) {
