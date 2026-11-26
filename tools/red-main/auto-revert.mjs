@@ -418,7 +418,7 @@ export async function jobSource(read, path, name, depth = 0) {
 
 // The repository files of the local actions (`uses: ./<dir>`) a piece of workflow uses.
 export function actionFiles(text, files) {
-  const dirs = [...String(text ?? "").matchAll(/^\s*(?:- )?uses:\s*\.\/([^\s@#'"]+?)\/?\s*(?:#.*)?$/gm)].map((m) => m[1]).filter((d) => !/\.ya?ml$/.test(d));
+  const dirs = [...String(text ?? "").matchAll(/^\s*(?:- )?uses:\s*["']?\.\/([^\s@#'"]+?)\/?["']?\s*(?:#.*)?$/gm)].map((m) => m[1]).filter((d) => !/\.ya?ml$/.test(d));
   return dirs.length ? [...files].filter((f) => dirs.some((d) => f.startsWith(`${d}/`))) : [];
 }
 
@@ -828,11 +828,12 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     if ((!blame || blame.distance === Infinity) && f.setup?.length) {
       const set = culprit(commits, await distances(f.setup.filter((x) => firstFiles.has(x)), { read, files: firstFiles }));
       const how = (x) => ({ ...x, how: `changed ${x.file}, ${x.distance ? `${x.distance} reference${x.distance > 1 ? "s" : ""} from ` : ""}the setup the job ran before its failing step` });
-      if (set && set.distance !== Infinity) blame = { ...how(set), ties: set.ties.map(how) };
+      if (set && set.distance !== Infinity) blame = { ...how(set), ties: set.ties.map(how), setup: true };
     }
     if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
     // Its PR changed the failing test or a file its failure names: a failure seen on main before still counts against it.
-    const touched = blame?.distance === 0;
+    // The job's setup is neither: a failure main already had stays main's (knownBefore).
+    const touched = blame?.distance === 0 && !blame.setup;
     const cleared = blame?.distance === Infinity ? loneCleared(commits.find((c) => c.pr === blame.pr), f) : null;
     results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
   }
@@ -991,7 +992,8 @@ export function settledBy(f, { greenLater = new Map(), changedLater = [] } = {})
 export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [], namedOnly = false }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
-  const settled = (c.failures ?? []).map((x) => settledBy(x.failure, { greenLater, changedLater }));
+  // A failure blamed on the job's setup is settled by a later change to that setup too.
+  const settled = (c.failures ?? []).map((x) => settledBy(x.blame?.setup ? { ...x.failure, roots: [...(x.failure.roots ?? []), ...(x.failure.setup ?? [])] } : x.failure, { greenLater, changedLater }));
   if (settled.length && settled.every(Boolean)) return { action: "skip", reason: settled.join("; ") };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };

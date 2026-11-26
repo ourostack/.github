@@ -444,7 +444,7 @@ test("a job that fails with no failing test starts from the files its failing st
 test("a job's failing step that nothing explains is blamed on the setup its earlier steps ran, read from its reusable workflow", async () => {
   const files = new Set([...FILES, ".github/workflows/ci.yml", ".github/workflows/release-stage.yml", ".github/actions/api-count/action.yml", ".github/actions/api-count/gh", ".github/actions/gh-retry/gh", ".github/actions/sign/action.yml", "engine/crates/tandem/src/main.rs", "engine/crates/tandem/tests/mock_serve.rs", "release/engine.ts"]);
   const ci = "on: push\njobs:\n  plan:\n    runs-on: ubuntu-latest\n    steps:\n      - run: node release/plan.ts\n  stage:\n    needs: plan\n    uses: ./.github/workflows/release-stage.yml\n";
-  const stage = (cmd) => `on: workflow_call\njobs:\n  build-and-sign:\n    runs-on: macos-latest\n    steps:\n      - uses: actions/checkout@v7\n      - uses: ./.github/actions/api-count\n        continue-on-error: true\n      - uses: ./.github/actions/gh-retry\n      - name: Build the Mac engine on an exact cache miss\n        run: ${cmd}\n      - name: Sign\n        uses: ./.github/actions/sign\n`;
+  const stage = (cmd) => `on: workflow_call\njobs:\n  build-and-sign:\n    runs-on: macos-latest\n    steps:\n      - uses: actions/checkout@v7\n      - uses: ./.github/actions/api-count\n        continue-on-error: true\n      - uses: "./.github/actions/gh-retry" # quoted\n      - name: Build the Mac engine on an exact cache miss\n        run: ${cmd}\n      - name: Sign\n        uses: ./.github/actions/sign\n`;
   const log = [
     "2026-11-26T18:33:30.1Z error: could not compile `tandem` (bin \"tandem\")",
     "2026-11-26T18:33:30.2Z   could not execute process `rustc --crate-name tandem --edition=2021 crates/tandem/src/main.rs --error-format=json` (never executed)",
@@ -474,6 +474,10 @@ test("a job's failing step that nothing explains is blamed on the setup its earl
   assert.equal(r.confirmed, true, "red the same way on both runs");
   const [c] = culprits([r]);
   assert.equal(decide(c, { minutes: 30, minRedMinutes: 0, namedOnly: true }).action, "revert", "named alone among three pull requests: reverted, not an issue");
+  assert.equal(r.touched, false, "the setup isn't what the failure names");
+  assert.match(knownBefore(r, { pr: 6981, earlier: [{ run: run({ head_sha: sha("e") }), keys: new Set([r.failure.key]) }] }), /failed the same way on main before #6981/, "a failure main already had stays main's");
+  const fixed = [{ sha: sha("f"), subject: "gh wrappers take the next gh on the PATH (#7194)", pr: 7194, files: [".github/actions/api-count/gh"] }];
+  assert.equal(decide(c, { minutes: 30, minRedMinutes: 0, namedOnly: true, changedLater: fixed }).action, "skip", "a later change to the setup settles it");
   const script = await replay("node release/engine.ts");
   assert.equal(script.blame.pr, 7137, "a pull request that changed what the failing step runs is blamed before the setup");
   const none = await replay("(cd engine && cargo build --release --locked -p tandem)", range.slice(0, 2));
