@@ -1459,6 +1459,9 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       analyses.push(r);
       if (r.infra) {
         log(`${repo}: ${v.workflow} failed at ${short(v.reds[0].head_sha)} on infrastructure only (${r.infra}); not red, the next run decides`);
+        // What infrastructure stopped (a cancelled job, a lost runner) measured nothing: its jobs run again once, so main gets a
+        // verdict without waiting for the next push (Tandem's rollup says a cancelled job "cancelled, not judged", 2026-11-26).
+        if (!asOf && cfg.rerun !== false) await rerunFailed(repo, v.reds[0], { apply, a, log });
         continue;
       }
       const since = Math.min(...r.results.map((x) => ms(x.first.updated_at)));

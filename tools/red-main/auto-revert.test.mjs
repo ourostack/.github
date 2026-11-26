@@ -590,6 +590,21 @@ test("check: one red run over the range dispatches its workflow on a verify bran
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
 });
 
+test("check: a red run on infrastructure only blames nothing and re-runs its failed and cancelled jobs once", async () => {
+  // Tandem's rollup says a cancelled job "cancelled, not judged" with title=infra (2026-11-26: #7039 was blamed for one).
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const lost = [{ id: n.id * 10, name: "test (windows-latest)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "Every test job of this system passed", conclusion: "success" }] }];
+  const gh = fakeGitHub([n, g], {}, { jobsOf: { [n.id]: lost } });
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /on infrastructure only/.test(l)), lines.join("\n"));
+  assert.deepEqual(gh.calls.filter((c) => c[0] === "post" || c[0] === "gql").map((c) => c[1]), [`/repos/o/r/actions/runs/${n.id}/rerun-failed-jobs`]);
+  const again = fakeGitHub([{ ...n, run_attempt: 2 }, g], {}, { jobsOf: { [n.id]: lost } });
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: again, now: NOW, apply: true, log() {}, source: async () => src() });
+  assert.ok(!again.calls.some((c) => /rerun-failed-jobs/.test(c[1] ?? "")), "once: a second attempt is never re-run");
+});
+
 test("check: red by run number but green by commit order is not red, and nothing is written", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const n = run({ conclusion: "success", head_sha: sha("n") });
