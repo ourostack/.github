@@ -1,0 +1,11 @@
+{
+  "name": "no-ai-credit-trailer-on-push",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {"ref_name": {"include": ["~ALL"], "exclude": ["~DEFAULT_BRANCH", "refs/heads/gh-readonly-queue/**"]}},
+  "rules": [{"type": "commit_message_pattern", "parameters": {
+    "name": "No AI co-author credit: drop the Co-authored-by line naming Copilot or a bot from each commit (git rebase -i, reword), then push",
+    "negate": true, "operator": "regex",
+    "pattern": "(?i)co-authored-by:[^\\n]*(\\[bot\\]|copilot)"}}],
+  "bypass_actors": []
+}
