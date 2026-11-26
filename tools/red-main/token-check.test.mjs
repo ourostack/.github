@@ -23,3 +23,12 @@ test("a token that may push by account but is refused at the ref door is reporte
   assert.match(out[1], /^o\/b: .* no$/);
   assert.match(out[2], /^::warning::o\/b: .*no write access/);
 });
+
+test("a write probe that loses its connection warns and goes on to the next repository", async () => {
+  const get = async () => ({ permissions: { pull: true, push: true } });
+  const probe = async (r) => { if (r === "o/a") throw Object.assign(new TypeError("fetch failed"), { cause: new Error("other side closed") }); return true; };
+  const out = await check(["o/a", "o/b"], get, probe);
+  assert.match(out[0], /^::warning::o\/a: could not tell whether the token may write \(other side closed\)/);
+  assert.equal(out[1], "o/b: read yes, write (contents and pull requests) yes");
+  assert.equal(out.length, 2);
+});
