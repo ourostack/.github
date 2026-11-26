@@ -281,7 +281,8 @@ test("analyse: a failure that began in the newer run is blamed on the commits af
   const b = run({ head_sha: sha("b") });
   const n = run({ head_sha: sha("n") });
   const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: [...TAP("x works", "test/x.test.ts"), ...TAP("readme", "README.md")] };
-  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src() });
+  const reads = async (_, p) => (p === "test/x.test.ts" ? `${SRC[p]}readFileSync("README.md");\n` : SRC[p] ?? null);
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src({ read: reads }) });
   const readme = r.results.find((x) => x.failure.test === "readme");
   assert.equal(readme.first.id, n.id);
   assert.equal(readme.base.id, b.id);
@@ -298,7 +299,8 @@ test("analyse: a list judge's red (Tandem's WebKit burst) is a failure per case,
   const n = run({ head_sha: sha("n") });
   // The burst stayed red from b on one case; n's run fails a new one as well. Keyed by the judge's step, both were one failure.
   const logs = { [b.id]: judged([["x works", "Expected values to be strictly equal"]]), [n.id]: judged([["x works", "Expected values to be strictly equal"], ["readme", "see README.md"]]) };
-  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src() });
+  const reads = async (_, p) => (p === "test/x.test.ts" ? `${SRC[p]}readFileSync("README.md");\n` : SRC[p] ?? null);
+  const r = await analyse("o/r", verdicts([n, b, g])[0], { a: fakeGitHub([n, b, g], logs), src: src({ read: reads }) });
   const readme = r.results.find((x) => x.failure.test === "readme");
   assert.equal(readme.first.id, n.id);
   assert.equal(readme.base.id, b.id);
@@ -334,6 +336,22 @@ test("analyse: a PR already reverted while the failure stayed is not blamed agai
   assert.equal(r.results[0].blame.pr, 10);
   assert.equal(revertOf('Revert "First run (#3877)" (#3969) (#4050)'), 3969);
   assert.equal(revertOf("Fix the build (#4050)"), null);
+});
+
+test("a failing test file is blamed only on a PR that changes its own import graph, not a file its failure merely names (Tandem #6797)", async () => {
+  const files = new Set([...FILES, "test/helpers/reply-box.ts", "test/other-window.test.ts"]);
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n") });
+  const gh = () => fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts", "see test/helpers/reply-box.ts:9") });
+  const named = { sha: sha("n"), subject: "Reply box (#6797)", pr: 6797, files: ["test/helpers/reply-box.ts", "test/other-window.test.ts"] };
+  const only = async (commits) => (await analyse("o/r", verdicts([n, g])[0], { a: gh(), src: src({ files: async () => files, commits: async () => commits }) })).results[0];
+  const one = await only([named]);
+  assert.equal(one.blame, null, "the range's one PR changed only a file the test doesn't import");
+  assert.match(one.why, /#6797 changed test\/helpers\/reply-box\.ts, which test\/x\.test\.ts does not import or read \(its import graph is 3 files\), so it is cleared/);
+  const two = await only([named, { sha: sha("b"), subject: "Breaks y (#11)", pr: 11, files: ["src/y.ts"] }]);
+  assert.equal(two.blame.pr, 11, "a PR inside the graph is still blamed, and the one outside is passed over");
+  const self = await only([named, { sha: sha("b"), subject: "Edits the test (#12)", pr: 12, files: ["test/x.test.ts"] }]);
+  assert.equal(self.blame.pr, 12);
 });
 
 test("an infrastructure-only red is no verdict: the run before it decides", async () => {

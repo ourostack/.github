@@ -34,6 +34,8 @@
 //      The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the PR whose change touches
 //      the most code names the failing assertion uses, else the newest. With
 //      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
+//      When the failure is a test file's own, only a PR that changes that file's import graph (the file, what it imports, reads
+//      or scans) is blamed; one that changed only a file the failure text names is cleared, with a line saying so.
 //   4. Confirmation (flake guard): the first time a red push run (attempt 1) has a failure not yet confirmed, its failed jobs are
 //      re-run once (rerunFailed), so a flake clears within minutes instead of holding main red until the next push. A re-attempt
 //      goes back to pending in main's shared concurrency group and may be replaced by the next push, losing its verdict (markPartial
@@ -680,13 +682,25 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const reverted = new Set((first.run.head_sha === newest.run.head_sha ? [] : await src.commits(first.run.head_sha, newest.run.head_sha)).map((c) => revertOf(c.subject)).filter(Boolean));
     const commits = (await src.commits(base.head_sha, first.run.head_sha)).filter((c) => !reverted.has(c.pr));
     const firstFiles = first.run.head_sha === v.reds[0].head_sha ? files : await src.files(first.run.head_sha);
-    const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read: (p) => src.read(first.run.head_sha, p), files: firstFiles });
+    const read = (p) => src.read(first.run.head_sha, p);
+    const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read, files: firstFiles });
     let blame = culprit(commits, dist);
+    // A failing test file is blamed only on a pull request that changes something in its own import graph (the file, what
+    // it imports, and what it reads or scans), not on a file merely named in its failure text (Tandem lead, 2026-11-26:
+    // #6797 changed test/helpers/reply-box.ts, which arrive-at-end-window.test.ts doesn't import).
+    let outside = null;
+    if (blame && blame.distance !== Infinity && f.file && TEST_FILE.test(f.file) && firstFiles.has(f.file)) {
+      const own = await distances([f.file], { read, files: firstFiles });
+      const narrow = culprit(commits, own);
+      const wide = blame;
+      blame = narrow && narrow.distance !== Infinity ? narrow : null;
+      if (wide.pr !== blame?.pr) outside = `#${wide.pr} ${wide.file ? `changed ${wide.file}` : "was the range's only pull request"}, which ${f.file} does not import or read (its import graph is ${own.size} files), so it is cleared`;
+    }
     if (blame?.ties?.length > 1 && src.diff) blame = await evidence(blame, f, { src, testSha: first.run.head_sha });
     // Its PR changed the failing test or a file its failure names: a failure seen on main before still counts against it.
     const touched = blame?.distance === 0;
     const cleared = blame?.distance === Infinity ? loneCleared(commits.find((c) => c.pr === blame.pr), f) : null;
-    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none" });
+    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
   }
   return { newest: newest.run, results, check };
 }
