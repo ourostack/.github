@@ -142,7 +142,7 @@ test("a red past the threshold escalates to the tooling coordinator, once, and o
 
 test("a repository's fixer, its drain, hears a red main first, told to clear it before other work, and its owner still hears", () => {
   const w = route({ "ourostack/ouro-ui": red() }, { now: at(5) });
-  assert.deepEqual(w.map((x) => [x.session, x.reason]), [["48c2a3ee", "fixer"], ["34c6f98e", "owner"]]);
+  assert.deepEqual(w.map((x) => [x.session, x.reason]), [["27ac0af3", "fixer"], ["34c6f98e", "owner"]]);
   assert.match(w[0].message, /before other work/);
   const none = route({ "o/r": red() }, { now: at(5), owners: { tooling: { session: "t", name: "t" }, fallback: { session: "f", name: "f" }, repos: { "o/r": { session: "o", name: "o" } } } });
   assert.deepEqual(none.map((x) => x.reason), ["owner"]);
