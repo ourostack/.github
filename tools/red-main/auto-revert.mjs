@@ -208,16 +208,17 @@ const NO_VERDICT = new Set(["cancelled", "skipped", "stale", "neutral", "action_
 const NOISE = ["url", "html_url", "node_id", "run_url", "check_run_url", "labels"];
 export async function runJobs(get, cache, repo, run, { attempt = run.run_attempt ?? 1, page = 1 } = {}) {
   const key = `${run.id}/${attempt}/${page}`;
-  const kept = cache?.runJobs?.[key];
+  const kept = cache?.runJobs?.[key] ?? cache?.live?.get(key);
   if (kept) return kept;
   const path = attempt === (run.run_attempt ?? 1) ? `filter=latest&per_page=100&page=${page}` : `per_page=100&page=${page}`;
   const jobs = (await get(`/repos/${repo}/actions/runs/${run.id}/${attempt === (run.run_attempt ?? 1) ? "" : `attempts/${attempt}/`}jobs?${path}`)).jobs ?? [];
+  cache?.live?.set(key, jobs);
   if (cache && jobs.length && jobs.every((j) => j.status === "completed")) {
     (cache.runJobs ??= {})[key] = jobs.map((j) => Object.fromEntries(Object.entries(j).filter(([k]) => !NOISE.includes(k))));
   }
   return jobs;
 }
-const RUN_JOBS_KEPT = 150;
+const RUN_JOBS_KEPT = 100;
 const NOTES_KEPT = 400;
 
 export async function markPartial(repo, runs, get, order = null, cache = null) {
@@ -1527,6 +1528,8 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
   const cachePath = opt("--cache");
   const rerunOnly = argv.includes("--rerun-only");
   const cache = cachePath ? (existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : {}) : null;
+  // This run's own reads of a run still going, so none is sent twice (not saved: the run's jobs change).
+  if (cache) Object.defineProperty(cache, "live", { value: new Map() });
   if (asOf && apply) throw new Error("--as-of replays the past: it never acts (drop --apply)");
   console.log(apply ? "auto-revert: applying" : `auto-revert: dry run${asOf ? ` as of ${asOf}` : ""} (pass --apply to act)`);
   const repos = self ? { [self]: { ...CONFIG.repos[self], enabled: true } } : CONFIG.repos;
