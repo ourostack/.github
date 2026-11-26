@@ -144,6 +144,23 @@ export function redMains(mains, now) {
     .sort((a, b) => b.age - a.age);
 }
 
+// A merge queue with entries whose default branch has not merged for longer than STALL_DEFAULT_MIN. The queue's own
+// limit is the bar: checkResponseTimeout is how long it lets one group's checks run, so a gap past it (never under
+// 30 minutes) means groups are being cancelled or refused, not slowly built. Unknown: 60 minutes.
+// Each main may carry `queue` { configuration{checkResponseTimeout}, entries{totalCount} } and `removals` [{ createdAt, reason, actor }].
+export const STALL_DEFAULT_MIN = 60;
+export function stallThreshold(queue) {
+  const t = queue?.configuration?.checkResponseTimeout;
+  return t > 0 ? Math.max(LIMIT_MIN, t / 60) : STALL_DEFAULT_MIN;
+}
+export function stalledQueues(mains, now) {
+  return mains
+    .filter((m) => m.queue?.entries?.totalCount > 0 && m.commit?.committedDate)
+    .map((m) => ({ main: m, age: minutesBetween(m.commit.committedDate, now), limit: stallThreshold(m.queue), entries: m.queue.entries.totalCount, removals: m.removals ?? [] }))
+    .filter((q) => q.age > q.limit)
+    .sort((a, b) => b.age - a.age);
+}
+
 const CLOCKS = ["🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚"];
 
 export function render(allPrs, now, seats, allMains = []) {
@@ -169,9 +186,22 @@ export function render(allPrs, now, seats, allMains = []) {
     out.push("");
   }
   if (hiddenReds) out.push(`🔒 ${hiddenReds} red main branch${hiddenReds === 1 ? "" : "es"} in private repositories, not named here.`, "");
+  const stalls = stalledQueues(allMains.filter((m) => !m.repository?.isPrivate), now);
+  const hiddenStalls = stalledQueues(allMains.filter((m) => m.repository?.isPrivate), now).length;
+  if (stalls.length) {
+    out.push(`## 🟣 ${stalls.length} stalled merge queue${stalls.length === 1 ? "" : "s"}`, "", "A queue holding entries while its default branch merges nothing. Read the removal reasons and fix the cause now: the flaky check, the rule that refuses at the front, the agents dequeuing. Never wait on it.", "");
+    out.push("| No merge for | Repository | Entries | Last removals |", "| --: | --- | --: | --- |");
+    for (const q of stalls) {
+      const repo = q.main.repository.nameWithOwner;
+      const removed = q.removals.length ? q.removals.map((r) => `${r.reason ?? "unknown"} by ${r.actor?.login ?? "the queue"} ${fmtAge(minutesBetween(r.createdAt, now))} ago`).join("<br>") : "none read";
+      out.push(`| ${fmtAge(q.age)} (limit ${fmtAge(q.limit)}) | [${repo}](https://github.com/${repo}/queue/${q.main.name}) | ${q.entries} | ${removed} |`);
+    }
+    out.push("");
+  }
+  if (hiddenStalls) out.push(`🔒 ${hiddenStalls} stalled merge queue${hiddenStalls === 1 ? "" : "s"} in private repositories, not named here.`, "");
   if (!rows.length && hidden) {
     out.push(`## 🔒 Only private repositories have late PRs`);
-  } else if (!rows.length && (reds.length || hiddenReds)) {
+  } else if (!rows.length && (reds.length || hiddenReds || stalls.length || hiddenStalls)) {
     out.push(`## No PRs past 30 minutes`);
   } else if (!rows.length) {
     out.push(`## 🟢 All clear`, "");
@@ -197,12 +227,13 @@ export function render(allPrs, now, seats, allMains = []) {
   if (hidden) out.push("", `🔒 ${hidden} late PR${hidden === 1 ? "" : "s"} in private repositories, not named here.`);
   out.push(
     "",
-    `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes: if this time is over 30 minutes old, the clock itself is late, so run \`gh workflow run pr-clock.yml -R ourostack/.github\`. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟠 rebase · ⚪ close with a reason or finish. 30 minutes is the outer alarm, not the goal: faster is always better. [The rule](${RULE_URL})</sub>`,
+    `<sub>${face} Checked ${stamp} UTC across ${OWNERS.join(", ")}. The clock runs every 10 minutes: if this time is over 30 minutes old, the clock itself is late, so run \`gh workflow run pr-clock.yml -R ourostack/.github\`. 🟢 merge it · ⏸️ publish with \`gh ouro-pr\` so green means merged · 🔴 fix the cause, issue before any rerun · 🟣 stalled queue: fix the cause now · 🟠 rebase · ⚪ close with a reason or finish. 30 minutes is the outer alarm, not the goal: faster is always better. [The rule](${RULE_URL})</sub>`,
   );
   const total = rows.length + hidden;
   const redCount = reds.length + hiddenReds;
-  const redNote = redCount ? ` · ${redCount} red main` : "";
-  return { title: total ? `${TITLE}: ${total}${redNote}` : redCount ? `${TITLE}: none${redNote}` : `${TITLE}: all clear`, body: out.join("\n"), rows, reds };
+  const stallCount = stalls.length + hiddenStalls;
+  const redNote = (redCount ? ` · ${redCount} red main` : "") + (stallCount ? ` · ${stallCount} stalled queue${stallCount === 1 ? "" : "s"}` : "");
+  return { title: total ? `${TITLE}: ${total}${redNote}` : redCount || stallCount ? `${TITLE}: none${redNote}` : `${TITLE}: all clear`, body: out.join("\n"), rows, reds, stalls };
 }
 
 // ---- GitHub I/O ----
@@ -263,13 +294,15 @@ export async function listRepos(owners = OWNERS) {
 
 const MAIN_FIELDS = `nameWithOwner isPrivate defaultBranchRef{name target{... on Commit{oid committedDate message
 statusCheckRollup{state contexts(first:100){nodes{__typename
-... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}`;
+... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}
+mergeQueue{configuration{checkResponseTimeout} entries{totalCount}}`;
 
 export async function fetchOpenPrs() {
   return (await fetchState()).prs;
 }
 
 const PAGE = 15; // PRs per repository per query: a 50-PR page of nested check contexts timed out server-side (POST /graphql: 504)
+const REMOVALS_SHOWN = 5; // the last removals shown per stalled queue
 const CHUNK = 3; // repositories per query
 const isServerError = (err) => /: 50\d /.test(err.message);
 
@@ -335,8 +368,18 @@ export async function fetchState(repoList, run = async (query) => (await gh("/gr
     unread.push(...got.unread);
     for (const { repo, nodes } of got.found) {
       const head = repo.defaultBranchRef;
-      if (head?.target?.oid) mains.push({ repository: { nameWithOwner: repo.nameWithOwner, isPrivate: repo.isPrivate }, name: head.name, commit: head.target });
+      if (head?.target?.oid) mains.push({ repository: { nameWithOwner: repo.nameWithOwner, isPrivate: repo.isPrivate }, name: head.name, commit: head.target, queue: repo.mergeQueue });
       prs.push(...nodes.filter((n) => n?.number));
+    }
+  }
+  // Only a stalled queue needs its removals read: who dequeued what, and why.
+  for (const q of stalledQueues(mains, new Date().toISOString())) {
+    const [owner, name] = q.main.repository.nameWithOwner.split("/");
+    try {
+      const data = await run(`query{repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){pullRequests(states:OPEN,first:50,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{timelineItems(last:3,itemTypes:[REMOVED_FROM_MERGE_QUEUE_EVENT]){nodes{... on RemovedFromMergeQueueEvent{createdAt reason actor{login}}}}}}}}`);
+      q.main.removals = (data?.repository?.pullRequests?.nodes ?? []).flatMap((n) => n.timelineItems?.nodes ?? []).filter((r) => r?.createdAt).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, REMOVALS_SHOWN);
+    } catch (err) {
+      console.error(`could not read removals for ${q.main.repository.nameWithOwner}: ${err.message}`);
     }
   }
   // A repository it cannot read could hold a late PR: fail loudly rather than say all clear.
@@ -377,6 +420,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (process.argv.includes("--json"))
       console.log(JSON.stringify({
         prs: view.rows.map((r) => ({ pr: r.pr.url, age: r.age, blocker: r.block, owner: r.owner })),
+        stalledQueues: view.stalls.map((q) => ({ repository: q.main.repository.nameWithOwner, age: q.age, limit: q.limit, entries: q.entries, removals: q.removals })),
         redMains: view.reds.map((r) => ({ repository: r.main.repository.nameWithOwner, commit: r.main.commit.oid, age: r.age, red: r.text, owner: r.owner })),
       }, null, 2));
     else if (process.argv.includes("--update-issue")) {

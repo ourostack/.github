@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { InfraError } from "../infra/infra.mjs";
-import { gh, autoMergeOff, fetchRetry, fetchState, readGroup, blocker, fmtAge, late, owner, redMains, render } from "./pr-clock.mjs";
+import { gh, autoMergeOff, fetchRetry, fetchState, readGroup, blocker, fmtAge, late, owner, redMains, render, stalledQueues } from "./pr-clock.mjs";
 
 const NOW = "2026-11-07T20:00:00Z";
 const run = (name, status, conclusion = null, startedAt = "2026-11-07T19:40:00Z") => ({ __typename: "CheckRun", name, status, conclusion, startedAt });
@@ -148,6 +148,34 @@ test("a private repository's red main is counted but never named", () => {
   const view = render([], NOW, undefined, [main("FAILURE", { repository: { nameWithOwner: "arimendelow/desk", isPrivate: true } })]);
   assert.doesNotMatch(view.body, /arimendelow\/desk/);
   assert.match(view.body, /🔒 1 red main branch in private repositories/);
+});
+
+const queue = (entries, over = {}) => ({ configuration: { checkResponseTimeout: 3600 }, entries: { totalCount: entries }, ...over });
+
+test("a queue with entries and no merge past its limit is stalled; healthy and queue-less repositories are not", () => {
+  const stalled = main(null, { queue: queue(42), removals: [{ createdAt: "2026-11-07T19:30:00Z", reason: "BRANCH_PROTECTION_FAILURE", actor: { login: "arimendelow" } }] });
+  const healthy = main(null, { repository: { nameWithOwner: "ourostack/ok" }, queue: queue(3), commit: { oid: "a", committedDate: "2026-11-07T19:30:00Z" } });
+  const empty = main(null, { repository: { nameWithOwner: "ourostack/empty" }, queue: queue(0) });
+  const none = main(null, { repository: { nameWithOwner: "ourostack/noqueue" }, queue: null });
+  const found = stalledQueues([stalled, healthy, empty, none], NOW);
+  assert.deepEqual(found.map((q) => [q.main.repository.nameWithOwner, q.age, q.limit, q.entries]), [["ourostack/gatefold", 120, 60, 42]]);
+  assert.equal(stalledQueues([main(null, { queue: queue(1, { configuration: null }) })], NOW)[0].limit, 60);
+});
+
+test("a stalled queue shows above the PRs with its removals and in the title, and is never all clear", () => {
+  const view = render([], NOW, undefined, [main(null, { queue: queue(42), removals: [{ createdAt: "2026-11-07T19:30:00Z", reason: "BRANCH_PROTECTION_FAILURE", actor: { login: "arimendelow" } }] })]);
+  assert.match(view.body, /## 🟣 1 stalled merge queue\n/);
+  assert.match(view.body, /\| 2h 00m \(limit 1h 00m\) \| \[ourostack\/gatefold\].*\| 42 \| BRANCH_PROTECTION_FAILURE by arimendelow 30m ago \|/);
+  assert.doesNotMatch(view.body, /All clear/);
+  assert.equal(view.title, "PRs past 30 minutes: none · 1 stalled queue");
+  assert.doesNotMatch(render([], NOW, undefined, [main(null, { queue: queue(0) })]).body, /## 🟣/);
+  assert.match(render([], NOW, undefined, [main(null, { queue: null })]).title, /all clear/);
+});
+
+test("a private repository's stalled queue is counted but never named", () => {
+  const view = render([], NOW, undefined, [main(null, { repository: { nameWithOwner: "arimendelow/desk", isPrivate: true }, queue: queue(5) })]);
+  assert.doesNotMatch(view.body, /arimendelow\/desk/);
+  assert.match(view.body, /🔒 1 stalled merge queue in private repositories/);
 });
 
 test("fetchRetry retries a 504 with backoff, then returns the good response", async () => {

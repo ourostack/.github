@@ -50,6 +50,8 @@ The [PR clock](#the-pr-clock) names every late PR and what is holding it. Whoeve
 | 🔵 Waiting for a required review, or 🙋 waiting on Ari | Ask the reviewer it waits on, in one line with the PR link, where they read. A PR should rarely be here: decisions belong before publishing. |
 | ⚪ A draft, or anything that isn't going anywhere | Finish it and publish it, then ask for help. Never close it or discard its work because of the clock. |
 
+**A stalled merge queue** is its own finding (🟣 above the late PRs, and in the issue title): a queue holds entries but its default branch has merged nothing for longer than the queue's own `checkResponseTimeout` (60 minutes if unknown). Read the removal reasons the clock lists and fix the cause now: the flaky check that fails groups, the rule that refuses at the front of the queue (`branch_protection_failure`), the agents dequeuing (each manual removal cancels every group behind it). Never wait on it.
+
 Draining someone else's late PR is fine when its owner is gone; read the PR and its linked task first, and don't push into a branch another agent is still working on: comment instead.
 
 ## The PR clock
