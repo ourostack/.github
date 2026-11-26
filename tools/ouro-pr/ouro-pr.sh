@@ -17,8 +17,8 @@
 #   gh ouro-pr claim <issue> --take-over "<reason>"       # takes a live claim over, with the reason on the issue
 #   gh ouro-pr release <issue> [--as name]                # says you have stopped; the assignee stays
 # Your session's name is $OURO_SESSION, or --as. A claim stands until its session releases it, or until it lapses: no sign
-# of life for claim_lapse_seconds (two hours). A sign of life is a comment by the claimant's account after the claim, or a
-# push since then to an open PR that references the issue. Opening a PR for an open issue with a live claim by another
+# of life for claim_lapse_seconds (two hours). A sign of life is a push since then to an open PR that references the issue;
+# comments never count. Opening a PR for an open issue with a live claim by another
 # session is refused before anything is pushed; --take-over "<reason>" takes that claim over and proceeds. A lapsed claim
 # is said, and passed. OURO_PR_NOW (epoch seconds) replaces the clock; the tests use it.
 # A probe, opened only to read a CI result, is a branch named probe/... or --probe: it gets the probe label and no
@@ -138,7 +138,7 @@ issue_events() {
 
 # The claim that stands on an issue, from issue_events on stdin, given "now" and the lapse in epoch seconds. A claim
 # stands until a release from its own session follows it; a later claim replaces it. Its last sign of life is the latest
-# of: the claim, a comment by the claimant's account after it, and a push after it. Prints nothing when no claim stands,
+# of: the claim and a push after it. Comments never count. Prints nothing when no claim stands,
 # else "live|session|claimed_at|claim_url|last_activity", or the same with "lapsed" when the last sign is over the lapse.
 claim_status() {
   local now=$1 lapse=$2 kind sess login epoch iso url events
@@ -155,7 +155,7 @@ claim_status() {
   while IFS='|' read -r kind sess login epoch iso url; do
     case $epoch in ''|*[!0-9]*) continue ;; esac
     [ "$epoch" -gt "$hep" ] || continue
-    if { [ -n "$hlogin" ] && [ "$login" = "$hlogin" ]; } || [ "$kind" = push ]; then
+    if [ "$kind" = push ]; then
       if [ "$epoch" -gt "$last_ep" ]; then last_ep=$epoch; last_iso=$iso; fi
     fi
   done <<<"$events"

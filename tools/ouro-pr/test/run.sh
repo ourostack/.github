@@ -41,12 +41,12 @@ same "an earlier claimant releasing does not drop a later claim" "live|session-b
 same "a claim made after a release stands" "live|session-b|C3|u3|C3" "$({ ev claim session-a alice $B C1 u1; ev release session-a alice $((B+5)) R2 u2; ev claim session-b bob $((B+6)) C3 u3; } | status $((B+7)) $LAPSE)"
 same "a claim with no sign of life for two hours lapses" "lapsed|session-a|C1|u1|C1" "$(ev claim session-a alice $B C1 u1 | status $((B+7201)) $LAPSE)"
 same "a claim exactly two hours old still stands" "live|session-a|C1|u1|C1" "$(ev claim session-a alice $B C1 u1 | status $((B+7200)) $LAPSE)"
-same "a comment by the claimant after the claim keeps it alive" "live|session-a|C1|u1|N5" "$({ ev claim session-a alice $B C1 u1; ev note "" alice $((B+5000)) N5 u5; } | status $((B+9000)) $LAPSE)"
+same "a comment by the claimant after the claim does not keep it alive" "lapsed|session-a|C1|u1|C1" "$({ ev claim session-a alice $B C1 u1; ev note "" alice $((B+5000)) N5 u5; } | status $((B+9000)) $LAPSE)"
 same "a comment by another account does not" "lapsed|session-a|C1|u1|C1" "$({ ev claim session-a alice $B C1 u1; ev note "" bob $((B+5000)) N5 u5; } | status $((B+9000)) $LAPSE)"
 same "a comment by the claimant from before the claim does not" "lapsed|session-a|C1|u1|C1" "$({ ev note "" alice $((B-500)) N0 u0; ev claim session-a alice $B C1 u1; } | status $((B+9000)) $LAPSE)"
 same "a push to a referencing PR after the claim keeps it alive" "live|session-a|C1|u1|P5" "$({ ev claim session-a alice $B C1 u1; ev push "" "" $((B+5000)) P5 pr5; } | status $((B+9000)) $LAPSE)"
 same "a push before the claim does not" "lapsed|session-a|C1|u1|C1" "$({ ev push "" "" $((B-500)) P0 pr0; ev claim session-a alice $B C1 u1; } | status $((B+9000)) $LAPSE)"
-same "the later of a comment and a push is the last sign of life" "live|session-a|C1|u1|N6" "$({ ev claim session-a alice $B C1 u1; ev push "" "" $((B+3000)) P5 pr5; ev note "" alice $((B+6000)) N6 u6; } | status $((B+9000)) $LAPSE)"
+same "a later comment does not move the last sign of life past a push" "live|session-a|C1|u1|P5" "$({ ev claim session-a alice $B C1 u1; ev push "" "" $((B+3000)) P5 pr5; ev note "" alice $((B+6000)) N6 u6; } | status $((B+9000)) $LAPSE)"
 
 refs=$(printf '%s\n' 'Fixes #1' 'closed #2' 'Resolves #3' 'Refs #4' 'Relates to #5' 'Fixes other/repo#6' 'Refs other/repo#7' \
   'prefixes #8' 'fixes ourostack/example#9' | lib closing_issues ourostack/example | tr '\n' ' ')
@@ -193,9 +193,9 @@ check "the branch is pushed" pushed "$work/l1" feature
 check "the PR is opened" logged "pr create"
 new_repo "$work/l2"
 stub "$({ claim7 session-a "$OLD" "$OLD_ISO"; ev note "" alice "$RECENT" "$RECENT_ISO" https://example.test/c3; })"
-expect 1 "a claim with a recent comment from the claimant still refuses" ouro "$work/l2/clone" session-b --body-file "$body"
-check "the refusal says when the claim was made" outputs "#7 is claimed by session-a since $OLD_ISO"
-check "nothing was pushed" not_pushed "$work/l2" feature
+expect 0 "a claim with only a recent comment from the claimant has lapsed and does not refuse" ouro "$work/l2/clone" session-b --body-file "$body"
+check "it says the claim lapsed despite the comment" outputs "ouro-pr: the claim on #7 by session-a lapsed (no activity since $OLD_ISO)."
+check "the branch is pushed" pushed "$work/l2" feature
 new_repo "$work/l3"
 stub "$(claim7 session-a "$OLD" "$OLD_ISO")"
 pushes "https://github.com/ourostack/example/pull/3	abc123"
