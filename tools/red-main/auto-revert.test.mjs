@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
-  CONFIG, MARKER, analyse, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
+  CONFIG, MARKER, analyse, envFor, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
   KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
@@ -814,4 +814,14 @@ test("check: Tandem, #5252: the range's one pull request, a test's types only, i
   await check("o/r", cfg, { a: added, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits: lone({ files: ["test/organization.test.ts"], added: ["test/organization.test.ts"], deleted: [] }) }) });
   assert.ok(lines.some((l) => /culprit #5241 .*: revert$/.test(l)), lines.join("\n"));
   assert.ok(added.calls.some((c) => c[0] === "gql"), "reverted: an added test file can shift what each shard runs");
+});
+
+test("issues and their comments are written with ISSUE_TOKEN when it is set; reads with READ_TOKEN; other writes with GH_TOKEN", () => {
+  const env = { GH_TOKEN: "pat", READ_TOKEN: "read", ISSUE_TOKEN: "issue" };
+  assert.equal(envFor("GET", "/repos/o/r/issues?state=open", env).GH_TOKEN, "read");
+  assert.equal(envFor("POST", "/repos/o/r/issues", env).GH_TOKEN, "issue", "an issue for a suspect: the PAT was refused with 403");
+  assert.equal(envFor("POST", "/repos/o/r/issues/42/comments", env).GH_TOKEN, "issue");
+  assert.equal(envFor("POST", "/repos/o/r/pulls", env).GH_TOKEN, "pat", "a revert pull request stays the PAT's, so its checks run");
+  assert.equal(envFor("PUT", "/repos/o/r/pulls/7/merge", env).GH_TOKEN, "pat");
+  assert.equal(envFor("POST", "/repos/o/r/issues", { GH_TOKEN: "pat" }).GH_TOKEN, "pat", "no ISSUE_TOKEN: as before");
 });

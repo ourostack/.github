@@ -53,8 +53,9 @@
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
 // .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
 // and its culprit isn't the revert's), with a squash merge.
-// It prints the API calls it spent. Reads use READ_TOKEN when set (the caller's GITHUB_TOKEN, which can read Checks); writes use
-// GH_TOKEN (contents, pull-requests and actions write).
+// It prints the API calls it spent. Reads use READ_TOKEN when set (the caller's GITHUB_TOKEN, which can read Checks); issues and
+// their comments use ISSUE_TOKEN when set (the caller's GITHUB_TOKEN with issues: write); other writes use GH_TOKEN
+// (contents, pull-requests and actions write).
 
 import { execFile, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -988,7 +989,14 @@ export function revertBody({ repo, c, run, minutes }) {
 // --- GitHub ----------------------------------------------------------------------------------------------------------
 
 const run = promisify(execFile);
-const readEnv = (method) => (method === "GET" && process.env.READ_TOKEN ? { ...process.env, GH_TOKEN: process.env.READ_TOKEN } : process.env);
+// Issues and their comments (an issue for a suspect picked from several, the evidence on a pull request that stays) use
+// ISSUE_TOKEN when set: the caller's own GITHUB_TOKEN with issues: write. A fine-grained GH_TOKEN without Issues was refused
+// with HTTP 403 ("Resource not accessible by personal access token", Tandem, 2026-11-26), and no issue was opened.
+export const ISSUE_WRITE = /^\/repos\/[^/]+\/[^/]+\/issues(?:\/\d+\/comments)?$/;
+export const envFor = (method, path, env = process.env) =>
+  method === "GET" && env.READ_TOKEN ? { ...env, GH_TOKEN: env.READ_TOKEN }
+  : method !== "GET" && env.ISSUE_TOKEN && ISSUE_WRITE.test(path) ? { ...env, GH_TOKEN: env.ISSUE_TOKEN }
+  : env;
 // GitHub's own transient failures (5xx, a reset connection) are tried once more after a pause.
 async function http(method, path, body) {
   try {
@@ -1001,7 +1009,7 @@ async function http(method, path, body) {
 }
 async function http1(method, path, body) {
   const args = ["api", "-X", method, path.replace(/^\/graphql$/, "graphql"), ...(body ? ["--input", "-"] : [])];
-  const child = run("gh", args, { maxBuffer: 64 * 1024 * 1024, env: readEnv(method) });
+  const child = run("gh", args, { maxBuffer: 64 * 1024 * 1024, env: envFor(method, path) });
   if (body) child.child.stdin.end(JSON.stringify(body));
   else child.child.stdin.end();
   let out;
@@ -1018,7 +1026,7 @@ async function http1(method, path, body) {
 }
 // A job's log, a line at a time: logs run to hundreds of megabytes, so they are streamed, never held.
 async function* lines(path) {
-  const child = spawn("gh", ["api", path, "--allow-escape-sequences"], { env: readEnv("GET"), stdio: ["ignore", "pipe", "pipe"] });
+  const child = spawn("gh", ["api", path, "--allow-escape-sequences"], { env: envFor("GET", path), stdio: ["ignore", "pipe", "pipe"] });
   let err = "";
   child.stderr.on("data", (d) => (err += d));
   const done = new Promise((res) => child.on("close", res));
