@@ -17,7 +17,15 @@ export async function check(repos, get, probe) {
     }
     // permissions.push only says the account may push; a fine-grained token without Contents write still gets 403, so ask the write door itself.
     let write = !!perms?.push;
-    if (write && probe) write = await probe(repo);
+    if (write && probe) {
+      try {
+        write = await probe(repo);
+      } catch (e) {
+        // This check only reports; a dropped connection here must not stop the revert step that follows it.
+        lines.push(`::warning::${repo}: could not tell whether the token may write (${e.cause?.message ?? e.message}); auto-revert still tries.`);
+        continue;
+      }
+    }
     const can = { read: !!perms?.pull, write };
     lines.push(`${repo}: read ${can.read ? "yes" : "no"}, write (contents and pull requests) ${can.write ? "yes" : "no"}`);
     if (!can.write) lines.push(`::warning::${repo}: the token has no write access, so auto-revert cannot push a revert or open its pull request there.`);
