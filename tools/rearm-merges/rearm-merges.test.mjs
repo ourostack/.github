@@ -174,3 +174,36 @@ test("an exhausted quota is told apart from a transient failure", () => {
   assert.doesNotMatch("You have exceeded a secondary rate limit", QUOTA_OUT);
   assert.match("You have exceeded a secondary rate limit", TRANSIENT);
 });
+
+test("a workflow-scope refusal comments once, is skipped not failed, and a genuine error still fails", () => {
+  const refusal = "gh: Pull request refusing to allow a Personal Access Token to create or update workflow .github/workflows/ci.yml without workflow scope";
+  for (const [msg, failed] of [[refusal, 0], ["boom", 1]]) {
+    for (const path of ["queue", "prs"]) {
+      const added = [];
+      let prior = [];
+      setTransport((q, v) => {
+        if (/updatePullRequestBranch/.test(q)) throw Object.assign(new Error("x"), { stderr: msg });
+        if (/comments\(/.test(q)) return { node: { comments: { nodes: prior } } };
+        if (/addComment/.test(q)) { added.push(v.b); return {}; }
+        return { node: { state: "OPEN", autoMergeRequest: { commitHeadline: null } } };
+      });
+      const run = () => path === "queue"
+        ? processQueue([entry({ state: "UNMERGEABLE" })], { now: T0, log: () => {} })
+        : processPrs([{ id: "P9", number: 9, title: "T", body: "", mergeStateStatus: "BEHIND", repository: { nameWithOwner: "o/r" }, autoMergeRequest: { mergeMethod: "SQUASH", commitHeadline: "T (#9)" } }], new Set(), { log: () => {} });
+      try {
+        const r = run();
+        assert.equal(r.failed, failed, `${path} ${msg}`);
+        assert.equal(r.skipped.length, failed ? 0 : 1, path);
+        assert.equal(added.length, failed ? 0 : 1);
+        if (!failed) {
+          assert.match(added[0], /workflow/);
+          prior = [{ body: added[0] }];
+          run();
+          assert.equal(added.length, 1);
+        }
+      } finally {
+        setTransport(null);
+      }
+    }
+  }
+});
