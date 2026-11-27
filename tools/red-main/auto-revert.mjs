@@ -46,7 +46,9 @@
 //      keeps the failed jobs of its previous attempt). So the workflow is also dispatched (workflow_dispatch,
 //      its own group) on a throwaway branch `auto-revert/verify-<sha>` at the red run's commit. A failure is confirmed when it
 //      fails again in that run, or in two main runs in a row; one that passes there is a flake and is never reverted. Only
-//      confirmed culprits are reverted. Verify branches are deleted once main has moved past them.
+//      confirmed culprits are reverted, and only for a failure that itself reproduced: once main's own failures (5) are
+//      dropped, a culprit left with none that did is declined as a flake, each failure a line in the run's summary and in
+//      the repository's flake issue ("flakeIssue" in auto-revert.json: one open issue, by title, a line added per flake). Verify branches are deleted once main has moved past them.
 //   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), whose every failure
 //      is settled since (its job passed whole in a newer run of the workflow, or a newer commit changed its test), with an open fix or
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation). And a failure main
@@ -988,7 +990,19 @@ export function settledBy(f, { greenLater = new Map(), changedLater = [] } = {})
   return null;
 }
 
-// Per culprit: { action: "revert" | "wait" | "skip", reason }.
+const FLAKE_REASON = "passed when its workflow was dispatched at the same commit: a flake";
+
+// What a culprit is left with once main's own failures are dropped must itself have reproduced: one that did and was
+// dropped confirms nothing about the rest. Null when it did; else a flake (every one passed at the same commit) or a wait.
+// Tandem, #7976 reverted #7963 for a WebKit test that passed when the burst ran again at its commit, because two of its
+// other failures failed there again and were then found failing on main before it.
+export function reproducedNow(c) {
+  if ((c.failures ?? []).some((x) => x.confirmed)) return null;
+  if ((c.failures ?? []).every((x) => x.flake)) return { action: "flake", reason: FLAKE_REASON };
+  return { action: "wait", reason: "not yet reproduced: the verify run at the same commit decides" };
+}
+
+// Per culprit: { action: "revert" | "wait" | "skip" | "flake" | "known" | "issue", reason }.
 export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [], namedOnly = false }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
@@ -997,7 +1011,7 @@ export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, gr
   if (settled.length && settled.every(Boolean)) return { action: "skip", reason: settled.join("; ") };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };
-  if (!c.confirmed && c.flake) return { action: "skip", reason: "passed when its workflow was dispatched at the same commit: a flake" };
+  if (!c.confirmed && c.flake) return { action: "flake", reason: FLAKE_REASON };
   if (!c.confirmed) return { action: "wait", reason: "not yet reproduced: the verify run at the same commit decides" };
   if (minutes < minRedMinutes) return { action: "wait", reason: `red for ${minutes}m, under ${minRedMinutes}m` };
   // namedOnly (a repository's revertOnlyNamed): reverted only when its range is that one pull request (a bisect or a single
@@ -1108,6 +1122,28 @@ export async function postKnown(repo, c, reasons, { run, apply, a = api, log = c
   await a.post(`/repos/${repo}/issues/${c.pr}/comments`, { body });
 }
 
+// A declined revert's line for the flake issue: the culprit it spared, the test, and the runs that failed and passed it.
+export const flakeLine = (pr, x, run) =>
+  `#${pr}: ${x.failure.test ? `\`${x.failure.test}\` (${x.failure.file ?? x.failure.jobs.join(", ")})` : `job \`${x.failure.job}\`${x.failure.step ? `, step "${x.failure.step}"` : ""}`} failed in main's \`${run.name}\` (${x.first.html_url}) and passed when ${x.verify?.html_url ?? "its workflow"} ran at the same commit (${short(x.first.head_sha)})`;
+
+// The repository's one open issue for declined reverts (cfg.flakeIssue: { title, labels }), found by title: a new line is
+// added to its body, never a comment per tick; opened when none is open. Closing it once its flakes are fixed starts the next.
+export async function flakeIssue(repo, { title, labels = [] }, lines, { apply, a = api, log = console.log }) {
+  const q = labels.length ? `&labels=${encodeURIComponent(labels.join(","))}` : "";
+  const open = apply ? ((await a.get(`/repos/${repo}/issues?state=open&per_page=100${q}`)) ?? []) : [];
+  const had = open.filter((i) => i.title === title && !i.pull_request).sort((x, y) => x.number - y.number)[0];
+  const body = String(had?.body ?? "");
+  const fresh = [...new Set(lines)].filter((l) => !body.includes(l));
+  if (!fresh.length) return log(`  the flake issue #${had.number} already lists them`);
+  log(`  ${apply ? "" : "would "}${had ? `add ${fresh.length} to the flake issue #${had.number}` : `open the flake issue "${title}"`}`);
+  if (!apply) return;
+  const items = fresh.map((l) => `- ${l}`).join("\n");
+  if (had) return a.patch(`/repos/${repo}/issues/${had.number}`, { body: `${body.trimEnd()}\n${items}` });
+  const head = `Auto-revert declined to revert these pull requests: each failure passed when its workflow ran again at the same commit. Each is a flake to fix, by its test's owner. ${FLAKE_MARKER}`;
+  await a.post(`/repos/${repo}/issues`, { title, body: `${head}\n\n${items}`, labels });
+}
+export const FLAKE_MARKER = "Written by tools/red-main/auto-revert.mjs in ourostack/.github.";
+
 export const SUSPECT_MARKER = "Opened by tools/red-main/auto-revert.mjs in ourostack/.github instead of a revert:";
 // One open issue per suspect pull request, for its lane: what failed, the range, and why it wasn't reverted.
 export async function suspectIssue(repo, c, reason, { run, apply, log = console.log, a = api }) {
@@ -1124,7 +1160,7 @@ export async function suspectIssue(repo, c, reason, { run, apply, log = console.
 }
 
 export function revertBody({ repo, c, run, minutes }) {
-  const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs < 2 ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : " in a row"}.`);
+  const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs >= 2 ? " in a row" : r.confirmed ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : r.flake ? `, and passed when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : ""}.`);
   return [
     `Automatic revert of #${c.pr} (${c.subject.replace(/\s*\(#\d+\)\s*$/, "")}).`,
     "",
@@ -1144,7 +1180,7 @@ const run = promisify(execFile);
 // Tandem, 2026-11-26), and no issue was opened. Comments stay GH_TOKEN's: each is on a pull request (the evidence on one
 // that stays, the owner on a revert), which the caller's token, with pull-requests: read, was refused with HTTP 403
 // ("Resource not accessible by integration", #6869's evidence, 2026-11-26), and GH_TOKEN's pull-requests: write allows.
-export const ISSUE_WRITE = /^\/repos\/[^/]+\/[^/]+\/issues$/;
+export const ISSUE_WRITE = /^\/repos\/[^/]+\/[^/]+\/issues(\/\d+)?$/;
 export const envFor = (method, path, env = process.env) =>
   method === "GET" && env.READ_TOKEN ? { ...env, GH_TOKEN: env.READ_TOKEN }
   : method !== "GET" && env.ISSUE_TOKEN && ISSUE_WRITE.test(path) ? { ...env, GH_TOKEN: env.ISSUE_TOKEN }
@@ -1189,6 +1225,7 @@ export const api = {
   get: (path) => http("GET", path),
   post: (path, body) => http("POST", path, body ?? {}),
   put: (path, body) => http("PUT", path, body ?? {}),
+  patch: (path, body) => http("PATCH", path, body ?? {}),
   del: (path) => http("DELETE", path),
   lines,
   async graphql(query, variables) {
@@ -1207,6 +1244,7 @@ export function counted(a = api) {
     lines: (p) => (calls.GET++, a.lines(p)),
     post: (p, b) => (calls.POST++, a.post(p, b)),
     put: (p, b) => (calls.POST++, a.put(p, b)),
+    patch: (p, b) => (calls.POST++, a.patch(p, b)),
     del: (p) => (calls.POST++, a.del(p)),
     graphql: (q, v) => (calls.graphql++, a.graphql(q, v)),
   };
@@ -1503,9 +1541,12 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   // Failures main had before a range (earlierReds), by the range's start, and the flake table's open flakes, read once a tick.
   const earlier = new Map();
   let flakes = null;
+  // Each failure a revert was declined for because it passed at the same commit: a flake to fix (cfg.flakeIssue).
+  const declined = [];
   const flakesNow = async (sha) => (flakes ??= cfg.knownFlakes ? openFlakes((await (await getSrc()).read(sha, cfg.knownFlakes)) ?? "") : new Map());
   try {
     await judge();
+    if (declined.length && cfg.flakeIssue) await flakeIssue(repo, cfg.flakeIssue, declined, { apply: apply && !asOf, a, log }).catch((e) => log(`  could not update the flake issue: ${e.message}`));
     // Main is red: a revert may land over what main already fails without it, but never over its own culprit's failure.
     if (red.length && mine()) {
       const s = await getSrc();
@@ -1576,8 +1617,17 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
             for (const [i, x] of c.failures.entries()) if (reasons[i]) log(`  not blaming #${c.pr} for ${x.failure.key}: ${reasons[i]}`);
             culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
           }
+          if (d.action === "revert") d = reproducedNow(culpritNow) ?? d;
         }
         log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : d.action === "issue" ? "an issue, not a revert" : "not reverting"}: ${d.reason}`}`);
+        if (d.action === "flake") {
+          for (const x of culpritNow.failures) {
+            const line = flakeLine(c.pr, x, r.newest);
+            log(`  declined revert, a flake to fix: ${line}`);
+            declined.push(line);
+          }
+          continue;
+        }
         if (d.action === "known") {
           await postKnown(repo, c, c.failures.map((x) => knownBefore(x, { pr: c.pr, earlier: earlier.get(x.base?.created_at ?? x.first.created_at) ?? [], flakes: flakes ?? new Map(), flakeDoc: cfg.knownFlakes })), { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not post the evidence on #${c.pr}: ${e.message}`));
           continue;

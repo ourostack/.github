@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, codeNames, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -56,7 +56,7 @@ const TAP = (name, file, extra = "") => [
   "2026-11-19T23:13:12.5Z ok 5 - next",
 ];
 // A fake GitHub for runs, jobs and logs: logs[runId] is the failing job's log lines (none: the run is green).
-function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsOf = {}, comments = [] } = {}) {
+function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsOf = {}, comments = [], issues = [] } = {}) {
   const calls = [];
   return {
     calls,
@@ -70,6 +70,7 @@ function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsO
       if (jobs) return { jobs: logs[jobs[1]] ? [{ id: Number(jobs[1]) * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] }] : [] };
       if (p.includes("/annotations")) return [];
       if (/\/issues\/\d+\/comments/.test(p)) return comments;
+      if (/\/issues\?state=open/.test(p)) return issues;
       if (p.includes("/pulls?state=open")) return open;
       const cr = /\/commits\/(\w+)\/check-runs/.exec(p);
       if (cr) return checks[cr[1]] ?? { check_runs: [] };
@@ -84,6 +85,7 @@ function fakeGitHub(runs, logs, { open = [], checks = {}, dispatched = [], jobsO
     },
     post: async (p, b) => calls.push(["post", p, b]),
     put: async (p, b) => calls.push(["put", p, b]),
+    patch: async (p, b) => calls.push(["patch", p, b]),
     graphql: async (q) => (calls.push(["gql", q.slice(0, 40)]), q.includes("revertPullRequest") ? { revertPullRequest: { revertPullRequest: { id: "N", number: 99, url: "https://x/pull/99" } } } : {}),
   };
 }
@@ -313,7 +315,7 @@ test("analyse: a red verdict covering a range of commits names the PR that broke
   assert.equal(reproduced.results[0].confirmed, true, "it failed again in the verify run at the same commit");
   const passed = await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: TAP("x works", "test/x.test.ts") }, { dispatched: [verify("success")] }), src: src() });
   assert.equal(passed.results[0].flake, true, "it passed there: a flake");
-  assert.equal(decide({ ...culprits(passed.results)[0] }, { minutes: 9, minRedMinutes: 0 }).action, "skip");
+  assert.equal(decide({ ...culprits(passed.results)[0] }, { minutes: 9, minRedMinutes: 0 }).action, "flake");
 });
 
 test("analyse: a failure that began in the newer run is blamed on the commits after the older red run only", async () => {
@@ -963,4 +965,55 @@ test("a new issue is written with ISSUE_TOKEN when it is set; reads with READ_TO
   assert.equal(envFor("POST", "/repos/o/r/pulls", env).GH_TOKEN, "pat", "a revert pull request stays the PAT's, so its checks run");
   assert.equal(envFor("PUT", "/repos/o/r/pulls/7/merge", env).GH_TOKEN, "pat");
   assert.equal(envFor("POST", "/repos/o/r/issues", { GH_TOKEN: "pat" }).GH_TOKEN, "pat", "no ISSUE_TOKEN: as before");
+});
+
+test("check: Tandem, #7976: a culprit is reverted only for a failure that itself failed again at the same commit, not one that passed there", async () => {
+  // #11 is blamed for two failures in one red run. The verify run fails "x works" again, but main failed it before #11 (e),
+  // so it is dropped; "y works" passed in the verify run. Nothing left reproduced: declined as a flake, never reverted.
+  const e = run({ head_sha: sha("e"), created_at: at(300), updated_at: at(290) });
+  const g = run({ conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const n = run({ head_sha: sha("n"), updated_at: at(2) });
+  const verify = run({ event: "workflow_dispatch", head_branch: `auto-revert/verify-${"n".repeat(12)}`, head_sha: sha("n") });
+  const both = [...TAP("x works", "test/x.test.ts"), ...TAP("y works", "test/x.test.ts", "src/y.ts")];
+  const cfg = { workflows: ["ci"], minRedMinutes: 0, flakeIssue: { title: "Health: auto-revert declined a revert", labels: ["delivery-health"] } };
+  const logs = { [e.id]: TAP("x works", "test/x.test.ts"), [n.id]: both, [verify.id]: TAP("x works", "test/x.test.ts") };
+  const gh = fakeGitHub([n, g, e], logs, { dispatched: [verify] });
+  const lines = [];
+  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /not blaming #11 for test\/x\.test\.ts :: x works/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /culprit #11 .*not reverting: passed when its workflow was dispatched at the same commit: a flake/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /declined revert, a flake to fix: #11: `y works` \(test\/x\.test\.ts\) failed in main's `ci` \(https:\/\/x\/run\/\d+\) and passed when https:\/\/x\/run\/\d+ ran/.test(l)), lines.join("\n"));
+  assert.ok(!gh.calls.some((c) => c[0] === "gql"), "no revert");
+  const issue = gh.calls.find((c) => c[0] === "post" && c[1] === "/repos/o/r/issues");
+  assert.equal(issue?.[2].title, cfg.flakeIssue.title);
+  assert.deepEqual(issue[2].labels, ["delivery-health"]);
+  assert.ok(issue[2].body.includes(FLAKE_MARKER) && /- #11: `y works`/.test(issue[2].body) && !/x works/.test(issue[2].body), issue[2].body);
+  // "y works" fails again too: reproduced, so #11 is reverted as fast as before, and the body says so.
+  const again = run({ event: "workflow_dispatch", head_branch: `auto-revert/verify-${"n".repeat(12)}`, head_sha: sha("n") });
+  const live = fakeGitHub([n, g, e], { ...logs, [again.id]: both }, { dispatched: [again] });
+  lines.length = 0;
+  await check("o/r", cfg, { a: live, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /culprit #11 .*: revert$/.test(l)), lines.join("\n"));
+  assert.ok(live.calls.some((c) => c[0] === "gql"), "reverted");
+  assert.ok(!live.calls.some((c) => c[0] === "post" && c[1] === "/repos/o/r/issues"), "nothing declined, no flake issue");
+  // Still running: it waits for the verify run rather than reverting on the failure main already had.
+  assert.equal(reproducedNow({ failures: [{ confirmed: false, flake: false }] }).action, "wait");
+});
+
+test("flakeIssue: a new declined revert is added to the one open issue by its title, once; none open, one is opened", async () => {
+  const cfg = { title: "Flakes auto-revert declined", labels: ["delivery-health"] };
+  const old = "#5: `a` (test/a.test.ts) failed in main's `ci` (u) and passed when v ran at the same commit (aaaaaaaaa)";
+  const gh = fakeGitHub([], {}, { issues: [{ number: 8, title: cfg.title, body: `head\n\n- ${old}` }] });
+  await flakeIssue("o/r", cfg, [old, "#6: `b` new", "#6: `b` new"], { apply: true, a: gh, log() {} });
+  assert.deepEqual(gh.calls.filter((c) => c[0] !== "get"), [["patch", "/repos/o/r/issues/8", { body: `head\n\n- ${old}\n- #6: \`b\` new` }]]);
+  assert.ok(gh.calls.some((c) => c[0] === "get" && /labels=delivery-health/.test(c[1])));
+  const same = fakeGitHub([], {}, { issues: [{ number: 8, title: cfg.title, body: `- ${old}` }] });
+  await flakeIssue("o/r", cfg, [old], { apply: true, a: same, log() {} });
+  assert.equal(same.calls.filter((c) => c[0] !== "get").length, 0, "already listed: no write");
+  const dry = fakeGitHub([], {});
+  const lines = [];
+  await flakeIssue("o/r", cfg, [old], { apply: false, a: dry, log: (l) => lines.push(l) });
+  assert.equal(dry.calls.length, 0);
+  assert.match(lines[0], /would open the flake issue "Flakes auto-revert declined"/);
+  assert.equal(envFor("PATCH", "/repos/o/r/issues/8", { GH_TOKEN: "pat", ISSUE_TOKEN: "issue" }).GH_TOKEN, "issue", "the issue's edit, like its opening, with ISSUE_TOKEN");
 });
