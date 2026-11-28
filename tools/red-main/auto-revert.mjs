@@ -763,6 +763,38 @@ export function culprit(commits, dist, named = []) {
   return null;
 }
 
+// A failure's message: node:test's `error:` (or `message:`) with the lines indented under it, else its text's first line (a
+// list judge's "<engine>: <message>").
+export function failureMessage(text) {
+  const lines = String(text ?? "").split("\n");
+  const at = lines.findIndex((l) => /^\s*(error|message):/.test(l));
+  if (at < 0) return lines[0] ?? "";
+  const indent = /^\s*/.exec(lines[at])[0].length;
+  const out = [lines[at].replace(/^\s*(error|message):\s*/, "")];
+  for (const l of lines.slice(at + 1)) {
+    if (l.trim() && /^\s*/.exec(l)[0].length <= indent) break;
+    out.push(l);
+  }
+  return out.join("\n");
+}
+
+// The pull requests in the range a failure's message names by a file's name, with or without its directory, before any
+// import is followed: each that changed a file of that name. One is the culprit; several are the suspects, tied. A
+// consuming app, 2026-11-28: "windows-tray.yml: no action is downloaded from this repository" failed, a pull request in
+// the range had changed .github/workflows/windows-tray.yml, and another, one reference from the test, was blamed. A
+// `file:line` is where code ran (a stack frame), not what the message is about: it names no one, as a helper only named in a failure never was.
+export function messageNamed(commits, message) {
+  const text = String(message ?? "");
+  const names = new Set([...text.matchAll(PATHISH)].filter((m) => !/^:\d/.test(text.slice(m.index + m[0].length))).map((m) => posix.basename(m[0].replace(/\\/g, "/"))));
+  if (!names.size) return null;
+  const hits = [];
+  for (const c of commits) {
+    const file = c.pr && c.files.find((x) => names.has(posix.basename(x)));
+    if (file) hits.push({ pr: c.pr, sha: c.sha, parent: c.parent, subject: c.subject, distance: 0, file, how: `changed ${file}, which the failure's message names` });
+  }
+  return hits.length ? { ...hits[0], ties: hits } : null;
+}
+
 // The pull request a squash-merged revert takes back: `Revert "<title>" (#N) (#M)` or `Revert "<title> (#N)" (#M)`.
 export function revertOf(subject) {
   const m = /^Revert\b.*\(#(\d+)\)"?\s*\(#\d+\)\s*$/.exec(subject ?? "");
@@ -854,12 +886,13 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const read = (p) => src.read(first.run.head_sha, p);
     const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read, files: firstFiles });
     const named = namedDirs(`${f.test ?? ""}\n${f.text ?? ""}`, firstFiles);
-    let blame = culprit(commits, dist, named);
+    const byName = messageNamed(commits, failureMessage(f.text));
+    let blame = byName ?? culprit(commits, dist, named);
     // A failing test file is blamed only on a pull request that changes something in its own import graph (the file, what
     // it imports, and what it reads or scans), not on a file merely named in its failure text (Tandem lead, 2026-11-26:
     // #6797 changed test/helpers/reply-box.ts, which arrive-at-end-window.test.ts doesn't import).
     let outside = null;
-    if (blame && blame.distance !== Infinity && f.file && TEST_FILE.test(f.file) && firstFiles.has(f.file)) {
+    if (!byName && blame && blame.distance !== Infinity && f.file && TEST_FILE.test(f.file) && firstFiles.has(f.file)) {
       const own = await distances([f.file], { read, files: firstFiles });
       const narrow = culprit(commits, own, named);
       const wide = blame;

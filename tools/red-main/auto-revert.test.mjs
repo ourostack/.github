@@ -416,6 +416,47 @@ test("a failing test file is blamed only on a PR that changes its own import gra
   assert.equal(self.blame.pr, 12);
 });
 
+test("a file the failure's message names by its bare name names the pull request that changed it, before any import is followed", async () => {
+  // test/workflow-checkout.test.ts reads the fail-fast action's file and scans the workflows. Of 7 pull requests in the
+  // range, #34 changed .github/workflows/windows-tray.yml, the file its message names; #35 changed the action, 1 reference away.
+  const files = new Set([...FILES, "test/workflow-checkout.test.ts", ".github/workflows/windows-tray.yml", ".github/workflows/ci.yml", ".github/actions/pr-fail-fast/action.yml", "docs/ci/windows-tray.yml"]);
+  const reads = { ...SRC, "test/workflow-checkout.test.ts": `const action = read(".github/actions/pr-fail-fast/action.yml");\nfor (const wf of fs.readdirSync(".github/workflows")) test(wf, () => {});\n` };
+  const range = [
+    { sha: sha("7"), parent: sha("6"), subject: "Docs (#37)", pr: 37, files: ["README.md"] },
+    { sha: sha("6"), parent: sha("5"), subject: "Types (#36)", pr: 36, files: ["src/z.ts"] },
+    { sha: sha("5"), parent: sha("4"), subject: "Fail fast (#35)", pr: 35, files: [".github/actions/pr-fail-fast/action.yml"] },
+    { sha: sha("4"), parent: sha("3"), subject: "Tray build (#34)", pr: 34, files: [".github/workflows/windows-tray.yml"] },
+    { sha: sha("3"), parent: sha("2"), subject: "Ci (#33)", pr: 33, files: [".github/workflows/ci.yml"] },
+    { sha: sha("2"), parent: sha("1"), subject: "Readme (#32)", pr: 32, files: ["README.md"] },
+    { sha: sha("1"), parent: sha("g"), subject: "Other (#31)", pr: 31, files: ["src/x.ts"] },
+  ];
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("7") });
+  const fail = [
+    "# Subtest: windows-tray.yml",
+    "not ok 12 - windows-tray.yml",
+    "  ---",
+    "  duration_ms: 1.2",
+    "  location: '/home/runner/work/r/r/test/workflow-checkout.test.ts:2:39'",
+    "  failureType: 'testCodeFailure'",
+    "  error: 'windows-tray.yml: no action is downloaded from this repository'",
+    "  code: 'ERR_ASSERTION'",
+    "  stack: |-",
+    "    TestContext.<anonymous> (file:///home/runner/work/r/r/test/workflow-checkout.test.ts:2:39)",
+    "  ...",
+  ];
+  const blame = async (commits) => (await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: fail }), src: src({ files: async () => files, read: async (_, p) => reads[p] ?? null, commits: async () => commits }) })).results[0].blame;
+  const one = await blame(range);
+  assert.equal(one.pr, 34, `${one.pr}: ${one.how}`);
+  assert.equal(one.how, "changed .github/workflows/windows-tray.yml, which the failure's message names");
+  assert.deepEqual(one.ties.map((t) => t.pr), [34]);
+  // Two pull requests changed a windows-tray.yml: both are suspects, so a repository that reverts only one named alone opens an issue.
+  const two = await blame([{ sha: sha("8"), parent: sha("7"), subject: "Tray docs (#38)", pr: 38, files: ["docs/ci/windows-tray.yml"] }, ...range]);
+  assert.deepEqual(two.ties.map((t) => t.pr), [38, 34]);
+  const c = { pr: two.pr, sha: two.sha, confirmed: true, failures: [{ failure: {}, prs: 8, blame: two }] };
+  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue");
+});
+
 test("an infrastructure-only red is no verdict: the run before it decides", async () => {
   const infra = [job({ steps: [] }), job({ log: "getaddrinfo ENOTFOUND registry.npmjs.org" }), job({ log: "The runner has received a shutdown signal." }), job({ conclusion: "cancelled" }), job({ steps: [{ name: "Run actions/checkout@v7", conclusion: "failure" }] }), job({ unreadable: true }), job({ infra: "pool down" })];
   for (const j of infra) assert.equal(classifyFailure({ conclusion: "failure" }, [j]).infra, true, JSON.stringify(j));
