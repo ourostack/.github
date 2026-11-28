@@ -661,6 +661,32 @@ test("check: one red run over the range dispatches its workflow on a verify bran
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
 });
 
+test("check: a run still going whose test job already failed is judged for that job now: its verify run is dispatched at once", async () => {
+  // ci's test shard failed early while an unrelated job that waits on a Mac pass ran 31 more minutes.
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("n"), status: "in_progress", conclusion: null });
+  const jobs = [
+    { id: n.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] },
+    { id: n.id * 10 + 1, name: "fast-record", status: "in_progress", conclusion: null, runner_id: 2, steps: [] },
+  ];
+  const logs = { [n.id]: TAP("x works", "test/x.test.ts") };
+  const gh = fakeGitHub([n, g], logs, { jobsOf: { [n.id]: jobs } });
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
+  assert.deepEqual(gh.calls.filter((c) => c[0] === "post").map((c) => c[1]), ["/repos/o/r/git/refs", "/repos/o/r/actions/workflows/ci.yml/dispatches"], "the verify run now; a run still going isn't re-run");
+  // A job still running says nothing.
+  const running = fakeGitHub([n, g], logs, { jobsOf: { [n.id]: jobs.map((j) => ({ ...j, status: "in_progress", conclusion: null })) } });
+  lines.length = 0;
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: running, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.includes("o/r: main is not red") && !running.calls.some((c) => c[0] === "post"), lines.join("\n"));
+  // A newer completed green supersedes it, and its jobs aren't read.
+  const newer = fakeGitHub([run({ conclusion: "success", head_sha: sha("f") }), n, g], logs, { jobsOf: { [n.id]: jobs } });
+  lines.length = 0;
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: newer, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
+  assert.ok(lines.includes("o/r: main is not red") && !newer.calls.some((c) => c[1].includes(`/runs/${n.id}/jobs`)), lines.join("\n"));
+});
+
 test("check: a red run on infrastructure only blames nothing and re-runs its failed and cancelled jobs once", async () => {
   // Tandem's rollup says a cancelled job "cancelled, not judged" with title=infra (2026-11-26: #7039 was blamed for one).
   const g = run({ conclusion: "success", head_sha: sha("g") });

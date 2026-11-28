@@ -16,7 +16,8 @@
 // but its "ignoreWorkflows") is judged by its newest COMPLETED push run on main (for a workflow in the repo's "tagRuns", its
 // newest completed run dispatched on a release tag of a commit on main; for one in "bisectRuns", its runs dispatched on an
 // `auto-revert/bisect-<sha>` branch inside a red range count too, by commit order): a pending or running run says nothing, a run
-// cancelled or replaced by concurrency says nothing, and one whose every failure is infrastructure says nothing. Main is red
+// cancelled or replaced by concurrency says nothing, and one whose every failure is infrastructure says nothing. A first
+// attempt still running is red for each job it has already failed (markPartial), so a red is judged without waiting for the run. Main is red
 // while that verdict is a code failure; a newer completed green run clears it. "Newer" is commit order on main (first parent),
 // never finish time: when each push has a run of its own (no shared concurrency group), an older commit's run can finish
 // after a newer one's, and its red then says nothing about main. Runs are ordered by run number (push order) and, once main
@@ -243,7 +244,10 @@ export async function runJobs(get, cache, repo, run, { attempt = run.run_attempt
 const RUN_JOBS_KEPT = 100;
 const NOTES_KEPT = 400;
 
-export async function markPartial(repo, runs, get, order = null, cache = null) {
+// A first attempt still running is a red verdict for each job it already failed: those jobs are judged now, not when its
+// slowest unrelated job ends (2026-11-28: a consuming app's ci failed its test jobs early and stayed in progress 31 more
+// minutes behind a job that waits on a Mac pass, and its verify run waited for all of it). A job still running says nothing.
+export async function markPartial(repo, runs, get, order = null, cache = null, asOf = null) {
   for (const rs of groupBy(runs, wfKey).values()) {
     const sorted = [...rs].sort(newestFirst(order));
     for (const r of sorted) {
@@ -255,7 +259,12 @@ export async function markPartial(repo, runs, get, order = null, cache = null) {
         r.partial = r.jobs.some((j) => j.conclusion === "failure");
         continue;
       }
-      if (r.status !== "completed" || r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
+      if (r.status !== "completed") {
+        r.jobs = (await runJobs(get, cache, repo, r)).map((j) => (asOf && j.completed_at && ms(j.completed_at) > ms(asOf) ? { ...j, status: "in_progress", conclusion: null } : j));
+        r.partial = r.jobs.some((j) => j.status === "completed" && j.conclusion === "failure");
+        continue;
+      }
+      if (r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
       r.jobs = await runJobs(get, cache, repo, r);
       r.partial = r.jobs.some((j) => j.conclusion === "failure");
       // Cancelled, yet its gate job passed and no job failed: the retry covered the cancelled job, so the run is green.
@@ -1678,7 +1687,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   const minRedMinutes = cfg.minRedMinutes ?? CONFIG.minRedMinutes;
   const runs = await readHistory(repo, (p) => a.get(p), { workflows: cfg.workflows ?? null, ignore: cfg.ignoreWorkflows ?? [], tagRuns: cfg.tagRuns ?? [], bisectRuns: cfg.bisectRuns ?? [], asOf });
   // A bisect run is at an older commit than the push run it narrows, but newer by run number: by push order it says nothing.
-  let vs = verdicts(await markPartial(repo, runs.filter((r) => !r.bisect), (p) => a.get(p), null, cache));
+  let vs = verdicts(await markPartial(repo, runs.filter((r) => !r.bisect), (p) => a.get(p), null, cache, asOf));
   let red = vs.filter((v) => v.state === "red");
   // Re-run only: a caller whose token has actions write and nothing else (the revert stays with the central cron's PAT).
   if (rerunOnly) {
@@ -1699,7 +1708,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     order = (await (await getSrc()).order?.()) ?? null;
     if (order?.size) {
       for (const r of runs) delete r.partial;
-      vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order, cache), order);
+      vs = verdicts(await markPartial(repo, runs, (p) => a.get(p), order, cache, asOf), order);
       red = vs.filter((v) => v.state === "red");
     }
   }
