@@ -54,8 +54,8 @@
 //   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), whose every failure
 //      is settled since (a newer commit changed its test or a file its failure names), with an open fix or
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation). And a failure main
-//      already had is never blamed on the range (knownBefore): one its runs of the workflow failed the same way in the 24 hours
-//      before the range began, or whose test the repo's flake table (its "knownFlakes" file, under "Open known flakes") names,
+//      already had is never blamed on the range (knownBefore): one a red run of the workflow (a bisect run too) failed the same
+//      way at a commit before the suspect's tree, from 24 hours before the range began until now (beforeTree), or whose test the repo's flake table (its "knownFlakes" file, under "Open known flakes") names,
 //      unless the culprit changed the failing test or a file its failure names. Nor is a failure blamed on the range's one
 //      pull request when nothing it changed reaches the failure and it changed only existing test files and documents
 //      (loneCleared). A culprit left with no failure is not reverted, and the evidence is posted on its pull request instead.
@@ -1304,25 +1304,49 @@ export function openFlakes(md) {
   return out;
 }
 
-// Main's red runs of the run's workflow (push runs only) in the `hours` before `before`, newest first, at most `max`, with
-// their failures' keys: [{ run, keys }].
-export async function earlierReds(repo, run, before, { a, files, cache = null, src = null, hours = KNOWN_HOURS, max = KNOWN_RUNS }) {
-  if (run.event && run.event !== "push") return [];
-  const to = ms(before);
-  const from = to - hours * 3600000;
+// Whether a run is at a commit before a suspect's tree: on main's first-parent line (`order`) at or before its parent. When
+// the parent isn't in `order`, a push run created before `before` (the range's start), as before.
+export const beforeTree = (order, parent, before) => (r) => {
+  const p = parent ? order?.get(parent) : undefined;
+  if (p !== undefined) return (order.get(r.head_sha) ?? Infinity) <= p;
+  return r.event === "push" && ms(r.created_at) < ms(before);
+};
+
+// Main's red runs of the run's workflow from `hours` before `before` until `until`, newest first, that `keep` admits (by
+// default push runs created before `before`; beforeTree: at a commit before the suspect's tree), at most `max`, with their
+// failures: [{ run, keys, failures }]. With `bisect`, its runs on a bisect branch are read too. A bursting workflow bisects
+// and passes in between, so its red at an older commit is often a run created after the range began (a consuming app,
+// 2026-11-28: a window test family failed main's bursts at three commits before a pull request's tree, and that pull
+// request was blamed for it twice). A red run judged on a bisect branch reads them as a push run does.
+export async function earlierReds(repo, run, before, { a, files, cache = null, src = null, hours = KNOWN_HOURS, max = KNOWN_RUNS, until = before, bisect = false, keep = null }) {
+  const from = ms(before) - hours * 3600000;
+  const to = Math.max(ms(until), ms(before));
+  const admit = keep ?? ((r) => r.event === "push" && ms(r.created_at) < ms(before));
   const range = encodeURIComponent(`${new Date(from).toISOString()}..${new Date(to).toISOString()}`);
-  const list = (await a.get(`/repos/${repo}/actions/workflows/${run.workflow_id}/runs?branch=main&event=push&per_page=100&created=${range}`)).workflow_runs ?? [];
+  const base = `/repos/${repo}/actions/workflows/${run.workflow_id}/runs?per_page=100&created=${range}`;
+  const list = [
+    ...((await a.get(`${base}&branch=main&event=push`)).workflow_runs ?? []),
+    ...(bisect ? ((await a.get(`${base}&event=workflow_dispatch`)).workflow_runs ?? []).filter((r) => String(r.head_branch ?? "").startsWith(BISECT)) : []),
+  ];
   const reds = list
-    .filter((r) => r.status === "completed" && ["failure", "cancelled"].includes(r.conclusion) && ms(r.created_at) < to && ms(r.created_at) >= from && r.id !== run.id)
+    .filter((r) => r.status === "completed" && ["failure", "cancelled"].includes(r.conclusion) && ms(r.created_at) >= from && ms(r.updated_at ?? r.created_at) <= to && r.id !== run.id && admit(r))
     .sort((x, y) => ms(y.created_at) - ms(x.created_at))
     .slice(0, max);
   const out = [];
   for (const r of reds) {
     const got = await runFailures(repo, r, { a, files, cache, read: src ? (p) => src.read(r.head_sha, p) : null });
-    if (got.failures) out.push({ run: r, keys: new Set(got.failures.map((f) => f.key)) });
+    if (got.failures) out.push({ run: r, keys: new Set(got.failures.map((f) => f.key)), failures: got.failures });
   }
   return out;
 }
+
+// The same failing test: the same key, or the same file where either log names no case (a list judge's red for a whole file).
+const sameTest = (f, g) => g.key === f.key || Boolean(f.file && g.file === f.file && (f.test === f.file || g.test === g.file));
+// The earlier red (earlierReds) that already failed this failure's test, or undefined.
+export const seenBefore = (f, earlier = []) => earlier.find((e) => e.keys.has(f.key) || (e.failures ?? []).some((g) => sameTest(f, g)));
+// A failure a suspect isn't blamed for because main failed it before the suspect's tree, for the flake issue.
+export const earlierLine = (pr, f, seen) =>
+  `#${pr}: ${f.test ? `\`${f.test}\` (${f.file ?? f.job})` : `job \`${f.job}\``} failed on main at ${short(seen.run.head_sha)} (${seen.run.html_url}), before #${pr}'s tree, so main already had it and #${pr} isn't blamed`;
 
 // Why one attributed failure (an analyse result) is not its culprit's, or null: main already had it (`earlier`, from
 // earlierReds), or its test is an open known flake (`flakes`, from openFlakes). Never when the culprit touched it.
@@ -1332,7 +1356,7 @@ export function knownBefore(x, { pr, earlier = [], flakes = new Map(), flakeDoc 
   const f = x.failure;
   const flake = f.file ? flakes.get(f.file) : null;
   if (flake) return `${f.file} is an open known flake in ${flakeDoc}: ${flake}`;
-  const seen = earlier.find((e) => e.keys.has(f.key));
+  const seen = seenBefore(f, earlier);
   if (seen) return `it failed the same way on main before #${pr}: ${seen.run.html_url} (${short(seen.run.head_sha)}, ${hhmm(seen.run.created_at)})`;
   return null;
 }
@@ -1404,7 +1428,7 @@ export function revertData(body) {
 export const plainBody = (body) => cleanBody(String(body ?? "").replace(DATA, ""));
 
 export function revertBody({ repo, c, run, minutes }) {
-  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}), ...(x.blame?.distance === Infinity ? { lone: true } : {}) })) };
+  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}), ...(x.blame?.distance === Infinity ? { lone: true } : {}), ...(x.touched ? { touched: true } : {}) })) };
   const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs >= 2 ? " in a row" : r.confirmed ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : r.flake ? `, and passed when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : ""}.`);
   return [
     `<!-- auto-revert: ${JSON.stringify(data).replace(/>/g, "\\u003e")} -->`,
@@ -1804,6 +1828,8 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   const analyses = [];
   // Failures main had before a range (earlierReds), by the range's start, and the flake table's open flakes, read once a tick.
   const earlier = new Map();
+  const earlierOf = new Map();
+  const bisects = (run) => (cfg.bisectRuns ?? []).includes(stem(run));
   let flakes = null;
   // Each failure a revert was declined for, because it passed at the same commit or a cause check found it failing without
   // its culprit: a flake to fix (cfg.flakeIssue).
@@ -1846,7 +1872,18 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     if (!kept?.failures?.length) return null;
     const redRun = runs.find((r) => r.id === kept.run) ?? (await a.get(`/repos/${repo}/actions/runs/${kept.run}`));
     order ??= (await (await getSrc()).order?.()) ?? null;
-    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, lone, ...failure }) => ({ failure, passedVerify: passedVerify === true, lone: lone === true })) };
+    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, lone, touched, ...failure }) => ({ failure, passedVerify: passedVerify === true, lone: lone === true, touched: touched === true })) };
+    // A failure main had before the culprit's tree is never its: the revert closes, as one never opened would not have opened.
+    const s = await getSrc();
+    const prior = c.failures.some((x) => !x.touched) ? await earlierReds(repo, redRun, redRun.created_at, { a, files: await s.files(redRun.head_sha), cache, src: s, until: now, bisect: bisects(redRun), keep: beforeTree(order, c.parent, redRun.created_at) }).catch(() => []) : [];
+    const seen = c.failures.map((x) => (x.touched ? undefined : seenBefore(x.failure, prior)));
+    if (seen.every(Boolean)) {
+      for (const [i, x] of c.failures.entries()) declined.push(earlierLine(c.pr, x.failure, seen[i]));
+      const why = `main already failed it before #${c.pr}'s tree: ${[...new Set(seen.map((e) => `${e.run.html_url} (${short(e.run.head_sha)})`))].join(", ")}`;
+      await closeRevert(repo, pr, why, { apply, a, log });
+      return { why, closed: true };
+    }
+    c.failures = c.failures.filter((_, i) => !seen[i]);
     const d = await byCause(c, redRun);
     if (!d || d.action === "revert") return null;
     if (d.action === "wait") return { why: d.reason };
@@ -1953,8 +1990,12 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           const reasons = [];
           for (const x of c.failures) {
             const before = x.base?.created_at ?? x.first.created_at;
-            if (!earlier.has(before) && !x.touched && !x.cleared) earlier.set(before, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s }).catch(() => []));
-            reasons.push(knownBefore(x, { pr: c.pr, earlier: earlier.get(before) ?? [], flakes: await flakesNow(r.newest.head_sha), flakeDoc: cfg.knownFlakes }));
+            const key = `${before}|${c.parent ?? ""}`;
+            if (!earlier.has(key) && !x.touched && !x.cleared) earlier.set(key, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s, until: now, bisect: bisects(r.newest), keep: beforeTree(order, c.parent, before) }).catch(() => []));
+            earlierOf.set(x, earlier.get(key) ?? []);
+            reasons.push(knownBefore(x, { pr: c.pr, earlier: earlierOf.get(x), flakes: await flakesNow(r.newest.head_sha), flakeDoc: cfg.knownFlakes }));
+            const seen = reasons.at(-1) && !x.touched && !x.cleared ? seenBefore(x.failure, earlierOf.get(x)) : null;
+            if (seen) declined.push(earlierLine(c.pr, x.failure, seen));
           }
           if (reasons.every(Boolean)) {
             d = { action: "known", reason: [...new Set(reasons)].join("; ") };
@@ -1994,7 +2035,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           continue;
         }
         if (d.action === "known") {
-          await postKnown(repo, c, c.failures.map((x) => knownBefore(x, { pr: c.pr, earlier: earlier.get(x.base?.created_at ?? x.first.created_at) ?? [], flakes: flakes ?? new Map(), flakeDoc: cfg.knownFlakes })), { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not post the evidence on #${c.pr}: ${e.message}`));
+          await postKnown(repo, c, c.failures.map((x) => knownBefore(x, { pr: c.pr, earlier: earlierOf.get(x) ?? [], flakes: flakes ?? new Map(), flakeDoc: cfg.knownFlakes })), { run: r.newest, apply: apply && !asOf, a, log }).catch((e) => log(`  could not post the evidence on #${c.pr}: ${e.message}`));
           continue;
         }
         if (d.action === "issue") {
