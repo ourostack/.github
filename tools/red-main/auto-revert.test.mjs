@@ -666,7 +666,7 @@ test("check: a run still going whose test job already failed is judged for that 
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const n = run({ head_sha: sha("n"), status: "in_progress", conclusion: null });
   const jobs = [
-    { id: n.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] },
+    { id: n.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "failure", completed_at: at(25), runner_id: 1, steps: [{ name: "npm test", conclusion: "failure" }] },
     { id: n.id * 10 + 1, name: "fast-record", status: "in_progress", conclusion: null, runner_id: 2, steps: [] },
   ];
   const logs = { [n.id]: TAP("x works", "test/x.test.ts") };
@@ -674,7 +674,11 @@ test("check: a run still going whose test job already failed is judged for that 
   const lines = [];
   await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
   assert.ok(lines.some((l) => /culprit #11 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /ci red at n{9} \(run \d+, failed 00:15Z\), red 25m/.test(l)), "red since its job failed, not since the run last changed");
   assert.deepEqual(gh.calls.filter((c) => c[0] === "post").map((c) => c[1]), ["/repos/o/r/git/refs", "/repos/o/r/actions/workflows/ci.yml/dispatches"], "the verify run now; a run still going isn't re-run");
+  const cache = {};
+  await runJobs((p) => fakeGitHub([], {}, { jobsOf: { [n.id]: jobs.slice(0, 1) } }).get(p), cache, "o/r", n);
+  assert.equal(cache.runJobs, undefined, "a running run's list, every job listed so far finished, isn't kept: later jobs aren't created yet");
   // A job still running says nothing.
   const running = fakeGitHub([n, g], logs, { jobsOf: { [n.id]: jobs.map((j) => ({ ...j, status: "in_progress", conclusion: null })) } });
   lines.length = 0;
@@ -685,6 +689,31 @@ test("check: a run still going whose test job already failed is judged for that 
   lines.length = 0;
   await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: newer, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
   assert.ok(lines.includes("o/r: main is not red") && !newer.calls.some((c) => c[1].includes(`/runs/${n.id}/jobs`)), lines.join("\n"));
+});
+
+test("analyse: a job a running run hasn't finished is neither failed nor passed there: its range and failures come from the runs that judged it", async () => {
+  // Each push its own run. b (#11 breaks y) fails lint and e2e; e2e is slow.
+  const lint = { name: "lint", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "lint", conclusion: "failure" }] };
+  const e2e = { name: "e2e", status: "completed", conclusion: "failure", runner_id: 1, steps: [{ name: "e2e", conclusion: "failure" }] };
+  const going = { ...e2e, status: "in_progress", conclusion: null, steps: [] };
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const fails = (r) => ({ [r.id]: TAP("lints", "test/x.test.ts"), [`${r.id}.1`]: TAP("y works", "test/x.test.ts") });
+  const judge = async (b, n, jobsOf) => {
+    const gh = fakeGitHub([n, b, g], { ...fails(b), ...fails(n) }, { jobsOf });
+    const lines = [];
+    await check("o/r", { workflows: ["ci"], minRedMinutes: 0 }, { a: gh, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src() });
+    return lines;
+  };
+  // b still running e2e, n finished red on both: e2e began after g, not after b.
+  let b = run({ head_sha: sha("b"), status: "in_progress", conclusion: null });
+  let n = run({ head_sha: sha("n") });
+  let lines = await judge(b, n, { [b.id]: [{ ...lint, id: b.id * 10 }, { ...going, id: b.id * 10 + 1 }], [n.id]: [{ ...lint, id: n.id * 10 }, { ...e2e, id: n.id * 10 + 1 }] });
+  assert.ok(lines.some((l) => /"y works": failing since n{9} \(run \d+\), passing at g{9}, 1 run, unconfirmed -> #11/.test(l)), lines.join("\n"));
+  // n still running e2e, b finished red on both: e2e's failure at b still counts.
+  b = run({ head_sha: sha("b") });
+  n = run({ head_sha: sha("n"), status: "in_progress", conclusion: null });
+  lines = await judge(b, n, { [b.id]: [{ ...lint, id: b.id * 10 }, { ...e2e, id: b.id * 10 + 1 }], [n.id]: [{ ...lint, id: n.id * 10 }, { ...going, id: n.id * 10 + 1 }] });
+  assert.ok(lines.some((l) => /"y works": failing since b{9} \(run \d+\), passing at g{9}/.test(l)) && lines.some((l) => /"lints": failing since b{9}.*, 2 runs/.test(l)), lines.join("\n"));
 });
 
 test("check: a red run on infrastructure only blames nothing and re-runs its failed and cancelled jobs once", async () => {

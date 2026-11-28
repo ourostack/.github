@@ -236,7 +236,8 @@ export async function runJobs(get, cache, repo, run, { attempt = run.run_attempt
     if (jobs.length === 50) jobs = [...jobs, ...(await half(2 * page))];
   }
   cache?.live?.set(key, jobs);
-  if (cache && jobs.length && jobs.every((j) => j.status === "completed")) {
+  // A run still going can list only finished jobs while later ones aren't created yet, so only a finished run's list is kept.
+  if (cache && jobs.length && jobs.every((j) => j.status === "completed") && (run.status === "completed" || attempt < (run.run_attempt ?? 1))) {
     (cache.runJobs ??= {})[key] = jobs.map((j) => Object.fromEntries(Object.entries(j).filter(([k]) => !NOISE.includes(k))));
   }
   return jobs;
@@ -261,7 +262,10 @@ export async function markPartial(repo, runs, get, order = null, cache = null, a
       }
       if (r.status !== "completed") {
         r.jobs = (await runJobs(get, cache, repo, r)).map((j) => (asOf && j.completed_at && ms(j.completed_at) > ms(asOf) ? { ...j, status: "in_progress", conclusion: null } : j));
-        r.partial = r.jobs.some((j) => j.status === "completed" && j.conclusion === "failure");
+        const failed = r.jobs.filter((j) => j.status === "completed" && j.conclusion === "failure");
+        r.partial = failed.length > 0;
+        r.pending = new Set(r.jobs.filter((j) => j.status !== "completed").map((j) => jobKey(j.name)));
+        r.failedAt = failed.map((j) => j.completed_at).filter(Boolean).sort()[0];
         continue;
       }
       if (r.conclusion !== "cancelled" || ms(r.updated_at) - ms(r.run_started_at ?? r.created_at) < 3 * 60000) continue;
@@ -787,9 +791,9 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const r = await runFailures(repo, run, { a, files, cache, read: (p) => src.read(run.head_sha, p) });
     chain.push({ run, ...r });
     if (chain.length === 1 && r.infra) continue;
-    const head = chain.find((c) => c.failures);
-    if (!head) continue;
-    const open = head.failures.filter((f) => chain.filter((c) => c.failures).every((c) => c.failures.some((g) => g.key === f.key)));
+    const withF = chain.filter((c) => c.failures);
+    if (!withF.length) continue;
+    const open = heads(withF).filter(({ f }) => withF.every((c) => unjudged(c.run, f) || c.failures.some((g) => g.key === f.key)));
     if (!open.length) break;
   }
   const reds = chain.filter((c) => c.failures);
@@ -809,15 +813,15 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     if (!seen.has(run.id)) seen.set(run.id, await failuresAt(run));
     return seen.get(run.id);
   };
-  const walked = chain.slice(chain.indexOf(newest) + 1).filter((c) => c.failures);
-  const older = [...walked, ...(green && !unwalked.length ? [green] : [])];
   const results = [];
-  for (const f of newest.failures) {
-    let first = newest;
+  for (const { f, from } of heads(reds)) {
+    const older = [...reds.slice(reds.indexOf(from) + 1), ...(green && !unwalked.length ? [green] : [])];
+    let first = from;
     let base = null;
     let runs = 1;
     let open = true;
     for (const c of older) {
+      if (unjudged(c.run, f)) continue;
       if (c.failures.some((g) => g.key === f.key)) {
         first = c;
         runs++;
@@ -835,7 +839,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
       let hi = among.length;
       while (hi - lo > 1) {
         const mid = (lo + hi) >> 1;
-        const at = await atRun(among[mid]);
+        const at = unjudged(among[mid], f) ? null : await atRun(among[mid]);
         if (at === null) {
           among.splice(mid, 1);
           hi--;
@@ -889,6 +893,19 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
   }
   return { newest: newest.run, results, check };
+}
+
+// A run still going has no verdict on a job it hasn't finished (markPartial's `pending`): it neither fails nor passes a
+// failure there.
+const unjudged = (run, f) => (f.jobs ?? [f.job]).some((j) => run.pending?.has(j));
+// Each failure with the newest red that judged its job: a running run's failures, and an older red's in the jobs it is
+// still running. [{ f, from }]
+function heads(reds) {
+  const m = new Map();
+  reds.forEach((c, i) => {
+    for (const f of c.failures) if (!m.has(f.key) && reds.slice(0, i).every((o) => unjudged(o.run, f))) m.set(f.key, { f, from: c });
+  });
+  return [...m.values()];
 }
 
 export const VERIFY = "auto-revert/verify-";
@@ -1835,9 +1852,9 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
         if (!asOf && cfg.rerun !== false) await rerunFailed(repo, v.reds[0], { apply, a, log });
         continue;
       }
-      const since = Math.min(...r.results.map((x) => ms(x.first.updated_at)));
+      const since = Math.min(...r.results.map((x) => ms(x.first.failedAt ?? x.first.updated_at)));
       const minutes = Math.round((now - since) / 60000);
-      log(`${repo}: ${v.workflow} red at ${short(r.newest.head_sha)} (run ${r.newest.id}, finished ${hhmm(r.newest.updated_at)}), red ${minutes}m, ${r.results.length} failure${r.results.length > 1 ? "s" : ""}:`);
+      log(`${repo}: ${v.workflow} red at ${short(r.newest.head_sha)} (run ${r.newest.id}, ${r.newest.status === "completed" ? "finished" : "failed"} ${hhmm(r.newest.failedAt ?? r.newest.updated_at)}), red ${minutes}m, ${r.results.length} failure${r.results.length > 1 ? "s" : ""}:`);
       for (const x of r.results) log(describe(x));
       const pending = r.results.some((x) => !x.confirmed && !x.flake);
       if (pending && !asOf && cfg.rerun !== false) await rerunFailed(repo, r.newest, { apply, a, log });
