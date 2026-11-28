@@ -232,6 +232,19 @@ test("a merge queue's limit is read apart, so a token refused it still reads the
   assert.equal(by["o/q2"].configuration.checkResponseTimeout, 7200);
 });
 
+test("an answer with no entry for a heavy group is split and shrunk like a 5xx, and every PR is still read", async () => {
+  const log = [];
+  const empty = async (query) => {
+    const sizes = [...query.matchAll(/pullRequests\(states:OPEN,first:(\d+)/g)].map((m) => +m[1]);
+    const names = [...query.matchAll(/name:"([^"]+)"/g)].length;
+    if (Math.max(...sizes) > 5 || names > 1) { log.push("empty"); return undefined; }
+    return fakeRun([])(query);
+  };
+  const { prs } = await fetchState(["o/a", "o/big", "o/c"], empty);
+  assert.equal(prs.length, 9);
+  assert.ok(log.length > 0);
+});
+
 test("a persistent 5xx on one repository still fails loudly", async () => {
   await assert.rejects(readGroup(["o/a"], async () => { throw new Error("POST /graphql: 504 x"); }), /504/);
 });

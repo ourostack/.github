@@ -274,6 +274,7 @@ export async function gh(path, { method = "GET", body, token = process.env.GH_TO
   }, { sleep });
   // A partial GraphQL error (one PR it could not read) still leaves the rest worth reporting.
   if (json.errors && json.data) console.error(`partial: ${JSON.stringify(json.errors).slice(0, 500)}`);
+  else if (res.ok && json.data == null && !json.errors && path === "/graphql") console.error(`empty answer: ${res.status} with no data and no errors`);
   else if (!res.ok || json.errors) throw new Error(`${method} ${path}: ${res.status} ${JSON.stringify(json.errors ?? json.message)}`);
   return json;
 }
@@ -322,18 +323,32 @@ export async function readGroup(group, run, size = PAGE, wait = (ms) => new Prom
     for (let attempt = 1; attempt <= 3; attempt++) {
       data = await run(query);
       if (group.every((_, j) => data?.[`r${j}`]?.pullRequests)) break;
+      // No entry at all is a query too heavy to answer, not a busy one: shrink it now rather than ask the same again.
+      if (group.every((_, j) => data?.[`r${j}`] === undefined) && (group.length > 1 || size > 3)) break;
       if (attempt < 3) await wait(2000 * attempt);
     }
   } catch (err) {
     if (!isServerError(err)) throw err;
-    if (group.length > 1) {
-      const mid = Math.ceil(group.length / 2);
-      const [x, y] = await Promise.all([readGroup(group.slice(0, mid), run, size, wait), readGroup(group.slice(mid), run, size, wait)]);
-      return { found: [...x.found, ...y.found], unread: [...x.unread, ...y.unread] };
-    }
-    if (size > 3) return readGroup(group, run, Math.ceil(size / 2), wait);
-    throw err;
+    return shrink(group, run, size, wait, err);
   }
+  // An answer with no entry at all for the group (an empty body, as a heavy query that ran out of time sometimes gets)
+  // is treated like a 5xx: split and shrink until it fits (ouro-ui, .github and gatefold, 2026-11-28 01:57Z).
+  if (group.every((_, j) => data?.[`r${j}`] === undefined) && (group.length > 1 || size > 3)) return shrink(group, run, size, wait);
+  return collect(group, data, run, size);
+}
+
+async function shrink(group, run, size, wait, err) {
+  if (group.length > 1) {
+    const mid = Math.ceil(group.length / 2);
+    const [x, y] = await Promise.all([readGroup(group.slice(0, mid), run, size, wait), readGroup(group.slice(mid), run, size, wait)]);
+    return { found: [...x.found, ...y.found], unread: [...x.unread, ...y.unread] };
+  }
+  if (size > 3) return readGroup(group, run, Math.ceil(size / 2), wait);
+  if (err) throw err;
+  return { found: [], unread: [...group] };
+}
+
+async function collect(group, data, run, size) {
   const found = [];
   const unread = [];
   for (const [j, full] of group.entries()) {
