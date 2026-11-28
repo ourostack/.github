@@ -339,6 +339,8 @@ export async function readGroup(group, run, size = PAGE, wait = (ms) => new Prom
   for (const [j, full] of group.entries()) {
     const repo = data?.[`r${j}`];
     if (!repo?.pullRequests) {
+      // Say what came back, so a failed run names its cause instead of only the repository.
+      console.error(`unread ${full}: ${repo === undefined ? "no entry in the answer" : repo === null ? "repository is null" : `pullRequests is ${JSON.stringify(repo.pullRequests)} (fields: ${Object.keys(repo).join(", ")})`}`);
       unread.push(full);
       continue;
     }
