@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -25,9 +25,9 @@ const SRC = {
   "src/z.ts": `export type T = 1;\n`,
 };
 const COMMITS = [
-  { sha: sha("n"), subject: "Newest (#13)", pr: 13, files: ["README.md"] },
-  { sha: sha("u"), subject: "Unrelated (#12)", pr: 12, files: ["src/z.ts"] },
-  { sha: sha("b"), subject: "Breaks y (#11)", pr: 11, files: ["src/y.ts"] },
+  { sha: sha("n"), parent: sha("u"), subject: "Newest (#13)", pr: 13, files: ["README.md"] },
+  { sha: sha("u"), parent: sha("b"), subject: "Unrelated (#12)", pr: 12, files: ["src/z.ts"] },
+  { sha: sha("b"), parent: sha("g"), subject: "Breaks y (#11)", pr: 11, files: ["src/y.ts"] },
 ];
 const src = (over = {}) => ({
   files: async () => FILES,
@@ -572,32 +572,16 @@ test("check: Tandem acts the moment a culprit is confirmed, one revert per culpr
   assert.deepEqual(writes, ["mutation($id:ID!,$t:", "mutation($id:ID!,$h:", "post /repos/o/r/issues/99/comments"]);
 });
 
-test("settled: a failure whose job passed whole on main since, or whose test a later commit changed, reverts nothing", async () => {
+test("settled: a failure whose test a later commit changed reverts nothing; a later run that passed it settles nothing on its own", async () => {
   assert.equal(jobKey("npm test (ubuntu-latest, 3/14)"), "npm test (ubuntu-latest)");
   assert.equal(jobKey("devbox npm (4/7)"), "devbox npm");
-  const red = run({ head_sha: sha("b"), run_number: 10 });
-  const later = run({ head_sha: sha("f"), run_number: 12, status: "in_progress", conclusion: null });
-  const mid = run({ head_sha: sha("m"), run_number: 11, status: "in_progress", conclusion: null });
-  const shard = (n, conclusion, status = "completed") => ({ name: `npm test (ubuntu-latest, ${n}/3)`, status, conclusion });
-  const gh = fakeGitHub([], {}, {
-    jobsOf: {
-      [later.id]: [shard(1, "success"), shard(2, "success"), shard(3, "success"), { name: "lint", status: "completed", conclusion: "failure" }],
-      [mid.id]: [shard(1, "success"), shard(2, null, "in_progress"), shard(3, "success"), { name: "lint", status: "completed", conclusion: "success" }],
-    },
-  });
-  const green = await laterGreen("o/r", [later, mid, red, run({ head_sha: sha("o"), run_number: 9 })], red, { a: gh });
-  assert.equal(green.get("npm test (ubuntu-latest)"), sha("f"), "every shard green, in a run still going");
-  assert.equal(green.get("lint"), sha("m"), "the newest run where the job passed");
-  const replay = fakeGitHub([], {}, { jobsOf: { [later.id]: [{ ...shard(1, "success"), completed_at: at(1) }] } });
-  const asOf = await laterGreen("o/r", [later], red, { a: replay, asOf: at(5) });
-  assert.equal(asOf.size, 0, "a replay doesn't see jobs that finished after it");
   const f = { job: "npm test (ubuntu-latest)", file: "test/x.test.ts", roots: ["test/x.test.ts"] };
-  assert.match(settledBy(f, { greenLater: green }), /passed at ffffffffff? on main since/);
-  assert.match(settledBy({ ...f, job: "other" }, { changedLater: [{ sha: sha("f"), pr: 21, files: ["test/x.test.ts"] }] }), /#21 \(fffffffff\) changed test\/x\.test\.ts/);
-  assert.equal(settledBy({ ...f, job: "other" }, { greenLater: green, changedLater: [{ sha: sha("f"), pr: 21, files: ["src/y.ts"] }] }), null);
+  const changedLater = [{ sha: sha("f"), pr: 21, files: ["test/x.test.ts"] }];
+  assert.match(settledBy(f, { changedLater }), /#21 \(fffffffff\) changed test\/x\.test\.ts/);
+  assert.equal(settledBy(f, { changedLater: [{ sha: sha("f"), pr: 21, files: ["src/y.ts"] }] }), null);
   const c = { pr: 11, sha: sha("b"), subject: "Breaks y (#11)", confirmed: true, failures: [{ failure: f }, { failure: { ...f, job: "other", roots: ["test/w.test.ts"] } }] };
-  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "revert", "one failure not settled still reverts");
-  assert.equal(decide({ ...c, failures: c.failures.slice(0, 1) }, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "skip");
+  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, changedLater }).action, "revert", "one failure not settled still reverts");
+  assert.equal(decide({ ...c, failures: c.failures.slice(0, 1) }, { minutes: 0, minRedMinutes: 0, changedLater }).action, "skip");
 });
 
 test("check: Tandem, #6242: a merge that edits a file a repository-wide test scans, failing on every push after it, is named and reverted, through a jobs list that answers 502", async () => {
@@ -639,7 +623,7 @@ test("ghError: gh's own error, not GH_DEBUG's request trace before it", () => {
   assert.doesNotMatch(ghError(stderr), /Request at/);
 });
 
-test("check: Tandem, #4262: a red run at an older commit reverts nothing once a newer main run passed the job, or a newer PR changed the test", async () => {
+test("check: #4262: a red run at an older commit reverts nothing while a newer main run that passed the test starts a cause check, or once a newer PR changed the test", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g") });
   const b = run({ head_sha: sha("b"), updated_at: at(35) });
   const n = run({ head_sha: sha("n"), updated_at: at(2) });
@@ -647,10 +631,10 @@ test("check: Tandem, #4262: a red run at an older commit reverts nothing once a 
   const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
   const cfg = { workflows: ["ci"], minRedMinutes: 0 };
   const fix = [{ sha: sha("f"), at: at(1), subject: "Fake the clock (#21)", body: "" }];
-  const passed = fakeGitHub([f, n, b, g], logs, { jobsOf: { [f.id]: [{ name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "success" }] } });
+  const passed = fakeGitHub([f, n, b, g], { ...logs, [f.id]: ["ok 4 - x works"] }, { jobsOf: { [f.id]: [{ id: f.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "success" }] } });
   const lines = [];
   await check("o/r", cfg, { a: passed, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ later: async () => fix }) });
-  assert.ok(lines.some((l) => /culprit #11 .*not reverting: npm test \(ubuntu-latest\) passed at f{9} on main since/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => new RegExp(`culprit #11 .*revert pending: \`x works\` \\(test/x\\.test\\.ts\\) passed in https://x/run/${f.id} at f{9} on main since, which contains #11; a cause check runs it`).test(l)), lines.join("\n"));
   assert.ok(!passed.calls.some((c) => c[0] === "gql"), "no revert");
   const changed = fakeGitHub([f, n, b, g], logs);
   const commits = async (base, head) => (head === "refs/remotes/origin/main" ? [{ sha: sha("f"), pr: 21, files: ["test/x.test.ts"] }] : src().commits(base, head));
@@ -1055,4 +1039,142 @@ test("flakeIssue: a new declined revert is added to the one open issue by its ti
   assert.equal(dry.calls.length, 0);
   assert.match(lines[0], /would open the flake issue "Flakes auto-revert declined"/);
   assert.equal(envFor("PATCH", "/repos/o/r/issues/8", { GH_TOKEN: "pat", ISSUE_TOKEN: "issue" }).GH_TOKEN, "issue", "the issue's edit, like its opening, with ISSUE_TOKEN");
+});
+
+// 2026-11-28, as it happened in a consuming app: main's burst went red at p, the commit of #21 (release promotion code that
+// the failing test doesn't reach; the range's one pull request), on a racy test. It failed again when the burst ran at p,
+// then passed at d (#22), after #21. Commits, oldest first: g, p (#21), d (#22).
+const ROWS = "rows draw again only when their own message changed";
+const ROWS_KEY = `test/rows.test.ts :: ${ROWS}`;
+const BURST = { name: "burst", path: ".github/workflows/burst.yml" };
+const rowsSrc = () => src({
+  files: async () => new Set(["test/rows.test.ts", "src/rows.ts", "release/promote.ts", "src/other.ts"]),
+  read: async (_, p) => ({ "test/rows.test.ts": `import { rows } from "../src/rows.ts";\n`, "src/rows.ts": "export const rows = 1;\n" })[p] ?? null,
+  commits: async (base, head) => {
+    const shas = [sha("d"), sha("p"), sha("g")];
+    const range = [
+      { sha: sha("d"), parent: sha("p"), subject: "Later (#22)", pr: 22, files: ["src/other.ts"] },
+      { sha: sha("p"), parent: sha("g"), subject: "Promote releases (#21)", pr: 21, files: ["release/promote.ts"] },
+    ];
+    return range.slice(head === "refs/remotes/origin/main" ? 0 : shas.indexOf(head), shas.indexOf(base));
+  },
+  order: async () => new Map([[sha("g"), 1], [sha("p"), 2], [sha("d"), 3]]),
+  later: async (x) => (x === sha("p") ? [{ sha: sha("d"), subject: "Later (#22)", body: "" }] : []),
+});
+// later: the burst's run at d (null: none yet), its test job's conclusion and log; cause: [side, failed, status] per cause run.
+function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {} } = {}) {
+  const g = run({ ...BURST, conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const red = run({ ...BURST, head_sha: sha("p"), updated_at: at(20) });
+  const verify = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${"p".repeat(12)}`, head_sha: sha("p") });
+  const d = later && run({ ...BURST, head_sha: sha("d"), status: "in_progress", conclusion: null, ...later });
+  const fail = TAP(ROWS, "test/rows.test.ts");
+  const logs = { [red.id]: fail, [verify.id]: fail, ...Object.fromEntries(Object.keys(jobsOf).map((id) => [id, [`ok 7 - ${ROWS}`]])) };
+  if (d) {
+    jobsOf[d.id] = [{ id: d.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: job }];
+    logs[d.id] = laterLog;
+  }
+  const causeRuns = cause.map(([c, failed, status = "completed"], i) => {
+    const r = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${c.repeat(12)}-cause-${i % 5 + 1}`, head_sha: sha(c), status, conclusion: status === "completed" ? (failed ? "failure" : "success") : null });
+    if (failed) logs[r.id] = fail;
+    return r;
+  });
+  const checks = { [sha("h")]: { check_runs: [{ name: "ci checks", status: "completed", conclusion: "success" }] } };
+  const gh = Object.assign(fakeGitHub([d, red, g].filter(Boolean), logs, { dispatched: [...(verified ? [verify] : []), ...causeRuns, ...extra], jobsOf, open, checks }), { open });
+  return { gh, g, red, verify, d, causeRuns };
+}
+const CAUSE_CFG = { workflows: ["burst"], bisectRuns: ["burst"], minRedMinutes: 0, rerun: false, flakeIssue: { title: "Flakes auto-revert declined", labels: [] } };
+const side = (c, failures, status) => Array.from({ length: 5 }, (_, i) => [c, i < failures, status]);
+const tick = async (gh, cfg = CAUSE_CFG) => {
+  const lines = [];
+  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => rowsSrc() });
+  return lines;
+};
+const writes = (gh) => gh.calls.filter((c) => !["get", "lines"].includes(c[0]));
+const rowsRevert = (red, g, verify) => {
+  const c = { pr: 21, sha: sha("p"), parent: sha("g"), subject: "Promote releases (#21)", failures: [{ failure: { key: ROWS_KEY, test: ROWS, file: "test/rows.test.ts", job: "npm test (ubuntu-latest)" }, first: red, base: g, runs: 1, confirmed: true, verify, prs: 1, blame: { how: "was the only pull request in the range" } }] };
+  return { number: 99, node_id: "R", title: 'Revert "Promote releases" (#21)', body: revertBody({ repo: "o/r", c, run: red, minutes: 3 }), head: { ref: "revert-21-promote", sha: sha("h") } };
+};
+
+test("cause: a reproduced failure a later main run passed, at a commit with the culprit, is run 5 times at the culprit's parent and at the culprit, not reverted", async () => {
+  // The reproduction rule holds first: before the verify run at the red commit fails it, the culprit waits, and no cause check runs.
+  const unverified = rowsCase({ verified: false });
+  let lines = await tick(unverified.gh);
+  assert.ok(lines.some((l) => /culprit #21 .*revert pending: not yet reproduced/.test(l)), lines.join("\n"));
+  assert.ok(!writes(unverified.gh).some((c) => c[0] === "gql" || /-cause-/.test(JSON.stringify(c))), "neither a revert nor a cause check");
+  // Reproduced, and passed at d since: a cause check, 5 runs on their own branches at each commit, and no revert.
+  const { gh, d } = rowsCase();
+  lines = await tick(gh);
+  assert.ok(lines.some((l) => l.includes(`culprit #21 "Promote releases (#21)": revert pending: \`${ROWS}\` (test/rows.test.ts) passed in https://x/run/${d.id} at ddddddddd on main since, which contains #21; a cause check runs it at #21's parent (ggggggggg) and at #21 (ppppppppp)`)), lines.join("\n"));
+  assert.ok(!writes(gh).some((c) => c[0] === "gql"), "no revert");
+  const refs = writes(gh).filter((c) => c[1] === "/repos/o/r/git/refs").map((c) => c[2].ref);
+  assert.equal(refs.length, 10);
+  assert.deepEqual([refs[0], refs[9]], [`refs/heads/auto-revert/verify-${"g".repeat(12)}-cause-1`, `refs/heads/auto-revert/verify-${"p".repeat(12)}-cause-5`]);
+  assert.deepEqual(writes(gh).filter((c) => /dispatches$/.test(c[1]))[0][2], { ref: `auto-revert/verify-${"g".repeat(12)}-cause-1` });
+  // A workflow that takes a repeat count and a file filter: one run at each commit, of the failing file only.
+  const repeat = rowsCase();
+  await tick(repeat.gh, { ...CAUSE_CFG, repeatInput: "repeat", testInput: "files" });
+  assert.deepEqual(writes(repeat.gh).filter((c) => /dispatches$/.test(c[1])).map((c) => c[2]), [
+    { ref: `auto-revert/verify-${"g".repeat(12)}-cause-1`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
+    { ref: `auto-revert/verify-${"p".repeat(12)}-cause-1`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
+  ]);
+});
+
+test("cause: still running, it reverts nothing and dispatches nothing again", async () => {
+  const { gh } = rowsCase({ cause: [...side("g", 1), ...side("p", 0, "in_progress")] });
+  const lines = await tick(gh);
+  assert.ok(lines.some((l) => /culprit #21 .*revert pending: .*; its cause check is running$/.test(l)), lines.join("\n"));
+  assert.deepEqual(writes(gh), [], "no revert, no dispatch, no branch deleted");
+});
+
+test("cause: the parent failing 1 of 5 and the culprit 2 of 5 is a race on main: no revert, a line in the flake issue, and an open revert is closed, not merged", async () => {
+  const { gh, causeRuns } = rowsCase({ cause: [...side("g", 1), ...side("p", 2)] });
+  const lines = await tick(gh);
+  assert.ok(lines.some((l) => /culprit #21 .*not reverting: .*failed in 1 of 5 runs at #21's parent \(ggggggggg\) and in 2 of 5 runs at #21 \(ppppppppp\).*: a race on main, not #21's/.test(l)), lines.join("\n"));
+  assert.ok(!writes(gh).some((c) => c[0] === "gql"), "no revert");
+  const issue = writes(gh).find((c) => c[1] === "/repos/o/r/issues");
+  assert.ok(issue[2].body.includes(`- #21: \`${ROWS}\` (test/rows.test.ts) passed in`) && issue[2].body.includes(causeRuns[0].html_url) && issue[2].body.includes(causeRuns[5].html_url), issue[2].body);
+  // The revert opened before main passed at d is green and main is green now: judged again, closed, naming the runs.
+  const live = rowsCase({ later: { status: "completed", conclusion: "success" }, cause: [...side("g", 1), ...side("p", 2)], open: [{}] });
+  const pr = Object.assign(live.gh.open[0], rowsRevert(live.red, live.g, live.verify));
+  assert.deepEqual(revertData(pr.body).failures.map((f) => f.key), [ROWS_KEY]);
+  const said = await tick(live.gh);
+  assert.ok(said.some((l) => /main is not red/.test(l)) && said.some((l) => /close revert #99: .*a race on main, not #21's/.test(l)), said.join("\n"));
+  assert.ok(!writes(live.gh).some((c) => c[0] === "put"), "not merged");
+  const comment = writes(live.gh).find((c) => c[1] === "/repos/o/r/issues/99/comments");
+  assert.ok(comment[2].body.startsWith("Closed, not merged:") && comment[2].body.includes(live.causeRuns[0].html_url), comment[2].body);
+  assert.deepEqual(writes(live.gh).find((c) => c[0] === "patch"), ["patch", "/repos/o/r/pulls/99", { state: "closed" }]);
+  assert.ok(writes(live.gh).some((c) => c[1] === "/repos/o/r/issues"), "the flake issue gets it");
+});
+
+test("cause: the parent passing 5 of 5 and the culprit failing reverts, and an open revert merges", async () => {
+  const { gh } = rowsCase({ cause: [...side("g", 0), ...side("p", 2)] });
+  const lines = await tick(gh);
+  assert.ok(lines.some((l) => /culprit #21 .*: revert: .*failed in 0 of 5 runs at #21's parent \(ggggggggg\) and in 2 of 5 runs at #21 \(ppppppppp\).*, so #21 caused it/.test(l)), lines.join("\n"));
+  assert.ok(writes(gh).some((c) => c[0] === "gql"), "reverted");
+  const live = rowsCase({ later: { status: "completed", conclusion: "success" }, cause: [...side("g", 0), ...side("p", 2)], open: [{}] });
+  Object.assign(live.gh.open[0], rowsRevert(live.red, live.g, live.verify));
+  await tick(live.gh);
+  const put = writes(live.gh).find((c) => c[0] === "put");
+  assert.equal(put?.[1], "/repos/o/r/pulls/99/merge");
+  assert.ok(!put[2].commit_message.includes("<!--"), "the merge message carries no hidden data");
+});
+
+test("cause: a later green run at a commit before the culprit, or one that skipped the test, starts no cause check: the revert goes ahead", async () => {
+  const pass = { name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "success" };
+  // A bisect run at g, before #21 in commit order, though created after the red run.
+  const bisect = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/bisect-${"g".repeat(12)}`, head_sha: sha("g"), conclusion: "success" });
+  const before = rowsCase({ later: null, extra: [bisect], jobsOf: { [bisect.id]: [{ ...pass, id: bisect.id * 10 }] } });
+  let lines = await tick(before.gh);
+  assert.ok(lines.some((l) => /culprit #21 .*: revert$/.test(l)), lines.join("\n"));
+  assert.ok(!writes(before.gh).some((c) => /-cause-/.test(JSON.stringify(c))), "no cause check");
+  for (const later of [{ laterLog: [`ok 7 - ${ROWS} # SKIP`] }, { laterLog: ["Not run: 1 cases that failed on main's last two runs too:", `  test/rows.test.ts > ${ROWS}`, "| test/rows.test.ts | 3 | 0 | 1 | 9 |"] }, { job: "skipped" }, { laterLog: ["ok 7 - another test"] }]) {
+    const { gh } = rowsCase(later);
+    lines = await tick(gh);
+    assert.ok(lines.some((l) => /culprit #21 .*: revert$/.test(l)), `${JSON.stringify(later)}\n${lines.join("\n")}`);
+    assert.ok(!writes(gh).some((c) => /-cause-/.test(JSON.stringify(c))), "no cause check");
+  }
+  // A known-failing list's judge, with no TAP: its log naming the file it judged is the test run.
+  const judged = rowsCase({ laterLog: ["| test/rows.test.ts | 3 | 0 | 0 | 9 |"] });
+  lines = await tick(judged.gh);
+  assert.ok(lines.some((l) => /culprit #21 .*revert pending: .*a cause check runs it/.test(l)), lines.join("\n"));
 });
