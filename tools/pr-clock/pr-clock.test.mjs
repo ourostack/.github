@@ -211,6 +211,27 @@ test("a query that 504s is split and shrunk until it fits, and every PR is still
   assert.ok(log.some((l) => l.size <= 5 && l.names === 1));
 });
 
+test("a merge queue's limit is read apart, so a token refused it still reads the repository", async () => {
+  const queries = [];
+  const run = async (q) => {
+    queries.push(q);
+    if (q.includes("configuration")) {
+      if (q.includes('name:"q1"')) return { repository: null };
+      return { repository: { mergeQueue: { configuration: { checkResponseTimeout: 7200 } } } };
+    }
+    const data = {};
+    for (const [, alias, name] of q.matchAll(/(\w+):repository\(owner:"o",name:"([^"]+)"\)/g)) data[alias] = { nameWithOwner: `o/${name}`, isPrivate: false, defaultBranchRef: { name: "main", target: { oid: "abc", committedDate: new Date().toISOString() } }, mergeQueue: { entries: { totalCount: name === "idle" ? 0 : 1 } }, pullRequests: { totalCount: 0, pageInfo: { hasNextPage: false }, nodes: [] } };
+    return data;
+  };
+  const { mains } = await fetchState(["o/q1", "o/q2", "o/idle"], run);
+  assert.equal(mains.length, 3);
+  assert.ok(queries.filter((q) => q.includes("pullRequests")).every((q) => !q.includes("configuration")));
+  assert.equal(queries.filter((q) => q.includes("configuration")).length, 2);
+  const by = Object.fromEntries(mains.map((m) => [m.repository.nameWithOwner, m.queue]));
+  assert.equal(by["o/q1"].configuration, undefined);
+  assert.equal(by["o/q2"].configuration.checkResponseTimeout, 7200);
+});
+
 test("a persistent 5xx on one repository still fails loudly", async () => {
   await assert.rejects(readGroup(["o/a"], async () => { throw new Error("POST /graphql: 504 x"); }), /504/);
 });
