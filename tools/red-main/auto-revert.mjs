@@ -50,13 +50,19 @@
 //      dropped, a culprit left with none that did is declined as a flake, each failure a line in the run's summary and in
 //      the repository's flake issue ("flakeIssue" in auto-revert.json: one open issue, by title, a line added per flake). Verify branches are deleted once main has moved past them.
 //   5. Guards: skip a culprit already reverted or fixed on main since the red run (a later commit names #N), whose every failure
-//      is settled since (its job passed whole in a newer run of the workflow, or a newer commit changed its test), with an open fix or
+//      is settled since (a newer commit changed its test or a file its failure names), with an open fix or
 //      revert PR, or while main has been red under the repo's minRedMinutes (Tandem: 0, act on confirmation). And a failure main
 //      already had is never blamed on the range (knownBefore): one its runs of the workflow failed the same way in the 24 hours
 //      before the range began, or whose test the repo's flake table (its "knownFlakes" file, under "Open known flakes") names,
 //      unless the culprit changed the failing test or a file its failure names. Nor is a failure blamed on the range's one
 //      pull request when nothing it changed reaches the failure and it changed only existing test files and documents
 //      (loneCleared). A culprit left with no failure is not reverted, and the evidence is posted on its pull request instead.
+//   6. Cause check: a culprit whose failure a later main run passed at a commit that contains it (laterPass: the test ran and
+//      passed), or whose failure passed when its workflow ran again at the red commit, is reverted only once its workflow,
+//      dispatched "causeRuns" times (5 by default) at its parent and at it (cause branches, `auto-revert/verify-<sha>-cause-<pr>-<i>-<workflow>`;
+//      one run with "repeatInput" set, only the failing files with "testInput"), passed every time at the parent and failed at
+//      it. A parent that failed it too is a race on main, and no cause found is no revert: either way an open revert of it is
+//      closed, naming the runs, and the flake issue gets a line. The same check runs again before its own open revert merges.
 // Then it opens the revert with GitHub's revertPullRequest (one per culprit, so two breaks in one range are both reverted in
 // one cycle), tries auto-merge, and on every tick lands its own open revert PRs whose head checks are green (the repo's
 // .github/merge-checks.json `required` list when it has one; never with a failed check, unless main already fails it now
@@ -747,13 +753,13 @@ export function culprit(commits, dist, named = []) {
       }
       if (d === undefined) continue;
       how ??= d === 0 ? `changed ${f}, which the failure names` : `changed ${file}, ${d} reference${d > 1 ? "s" : ""} from the failure`;
-      if (!at.has(c.pr) || d < at.get(c.pr).distance) at.set(c.pr, { pr: c.pr, sha: c.sha, subject: c.subject, distance: d, file, how });
+      if (!at.has(c.pr) || d < at.get(c.pr).distance) at.set(c.pr, { pr: c.pr, sha: c.sha, parent: c.parent, subject: c.subject, distance: d, file, how });
       if (!best || d < best.distance) best = at.get(c.pr);
     }
   }
   if (best) return { ...best, ties: [...at.values()].filter((x) => x.distance === best.distance) };
   const prs = commits.filter((c) => c.pr);
-  if (prs.length === 1) return { pr: prs[0].pr, sha: prs[0].sha, subject: prs[0].subject, distance: Infinity, file: null, how: "the only pull request in the range" };
+  if (prs.length === 1) return { pr: prs[0].pr, sha: prs[0].sha, parent: prs[0].parent, subject: prs[0].subject, distance: Infinity, file: null, how: "the only pull request in the range" };
   return null;
 }
 
@@ -836,7 +842,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const again = check.state === "done" && check.keys.has(f.key);
     const confirmed = runs >= 2 || again;
     const flake = !confirmed && check.state === "done";
-    const r = { failure: f, first: first.run, base, runs, confirmed, flake, verify: check.run ?? null };
+    const r = { failure: f, first: first.run, base, runs, confirmed, flake, passedVerify: check.state === "done" && !again, verify: check.run ?? null };
     if (!base) {
       results.push({ ...r, blame: null, why: "where it began is beyond the runs read" });
       continue;
@@ -885,7 +891,7 @@ export async function verification(repo, run, { a, files, cache = null, src = nu
   const list = (await a.get(`/repos/${repo}/actions/runs?head_sha=${run.head_sha}&event=workflow_dispatch&per_page=20`)).workflow_runs ?? [];
   const mine = list
     .map((r) => replay(r, asOf))
-    .filter((r) => r && (r.workflow_id ?? r.name) === (run.workflow_id ?? run.name) && String(r.head_branch ?? "").startsWith(VERIFY) && !["cancelled", "skipped", "stale"].includes(r.conclusion))
+    .filter((r) => r && (r.workflow_id ?? r.name) === (run.workflow_id ?? run.name) && r.head_branch === verifyBranch(run.head_sha) && !["cancelled", "skipped", "stale"].includes(r.conclusion))
     .sort((x, y) => ms(y.created_at) - ms(x.created_at));
   const vr = mine[0];
   if (!vr) return { state: "none", keys: new Set() };
@@ -911,6 +917,69 @@ export async function dispatchVerify(repo, run, { apply, a = api, log = console.
   } catch (e) {
     log(`  could not dispatch ${file} (${e.message.slice(0, 120)}); two red runs in a row confirm instead`);
     return false;
+  }
+}
+
+// --- Cause check: the failing test at the culprit's parent and at the culprit, the same number of times ------------------
+// A failure that a later main run passed, or that passed when its workflow ran again at the red commit, may be a race main
+// already had rather than the culprit's (2026-11-28: a racy window test failed twice at a commit whose only pull request
+// changed release promotion code, then passed on the next commit, and that pull request was reverted). So it is reverted only
+// once its workflow, dispatched `causeRuns` times at each of the two commits, passed every time at the parent and failed it
+// at least once at the culprit. A parent that fails it too is a race on main: no revert, and the flake issue gets it.
+// Each cause check's runs are its own: the commit, the culprit, the run's index and the workflow name the branch, so two
+// culprits that share a commit, or two workflows that blame one culprit, never count each other's runs.
+export const CAUSE = "-cause-";
+export const causePrefix = (sha, pr) => `${verifyBranch(sha)}${CAUSE}${pr}-`;
+export const causeBranch = (sha, pr, i, wf) => `${causePrefix(sha, pr)}${i}-${wf}`;
+
+// One side of a cause check: the red run's workflow's runs dispatched on culprit `pr`'s cause branches at `sha`, each
+// { run, running } or { run, keys: the failure keys it failed }, and how many were listed. A cancelled run, or one that
+// failed on infrastructure only, judged nothing.
+async function causeSide(repo, red, sha, pr, { a, files, cache = null, src = null, asOf = null }) {
+  const list = (await a.get(`/repos/${repo}/actions/runs?head_sha=${sha}&event=workflow_dispatch&per_page=100`)).workflow_runs ?? [];
+  const mine = list.map((x) => replay(x, asOf)).filter((x) => x && x.head_sha === sha && wfKey(x) === wfKey(red) && String(x.head_branch ?? "").startsWith(causePrefix(sha, pr)));
+  const out = [];
+  out.listed = mine.length;
+  for (const r of mine) {
+    if (r.status !== "completed") out.push({ run: r, running: true });
+    else if (r.conclusion === "success") out.push({ run: r, keys: new Set() });
+    else if (r.conclusion === "failure") {
+      const got = await runFailures(repo, r, { a, files, cache, read: src ? (p) => src.read(sha, p) : null });
+      if (got.failures) out.push({ run: r, keys: new Set(got.failures.map((f) => f.key)) });
+    }
+  }
+  return out;
+}
+
+// The verdict over a culprit's failure keys, from each side's runs (causeSide) and the runs a side needs: "caused" (for one
+// key, every parent run passed it and a culprit run failed it), "race" (a parent run failed it too) or "inconclusive" (both
+// passed, or runs are missing); "running" while one is, "none" before any.
+export function causeVerdict(keys, parent, culprit, expected) {
+  if ([...parent, ...culprit].some((x) => x.running)) return { state: "running" };
+  if (!parent.length && !culprit.length) return { state: "none" };
+  const fails = (side, k) => side.filter((x) => x.keys.has(k));
+  const full = parent.length >= expected && culprit.length >= expected;
+  const caused = full ? keys.find((k) => !fails(parent, k).length && fails(culprit, k).length) : undefined;
+  const race = keys.find((k) => fails(parent, k).length);
+  const key = caused ?? race ?? keys[0];
+  return { state: "done", verdict: caused ? "caused" : race ? "race" : "inconclusive", key, parent: fails(parent, key).map((x) => x.run), culprit: fails(culprit, key).map((x) => x.run), runs: [parent.length, culprit.length] };
+}
+
+// Dispatches the red run's workflow at each commit: `n` runs, each on its own cause branch, or one run given `n` repeats
+// through the workflow's `repeatInput`; with a `testInput`, only the failing tests' files run.
+export async function dispatchCause(repo, red, shas, pr, { n, cfg = {}, tests = [], apply, a = api, log = console.log }) {
+  const file = String(red.path ?? "").split("@")[0].split("/").pop();
+  const inputs = { ...(cfg.repeatInput ? { [cfg.repeatInput]: String(n) } : {}), ...(cfg.testInput && tests.length ? { [cfg.testInput]: tests.join(" ") } : {}) };
+  log(`  ${apply ? "" : "would "}dispatch ${file} ${cfg.repeatInput ? `once with ${n} repeats` : `${n} times`} at each of ${shas.map(short).join(" and ")}${inputs[cfg.testInput] ? ` (${inputs[cfg.testInput]})` : ""}, to find the cause`);
+  if (!apply) return;
+  for (const sha of shas) {
+    for (let i = 1; i <= (cfg.repeatInput ? 1 : n); i++) {
+      const ref = causeBranch(sha, pr, i, stem(red));
+      await a.post(`/repos/${repo}/git/refs`, { ref: `refs/heads/${ref}`, sha }).catch((e) => {
+        if (!/Reference already exists|422/.test(e.message)) throw e;
+      });
+      await a.post(`/repos/${repo}/actions/workflows/${file}/dispatches`, { ref, ...(Object.keys(inputs).length ? { inputs } : {}) });
+    }
   }
 }
 
@@ -976,7 +1045,7 @@ export async function evidence(blame, f, { src, testSha }) {
 export function culprits(results) {
   const m = new Map();
   for (const r of results.filter((x) => x.blame)) {
-    const c = m.get(r.blame.pr) ?? { pr: r.blame.pr, sha: r.blame.sha, subject: r.blame.subject, failures: [], confirmed: false, first: r.first };
+    const c = m.get(r.blame.pr) ?? { pr: r.blame.pr, sha: r.blame.sha, parent: r.blame.parent, subject: r.blame.subject, failures: [], confirmed: false, first: r.first };
     c.failures.push(r);
     c.confirmed ||= r.confirmed;
     c.flake = (c.flake ?? true) && r.flake;
@@ -985,15 +1054,17 @@ export function culprits(results) {
   return [...m.values()].sort((x, y) => y.pr - x.pr);
 }
 
-// The jobs that passed whole on main after a red run: for each job (by jobKey), the newest commit after `newest` whose run
-// of the same workflow has every one of its shards done and green (skipped ones aside, one at least green). Reads the jobs
-// of up to `max` newer runs, newest first, running or done: a run still going counts for the jobs it finished.
-export async function laterGreen(repo, runs, newest, { a, order = null, max = 3, asOf = null, cache = null }) {
+// The newest later run of the red run's workflow on main, at a commit that contains the culprit (`contains`, by commit
+// order), that ran the failure and passed it: its job passed whole (skipped shards aside, one at least green) and, for a
+// test, a log of that job shows the test passing (passedIn). A skipped or cancelled job, or a run that didn't run the test,
+// counts as nothing. Reads up to `max` newer runs, newest first, running or done: a run still going counts for its finished jobs.
+export async function laterPass(repo, runs, red, f, { a, order = null, contains = null, max = 3, asOf = null, cache = null }) {
+  const pos = (sha) => order?.get(sha);
   const newer = runs
-    .filter((r) => wfKey(r) === wfKey(newest) && r.id !== newest.id && r.head_sha !== newest.head_sha && newestFirst(order)(r, newest) < 0)
+    .filter((r) => wfKey(r) === wfKey(red) && r.id !== red.id && r.head_sha !== red.head_sha && newestFirst(order)(r, red) < 0)
+    .filter((r) => !order?.size || !contains || pos(r.head_sha) >= pos(contains))
     .sort(newestFirst(order))
     .slice(0, max);
-  const green = new Map();
   for (const r of newer) {
     // Always the latest attempt's jobs: markPartial may have left a run's previous attempt in r.jobs.
     let jobs = [];
@@ -1003,21 +1074,52 @@ export async function laterGreen(repo, runs, newest, { a, order = null, max = 3,
       if (got.length < 100) break;
     }
     if (asOf) jobs = jobs.map((j) => (j.completed_at && ms(j.completed_at) > ms(asOf) ? { ...j, status: "in_progress", conclusion: null } : j));
-    for (const [name, js] of groupBy(jobs, (j) => jobKey(j.name))) {
-      const done = js.every((j) => j.status === "completed" && ["success", "skipped"].includes(j.conclusion)) && js.some((j) => j.conclusion === "success");
-      if (done && !green.has(name)) green.set(name, r.head_sha);
+    const js = jobs.filter((j) => jobKey(j.name) === f.job);
+    if (!js.length || !js.every((j) => j.status === "completed" && ["success", "skipped"].includes(j.conclusion)) || !js.some((j) => j.conclusion === "success")) continue;
+    if (!f.test) return r;
+    for (const j of js.filter((x) => x.conclusion === "success")) {
+      const k = `${j.id}/${f.key}`;
+      let ran = cache?.passes?.[k];
+      if (ran === undefined) {
+        try {
+          ran = await passedIn(a.lines(`/repos/${repo}/actions/jobs/${j.id}/logs`), f);
+          if (cache) (cache.passes ??= {})[k] = ran;
+        } catch {
+          ran = false;
+        }
+      }
+      if (ran) return r;
     }
   }
-  return green;
+  return null;
 }
 
-// Why a failure no longer needs its culprit reverted, or null: its job passed whole on main since (greenLater), or a commit
-// on main since changed the test or a file its failure names (changedLater, first-parent commits after the red run with
-// their files). Tandem, 2026-11-20: two reverts of #4243 were opened over a test #4252 had already fixed, judged from a run
-// at an older commit that was still main's newest finished one while the runs after it waited for runners.
-export function settledBy(f, { greenLater = new Map(), changedLater = [] } = {}) {
-  const passed = greenLater.get(f.job);
-  if (passed) return `${f.job} passed at ${short(passed)} on main since`;
+// Whether a passing job's log ran the failure's test and passed it: node:test's `ok N - <test>`, or, in a log with no TAP
+// (a known-failing list's judge, which names each file it judged, not each case that passed), the test's file named. Never
+// when the log skips the test: `# SKIP` or `# TODO` on its line, or its name in a "Not run:" list.
+export async function passedIn(lines, f) {
+  let ok = false, tap = false, named = false, skipped = false, notRun = false;
+  for await (const raw of lines) {
+    const line = String(raw).replace(STAMP, "").replace(ANSI, "").replace(/\r$/, "");
+    if (/^\s*Not run\b.*:/i.test(line)) {
+      notRun = true;
+      continue;
+    }
+    if (notRun && !/^\s{2,}\S/.test(line)) notRun = false;
+    if (line.includes(f.test) && (notRun || /#\s*(SKIP|TODO)\b/i.test(line))) skipped = true;
+    const t = /^\s*(?:not )?ok \d+ - (.+?)(\s+#\s.*)?$/.exec(line);
+    if (t) tap = true;
+    if (t && !line.trimStart().startsWith("not") && t[1].trim() === f.test && !t[2]) ok = true;
+    if (f.file && line.includes(f.file)) named = true;
+  }
+  return !skipped && (ok || (!tap && named));
+}
+
+// Why a failure no longer needs its culprit reverted, or null: a commit on main since changed the test or a file its failure
+// names (changedLater, first-parent commits after the red run with their files). A consuming app, 2026-11-20: two reverts of #4243
+// were opened over a test #4252 had already fixed. A later run that passed it settles nothing on its own: a flaky
+// regression passes now and then, so that starts a cause check (causeCheck) instead.
+export function settledBy(f, { changedLater = [] } = {}) {
   const named = new Set(f.roots ?? (f.file ? [f.file] : []));
   const changed = named.size ? changedLater.find((c) => c.files?.some((x) => named.has(x))) : null;
   if (changed) return `${changed.pr ? `#${changed.pr}` : short(changed.sha)} (${short(changed.sha)}) changed ${changed.files.find((x) => named.has(x))} on main since`;
@@ -1037,11 +1139,11 @@ export function reproducedNow(c) {
 }
 
 // Per culprit: { action: "revert" | "wait" | "skip" | "flake" | "known" | "issue", reason }.
-export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, greenLater = new Map(), changedLater = [], namedOnly = false }) {
+export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, changedLater = [], namedOnly = false }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
   // A failure blamed on the job's setup is settled by a later change to that setup too.
-  const settled = (c.failures ?? []).map((x) => settledBy(x.blame?.setup ? { ...x.failure, roots: [...(x.failure.roots ?? []), ...(x.failure.setup ?? [])] } : x.failure, { greenLater, changedLater }));
+  const settled = (c.failures ?? []).map((x) => settledBy(x.blame?.setup ? { ...x.failure, roots: [...(x.failure.roots ?? []), ...(x.failure.setup ?? [])] } : x.failure, { changedLater }));
   if (settled.length && settled.every(Boolean)) return { action: "skip", reason: settled.join("; ") };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };
@@ -1173,7 +1275,7 @@ export async function flakeIssue(repo, { title, labels = [] }, lines, { apply, a
   if (!apply) return;
   const items = fresh.map((l) => `- ${l}`).join("\n");
   if (had) return a.patch(`/repos/${repo}/issues/${had.number}`, { body: `${body.trimEnd()}\n${items}` });
-  const head = `Auto-revert declined to revert these pull requests: each failure passed when its workflow ran again at the same commit. Each is a flake to fix, by its test's owner. ${FLAKE_MARKER}`;
+  const head = `Auto-revert declined to revert these pull requests: each failure passed when its workflow ran again at the same commit, or failed without the pull request too. Each is a flake to fix, by its test's owner. ${FLAKE_MARKER}`;
   await a.post(`/repos/${repo}/issues`, { title, body: `${head}\n\n${items}`, labels });
 }
 export const FLAKE_MARKER = "Written by tools/red-main/auto-revert.mjs in ourostack/.github.";
@@ -1193,9 +1295,24 @@ export async function suspectIssue(repo, c, reason, { run, apply, log = console.
   return made;
 }
 
+// What a revert needs to be judged again before it merges, kept in its body as a hidden comment: the red run, the culprit,
+// its parent and each failure.
+const DATA = /<!-- auto-revert: (\{.*?\}) -->\n*/s;
+export function revertData(body) {
+  try {
+    return JSON.parse(DATA.exec(String(body ?? ""))?.[1] ?? "null");
+  } catch {
+    return null;
+  }
+}
+// A revert's body as its merge commit's message: without the hidden data or any AI credit.
+export const plainBody = (body) => cleanBody(String(body ?? "").replace(DATA, ""));
+
 export function revertBody({ repo, c, run, minutes }) {
+  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}) })) };
   const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs >= 2 ? " in a row" : r.confirmed ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : r.flake ? `, and passed when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : ""}.`);
   return [
+    `<!-- auto-revert: ${JSON.stringify(data).replace(/>/g, "\\u003e")} -->`,
     `Automatic revert of #${c.pr} (${c.subject.replace(/\s*\(#\d+\)\s*$/, "")}).`,
     "",
     `Main's \`${run.name}\` in ${repo} has been red for ${minutes} minutes (${run.html_url}). What it failed and why #${c.pr}:`,
@@ -1442,13 +1559,14 @@ export function parseLog1e(out) {
     const pr = parents.trim().split(" ").length === 1 ? Number(/\(#(\d+)\)\s*$/.exec(subject)?.[1]) || null : null;
     const entries = rest.map((l) => l.trim()).filter(Boolean).map((l) => (/^[ACDMRTUX]\d*\t/.test(l) ? l.split("\t") : ["M", l]));
     // A rename adds its new path and removes its old one; a copy adds.
-    return { sha, at, subject, pr, files: entries.map((e) => e.at(-1)), added: entries.filter((e) => /^[ACR]/.test(e[0])).map((e) => e.at(-1)), deleted: entries.filter((e) => /^[DR]/.test(e[0])).map((e) => e[1]) };
+    return { sha, parent: parents.trim().split(" ")[0] || null, at, subject, pr, files: entries.map((e) => e.at(-1)), added: entries.filter((e) => /^[ACR]/.test(e[0])).map((e) => e.at(-1)), deleted: entries.filter((e) => /^[DR]/.test(e[0])).map((e) => e[1]) };
   });
 }
 
 // --- Acting ----------------------------------------------------------------------------------------------------------
 
 const ENABLE = `mutation($id:ID!,$h:String!,$b:String!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH,commitHeadline:$h,commitBody:$b}){clientMutationId}}`;
+const DISABLE = `mutation($id:ID!){disablePullRequestAutoMerge(input:{pullRequestId:$id}){clientMutationId}}`;
 const REVERT = `mutation($id:ID!,$t:String!,$b:String!){revertPullRequest(input:{pullRequestId:$id,title:$t,body:$b,draft:false}){revertPullRequest{id number url}}}`;
 
 export async function revert(repo, c, { run, minutes, apply, log = console.log, a = api, owners = OWNERS }) {
@@ -1460,7 +1578,7 @@ export async function revert(repo, c, { run, minutes, apply, log = console.log, 
   const made = (await a.graphql(REVERT, { id: node_id, t: title, b: body })).revertPullRequest.revertPullRequest;
   log(`  opened ${made.url}`);
   try {
-    await a.graphql(ENABLE, { id: made.id, h: `${title.replace(/ \(#\d+\)$/, "")} (#${made.number})`, b: cleanBody(body) });
+    await a.graphql(ENABLE, { id: made.id, h: `${title.replace(/ \(#\d+\)$/, "")} (#${made.number})`, b: plainBody(body) });
     log(`  auto-merge on`);
   } catch (e) {
     log(`  auto-merge unavailable (${e.message.slice(0, 80)}); a later tick merges it once its checks are green`);
@@ -1502,9 +1620,17 @@ export function onlyKnown(failures, known, culpritPr, required = []) {
   return own.length > 0 && own.every((f) => known.has(f.key) && known.get(f.key) !== culpritPr);
 }
 
-export async function landReverts(repo, openPrs, { a, required, apply, log = console.log, known = new Map(), failuresOf = null }) {
+// `hold(pr)`: why a revert must not merge now ({ why, closed }), or null. A held revert with auto-merge on has it turned off.
+export async function landReverts(repo, openPrs, { a, required, apply, log = console.log, known = new Map(), failuresOf = null, hold = null }) {
+  const mine = openPrs.filter((p) => /^revert-\d+-/.test(p.head?.ref ?? "") && String(p.body ?? "").includes(MARKER) && !p.draft);
+  for (const pr of mine.filter((p) => p.auto_merge && hold)) {
+    const h = await hold(pr);
+    if (!h || h.closed) continue;
+    log(`${repo}: revert #${pr.number} held: ${h.why}; ${apply ? "" : "would "}turn its auto-merge off`);
+    if (apply) await a.graphql(DISABLE, { id: pr.node_id });
+  }
   // Where auto-merge took, GitHub merges it; this lands only the reverts in repositories without auto-merge.
-  for (const pr of openPrs.filter((p) => /^revert-\d+-/.test(p.head?.ref ?? "") && String(p.body ?? "").includes(MARKER) && !p.draft && !p.auto_merge)) {
+  for (const pr of mine.filter((p) => !p.auto_merge)) {
     const checks = await a.get(`/repos/${repo}/commits/${pr.head.sha}/check-runs?per_page=100`);
     let v = landable(checks, required);
     let over = null;
@@ -1521,11 +1647,23 @@ export async function landReverts(repo, openPrs, { a, required, apply, log = con
       log(`${repo}: revert #${pr.number} not merged yet: ${v.why}`);
       continue;
     }
+    const h = hold ? await hold(pr) : null;
+    if (h) {
+      if (!h.closed) log(`${repo}: revert #${pr.number} not merged yet: ${h.why}`);
+      continue;
+    }
     log(over ? `${repo}: revert #${pr.number} fails only what main already fails without it (${over.slice(0, 3).join("; ")}); ${apply ? "" : "would "}merge it` : `${repo}: revert #${pr.number} is green; ${apply ? "" : "would "}merge it`);
-    if (apply) await a.put(`/repos/${repo}/pulls/${pr.number}/merge`, { merge_method: "squash", sha: pr.head.sha, commit_title: `${pr.title} (#${pr.number})`, commit_message: cleanBody(pr.body) });
+    if (apply) await a.put(`/repos/${repo}/pulls/${pr.number}/merge`, { merge_method: "squash", sha: pr.head.sha, commit_title: `${pr.title} (#${pr.number})`, commit_message: plainBody(pr.body) });
   }
 }
 
+// Closes the tool's own revert that a cause check found isn't its culprit's, saying why on it.
+export async function closeRevert(repo, pr, why, { apply, a = api, log = console.log }) {
+  log(`${repo}: ${apply ? "" : "would "}close revert #${pr.number}: ${why}`);
+  if (!apply) return;
+  await a.post(`/repos/${repo}/issues/${pr.number}/comments`, { body: `Closed, not merged: ${why}. ${MARKER}` });
+  await a.patch(`/repos/${repo}/pulls/${pr.number}`, { state: "closed" });
+}
 
 function describe(r) {
   const f = r.failure;
@@ -1567,29 +1705,24 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   }
   if (apply && !asOf) openPrs = await a.get(`/repos/${repo}/pulls?state=open&per_page=100`);
   const mine = () => apply && !asOf && openPrs.some((p) => String(p.body ?? "").includes(MARKER));
-  if (!red.length && mine()) await landReverts(repo, openPrs, { a, required: await (await getSrc()).mergeChecks(), apply, log });
-  if (!red.length) {
-    log(`${repo}: main is not red`);
-    src?.close?.();
-    if (apply && !asOf) await pruneVerify(repo, new Set(), { apply, a, log });
-    return;
-  }
   const keep = new Set();
   const analyses = [];
   // Failures main had before a range (earlierReds), by the range's start, and the flake table's open flakes, read once a tick.
   const earlier = new Map();
   let flakes = null;
-  // Each failure a revert was declined for because it passed at the same commit: a flake to fix (cfg.flakeIssue).
+  // Each failure a revert was declined for, because it passed at the same commit or a cause check found it failing without
+  // its culprit: a flake to fix (cfg.flakeIssue).
   const declined = [];
   const flakesNow = async (sha) => (flakes ??= cfg.knownFlakes ? openFlakes((await (await getSrc()).read(sha, cfg.knownFlakes)) ?? "") : new Map());
+  const causeRuns = cfg.causeRuns ?? CONFIG.causeRuns ?? 5;
   try {
-    await judge();
-    if (declined.length && cfg.flakeIssue) await flakeIssue(repo, cfg.flakeIssue, declined, { apply: apply && !asOf, a, log }).catch((e) => log(`  could not update the flake issue: ${e.message}`));
-    // Main is red: a revert may land over what main already fails without it, but never over its own culprit's failure.
-    if (red.length && mine()) {
+    if (red.length) await judge();
+    else log(`${repo}: main is not red`);
+    if (mine()) {
       const s = await getSrc();
-      const head = red[0].reds[0].head_sha;
-      const files = await s.files(head);
+      // Main is red: a revert may land over what main already fails without it, but never over its own culprit's failure.
+      const head = red[0]?.reds[0].head_sha;
+      const files = head ? await s.files(head) : null;
       const failuresOf = async (checks) => {
         const ids = [...new Set((checks.check_runs ?? []).filter((r) => FAILED.includes(r.conclusion)).map((r) => /\/actions\/runs\/(\d+)\//.exec(r.details_url ?? "")?.[1]).filter(Boolean))];
         if (!ids.length) return null;
@@ -1602,12 +1735,85 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
         }
         return out;
       };
-      await landReverts(repo, openPrs, { a, required: await s.mergeChecks(), apply, log, known: knownOnMain(analyses), failuresOf });
+      await landReverts(repo, openPrs, { a, required: await s.mergeChecks(), apply, log, hold, ...(head ? { known: knownOnMain(analyses), failuresOf } : {}) });
     }
   } finally {
+    // Even when a later write failed: a revert closed this tick is never judged again.
+    if (declined.length && cfg.flakeIssue) await flakeIssue(repo, cfg.flakeIssue, declined, { apply: apply && !asOf, a, log }).catch((e) => log(`  could not update the flake issue: ${e.message}`));
     src?.close?.();
   }
   if (apply && !asOf) await pruneVerify(repo, keep, { apply, a, log });
+
+  // Before the tool's own open revert merges, its culprit is judged again by cause (byCause), from the data its body keeps:
+  // { why } holds it while that runs, and one found not to be its culprit's is closed ({ closed }).
+  async function hold(pr) {
+    const kept = revertData(pr.body);
+    if (!kept?.failures?.length) return null;
+    const redRun = runs.find((r) => r.id === kept.run) ?? (await a.get(`/repos/${repo}/actions/runs/${kept.run}`));
+    order ??= (await (await getSrc()).order?.()) ?? null;
+    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, ...failure }) => ({ failure, passedVerify: passedVerify === true })) };
+    const d = await byCause(c, redRun);
+    if (!d || d.action === "revert") return null;
+    if (d.action === "wait") return { why: d.reason };
+    declined.push(`#${c.pr}: ${d.reason}`);
+    await closeRevert(repo, pr, d.reason, { apply, a, log });
+    return { why: d.reason, closed: true };
+  }
+
+  // A culprit with a failure a later main run passed (laterPass), or one that passed when its workflow ran again at the red
+  // commit, is decided by a cause check: { action: "revert" | "wait" | "race" | "inconclusive", reason }. Null for any other.
+  async function byCause(c, redRun) {
+    const what = (f) => (f.test ? `\`${f.test}\` (${f.file ?? f.job})` : `job \`${f.job}\``);
+    const flaky = c.failures.find((x) => x.passedVerify || x.flake);
+    let why = flaky ? `${what(flaky.failure)} passed when its workflow ran again at ${short(redRun.head_sha)}` : null;
+    for (const x of why ? [] : c.failures) {
+      const p = await laterPass(repo, runs, redRun, x.failure, { a, order, contains: c.sha, asOf, cache });
+      if (p) {
+        why = `${what(x.failure)} passed in ${p.html_url} at ${short(p.head_sha)} on main since, which contains #${c.pr}`;
+        break;
+      }
+    }
+    if (!why) return null;
+    if (!c.parent) return { action: "inconclusive", reason: `${why}; #${c.pr}'s parent commit is unknown, so no cause check ran` };
+    const s = await getSrc();
+    const files = await s.files(redRun.head_sha);
+    const shas = [c.parent, c.sha];
+    const sides = [];
+    for (const sha of shas) sides.push(await causeSide(repo, redRun, sha, c.pr, { a, files, cache, src: s, asOf }));
+    const expected = cfg.repeatInput ? 1 : causeRuns;
+    const branches = (sha) => Array.from({ length: expected }, (_, i) => causeBranch(sha, c.pr, i + 1, stem(redRun)));
+    // A side with no run listed: dispatched, its runs not listed yet (its branches are there), or not yet dispatched.
+    const empty = [];
+    for (const [i, sha] of shas.entries()) {
+      if (sides[i].listed) continue;
+      const refs = ((await a.get(`/repos/${repo}/git/matching-refs/heads/${causePrefix(sha, c.pr)}`).catch(() => [])) ?? []).map((r) => r.ref.replace(/^refs\/heads\//, ""));
+      if (refs.some((r) => branches(sha).includes(r))) sides[i].push({ running: true });
+      else empty.push(sha);
+    }
+    const at = `at #${c.pr}'s parent (${short(c.parent)}) and at #${c.pr} (${short(c.sha)})`;
+    if (empty.length) {
+      if (asOf) return { action: "wait", reason: `${why}; a cause check would run it ${at}` };
+      try {
+        await dispatchCause(repo, redRun, empty, c.pr, { n: causeRuns, cfg, tests: [...new Set(c.failures.map((x) => x.failure.file).filter(Boolean))], apply, a, log });
+        empty.flatMap(branches).forEach((b) => keep.add(b));
+      } catch (e) {
+        log(`  could not dispatch the cause check (${e.message.slice(0, 120)}); the next tick tries again`);
+      }
+      return { action: "wait", reason: `${why}; a cause check runs it ${at}` };
+    }
+    const v = causeVerdict(c.failures.map((x) => x.failure.key), ...sides, expected);
+    if (v.state === "running") {
+      shas.flatMap(branches).forEach((b) => keep.add(b));
+      return { action: "wait", reason: `${why}; its cause check is running` };
+    }
+    const f = c.failures.find((x) => x.failure.key === v.key).failure;
+    const of = (k, i) => `${k} of ${v.runs[i]} run${v.runs[i] === 1 ? "" : "s"}${cfg.repeatInput ? ` of ${causeRuns} repeats` : ""}`;
+    const failed = [...v.parent, ...v.culprit].map((r) => r.html_url);
+    const found = `${what(f)} failed in ${of(v.parent.length, 0)} at #${c.pr}'s parent (${short(c.parent)}) and in ${of(v.culprit.length, 1)} at #${c.pr} (${short(c.sha)})${failed.length ? ` (${failed.join(", ")})` : ""}`;
+    if (v.verdict === "caused") return { action: "revert", reason: `${why}; ${found}, so #${c.pr} caused it` };
+    if (v.verdict === "race") return { action: "race", reason: `${why}; ${found}: a race on main, not #${c.pr}'s` };
+    return { action: "inconclusive", reason: `${why}; ${found}: no cause found${v.runs.some((n) => n < expected) ? ` (runs missing: ${expected} needed at each)` : ""}` };
+  }
   async function judge() {
     for (const v of red) {
       const s = await getSrc();
@@ -1638,9 +1844,8 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       const later = await s.later(r.newest.head_sha);
       const after = new Set(later.map((c) => c.sha));
       const changedLater = later.length && s.commits ? (await s.commits(r.newest.head_sha, "refs/remotes/origin/main")).filter((c) => after.has(c.sha)) : [];
-      const greenLater = later.length ? await laterGreen(repo, runs, r.newest, { a, order, asOf, cache }) : new Map();
       for (const c of cs.slice(0, 5)) {
-        let d = decide(c, { later, openPrs, minutes, minRedMinutes, greenLater, changedLater, namedOnly: cfg.revertOnlyNamed === true });
+        let d = decide(c, { later, openPrs, minutes, minRedMinutes, changedLater, namedOnly: cfg.revertOnlyNamed === true });
         let culpritNow = c;
         if (d.action === "revert") {
           const reasons = [];
@@ -1656,14 +1861,20 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
             culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
           }
           if (d.action === "revert") d = reproducedNow(culpritNow) ?? d;
+          if (d.action === "revert") d = (await byCause(culpritNow, r.newest)) ?? d;
         }
-        log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? "revert" : `${d.action === "wait" ? "revert pending" : d.action === "issue" ? "an issue, not a revert" : "not reverting"}: ${d.reason}`}`);
+        log(`  culprit #${c.pr} "${c.subject.slice(0, 90)}": ${d.action === "revert" ? (d.reason === "reproduced" ? "revert" : `revert: ${d.reason}`) : `${d.action === "wait" ? "revert pending" : d.action === "issue" ? "an issue, not a revert" : "not reverting"}: ${d.reason}`}`);
         if (d.action === "flake") {
           for (const x of culpritNow.failures) {
             const line = flakeLine(c.pr, x, r.newest);
             log(`  declined revert, a flake to fix: ${line}`);
             declined.push(line);
           }
+          continue;
+        }
+        if (d.action === "race" || d.action === "inconclusive") {
+          log(`  declined revert, ${d.action === "race" ? "a race on main" : "no cause found"}: #${c.pr}`);
+          declined.push(`#${c.pr}: ${d.reason}`);
           continue;
         }
         if (d.action === "known") {
@@ -1729,6 +1940,7 @@ export async function main(argv = process.argv.slice(2), now = Date.now(), base 
     };
     newest(cache.runJobs, RUN_JOBS_KEPT);
     newest(cache.notes, NOTES_KEPT);
+    newest(cache.passes, NOTES_KEPT);
     mkdirSync(dirname(cachePath), { recursive: true });
     writeFileSync(cachePath, JSON.stringify(cache));
   }
