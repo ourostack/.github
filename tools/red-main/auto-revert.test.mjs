@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
-  CONFIG, MARKER, analyse, envFor, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
+  CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
   KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterGreen, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
@@ -598,6 +598,45 @@ test("settled: a failure whose job passed whole on main since, or whose test a l
   const c = { pr: 11, sha: sha("b"), subject: "Breaks y (#11)", confirmed: true, failures: [{ failure: f }, { failure: { ...f, job: "other", roots: ["test/w.test.ts"] } }] };
   assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "revert", "one failure not settled still reverts");
   assert.equal(decide({ ...c, failures: c.failures.slice(0, 1) }, { minutes: 0, minRedMinutes: 0, greenLater: green }).action, "skip");
+});
+
+test("check: Tandem, #6242: a merge that edits a file a repository-wide test scans, failing on every push after it, is named and reverted, through a jobs list that answers 502", async () => {
+  // test/candidates.test.ts imports src/x.ts and scans src/candidates; it fails naming the folder whose README #22 edited.
+  // #21 changed src/x.ts, a reference away: it was the pick among three, and revertOnlyNamed opened an issue instead.
+  const files = new Set([...FILES, "test/candidates.test.ts", "src/candidates/quote/README.md", "src/candidates/card/README.md"]);
+  const reads = { ...SRC, "test/candidates.test.ts": `import { x } from "../src/x.ts";\nconst all = fs.readdirSync(path.join(ROOT, "src/candidates"));\ntest("every candidate README names its upstream API", () => { for (const d of all) assert.match(read(d + "/README.md"), /Upstream/, d); });\n` };
+  const range = [
+    { sha: sha("c"), subject: "Unrelated (#23)", pr: 23, files: ["src/z.ts"] },
+    { sha: sha("q"), subject: "Quote's README links its port (#22)", pr: 22, files: ["src/candidates/quote/README.md"], added: [] },
+    { sha: sha("b"), subject: "Runtime (#21)", pr: 21, files: ["src/x.ts"] },
+  ];
+  const s = src({ files: async () => files, read: async (_, p) => reads[p] ?? null, commits: async (base, head) => (base === sha("g") ? range : []) });
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const r1 = run({ head_sha: sha("c"), updated_at: at(35) });
+  const r2 = run({ head_sha: sha("n"), updated_at: at(2), run_attempt: 2 });
+  const fail = TAP("every candidate README names its upstream API", "test/candidates.test.ts", "'src/candidates/quote'");
+  const gh = fakeGitHub([r2, r1, g], { [r1.id]: fail, [r2.id]: fail });
+  const get = gh.get;
+  gh.get = async (p) => {
+    if (/\/jobs\?.*per_page=100/.test(p)) throw new Error(`GET ${p}: gh: Server Error (HTTP 502)`);
+    return get(p);
+  };
+  const lines = [];
+  await check("o/r", { workflows: ["ci"], minRedMinutes: 0, revertOnlyNamed: true }, { a: gh, now: NOW, apply: false, log: (l) => lines.push(l), source: async () => s });
+  assert.ok(lines.some((l) => /-> #22 \(changed src\/candidates\/quote\/README\.md under src\/candidates\/quote\/, which the failure names/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /would open revert PR "Revert "Quote's README links its port" \(#22\)"/.test(l)), lines.join("\n"));
+  assert.ok(!lines.some((l) => /#21|#23|an issue/.test(l)), lines.join("\n"));
+  assert.ok(gh.calls.some(([, p]) => /\/jobs\?.*per_page=50&page=1$/.test(p)), "the 502'd page was read as pages of 50");
+  const dist = await distances(["test/candidates.test.ts"], { read: async (p) => reads[p] ?? null, files });
+  assert.equal(culprit([{ sha: sha("q"), pr: 22, files: ["src/candidates/quote/README.md"] }], dist, ["src/candidates"]).distance, 1, "naming the scanned directory itself names no one file in it");
+  assert.equal(culprit([{ sha: sha("q"), pr: 22, files: ["src/candidates/quote/README.md"] }], dist, ["src/candidates/quote"]).distance, 0);
+  assert.equal(culprit([{ sha: sha("q"), pr: 22, files: ["src/other/quote/README.md"] }], Object.assign(new Map(dist), { dirs: new Map() }), ["src/other/quote"]).distance, Infinity, "a named directory no test scans is not followed");
+});
+
+test("ghError: gh's own error, not GH_DEBUG's request trace before it", () => {
+  const stderr = "* Request at 2026-11-27 23:44:01\n* Request to https://api.github.com/repos/o/r/actions/runs/1/jobs\n> GET /repos/o/r/actions/runs/1/jobs HTTP/1.1\n< HTTP/2.0 502 Bad Gateway\n* Request took 10s\n{\n  \"message\": \"Server Error\"\n}\ngh: Server Error (HTTP 502)\n";
+  assert.match(ghError(stderr), /gh: Server Error \(HTTP 502\)$/);
+  assert.doesNotMatch(ghError(stderr), /Request at/);
 });
 
 test("check: Tandem, #4262: a red run at an older commit reverts nothing once a newer main run passed the job, or a newer PR changed the test", async () => {
