@@ -37,6 +37,22 @@ It prints the median and p90 from PR opened to merged, merged to live (the first
 
 9. **The release path runs where runners are free.** Measure queue wait apart from work, per runner pool: when one pool queues, every job that a release waits on (plan, publish, record, promote) moves to a pool that isn't queuing, proven first by a probe that runs its steps there and, for builds, compares the outputs file by file. Watchers that poll GitHub read slowly while jobs wait for runners and quickly only near the end, and they treat a quota refusal as a wait, not an answer. In one app on 2026-11-23, Linux jobs waited a median 21 minutes while Windows and Macs started in 1-7. Moving the release path off Linux, plus the steps above, took merge to the release users get from 67 minutes to 36.
 
+10. **The release users get is never stuck.** "Latest" (whatever users install) moves within minutes of a green candidate, or something says why and acts.
+    - **The release's checks run before merge.** Checks that judge what users get (first run, freezes, typing) run on the merge queue's batch tip for every PR that touches their inputs, so a regression never lands on main; one batch run covers up to 10 PRs. Run only after merge, one regression in one app held every candidate for 30 hours, and its release stood 37 hours while 900+ changes merged (2026-11-26/27).
+    - **A failing release check bisects itself.** When two candidates in a row fail a check the current release passes, a bisect over the already built candidates (then commits, in the last gap) names the culprit and opens its revert. A revert that would conflict opens an issue naming the culprit and its owner instead. Each round tests as many evenly spaced points as there are free test machines, two runs a point, with the next round's points built while this one runs: one app's 683-commit range took 2 hours that way.
+    - **A meter is proven before it gates.** Before a reading becomes a gate or a baseline, a positive control the harness plants from outside the product (for example, the app's web-content process stopped for 500 ms) must read in full on every platform the gate runs. Otherwise the verdict is "meter blind", never a pass. That app's Mac freeze meter read longtask entries WebKit never produces, so it passed every freeze; its Windows meter read none of a stall outside a script task. Where a control reads blind, it reports there and doesn't gate until that meter is fixed and its baseline is recorded again: a blind control that turns every run red holds the release as surely as a regression does. A bisect measures every point with the same meter as its known-good reference, so a meter change can't pose as the culprit.
+    - **Stalls alarm at 30 minutes and say what holds them.** Release stuck behind a waiting candidate, no candidate cut, a rehearsal silent: each opens one issue naming the holder, in the release tool's own words, and whoever holds the lead lease reads open alarms on every pass.
+    - **The machinery itself can't stall the release.** Each of these held that app's release in the same 37 hours. Check for each one in any repo with a release train:
+      - Proof runs on one shared resource queue, never replace each other.
+      - A re-run of a red never waits in a concurrency slot a newer push replaces, and a cancelled re-run decides nothing.
+      - Tests never read the real clock, and the nightly fake-clock run includes a weekend day, not only midnight. A red that starts in a day's first hour, after a green run the day before, is named as the date's: auto-revert has no merge to name for it.
+      - A check that last ran on an old base runs again on current main before its PR merges.
+      - A queue for a scarce resource holds only the jobs that use it: builds run while proofs wait their turn.
+      - A tool that reads GitHub's lists survives a page that always errors: it reads that page again in halves (an auto-revert stood still on a 502 at 100 a page).
+      - Release publishing runs on a budget no person or interactive tool spends: a GitHub App's, not a personal token that shares a login's hourly count with that person's apps.
+      - A merge queue starts its next batch on the new main when something merges outside it.
+      - Public pages that show the release are checked against it.
+
 ## What we chose not to adopt
 
 - No blanket comment ban: measured, most of our comments earn their place (step 4).
