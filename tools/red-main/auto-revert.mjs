@@ -72,7 +72,7 @@ import { dirname, join, posix } from "node:path";
 import { createInterface } from "node:readline";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
-import { OWNERS, RUNNER_LOST, neverStarted } from "./red-main.mjs";
+import { ARTIFACT_SERVICE, OWNERS, RUNNER_LOST, neverStarted } from "./red-main.mjs";
 import { cleanBody } from "../rearm-merges/rearm-merges.mjs";
 
 export const CONFIG = JSON.parse(readFileSync(new URL("./auto-revert.json", import.meta.url), "utf8"));
@@ -81,6 +81,7 @@ export const MARKER = "Opened by tools/red-main/auto-revert.mjs in ourostack/.gi
 // A failure that says nothing about the commit under test.
 const INFRA_LOG = [
   RUNNER_LOST,
+  ARTIFACT_SERVICE,
   /ENOTFOUND|EAI_AGAIN|ECONNRESET|ETIMEDOUT|ECONNREFUSED/,
   /could not resolve host/i,
   /no space left on device/i,

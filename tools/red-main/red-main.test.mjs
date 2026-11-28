@@ -106,8 +106,8 @@ test("an infra annotation does not hide a code failure in the same commit", asyn
   assert.equal(infraFailures(runs, { since: at(0), now: at(100) }).length, 0);
 });
 
-test("a run whose only failure is a GitHub 5xx or ETIMEDOUT is infra; a plain test failure is red", async () => {
-  for (const log of ["gh: POST /graphql: 504", "HTTP 502 Bad Gateway", "connect ETIMEDOUT 140.82.1.1:443"]) {
+test("a run whose only failure is a GitHub 5xx, ETIMEDOUT or an artifact-service timeout is infra; a plain test failure is red", async () => {
+  for (const log of ["gh: POST /graphql: 504", "HTTP 502 Bad Gateway", "connect ETIMEDOUT 140.82.1.1:443", "Attempt 1 of 5 failed with error: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact.", "##[error]request to https://productionresultssa15.blob.core.windows.net/actions-results/1681a7f0/artifacts/1a46.zip failed, reason: socket hang up"]) {
     const runs = [run("b", "ci", "failure", 10, 15, { id: 7 })];
     await markInfra("o/r", runs, infraGet([], log));
     assert.ok(runs[0].infra, log);
