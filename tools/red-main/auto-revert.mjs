@@ -38,7 +38,8 @@
 //      The squash-merged PR in the range whose files are closest is the culprit; a tie goes to the PR whose change touches
 //      the most code names the failing assertion uses, else the newest. With
 //      nothing reachable from a job's failing step, its setup is followed the same way. With
-//      nothing reachable, the range's only PR is the culprit; with several, the failure is reported unattributed.
+//      nothing reachable, the range's only PR is the suspect: not blamed when it changed only CI-only paths (ciOnlyCleared),
+//      else decided by a cause check (6); with several, the failure is reported unattributed.
 //      When the failure is a test file's own, only a PR that changes that file's import graph (the file, what it imports, reads
 //      or scans) is blamed; one that changed only a file the failure text names is cleared, with a line saying so.
 //   4. Confirmation (flake guard): the first time a red push run (attempt 1) has a failure not yet confirmed, its failed jobs are
@@ -59,7 +60,8 @@
 //      pull request when nothing it changed reaches the failure and it changed only existing test files and documents
 //      (loneCleared). A culprit left with no failure is not reverted, and the evidence is posted on its pull request instead.
 //   6. Cause check: a culprit whose failure a later main run passed at a commit that contains it (laterPass: the test ran and
-//      passed), or whose failure passed when its workflow ran again at the red commit, is reverted only once its workflow,
+//      passed), whose failure passed when its workflow ran again at the red commit, or that is blamed only as the range's one
+//      pull request with nothing it changed reaching the failure, is reverted only once its workflow,
 //      dispatched "causeRuns" times (5 by default) at its parent and at it (cause branches, `auto-revert/verify-<sha>-cause-<pr>-<i>-<workflow>`;
 //      one run with "repeatInput" set, only the failing files with "testInput"), passed every time at the parent and failed at
 //      it. A parent that failed it too is a race on main, and no cause found is no revert: either way an open revert of it is
@@ -928,7 +930,8 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     // The job's setup is neither: a failure main already had stays main's (knownBefore).
     const touched = blame?.distance === 0 && !blame.setup;
     const cleared = blame?.distance === Infinity ? loneCleared(commits.find((c) => c.pr === blame.pr), f) : null;
-    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
+    const ciOnly = blame?.distance === Infinity && f.test ? ciOnlyCleared(commits.find((c) => c.pr === blame.pr), f, await jobRuns(read, first.run, f.job, firstFiles)) : null;
+    results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, ciOnly, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
   }
   return { newest: newest.run, results, check };
 }
@@ -1256,6 +1259,33 @@ export function loneCleared(c, f) {
   return `#${c.pr} was blamed only as the range's one pull request, and it changed only test files and documents (${c.files.slice(0, 4).join(", ")}${c.files.length > 4 ? ", ..." : ""}), none that the failing test is or reaches, and added or removed no test file`;
 }
 
+// CI-only paths: the repository's workflows and actions, scripts, and documents. A test loads none of them unless it reaches
+// them, through its imports or a path it names, or its job runs them.
+const CI_ONLY = /^(\.github\/|scripts\/)/;
+// What a test's job runs, at that commit: the workflow, a reusable workflow its job calls, the local actions it uses and the
+// files its steps name (the script a step runs).
+export async function jobRuns(read, run, job, files) {
+  const wf = String(run?.path ?? "").split("@")[0];
+  if (!wf) return new Set();
+  const own = (await jobSource(read, wf, job)) ?? "";
+  const caller = job.includes(" / ") ? (await jobSource(read, wf, job.slice(0, job.indexOf(" / ")))) ?? "" : "";
+  const called = [...caller.matchAll(/uses:\s*\.\/(\.github\/workflows\/[^\s@#'"]+\.ya?ml)/g)].map((m) => m[1]);
+  return new Set([wf, ...called, ...actionFiles(own, files), ...mentions(own, files)]);
+}
+// Why a test failure's culprit, blamed only as the range's one pull request (nothing it changed reaches the failure), is not
+// blamed at all, or null: it changed (renamed and removed paths too) only CI-only paths and test files other than the failing
+// one, none its job runs (`runs`, jobRuns), and added or removed no test file (that moves what each shard runs). Picked so, it was reverted for a racy window test on a change to two CI scripts (a consuming app,
+// 2026-11-28); one that changed other code is decided by a cause check instead (byCause).
+export function ciOnlyCleared(c, f, runs = new Set()) {
+  const changed = [...new Set([...(c?.files ?? []), ...(c?.deleted ?? [])])];
+  if (!f.test || !changed.length || [...(c.added ?? []), ...(c.deleted ?? [])].some((x) => TEST_FILE.test(x))) return null;
+  if (!changed.every((x) => x !== f.file && !runs.has(x) && (CI_ONLY.test(x) || DOC.test(x) || (TEST_FILE.test(x) && !NOT_A_TEST.test(x))))) return null;
+  return `#${c.pr} was blamed only as the range's one pull request, and it changed only paths the test doesn't load (${changed.slice(0, 4).join(", ")}${changed.length > 4 ? ", ..." : ""}): CI, scripts, documents and other tests`;
+}
+// A culprit's failure that ciOnlyCleared spared, for the flake issue: the test, and the commits it failed and passed at.
+export const ciOnlyLine = (pr, x, run) =>
+  `#${pr}: \`${x.failure.test}\` (${x.failure.file ?? x.failure.jobs?.join(", ") ?? x.failure.job}) failed in main's \`${run.name}\` (${x.first.html_url}) at ${short(x.first.head_sha)} and passed at ${short(x.base.head_sha)}; ${x.ciOnly}, so it isn't blamed`;
+
 // The open known flakes a repository's flake table names: under a heading "Open known flakes", each list item or table row
 // naming a file in backticks. Returns Map(file -> that line).
 export function openFlakes(md) {
@@ -1374,7 +1404,7 @@ export function revertData(body) {
 export const plainBody = (body) => cleanBody(String(body ?? "").replace(DATA, ""));
 
 export function revertBody({ repo, c, run, minutes }) {
-  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}) })) };
+  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}), ...(x.blame?.distance === Infinity ? { lone: true } : {}) })) };
   const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs >= 2 ? " in a row" : r.confirmed ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : r.flake ? `, and passed when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : ""}.`);
   return [
     `<!-- auto-revert: ${JSON.stringify(data).replace(/>/g, "\\u003e")} -->`,
@@ -1816,7 +1846,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     if (!kept?.failures?.length) return null;
     const redRun = runs.find((r) => r.id === kept.run) ?? (await a.get(`/repos/${repo}/actions/runs/${kept.run}`));
     order ??= (await (await getSrc()).order?.()) ?? null;
-    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, ...failure }) => ({ failure, passedVerify: passedVerify === true })) };
+    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, lone, ...failure }) => ({ failure, passedVerify: passedVerify === true, lone: lone === true })) };
     const d = await byCause(c, redRun);
     if (!d || d.action === "revert") return null;
     if (d.action === "wait") return { why: d.reason };
@@ -1825,12 +1855,18 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     return { why: d.reason, closed: true };
   }
 
-  // A culprit with a failure a later main run passed (laterPass), or one that passed when its workflow ran again at the red
-  // commit, is decided by a cause check: { action: "revert" | "wait" | "race" | "inconclusive", reason }. Null for any other.
+  // A culprit with a failure a later main run passed (laterPass), one that passed when its workflow ran again at the red
+  // commit, or one it is blamed for only as the range's one pull request (nothing it changed reaches it: reproducing at the
+  // culprit says nothing of its cause), is decided by a cause check: { action: "revert" | "wait" | "race" | "inconclusive",
+  // reason }. Null for any other.
   async function byCause(c, redRun) {
     const what = (f) => (f.test ? `\`${f.test}\` (${f.file ?? f.job})` : `job \`${f.job}\``);
     const flaky = c.failures.find((x) => x.passedVerify || x.flake);
-    let why = flaky ? `${what(flaky.failure)} passed when its workflow ran again at ${short(redRun.head_sha)}` : null;
+    // Only when it reaches none of them: a failure it does reach reverts it as before.
+    const lone = c.failures.length && c.failures.every((x) => x.lone || x.blame?.distance === Infinity) ? c.failures[0] : null;
+    let why = flaky ? `${what(flaky.failure)} passed when its workflow ran again at ${short(redRun.head_sha)}`
+      : lone ? `#${c.pr} is blamed for ${what(lone.failure)} only as the range's one pull request: nothing it changed reaches it`
+      : null;
     for (const x of why ? [] : c.failures) {
       const p = await laterPass(repo, runs, redRun, x.failure, { a, order, contains: c.sha, asOf, cache });
       if (p) {
@@ -1912,6 +1948,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
       for (const c of cs.slice(0, 5)) {
         let d = decide(c, { later, openPrs, minutes, minRedMinutes, changedLater, namedOnly: cfg.revertOnlyNamed === true });
         let culpritNow = c;
+        let ci = [];
         if (d.action === "revert") {
           const reasons = [];
           for (const x of c.failures) {
@@ -1925,6 +1962,12 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
             for (const [i, x] of c.failures.entries()) if (reasons[i]) log(`  not blaming #${c.pr} for ${x.failure.key}: ${reasons[i]}`);
             culpritNow = { ...c, failures: c.failures.filter((_, i) => !reasons[i]) };
           }
+          ci = d.action === "revert" ? culpritNow.failures.filter((x) => x.ciOnly) : [];
+          if (ci.length && ci.length === culpritNow.failures.length) d = { action: "ci-only", reason: ci[0].ciOnly };
+          else if (ci.length) {
+            for (const x of ci) log(`  not blaming #${c.pr} for ${x.failure.key}: ${x.ciOnly}`);
+            culpritNow = { ...culpritNow, failures: culpritNow.failures.filter((x) => !x.ciOnly) };
+          }
           if (d.action === "revert") d = reproducedNow(culpritNow) ?? d;
           if (d.action === "revert") d = (await byCause(culpritNow, r.newest)) ?? d;
         }
@@ -1933,6 +1976,14 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           for (const x of culpritNow.failures) {
             const line = flakeLine(c.pr, x, r.newest);
             log(`  declined revert, a flake to fix: ${line}`);
+            declined.push(line);
+          }
+          continue;
+        }
+        if (d.action === "ci-only") {
+          for (const x of ci) {
+            const line = ciOnlyLine(c.pr, x, r.newest);
+            log(`  declined revert, not its cause: ${line}`);
             declined.push(line);
           }
           continue;

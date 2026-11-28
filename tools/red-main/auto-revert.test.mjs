@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, ciOnlyCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -186,7 +186,9 @@ test("check: a bisect run narrows a red range by commit order, and a green one n
   const lines = [];
   await check("o/r", { workflows: ["ci"], bisectRuns: ["ci"], minRedMinutes: 0 }, { a: fakeGitHub([n, g], logs, { dispatched: [b, u] }), now: NOW, apply: false, log: (l) => lines.push(l), source: async () => src({ order: async () => order }) });
   assert.ok(lines.some((l) => /failing since u+ \(run \d+\), passing at b+, 2 runs -> #12/.test(l)), lines.join("\n"));
-  assert.ok(lines.some((l) => /would open revert PR "Revert "Unrelated" \(#12\)"/.test(l)), lines.join("\n"));
+  // Named by the bisect, yet nothing #12 changed reaches the test: its parent and it are run against each other first.
+  assert.ok(lines.some((l) => /culprit #12 .*revert pending: #12 is blamed for `w works` \(.+?\) only as the range's one pull request: nothing it changed reaches it; a cause check runs it at #12's parent \(b{9}\) and at #12 \(u{9}\)/.test(l)), lines.join("\n"));
+  assert.ok(lines.some((l) => /would dispatch ci\.yml 5 times at each of b{9} and u{9}/.test(l)) && !lines.some((l) => /would open revert PR/.test(l)), lines.join("\n"));
 });
 
 test("parseLog: node:test's failing tests with their location and error, the YAML's own '...' ending the block", async () => {
@@ -1062,13 +1064,13 @@ test("lone: a range's one pull request is cleared only when it changed existing 
   assert.equal(loneCleared(pr(["test/x.test.ts"]), f), null, "the failing test itself");
 });
 
-test("check: Tandem, #5252: the range's one pull request, a test's types only, isn't reverted and gets the evidence; one that added a test file is reverted", async () => {
+test("check: #5252: the range's one pull request, a test's types only, isn't reverted and gets the evidence; one that added a test file goes to a cause check", async () => {
   const g = run({ conclusion: "success", head_sha: sha("g"), created_at: at(70) });
   const b = run({ head_sha: sha("b"), updated_at: at(35) });
   const n = run({ head_sha: sha("n"), updated_at: at(2) });
   const logs = { [b.id]: TAP("x works", "test/x.test.ts"), [n.id]: TAP("x works", "test/x.test.ts") };
   const cfg = { workflows: ["ci"], minRedMinutes: 0 };
-  const lone = (c) => async () => [{ sha: sha("n"), subject: "Type the organization test (#5241)", pr: 5241, ...c }];
+  const lone = (c) => async () => [{ sha: sha("n"), parent: sha("b"), subject: "Type the organization test (#5241)", pr: 5241, ...c }];
   const gh = fakeGitHub([n, b, g], logs);
   const lines = [];
   await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits: lone({ files: ["test/organization.test.ts"], added: [], deleted: [] }) }) });
@@ -1080,8 +1082,8 @@ test("check: Tandem, #5252: the range's one pull request, a test's types only, i
   const added = fakeGitHub([n, b, g], logs);
   lines.length = 0;
   await check("o/r", cfg, { a: added, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src({ commits: lone({ files: ["test/organization.test.ts"], added: ["test/organization.test.ts"], deleted: [] }) }) });
-  assert.ok(lines.some((l) => /culprit #5241 .*: revert$/.test(l)), lines.join("\n"));
-  assert.ok(added.calls.some((c) => c[0] === "gql"), "reverted: an added test file can shift what each shard runs");
+  assert.ok(lines.some((l) => /culprit #5241 .*revert pending: #5241 is blamed .* only as the range's one pull request: nothing it changed reaches it; a cause check runs it/.test(l)), lines.join("\n"));
+  assert.ok(!added.calls.some((c) => c[0] === "gql"), "an added test file can shift what each shard runs, so its cause decides, not the range alone");
 });
 
 test("a new issue is written with ISSUE_TOKEN when it is set; reads with READ_TOKEN; other writes, pull request comments too, with GH_TOKEN", () => {
@@ -1151,14 +1153,19 @@ test("flakeIssue: a new declined revert is added to the one open issue by its ti
 const ROWS = "rows draw again only when their own message changed";
 const ROWS_KEY = `test/rows.test.ts :: ${ROWS}`;
 const BURST = { name: "burst", path: ".github/workflows/burst.yml" };
-const rowsSrc = () => src({
-  files: async () => new Set(["test/rows.test.ts", "src/rows.ts", "release/promote.ts", "src/other.ts"]),
-  read: async (_, p) => ({ "test/rows.test.ts": `import { rows } from "../src/rows.ts";\n`, "src/rows.ts": "export const rows = 1;\n" })[p] ?? null,
+// pFiles: what #21 changed. By default a file the test imports, so only a later pass, not the range alone, starts a cause check.
+const rowsSrc = (pFiles = ["src/rows.ts"]) => src({
+  files: async () => new Set(["test/rows.test.ts", "src/rows.ts", "release/promote.ts", "src/other.ts", ".github/workflows/burst.yml", ".github/actions/setup-webkit/action.yml", "scripts/burst.mjs"]),
+  read: async (_, p) => ({
+    "test/rows.test.ts": `import { rows } from "../src/rows.ts";\n`,
+    "src/rows.ts": "export const rows = 1;\n",
+    ".github/workflows/burst.yml": "jobs:\n  shard:\n    name: npm test\n    steps:\n      - uses: ./.github/actions/setup-webkit\n      - run: node scripts/burst.mjs\n",
+  })[p] ?? null,
   commits: async (base, head) => {
     const shas = [sha("d"), sha("p"), sha("g")];
     const range = [
       { sha: sha("d"), parent: sha("p"), subject: "Later (#22)", pr: 22, files: ["src/other.ts"] },
-      { sha: sha("p"), parent: sha("g"), subject: "Promote releases (#21)", pr: 21, files: ["release/promote.ts"] },
+      { sha: sha("p"), parent: sha("g"), subject: "Promote releases (#21)", pr: 21, files: pFiles },
     ];
     return range.slice(head === "refs/remotes/origin/main" ? 0 : shas.indexOf(head), shas.indexOf(base));
   },
@@ -1166,12 +1173,12 @@ const rowsSrc = () => src({
   later: async (x) => (x === sha("p") ? [{ sha: sha("d"), subject: "Later (#22)", body: "" }] : []),
 });
 // later: the burst's run at d (null: none yet), its test job's conclusion and log; cause: [side, failed, status] per cause run.
-function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {} } = {}) {
+function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {}, also = [] } = {}) {
   const g = run({ ...BURST, conclusion: "success", head_sha: sha("g"), created_at: at(70) });
   const red = run({ ...BURST, head_sha: sha("p"), updated_at: at(20) });
   const verify = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${"p".repeat(12)}`, head_sha: sha("p") });
   const d = later && run({ ...BURST, head_sha: sha("d"), status: "in_progress", conclusion: null, ...later });
-  const fail = TAP(ROWS, "test/rows.test.ts");
+  const fail = [...TAP(ROWS, "test/rows.test.ts"), ...also];
   const logs = { [red.id]: fail, [verify.id]: fail, ...Object.fromEntries(Object.keys(jobsOf).map((id) => [id, [`ok 7 - ${ROWS}`]])) };
   if (d) {
     jobsOf[d.id] = [{ id: d.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: job }];
@@ -1188,9 +1195,9 @@ function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], 
 }
 const CAUSE_CFG = { workflows: ["burst"], bisectRuns: ["burst"], minRedMinutes: 0, rerun: false, flakeIssue: { title: "Flakes auto-revert declined", labels: [] } };
 const side = (c, failures, status) => Array.from({ length: 5 }, (_, i) => [c, i < failures, status]);
-const tick = async (gh, cfg = CAUSE_CFG) => {
+const tick = async (gh, cfg = CAUSE_CFG, pFiles = undefined) => {
   const lines = [];
-  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => rowsSrc() });
+  await check("o/r", cfg, { a: gh, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => rowsSrc(pFiles) });
   return lines;
 };
 const writes = (gh) => gh.calls.filter((c) => !["get", "lines"].includes(c[0]));
@@ -1311,4 +1318,56 @@ test("cause: a later green run at a commit before the culprit, or one that skipp
   const judged = rowsCase({ laterLog: ["| test/rows.test.ts | 3 | 0 | 0 | 9 |"] });
   lines = await tick(judged.gh);
   assert.ok(lines.some((l) => /culprit #21 .*revert pending: .*a cause check runs it/.test(l)), lines.join("\n"));
+});
+
+test("lone: a burst red blamed only as the range's one pull request, which changed CI scripts and another test, blames nobody: a flake line, no revert", async () => {
+  // As it happened in a consuming app: the window test failed in the burst, again at the same commit, and the range's one
+  // pull request had changed only a CI script and that script's own test.
+  const ci = ["scripts/main-reopen.ts", "test/main-closed.test.ts"];
+  const { gh, red } = rowsCase({ later: null });
+  const lines = await tick(gh, CAUSE_CFG, ci);
+  assert.ok(lines.some((l) => /culprit #21 .*not reverting: #21 was blamed only as the range's one pull request, and it changed only paths the test doesn't load \(scripts\/main-reopen\.ts, test\/main-closed\.test\.ts\)/.test(l)), lines.join("\n"));
+  assert.ok(!writes(gh).some((c) => c[0] === "gql" || /-cause-/.test(JSON.stringify(c))), "no revert, no cause check");
+  const issue = writes(gh).find((c) => c[1] === "/repos/o/r/issues");
+  assert.ok(issue[2].body.includes(`- #21: \`${ROWS}\` (test/rows.test.ts) failed in main's \`burst\` (${red.html_url}) at ppppppppp and passed at ggggggggg; #21 was blamed only`), issue[2].body);
+  // What the test's job runs isn't CI-only for it: its workflow, a local action it uses, a script a step runs. A change there
+  // goes to a cause check.
+  for (const runs of [".github/workflows/burst.yml", ".github/actions/setup-webkit/action.yml", "scripts/burst.mjs"]) {
+    const own = rowsCase({ later: null });
+    const said = await tick(own.gh, CAUSE_CFG, [runs]);
+    assert.ok(said.some((l) => /culprit #21 .*revert pending: .*only as the range's one pull request: nothing it changed reaches it; a cause check runs it/.test(l)), `${runs}\n${said.join("\n")}`);
+  }
+  // A rename out of product code moved product code: not CI-only.
+  const f = { test: ROWS, file: "test/rows.test.ts" };
+  assert.equal(ciOnlyCleared({ pr: 21, files: ["scripts/polyfill.ts"], deleted: ["src/polyfill.ts"], added: ["scripts/polyfill.ts"] }, f), null);
+  assert.match(ciOnlyCleared({ pr: 21, files: ["scripts/main-reopen.ts", "docs/x.md"], deleted: [], added: [] }, f), /changed only paths the test doesn't load/);
+});
+
+test("lone: a culprit nothing of which reaches the failure is reverted only when its parent passes every cause run and it fails one; a reachable one as before", async () => {
+  const code = ["release/promote.ts"];
+  // Reproducing at the culprit is not enough: 5 runs at its parent and 5 at it, and no revert yet.
+  const first = rowsCase({ later: null });
+  let lines = await tick(first.gh, CAUSE_CFG, code);
+  assert.ok(lines.some((l) => /culprit #21 .*revert pending: #21 is blamed for .* only as the range's one pull request: nothing it changed reaches it; a cause check runs it at #21's parent \(g{9}\) and at #21 \(p{9}\)/.test(l)), lines.join("\n"));
+  assert.equal(writes(first.gh).filter((c) => /dispatches$/.test(c[1])).length, 10);
+  assert.ok(!writes(first.gh).some((c) => c[0] === "gql"));
+  // The parent passed 5 of 5 and the culprit failed 2: reverted.
+  const caused = rowsCase({ later: null, cause: [...side("g", 0), ...side("p", 2)] });
+  lines = await tick(caused.gh, CAUSE_CFG, code);
+  assert.ok(lines.some((l) => /culprit #21 .*: revert: .*failed in 0 of 5 runs at #21's parent .* and in 2 of 5 runs at #21 .*, so #21 caused it/.test(l)), lines.join("\n"));
+  assert.ok(writes(caused.gh).some((c) => c[0] === "gql"), "reverted");
+  // The parent failed it too: a race on main.
+  const race = rowsCase({ later: null, cause: [...side("g", 1), ...side("p", 2)] });
+  lines = await tick(race.gh, CAUSE_CFG, code);
+  assert.ok(lines.some((l) => /culprit #21 .*not reverting: .*: a race on main, not #21's/.test(l)) && !writes(race.gh).some((c) => c[0] === "gql"), lines.join("\n"));
+  // A culprit that reaches one of its failures is reverted on reproducing, as before, though another failure in the run is
+  // one nothing it changed reaches.
+  const mixed = rowsCase({ later: null, also: TAP("a window opens", "test/window.test.ts") });
+  lines = await tick(mixed.gh);
+  assert.ok(lines.some((l) => /"a window opens": .*-> #21 \(the only pull request in the range/.test(l)) && lines.some((l) => /culprit #21 .*: revert$/.test(l)), lines.join("\n"));
+  // A culprit whose change the test imports is reverted on reproducing, with no cause check, as before.
+  const reachable = rowsCase({ later: null });
+  lines = await tick(reachable.gh);
+  assert.ok(lines.some((l) => /-> #21 \(changed src\/rows\.ts, 1 reference from the failure/.test(l)) && lines.some((l) => /culprit #21 .*: revert$/.test(l)), lines.join("\n"));
+  assert.ok(writes(reachable.gh).some((c) => c[0] === "gql") && !writes(reachable.gh).some((c) => /-cause-/.test(JSON.stringify(c))));
 });
