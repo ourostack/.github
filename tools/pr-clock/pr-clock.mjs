@@ -295,7 +295,7 @@ export async function listRepos(owners = OWNERS) {
 const MAIN_FIELDS = `nameWithOwner isPrivate defaultBranchRef{name target{... on Commit{oid committedDate message
 statusCheckRollup{state contexts(first:100){nodes{__typename
 ... on CheckRun{name status conclusion startedAt} ... on StatusContext{context state createdAt}}}}}}}
-mergeQueue{configuration{checkResponseTimeout} entries{totalCount}}`;
+mergeQueue{entries{totalCount}}`;
 
 export async function fetchOpenPrs() {
   return (await fetchState()).prs;
@@ -370,6 +370,19 @@ export async function fetchState(repoList, run = async (query) => (await gh("/gr
       const head = repo.defaultBranchRef;
       if (head?.target?.oid) mains.push({ repository: { nameWithOwner: repo.nameWithOwner, isPrivate: repo.isPrivate }, name: head.name, commit: head.target, queue: repo.mergeQueue });
       prs.push(...nodes.filter((n) => n?.number));
+    }
+  }
+  // A queue's own time limit is read apart and only for a queue with entries: the workflow token is refused it
+  // (FORBIDDEN, "Resource not accessible by integration"), and GitHub then drops the whole repository from the answer,
+  // which failed every run from 2026-11-28 00:32Z. Unread, the stall bar is STALL_DEFAULT_MIN.
+  for (const m of mains.filter((x) => x.queue?.entries?.totalCount > 0)) {
+    const [owner, name] = m.repository.nameWithOwner.split("/");
+    try {
+      const data = await run(`query{repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){mergeQueue{configuration{checkResponseTimeout}}}}`);
+      const configuration = data?.repository?.mergeQueue?.configuration;
+      if (configuration) m.queue = { ...m.queue, configuration };
+    } catch (err) {
+      console.error(`could not read the merge queue limit for ${m.repository.nameWithOwner}: ${err.message}`);
     }
   }
   // Only a stalled queue needs its removals read: who dequeued what, and why.
