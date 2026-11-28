@@ -215,7 +215,18 @@ export async function runJobs(get, cache, repo, run, { attempt = run.run_attempt
   const kept = cache?.runJobs?.[key] ?? cache?.live?.get(key);
   if (kept) return kept;
   const path = attempt === (run.run_attempt ?? 1) ? `filter=latest&per_page=100&page=${page}` : `per_page=100&page=${page}`;
-  const jobs = (await get(`/repos/${repo}/actions/runs/${run.id}/${attempt === (run.run_attempt ?? 1) ? "" : `attempts/${attempt}/`}jobs?${path}`)).jobs ?? [];
+  const base = `/repos/${repo}/actions/runs/${run.id}/${attempt === (run.run_attempt ?? 1) ? "" : `attempts/${attempt}/`}jobs?`;
+  let jobs;
+  try {
+    jobs = (await get(base + path)).jobs ?? [];
+  } catch (e) {
+    // A page of 100 jobs can be too much for GitHub to answer: Tandem's ci run 46081699643, re-run to 129 jobs, gave HTTP 502
+    // on every read of it for 25 minutes (2026-11-27), and each tick failed. The same page is read as two pages of 50.
+    if (!/HTTP 5\d\d/.test(e.message)) throw e;
+    const half = (k) => get(base + path.replace(/per_page=100&page=\d+/, `per_page=50&page=${k}`)).then((r) => r.jobs ?? []);
+    jobs = await half(2 * page - 1);
+    if (jobs.length === 50) jobs = [...jobs, ...(await half(2 * page))];
+  }
   cache?.live?.set(key, jobs);
   if (cache && jobs.length && jobs.every((j) => j.status === "completed")) {
     (cache.runJobs ??= {})[key] = jobs.map((j) => Object.fromEntries(Object.entries(j).filter(([k]) => !NOISE.includes(k))));
@@ -643,6 +654,16 @@ export function scannedDirs(src, dirs) {
   }
   return [...out];
 }
+// The repository directories a failure's text names exactly (an assertion's message such as a candidate's folder).
+export function namedDirs(text, files) {
+  const dirs = dirSet(files);
+  const out = new Set();
+  for (const t of String(text).match(/[\w@.+\-\/]+/g) ?? []) {
+    const p = t.replace(/^(?:\.{1,2}\/)+/, "").replace(/[./]+$/, "");
+    if (p.includes("/") && dirs.has(p)) out.add(p);
+  }
+  return [...out];
+}
 const dirsOf = new WeakMap();
 function dirSet(files) {
   if (!dirsOf.has(files)) {
@@ -694,7 +715,13 @@ async function pool(items, n, fn) {
 // commits: the range's first-parent commits on main, newest first: { sha, subject, at, files, pr }.
 // Returns { pr, sha, subject, distance, file, how } or null.
 // `ties`: every PR at the best distance (newest first), for a tie-break on what the failure says (evidence()).
-export function culprit(commits, dist) {
+// `named`: the directories the failure names (namedDirs). A file changed under one of them, inside a directory a test the
+// failure reaches scans, is as close as a file the failure names. Tandem, 2026-11-27: test/hui-boundary.test.ts scans
+// src/app/ouro-candidates and failed naming src/app/ouro-candidates/quoted-message, whose README #6242 had edited; #6908, a
+// reference away through an import, was picked from 8 pull requests instead, got an issue, and main stayed red 80 minutes.
+export function culprit(commits, dist, named = []) {
+  const scanned = [...(dist.dirs?.keys() ?? [])];
+  const inScanned = named.filter((n) => scanned.some((s) => n.startsWith(`${s}/`)));
   let best = null;
   const at = new Map();
   for (const c of commits) {
@@ -711,6 +738,11 @@ export function culprit(commits, dist) {
             how = `added ${f} under ${dir}/, which a test ${dd} reference${dd > 1 ? "s" : ""} from the failure scans`;
           }
         }
+      }
+      const under = d === 0 ? null : inScanned.find((n) => f.startsWith(`${n}/`));
+      if (under) {
+        d = 0;
+        how = `changed ${f} under ${under}/, which the failure names, in a directory a test it reaches scans`;
       }
       if (d === undefined) continue;
       how ??= d === 0 ? `changed ${f}, which the failure names` : `changed ${file}, ${d} reference${d > 1 ? "s" : ""} from the failure`;
@@ -814,14 +846,15 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     const firstFiles = first.run.head_sha === v.reds[0].head_sha ? files : await src.files(first.run.head_sha);
     const read = (p) => src.read(first.run.head_sha, p);
     const dist = await distances(f.roots.filter((x) => firstFiles.has(x)), { read, files: firstFiles });
-    let blame = culprit(commits, dist);
+    const named = namedDirs(`${f.test ?? ""}\n${f.text ?? ""}`, firstFiles);
+    let blame = culprit(commits, dist, named);
     // A failing test file is blamed only on a pull request that changes something in its own import graph (the file, what
     // it imports, and what it reads or scans), not on a file merely named in its failure text (Tandem lead, 2026-11-26:
     // #6797 changed test/helpers/reply-box.ts, which arrive-at-end-window.test.ts doesn't import).
     let outside = null;
     if (blame && blame.distance !== Infinity && f.file && TEST_FILE.test(f.file) && firstFiles.has(f.file)) {
       const own = await distances([f.file], { read, files: firstFiles });
-      const narrow = culprit(commits, own);
+      const narrow = culprit(commits, own, named);
       const wide = blame;
       blame = narrow && narrow.distance !== Infinity ? narrow : null;
       if (wide.pr !== blame?.pr) outside = `#${wide.pr} ${wide.file ? `changed ${wide.file}` : "was the range's only pull request"}, which ${f.file} does not import or read (its import graph is ${own.size} files), so it is cleared`;
@@ -1185,6 +1218,10 @@ export const envFor = (method, path, env = process.env) =>
   method === "GET" && env.READ_TOKEN ? { ...env, GH_TOKEN: env.READ_TOKEN }
   : method !== "GET" && env.ISSUE_TOKEN && ISSUE_WRITE.test(path) ? { ...env, GH_TOKEN: env.ISSUE_TOKEN }
   : env;
+// gh's own error, without the request trace GH_DEBUG adds before it ("* Request at", "> GET", "< HTTP/2.0 502"): kept from the
+// front, the trace hid the error and its HTTP status, so a 5xx was never tried again (Tandem, 2026-11-27: "could not check:
+// GET ...: * Request at ...").
+export const ghError = (stderr) => String(stderr ?? "").split("\n").filter((l) => l.trim() && !/^[*<>] /.test(l)).join("\n").trim().slice(-200);
 // GitHub's own transient failures (5xx, a reset connection) are tried once more after a pause.
 async function http(method, path, body) {
   try {
@@ -1204,7 +1241,7 @@ async function http1(method, path, body) {
   try {
     out = (await child).stdout;
   } catch (err) {
-    throw new Error(`${method} ${path}: ${String(err.stderr || err.message).trim().slice(0, 200)}`);
+    throw new Error(`${method} ${path}: ${ghError(err.stderr) || String(err.message).trim().slice(0, 200)}`);
   }
   try {
     return JSON.parse(out);
@@ -1219,7 +1256,7 @@ async function* lines(path) {
   child.stderr.on("data", (d) => (err += d));
   const done = new Promise((res) => child.on("close", res));
   yield* createInterface({ input: child.stdout, crlfDelay: Infinity });
-  if ((await done) !== 0) throw new Error(`GET ${path}: ${err.trim().slice(0, 200)}`);
+  if ((await done) !== 0) throw new Error(`GET ${path}: ${ghError(err)}`);
 }
 export const api = {
   get: (path) => http("GET", path),
