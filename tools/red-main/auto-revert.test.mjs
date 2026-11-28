@@ -1116,7 +1116,7 @@ test("check: Tandem, #7976: a culprit is reverted only for a failure that itself
   const issue = gh.calls.find((c) => c[0] === "post" && c[1] === "/repos/o/r/issues");
   assert.equal(issue?.[2].title, cfg.flakeIssue.title);
   assert.deepEqual(issue[2].labels, ["delivery-health"]);
-  assert.ok(issue[2].body.includes(FLAKE_MARKER) && /- #11: `y works`/.test(issue[2].body) && !/x works/.test(issue[2].body), issue[2].body);
+  assert.ok(issue[2].body.includes(FLAKE_MARKER) && /- #11: `y works`/.test(issue[2].body) && /- #11: `x works` \(test\/x\.test\.ts\) failed on main at e{9} .*, before #11's tree/.test(issue[2].body), issue[2].body);
   // "y works" fails again too: reproduced, so #11 is reverted as fast as before, and the body says so.
   const again = run({ event: "workflow_dispatch", head_branch: `auto-revert/verify-${"n".repeat(12)}`, head_sha: sha("n") });
   const live = fakeGitHub([n, g, e], { ...logs, [again.id]: both }, { dispatched: [again] });
@@ -1124,7 +1124,8 @@ test("check: Tandem, #7976: a culprit is reverted only for a failure that itself
   await check("o/r", cfg, { a: live, now: NOW, apply: true, log: (l) => lines.push(l), source: async () => src() });
   assert.ok(lines.some((l) => /culprit #11 .*: revert$/.test(l)), lines.join("\n"));
   assert.ok(live.calls.some((c) => c[0] === "gql"), "reverted");
-  assert.ok(!live.calls.some((c) => c[0] === "post" && c[1] === "/repos/o/r/issues"), "nothing declined, no flake issue");
+  const listed = live.calls.find((c) => c[0] === "post" && c[1] === "/repos/o/r/issues")?.[2].body ?? "";
+  assert.ok(/- #11: `x works`.*before #11's tree/.test(listed) && !/y works/.test(listed), `only the failure main already had is listed: ${listed}`);
   // Still running: it waits for the verify run rather than reverting on the failure main already had.
   assert.equal(reproducedNow({ failures: [{ confirmed: false, flake: false }] }).action, "wait");
 });
@@ -1169,17 +1170,17 @@ const rowsSrc = (pFiles = ["src/rows.ts"]) => src({
     ];
     return range.slice(head === "refs/remotes/origin/main" ? 0 : shas.indexOf(head), shas.indexOf(base));
   },
-  order: async () => new Map([[sha("g"), 1], [sha("p"), 2], [sha("d"), 3]]),
+  order: async () => new Map([[sha("e"), 0], [sha("g"), 1], [sha("p"), 2], [sha("d"), 3]]),
   later: async (x) => (x === sha("p") ? [{ sha: sha("d"), subject: "Later (#22)", body: "" }] : []),
 });
 // later: the burst's run at d (null: none yet), its test job's conclusion and log; cause: [side, failed, status] per cause run.
-function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {}, also = [] } = {}) {
+function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {}, also = [], extraLogs = {} } = {}) {
   const g = run({ ...BURST, conclusion: "success", head_sha: sha("g"), created_at: at(70) });
   const red = run({ ...BURST, head_sha: sha("p"), updated_at: at(20) });
   const verify = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${"p".repeat(12)}`, head_sha: sha("p") });
   const d = later && run({ ...BURST, head_sha: sha("d"), status: "in_progress", conclusion: null, ...later });
   const fail = [...TAP(ROWS, "test/rows.test.ts"), ...also];
-  const logs = { [red.id]: fail, [verify.id]: fail, ...Object.fromEntries(Object.keys(jobsOf).map((id) => [id, [`ok 7 - ${ROWS}`]])) };
+  const logs = { [red.id]: fail, [verify.id]: fail, ...Object.fromEntries(Object.keys(jobsOf).map((id) => [id, [`ok 7 - ${ROWS}`]])), ...extraLogs };
   if (d) {
     jobsOf[d.id] = [{ id: d.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: job }];
     logs[d.id] = laterLog;
@@ -1370,4 +1371,54 @@ test("lone: a culprit nothing of which reaches the failure is reverted only when
   lines = await tick(reachable.gh);
   assert.ok(lines.some((l) => /-> #21 \(changed src\/rows\.ts, 1 reference from the failure/.test(l)) && lines.some((l) => /culprit #21 .*: revert$/.test(l)), lines.join("\n"));
   assert.ok(writes(reachable.gh).some((c) => c[0] === "gql") && !writes(reachable.gh).some((c) => /-cause-/.test(JSON.stringify(c))));
+});
+
+test("earlier: a test that failed main's burst at a commit before the suspect's tree clears it, though the burst passed in between and the red is a bisect run's", async () => {
+  // Main e, g, p (#21), d. The burst failed the window test at e, passed at g, then failed at p. The red at e is a bisect run,
+  // dispatched after g's run: neither a push run nor created before the range began, so it was never read, and #21, whose
+  // change the test imports, was blamed.
+  const earlier = (c, over = {}) => run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/bisect-${c.repeat(12)}`, head_sha: sha(c), created_at: at(40), updated_at: at(35), ...over });
+  const e = earlier("e");
+  const cleared = rowsCase({ later: null, extra: [e], extraLogs: { [e.id]: TAP(ROWS, "test/rows.test.ts") } });
+  let lines = await tick(cleared.gh);
+  assert.ok(lines.some((l) => new RegExp(`culprit #21 .*not reverting: it failed the same way on main before #21: https://x/run/${e.id} \\(e{9}`).test(l)), lines.join("\n"));
+  assert.ok(!writes(cleared.gh).some((c) => c[0] === "gql" || /-cause-/.test(JSON.stringify(c))), "no revert, no cause check");
+  const issue = writes(cleared.gh).find((c) => c[1] === "/repos/o/r/issues");
+  assert.ok(issue[2].body.includes(`- #21: \`${ROWS}\` (test/rows.test.ts) failed on main at eeeeeeeee (https://x/run/${e.id}), before #21's tree, so main already had it and #21 isn't blamed`), issue[2].body);
+  // A red at a commit that isn't before #21's tree (not on main's first-parent line) clears nothing.
+  const z = earlier("z", { run_number: 1 });
+  const elsewhere = rowsCase({ later: null, extra: [z], extraLogs: { [z.id]: TAP(ROWS, "test/rows.test.ts") } });
+  lines = await tick(elsewhere.gh);
+  assert.ok(lines.some((l) => /culprit #21 .*: revert$/.test(l)) && writes(elsewhere.gh).some((c) => c[0] === "gql"), lines.join("\n"));
+  // #21 changed the failing test: still blamed, as before.
+  const ownE = earlier("e");
+  const changed = rowsCase({ later: null, extra: [ownE], extraLogs: { [ownE.id]: TAP(ROWS, "test/rows.test.ts") } });
+  lines = await tick(changed.gh, CAUSE_CFG, ["test/rows.test.ts"]);
+  assert.ok(lines.some((l) => /-> #21 \(changed test\/rows\.test\.ts, which the failure names/.test(l)) && lines.some((l) => /culprit #21 .*: revert$/.test(l)) && writes(changed.gh).some((c) => c[0] === "gql"), lines.join("\n"));
+});
+
+test("earlier: the tool's open revert of a suspect main failed the test before is closed, not merged", async () => {
+  const e = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/bisect-${"e".repeat(12)}`, head_sha: sha("e"), created_at: at(40), updated_at: at(35) });
+  const live = rowsCase({ later: { status: "completed", conclusion: "success" }, open: [{}], extra: [e], extraLogs: { [e.id]: TAP(ROWS, "test/rows.test.ts") } });
+  Object.assign(live.gh.open[0], rowsRevert(live.red, live.g, live.verify));
+  const lines = await tick(live.gh);
+  assert.ok(lines.some((l) => new RegExp(`close revert #99: main already failed it before #21's tree: https://x/run/${e.id} \\(e{9}\\)`).test(l)), lines.join("\n"));
+  assert.ok(!writes(live.gh).some((c) => c[0] === "put" || /-cause-/.test(JSON.stringify(c))), "not merged, no cause check");
+  assert.deepEqual(writes(live.gh).find((c) => c[0] === "patch"), ["patch", "/repos/o/r/pulls/99", { state: "closed" }]);
+  assert.ok(writes(live.gh).find((c) => c[1] === "/repos/o/r/issues")[2].body.includes("before #21's tree"));
+  // A revert opened before the rule keeps no range start (nor whether its culprit changed the test): not closed by it.
+  const old = rowsCase({ later: null, open: [{}], extra: [e], extraLogs: { [e.id]: TAP(ROWS, "test/rows.test.ts") } });
+  const pr = Object.assign(old.gh.open[0], rowsRevert(old.red, old.g, old.verify));
+  pr.body = pr.body.replace(/,"before":"[^"]*"/g, "");
+  assert.ok(!revertData(pr.body).failures[0].before);
+  const said = await tick(old.gh);
+  assert.ok(!said.some((l) => /close revert #99/.test(l)) && writes(old.gh).some((c) => c[0] === "put"), said.join("\n"));
+});
+
+test("earlier: the same test is the same file and case, or the same file where a log names no case", () => {
+  const f = { key: `test/rows.test.ts :: ${ROWS}`, test: ROWS, file: "test/rows.test.ts" };
+  const red = (g) => [{ run: run({ head_sha: sha("e") }), keys: new Set([g.key]), failures: [g] }];
+  const x = { failure: f };
+  assert.match(knownBefore(x, { pr: 21, earlier: red({ key: "test/rows.test.ts :: test/rows.test.ts", test: "test/rows.test.ts", file: "test/rows.test.ts" }) }), /failed the same way on main before #21/);
+  assert.equal(knownBefore(x, { pr: 21, earlier: red({ key: "test/rows.test.ts :: another case", test: "another case", file: "test/rows.test.ts" }) }), null, "another case in the same file is another test");
 });
