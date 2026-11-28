@@ -1074,7 +1074,7 @@ function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], 
     logs[d.id] = laterLog;
   }
   const causeRuns = cause.map(([c, failed, status = "completed"], i) => {
-    const r = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${c.repeat(12)}-cause-${i % 5 + 1}`, head_sha: sha(c), status, conclusion: status === "completed" ? (failed ? "failure" : "success") : null });
+    const r = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${c.repeat(12)}-cause-21-${i % 5 + 1}-burst`, head_sha: sha(c), status, conclusion: status === "completed" ? (failed ? "failure" : "success") : null });
     if (failed) logs[r.id] = fail;
     return r;
   });
@@ -1108,15 +1108,45 @@ test("cause: a reproduced failure a later main run passed, at a commit with the 
   assert.ok(!writes(gh).some((c) => c[0] === "gql"), "no revert");
   const refs = writes(gh).filter((c) => c[1] === "/repos/o/r/git/refs").map((c) => c[2].ref);
   assert.equal(refs.length, 10);
-  assert.deepEqual([refs[0], refs[9]], [`refs/heads/auto-revert/verify-${"g".repeat(12)}-cause-1`, `refs/heads/auto-revert/verify-${"p".repeat(12)}-cause-5`]);
-  assert.deepEqual(writes(gh).filter((c) => /dispatches$/.test(c[1]))[0][2], { ref: `auto-revert/verify-${"g".repeat(12)}-cause-1` });
+  assert.deepEqual([refs[0], refs[9]], [`refs/heads/auto-revert/verify-${"g".repeat(12)}-cause-21-1-burst`, `refs/heads/auto-revert/verify-${"p".repeat(12)}-cause-21-5-burst`]);
+  assert.deepEqual(writes(gh).filter((c) => /dispatches$/.test(c[1]))[0][2], { ref: `auto-revert/verify-${"g".repeat(12)}-cause-21-1-burst` });
   // A workflow that takes a repeat count and a file filter: one run at each commit, of the failing file only.
   const repeat = rowsCase();
   await tick(repeat.gh, { ...CAUSE_CFG, repeatInput: "repeat", testInput: "files" });
   assert.deepEqual(writes(repeat.gh).filter((c) => /dispatches$/.test(c[1])).map((c) => c[2]), [
-    { ref: `auto-revert/verify-${"g".repeat(12)}-cause-1`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
-    { ref: `auto-revert/verify-${"p".repeat(12)}-cause-1`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
+    { ref: `auto-revert/verify-${"g".repeat(12)}-cause-21-1-burst`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
+    { ref: `auto-revert/verify-${"p".repeat(12)}-cause-21-1-burst`, inputs: { repeat: "5", files: "test/rows.test.ts" } },
   ]);
+  // Runs at the parent already there (another culprit's at that commit are not): only the culprit's side is dispatched.
+  const half = rowsCase({ cause: side("g", 0) });
+  await tick(half.gh);
+  assert.deepEqual([...new Set(writes(half.gh).filter((c) => /dispatches$/.test(c[1])).map((c) => c[2].ref.slice(0, 31)))], [`auto-revert/verify-${"p".repeat(12)}`]);
+});
+
+test("cause: a failure two red runs confirmed, which passed when its workflow ran again at the red commit, starts a cause check, not a revert", async () => {
+  const g = run({ ...BURST, conclusion: "success", head_sha: sha("g"), created_at: at(70) });
+  const first = run({ ...BURST, head_sha: sha("p"), updated_at: at(30) });
+  const red = run({ ...BURST, head_sha: sha("d"), updated_at: at(20) });
+  const passed = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${"d".repeat(12)}`, head_sha: sha("d"), conclusion: "success" });
+  const fail = TAP(ROWS, "test/rows.test.ts");
+  const gh = fakeGitHub([red, first, g], { [first.id]: fail, [red.id]: fail }, { dispatched: [passed] });
+  const lines = await tick(gh);
+  assert.ok(lines.some((l) => l.includes(`culprit #21 "Promote releases (#21)": revert pending: \`${ROWS}\` (test/rows.test.ts) passed when its workflow ran again at ddddddddd; a cause check runs it`)), lines.join("\n"));
+  assert.ok(!writes(gh).some((c) => c[0] === "gql"), "no revert");
+});
+
+test("laterPass: a log that couldn't be read counts as nothing and is read again on the next tick", async () => {
+  const red = run({ head_sha: sha("b") });
+  const later = run({ head_sha: sha("n") });
+  const f = { key: "test/x.test.ts :: x works", test: "x works", file: "test/x.test.ts", job: "npm test (ubuntu-latest)" };
+  const gh = fakeGitHub([], { [later.id]: ["ok 4 - x works"] }, { jobsOf: { [later.id]: [{ id: later.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: "success" }] } });
+  const lines = gh.lines;
+  gh.lines = () => (async function* () { throw new Error("HTTP 502"); })();
+  const cache = {};
+  assert.equal(await laterPass("o/r", [later, red], red, f, { a: gh, cache }), null);
+  assert.equal(cache.passes, undefined, "nothing kept");
+  gh.lines = lines;
+  assert.equal((await laterPass("o/r", [later, red], red, f, { a: gh, cache }))?.id, later.id);
 });
 
 test("cause: still running, it reverts nothing and dispatches nothing again", async () => {
