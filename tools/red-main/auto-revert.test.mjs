@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -414,6 +414,55 @@ test("a failing test file is blamed only on a PR that changes its own import gra
   assert.equal(two.blame.pr, 11, "a PR inside the graph is still blamed, and the one outside is passed over");
   const self = await only([named, { sha: sha("b"), subject: "Edits the test (#12)", pr: 12, files: ["test/x.test.ts"] }]);
   assert.equal(self.blame.pr, 12);
+});
+
+test("a file the failure's message names by its bare name names the pull request that changed it, before any import is followed", async () => {
+  // test/workflow-checkout.test.ts reads the fail-fast action's file and scans the workflows. Of 7 pull requests in the
+  // range, #34 changed .github/workflows/windows-tray.yml, the file its message names; #35 changed the action, 1 reference away.
+  const files = new Set([...FILES, "test/workflow-checkout.test.ts", ".github/workflows/windows-tray.yml", ".github/workflows/ci.yml", ".github/actions/pr-fail-fast/action.yml", "docs/ci/windows-tray.yml"]);
+  const reads = { ...SRC, "test/workflow-checkout.test.ts": `const action = read(".github/actions/pr-fail-fast/action.yml");\nfor (const wf of fs.readdirSync(".github/workflows")) test(wf, () => {});\n` };
+  const range = [
+    { sha: sha("7"), parent: sha("6"), subject: "Docs (#37)", pr: 37, files: ["README.md"] },
+    { sha: sha("6"), parent: sha("5"), subject: "Types (#36)", pr: 36, files: ["src/z.ts"] },
+    { sha: sha("5"), parent: sha("4"), subject: "Fail fast (#35)", pr: 35, files: [".github/actions/pr-fail-fast/action.yml"] },
+    { sha: sha("4"), parent: sha("3"), subject: "Tray build (#34)", pr: 34, files: [".github/workflows/windows-tray.yml"] },
+    { sha: sha("3"), parent: sha("2"), subject: "Ci (#33)", pr: 33, files: [".github/workflows/ci.yml"] },
+    { sha: sha("2"), parent: sha("1"), subject: "Readme (#32)", pr: 32, files: ["README.md"] },
+    { sha: sha("1"), parent: sha("g"), subject: "Other (#31)", pr: 31, files: ["src/x.ts"] },
+  ];
+  const g = run({ conclusion: "success", head_sha: sha("g") });
+  const n = run({ head_sha: sha("7") });
+  const fail = [
+    "# Subtest: windows-tray.yml",
+    "not ok 12 - windows-tray.yml",
+    "  ---",
+    "  duration_ms: 1.2",
+    "  location: '/home/runner/work/r/r/test/workflow-checkout.test.ts:2:39'",
+    "  failureType: 'testCodeFailure'",
+    "  error: 'windows-tray.yml: no action is downloaded from this repository'",
+    "  code: 'ERR_ASSERTION'",
+    "  stack: |-",
+    "    TestContext.<anonymous> (file:///home/runner/work/r/r/test/workflow-checkout.test.ts:2:39)",
+    "  ...",
+  ];
+  const blame = async (commits) => (await analyse("o/r", verdicts([n, g])[0], { a: fakeGitHub([n, g], { [n.id]: fail }), src: src({ files: async () => files, read: async (_, p) => reads[p] ?? null, commits: async () => commits }) })).results[0].blame;
+  const one = await blame(range);
+  assert.equal(one.pr, 34, `${one.pr}: ${one.how}`);
+  assert.equal(one.how, "changed .github/workflows/windows-tray.yml, which the failure's message names");
+  assert.deepEqual(one.ties.map((t) => t.pr), [34]);
+  // Two pull requests changed a windows-tray.yml: both are suspects, so a repository that reverts only one named alone opens an issue.
+  const two = await blame([{ sha: sha("8"), parent: sha("7"), subject: "Tray docs (#38)", pr: 38, files: ["docs/ci/windows-tray.yml"] }, ...range]);
+  assert.deepEqual(two.ties.map((t) => t.pr), [38, 34]);
+  const c = { pr: two.pr, sha: two.sha, confirmed: true, failures: [{ failure: {}, prs: 8, blame: two }] };
+  assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue");
+  // A fix to the named file on main since settles it.
+  const fixed = { pr: 34, sha: sha("4"), confirmed: true, failures: [{ failure: { job: "npm test", roots: ["test/workflow-checkout.test.ts"] }, prs: 7, blame: one }] };
+  assert.match(decide(fixed, { minutes: 0, minRedMinutes: 0, changedLater: [{ sha: sha("9"), pr: 39, files: [".github/workflows/windows-tray.yml"] }] }).reason, /#39 .* changed \.github\/workflows\/windows-tray\.yml on main since/);
+  // A name with a directory is a path: its end, or the checkout's path before it. Never a temp or package path, or a file:line.
+  const index = [{ sha: sha("2"), pr: 2, files: ["src/other/index.ts"] }, { sha: sha("1"), pr: 1, files: ["src/app/index.ts", ".vscode/settings.json", "lib/index.ts"] }];
+  for (const said of ["src/app/index.ts does not export foo", "app/index.ts does not export foo", "/home/runner/work/r/r/src/app/index.ts does not export foo"]) assert.deepEqual(messageNamed(index, said).ties.map((t) => t.pr), [1], said);
+  assert.deepEqual(messageNamed(index, "index.ts does not export foo").ties.map((t) => t.pr), [2, 1], "a bare name: every pull request that changed one");
+  for (const said of ['ENOENT: no such file or directory, open "/tmp/t-1/settings.json"', "node_modules/ws/lib/index.ts is stale", "at run (src/app/index.ts:9:3)"]) assert.equal(messageNamed(index, said), null, said);
 });
 
 test("an infrastructure-only red is no verdict: the run before it decides", async () => {
