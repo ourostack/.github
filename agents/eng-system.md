@@ -52,6 +52,10 @@ It prints the median and p90 from PR opened to merged, merged to live (the first
       - Release publishing runs on a budget no person or interactive tool spends: a GitHub App's, not a personal token that shares a login's hourly count with that person's apps.
       - A merge queue starts its next batch on the new main when something merges outside it.
       - Public pages that show the release are checked against it.
+      - A turn, lock or slot the release path holds alarms when its holder has done no work for 30 minutes, naming the holder and the command that frees it. A cached verdict is final only for a candidate that has failed, never for one that is only waiting: one app's readings turn stayed with a candidate whose verdict was cached as final, and every newer candidate waited four hours with no alarm.
+      - A batch that fails for its own harness (a reading never taken, a step that timed out, the same failure as the batch before with no change in common) blames no change and alarms at once. A change ejected for the harness's fault goes back by itself.
+      - A step allowed to fail is still watched: a check marked "continue on error" that has never once passed is a broken check, not a passing one. One app's release typing probe timed out on every run for a day, unseen, until a merge gate began to need its reading.
+      - A test's copy of a downloaded app drops the download's quarantine, and every launch it waits on has a time limit: a held first launch waits forever on a machine with no one to answer.
 
 ## What we chose not to adopt
 
