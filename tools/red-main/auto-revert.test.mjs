@@ -1406,6 +1406,13 @@ test("earlier: the tool's open revert of a suspect main failed the test before i
   assert.ok(!writes(live.gh).some((c) => c[0] === "put" || /-cause-/.test(JSON.stringify(c))), "not merged, no cause check");
   assert.deepEqual(writes(live.gh).find((c) => c[0] === "patch"), ["patch", "/repos/o/r/pulls/99", { state: "closed" }]);
   assert.ok(writes(live.gh).find((c) => c[1] === "/repos/o/r/issues")[2].body.includes("before #21's tree"));
+  // A revert opened before the rule keeps no range start (nor whether its culprit changed the test): not closed by it.
+  const old = rowsCase({ later: null, open: [{}], extra: [e], extraLogs: { [e.id]: TAP(ROWS, "test/rows.test.ts") } });
+  const pr = Object.assign(old.gh.open[0], rowsRevert(old.red, old.g, old.verify));
+  pr.body = pr.body.replace(/,"before":"[^"]*"/g, "");
+  assert.ok(!revertData(pr.body).failures[0].before);
+  const said = await tick(old.gh);
+  assert.ok(!said.some((l) => /close revert #99/.test(l)) && writes(old.gh).some((c) => c[0] === "put"), said.join("\n"));
 });
 
 test("earlier: the same test is the same file and case, or the same file where a log names no case", () => {

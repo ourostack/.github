@@ -1428,7 +1428,7 @@ export function revertData(body) {
 export const plainBody = (body) => cleanBody(String(body ?? "").replace(DATA, ""));
 
 export function revertBody({ repo, c, run, minutes }) {
-  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}), ...(x.blame?.distance === Infinity ? { lone: true } : {}), ...(x.touched ? { touched: true } : {}) })) };
+  const data = { run: run.id, pr: c.pr, sha: c.sha, parent: c.parent ?? null, failures: c.failures.map((x) => ({ key: x.failure.key, test: x.failure.test, file: x.failure.file, job: x.failure.job, ...(x.passedVerify || x.flake ? { passedVerify: true } : {}), ...(x.blame?.distance === Infinity ? { lone: true } : {}), ...(x.touched ? { touched: true } : {}), before: x.base?.created_at ?? x.first?.created_at })) };
   const lines = c.failures.map((r) => `- ${r.failure.test ? `\`${r.failure.test}\` (${r.failure.file ?? r.failure.jobs.join(", ")})` : `job \`${r.failure.job}\`${r.failure.step ? `, step "${r.failure.step}"` : ""}`}: first failed in ${r.first.html_url} (${short(r.first.head_sha)}), passed in ${r.base.html_url} (${short(r.base.head_sha)}); of the ${r.prs} pull requests between, #${c.pr} ${r.blame.how}. Failed in ${r.runs} run${r.runs > 1 ? "s" : ""}${r.runs >= 2 ? " in a row" : r.confirmed ? `, and again when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : r.flake ? `, and passed when ${r.verify?.html_url ?? "its workflow"} ran at the same commit` : ""}.`);
   return [
     `<!-- auto-revert: ${JSON.stringify(data).replace(/>/g, "\\u003e")} -->`,
@@ -1872,11 +1872,20 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
     if (!kept?.failures?.length) return null;
     const redRun = runs.find((r) => r.id === kept.run) ?? (await a.get(`/repos/${repo}/actions/runs/${kept.run}`));
     order ??= (await (await getSrc()).order?.()) ?? null;
-    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, lone, touched, ...failure }) => ({ failure, passedVerify: passedVerify === true, lone: lone === true, touched: touched === true })) };
+    const c = { pr: kept.pr, sha: kept.sha, parent: kept.parent, failures: kept.failures.map(({ passedVerify, lone, touched, before, ...failure }) => ({ failure, passedVerify: passedVerify === true, lone: lone === true, touched: touched === true, before })) };
     // A failure main had before the culprit's tree is never its: the revert closes, as one never opened would not have opened.
+    // Read as the judge read it (the same window, by the range's start); a revert whose data has no start predates the rule.
     const s = await getSrc();
-    const prior = c.failures.some((x) => !x.touched) ? await earlierReds(repo, redRun, redRun.created_at, { a, files: await s.files(redRun.head_sha), cache, src: s, until: now, bisect: bisects(redRun), keep: beforeTree(order, c.parent, redRun.created_at) }).catch(() => []) : [];
-    const seen = c.failures.map((x) => (x.touched ? undefined : seenBefore(x.failure, prior)));
+    const seen = [];
+    for (const x of c.failures) {
+      if (x.touched || !x.before) {
+        seen.push(undefined);
+        continue;
+      }
+      const key = `${wfKey(redRun)}|${x.before}|${c.parent ?? ""}`;
+      if (!earlier.has(key)) earlier.set(key, await earlierReds(repo, redRun, x.before, { a, files: await s.files(redRun.head_sha), cache, src: s, until: now, bisect: bisects(redRun), keep: beforeTree(order, c.parent, x.before) }).catch(() => []));
+      seen.push(seenBefore(x.failure, earlier.get(key)));
+    }
     if (seen.every(Boolean)) {
       for (const [i, x] of c.failures.entries()) declined.push(earlierLine(c.pr, x.failure, seen[i]));
       const why = `main already failed it before #${c.pr}'s tree: ${[...new Set(seen.map((e) => `${e.run.html_url} (${short(e.run.head_sha)})`))].join(", ")}`;
@@ -1990,7 +1999,7 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
           const reasons = [];
           for (const x of c.failures) {
             const before = x.base?.created_at ?? x.first.created_at;
-            const key = `${before}|${c.parent ?? ""}`;
+            const key = `${wfKey(r.newest)}|${before}|${c.parent ?? ""}`;
             if (!earlier.has(key) && !x.touched && !x.cleared) earlier.set(key, await earlierReds(repo, r.newest, before, { a, files: await s.files(r.newest.head_sha), cache, src: s, until: now, bisect: bisects(r.newest), keep: beforeTree(order, c.parent, before) }).catch(() => []));
             earlierOf.set(x, earlier.get(key) ?? []);
             reasons.push(knownBefore(x, { pr: c.pr, earlier: earlierOf.get(x), flakes: await flakesNow(r.newest.head_sha), flakeDoc: cfg.knownFlakes }));
