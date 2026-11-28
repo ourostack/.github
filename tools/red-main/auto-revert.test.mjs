@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, ciOnlyCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -1155,8 +1155,12 @@ const ROWS_KEY = `test/rows.test.ts :: ${ROWS}`;
 const BURST = { name: "burst", path: ".github/workflows/burst.yml" };
 // pFiles: what #21 changed. By default a file the test imports, so only a later pass, not the range alone, starts a cause check.
 const rowsSrc = (pFiles = ["src/rows.ts"]) => src({
-  files: async () => new Set(["test/rows.test.ts", "src/rows.ts", "release/promote.ts", "src/other.ts"]),
-  read: async (_, p) => ({ "test/rows.test.ts": `import { rows } from "../src/rows.ts";\n`, "src/rows.ts": "export const rows = 1;\n" })[p] ?? null,
+  files: async () => new Set(["test/rows.test.ts", "src/rows.ts", "release/promote.ts", "src/other.ts", ".github/workflows/burst.yml", ".github/actions/setup-webkit/action.yml", "scripts/burst.mjs"]),
+  read: async (_, p) => ({
+    "test/rows.test.ts": `import { rows } from "../src/rows.ts";\n`,
+    "src/rows.ts": "export const rows = 1;\n",
+    ".github/workflows/burst.yml": "jobs:\n  shard:\n    name: npm test\n    steps:\n      - uses: ./.github/actions/setup-webkit\n      - run: node scripts/burst.mjs\n",
+  })[p] ?? null,
   commits: async (base, head) => {
     const shas = [sha("d"), sha("p"), sha("g")];
     const range = [
@@ -1169,12 +1173,12 @@ const rowsSrc = (pFiles = ["src/rows.ts"]) => src({
   later: async (x) => (x === sha("p") ? [{ sha: sha("d"), subject: "Later (#22)", body: "" }] : []),
 });
 // later: the burst's run at d (null: none yet), its test job's conclusion and log; cause: [side, failed, status] per cause run.
-function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {} } = {}) {
+function rowsCase({ later = {}, job = "success", laterLog = [`ok 7 - ${ROWS}`], verified = true, cause = [], open = [], extra = [], jobsOf = {}, also = [] } = {}) {
   const g = run({ ...BURST, conclusion: "success", head_sha: sha("g"), created_at: at(70) });
   const red = run({ ...BURST, head_sha: sha("p"), updated_at: at(20) });
   const verify = run({ ...BURST, event: "workflow_dispatch", head_branch: `auto-revert/verify-${"p".repeat(12)}`, head_sha: sha("p") });
   const d = later && run({ ...BURST, head_sha: sha("d"), status: "in_progress", conclusion: null, ...later });
-  const fail = TAP(ROWS, "test/rows.test.ts");
+  const fail = [...TAP(ROWS, "test/rows.test.ts"), ...also];
   const logs = { [red.id]: fail, [verify.id]: fail, ...Object.fromEntries(Object.keys(jobsOf).map((id) => [id, [`ok 7 - ${ROWS}`]])) };
   if (d) {
     jobsOf[d.id] = [{ id: d.id * 10, name: "npm test (ubuntu-latest, 3/14)", status: "completed", conclusion: job }];
@@ -1326,9 +1330,17 @@ test("lone: a burst red blamed only as the range's one pull request, which chang
   assert.ok(!writes(gh).some((c) => c[0] === "gql" || /-cause-/.test(JSON.stringify(c))), "no revert, no cause check");
   const issue = writes(gh).find((c) => c[1] === "/repos/o/r/issues");
   assert.ok(issue[2].body.includes(`- #21: \`${ROWS}\` (test/rows.test.ts) failed in main's \`burst\` (${red.html_url}) at ppppppppp and passed at ggggggggg; #21 was blamed only`), issue[2].body);
-  // The workflow that runs the test isn't CI-only for it: a change there goes to a cause check.
-  const own = rowsCase({ later: null });
-  assert.ok((await tick(own.gh, CAUSE_CFG, [".github/workflows/burst.yml"])).some((l) => /culprit #21 .*revert pending: .*only as the range's one pull request: nothing it changed reaches it; a cause check runs it/.test(l)));
+  // What the test's job runs isn't CI-only for it: its workflow, a local action it uses, a script a step runs. A change there
+  // goes to a cause check.
+  for (const runs of [".github/workflows/burst.yml", ".github/actions/setup-webkit/action.yml", "scripts/burst.mjs"]) {
+    const own = rowsCase({ later: null });
+    const said = await tick(own.gh, CAUSE_CFG, [runs]);
+    assert.ok(said.some((l) => /culprit #21 .*revert pending: .*only as the range's one pull request: nothing it changed reaches it; a cause check runs it/.test(l)), `${runs}\n${said.join("\n")}`);
+  }
+  // A rename out of product code moved product code: not CI-only.
+  const f = { test: ROWS, file: "test/rows.test.ts" };
+  assert.equal(ciOnlyCleared({ pr: 21, files: ["scripts/polyfill.ts"], deleted: ["src/polyfill.ts"], added: ["scripts/polyfill.ts"] }, f), null);
+  assert.match(ciOnlyCleared({ pr: 21, files: ["scripts/main-reopen.ts", "docs/x.md"], deleted: [], added: [] }, f), /changed only paths the test doesn't load/);
 });
 
 test("lone: a culprit nothing of which reaches the failure is reverted only when its parent passes every cause run and it fails one; a reachable one as before", async () => {
@@ -1348,6 +1360,11 @@ test("lone: a culprit nothing of which reaches the failure is reverted only when
   const race = rowsCase({ later: null, cause: [...side("g", 1), ...side("p", 2)] });
   lines = await tick(race.gh, CAUSE_CFG, code);
   assert.ok(lines.some((l) => /culprit #21 .*not reverting: .*: a race on main, not #21's/.test(l)) && !writes(race.gh).some((c) => c[0] === "gql"), lines.join("\n"));
+  // A culprit that reaches one of its failures is reverted on reproducing, as before, though another failure in the run is
+  // one nothing it changed reaches.
+  const mixed = rowsCase({ later: null, also: TAP("a window opens", "test/window.test.ts") });
+  lines = await tick(mixed.gh);
+  assert.ok(lines.some((l) => /"a window opens": .*-> #21 \(the only pull request in the range/.test(l)) && lines.some((l) => /culprit #21 .*: revert$/.test(l)), lines.join("\n"));
   // A culprit whose change the test imports is reverted on reproducing, with no cause check, as before.
   const reachable = rowsCase({ later: null });
   lines = await tick(reachable.gh);

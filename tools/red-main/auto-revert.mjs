@@ -930,7 +930,7 @@ export async function analyse(repo, v, { a, src, cache = null, maxWalk = 8, asOf
     // The job's setup is neither: a failure main already had stays main's (knownBefore).
     const touched = blame?.distance === 0 && !blame.setup;
     const cleared = blame?.distance === Infinity ? loneCleared(commits.find((c) => c.pr === blame.pr), f) : null;
-    const ciOnly = blame?.distance === Infinity ? ciOnlyCleared(commits.find((c) => c.pr === blame.pr), f, first.run) : null;
+    const ciOnly = blame?.distance === Infinity && f.test ? ciOnlyCleared(commits.find((c) => c.pr === blame.pr), f, await jobRuns(read, first.run, f.job, firstFiles)) : null;
     results.push({ ...r, prs: commits.filter((c) => c.pr).length, blame, touched, cleared, ciOnly, why: blame ? blame.how : outside ?? (f.roots.length ? "no pull request in the range touches what it reaches" : "its failure names no file and its step runs none") });
   }
   return { newest: newest.run, results, check };
@@ -1260,17 +1260,26 @@ export function loneCleared(c, f) {
 }
 
 // CI-only paths: the repository's workflows and actions, scripts, and documents. A test loads none of them unless it reaches
-// them, through its imports or a path it names.
+// them, through its imports or a path it names, or its job runs them.
 const CI_ONLY = /^(\.github\/|scripts\/)/;
+// What a test's job runs, at that commit: the workflow, a reusable workflow its job calls, the local actions it uses and the
+// files its steps name (the script a step runs).
+export async function jobRuns(read, run, job, files) {
+  const wf = String(run?.path ?? "").split("@")[0];
+  if (!wf) return new Set();
+  const own = (await jobSource(read, wf, job)) ?? "";
+  const caller = job.includes(" / ") ? (await jobSource(read, wf, job.slice(0, job.indexOf(" / ")))) ?? "" : "";
+  const called = [...caller.matchAll(/uses:\s*\.\/(\.github\/workflows\/[^\s@#'"]+\.ya?ml)/g)].map((m) => m[1]);
+  return new Set([wf, ...called, ...actionFiles(own, files), ...mentions(own, files)]);
+}
 // Why a test failure's culprit, blamed only as the range's one pull request (nothing it changed reaches the failure), is not
-// blamed at all, or null: it changed only CI-only paths and test files other than the failing one, and not the workflow
-// that ran the test, and added or removed no test file (that moves what each shard runs). Picked so, it was reverted for a racy window test on a change to two CI scripts (a consuming app,
+// blamed at all, or null: it changed (renamed and removed paths too) only CI-only paths and test files other than the failing
+// one, none its job runs (`runs`, jobRuns), and added or removed no test file (that moves what each shard runs). Picked so, it was reverted for a racy window test on a change to two CI scripts (a consuming app,
 // 2026-11-28); one that changed other code is decided by a cause check instead (byCause).
-export function ciOnlyCleared(c, f, run) {
-  const changed = c?.files ?? [];
+export function ciOnlyCleared(c, f, runs = new Set()) {
+  const changed = [...new Set([...(c?.files ?? []), ...(c?.deleted ?? [])])];
   if (!f.test || !changed.length || [...(c.added ?? []), ...(c.deleted ?? [])].some((x) => TEST_FILE.test(x))) return null;
-  const workflow = String(run?.path ?? "").split("@")[0];
-  if (!changed.every((x) => x !== f.file && x !== workflow && (CI_ONLY.test(x) || DOC.test(x) || (TEST_FILE.test(x) && !NOT_A_TEST.test(x))))) return null;
+  if (!changed.every((x) => x !== f.file && !runs.has(x) && (CI_ONLY.test(x) || DOC.test(x) || (TEST_FILE.test(x) && !NOT_A_TEST.test(x))))) return null;
   return `#${c.pr} was blamed only as the range's one pull request, and it changed only paths the test doesn't load (${changed.slice(0, 4).join(", ")}${changed.length > 4 ? ", ..." : ""}): CI, scripts, documents and other tests`;
 }
 // A culprit's failure that ciOnlyCleared spared, for the flake issue: the test, and the commits it failed and passed at.
@@ -1853,7 +1862,8 @@ export async function check(repo, cfg, { a, now, apply, asOf = null, gitDir = nu
   async function byCause(c, redRun) {
     const what = (f) => (f.test ? `\`${f.test}\` (${f.file ?? f.job})` : `job \`${f.job}\``);
     const flaky = c.failures.find((x) => x.passedVerify || x.flake);
-    const lone = c.failures.find((x) => x.lone || x.blame?.distance === Infinity);
+    // Only when it reaches none of them: a failure it does reach reverts it as before.
+    const lone = c.failures.length && c.failures.every((x) => x.lone || x.blame?.distance === Infinity) ? c.failures[0] : null;
     let why = flaky ? `${what(flaky.failure)} passed when its workflow ran again at ${short(redRun.head_sha)}`
       : lone ? `#${c.pr} is blamed for ${what(lone.failure)} only as the range's one pull request: nothing it changed reaches it`
       : null;
