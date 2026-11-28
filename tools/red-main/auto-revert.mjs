@@ -778,19 +778,24 @@ export function failureMessage(text) {
   return out.join("\n");
 }
 
-// The pull requests in the range a failure's message names by a file's name, with or without its directory, before any
-// import is followed: each that changed a file of that name. One is the culprit; several are the suspects, tied. A
+// The pull requests in the range a failure's message names by a file's name, before any import is followed: each that
+// changed a file of that name (a bare name), or at that path (a name with a directory: the path's end, or the checkout's
+// path before it). One is the culprit; several are the suspects, tied. A
 // consuming app, 2026-11-28: "windows-tray.yml: no action is downloaded from this repository" failed, a pull request in
 // the range had changed .github/workflows/windows-tray.yml, and another, one reference from the test, was blamed. A
 // `file:line` is where code ran (a stack frame), not what the message is about: it names no one, as a helper only named in a failure never was.
 export function messageNamed(commits, message) {
   const text = String(message ?? "");
-  const names = new Set([...text.matchAll(PATHISH)].filter((m) => !/^:\d/.test(text.slice(m.index + m[0].length))).map((m) => posix.basename(m[0].replace(/\\/g, "/"))));
-  if (!names.size) return null;
+  const names = [...text.matchAll(PATHISH)]
+    .filter((m) => !/^:\d/.test(text.slice(m.index + m[0].length)))
+    .map((m) => m[0].replace(/\\/g, "/").replace(/^\.\//, ""))
+    .filter((n) => !n.includes("node_modules/"));
+  if (!names.length) return null;
+  const is = (x) => names.some((n) => (n.includes("/") ? n === x || n.endsWith(`/${x}`) || x.endsWith(`/${n}`) : posix.basename(x) === n));
   const hits = [];
   for (const c of commits) {
-    const file = c.pr && c.files.find((x) => names.has(posix.basename(x)));
-    if (file) hits.push({ pr: c.pr, sha: c.sha, parent: c.parent, subject: c.subject, distance: 0, file, how: `changed ${file}, which the failure's message names` });
+    const file = c.pr && c.files.find(is);
+    if (file) hits.push({ pr: c.pr, sha: c.sha, parent: c.parent, subject: c.subject, distance: 0, file, message: true, how: `changed ${file}, which the failure's message names` });
   }
   return hits.length ? { ...hits[0], ties: hits } : null;
 }
@@ -1175,8 +1180,9 @@ export function reproducedNow(c) {
 export function decide(c, { later = [], openPrs = [], minutes, minRedMinutes, changedLater = [], namedOnly = false }) {
   const landed = fixLanded(later, c.pr);
   if (landed) return { action: "skip", reason: `${short(landed.sha)} on main since names #${c.pr}: ${landed.subject}` };
-  // A failure blamed on the job's setup is settled by a later change to that setup too.
-  const settled = (c.failures ?? []).map((x) => settledBy(x.blame?.setup ? { ...x.failure, roots: [...(x.failure.roots ?? []), ...(x.failure.setup ?? [])] } : x.failure, { changedLater }));
+  // A failure blamed on the job's setup, or on a file its message names, is settled by a later change to that setup or file too.
+  const also = (x) => (x.blame?.setup ? x.failure.setup ?? [] : x.blame?.message ? (x.blame.ties ?? [x.blame]).map((t) => t.file) : []);
+  const settled = (c.failures ?? []).map((x) => settledBy(also(x).length ? { ...x.failure, roots: [...(x.failure.roots ?? []), ...also(x)] } : x.failure, { changedLater }));
   if (settled.length && settled.every(Boolean)) return { action: "skip", reason: settled.join("; ") };
   const open = fixPrOpen(openPrs, { number: c.pr }, c.sha);
   if (open) return { action: "skip", reason: `a fix or revert PR is already open (#${open.number})` };

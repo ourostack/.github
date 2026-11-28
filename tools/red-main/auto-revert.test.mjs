@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { OWNERS } from "./red-main.mjs";
 import {
   CONFIG, MARKER, analyse, envFor, ghError, check, classifyFailure, culprit, culprits, decide, distances, fixLanded, fixPrOpen, ignored, knownOnMain, landReverts, landable, main, onlyKnown,
-  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
+  KNOWN_MARKER, FLAKE_MARKER, codeNames, flakeIssue, reproducedNow, earlierReds, evidence, jobKey, knownBefore, laterPass, loneCleared, messageNamed, openFlakes, softJob, softJobs, markPartial, mentions, parseLog, parseLog1e, PARSE_VERSION, readHistory, references, revert, revertBody, revertData, revertOf, runFailures, runJobs, scannedDirs, settledBy, stepBlock, textNamed, verdicts,
 } from "./auto-revert.mjs";
 
 const NOW = Date.UTC(2026, 10, 20, 0, 40);
@@ -455,6 +455,14 @@ test("a file the failure's message names by its bare name names the pull request
   assert.deepEqual(two.ties.map((t) => t.pr), [38, 34]);
   const c = { pr: two.pr, sha: two.sha, confirmed: true, failures: [{ failure: {}, prs: 8, blame: two }] };
   assert.equal(decide(c, { minutes: 0, minRedMinutes: 0, namedOnly: true }).action, "issue");
+  // A fix to the named file on main since settles it.
+  const fixed = { pr: 34, sha: sha("4"), confirmed: true, failures: [{ failure: { job: "npm test", roots: ["test/workflow-checkout.test.ts"] }, prs: 7, blame: one }] };
+  assert.match(decide(fixed, { minutes: 0, minRedMinutes: 0, changedLater: [{ sha: sha("9"), pr: 39, files: [".github/workflows/windows-tray.yml"] }] }).reason, /#39 .* changed \.github\/workflows\/windows-tray\.yml on main since/);
+  // A name with a directory is a path: its end, or the checkout's path before it. Never a temp or package path, or a file:line.
+  const index = [{ sha: sha("2"), pr: 2, files: ["src/other/index.ts"] }, { sha: sha("1"), pr: 1, files: ["src/app/index.ts", ".vscode/settings.json", "lib/index.ts"] }];
+  for (const said of ["src/app/index.ts does not export foo", "app/index.ts does not export foo", "/home/runner/work/r/r/src/app/index.ts does not export foo"]) assert.deepEqual(messageNamed(index, said).ties.map((t) => t.pr), [1], said);
+  assert.deepEqual(messageNamed(index, "index.ts does not export foo").ties.map((t) => t.pr), [2, 1], "a bare name: every pull request that changed one");
+  for (const said of ['ENOENT: no such file or directory, open "/tmp/t-1/settings.json"', "node_modules/ws/lib/index.ts is stale", "at run (src/app/index.ts:9:3)"]) assert.equal(messageNamed(index, said), null, said);
 });
 
 test("an infrastructure-only red is no verdict: the run before it decides", async () => {
