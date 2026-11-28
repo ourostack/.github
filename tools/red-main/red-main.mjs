@@ -301,8 +301,10 @@ export async function fetchMainRuns(repo, since, get = ghGet, now = Date.now(), 
 // A failed job's annotation titled "infra" says the job failed for infrastructure, not code.
 // Text a lost or killed runner leaves in a job's log or annotations.
 export const RUNNER_LOST = /runner has received a shutdown signal|lost communication with the server|hosted runner .* lost|job was not acquired by runner|the operation was canceled/i;
+// GitHub's artifact service timing out while a job uploads its report (shepherd's X-ray, 2026-11-28).
+export const ARTIFACT_SERVICE = /Request timeout: \/twirp\/github\.actions\.results|request to https:\/\/\S+\.blob\.core\.windows\.net\/actions-results\/\S+ failed/i;
 const INFRA_LOG = /\b50[0234] (Bad Gateway|Service Unavailable|Gateway Time-?out)\b|(GET|POST|PUT|PATCH|DELETE) \S+: 50[0234]\b|HTTP 50[0234]\b|ETIMEDOUT/i;
-const infraText = (t) => String(t).slice(-200000).match(INFRA_LOG) ?? String(t).slice(-200000).match(RUNNER_LOST);
+const infraText = (t) => [INFRA_LOG, RUNNER_LOST, ARTIFACT_SERVICE].map((re) => String(t).slice(-200000).match(re)).find(Boolean) ?? null;
 
 // A job that never got a runner or ran no step.
 export const neverStarted = (j) => (Array.isArray(j.steps) && j.steps.length === 0) || j.runner_id === 0 || j.runner_id === null;
